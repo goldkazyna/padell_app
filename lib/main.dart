@@ -20,10 +20,14 @@ import 'providers/profile_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  debugPrint('[APP] ===== APP START =====');
+  debugPrint('[APP] kIsWeb: $kIsWeb');
+
   try {
     await Firebase.initializeApp();
+    debugPrint('[APP] Firebase initialized OK');
   } catch (e) {
-    debugPrint('Firebase init error: $e');
+    debugPrint('[APP] Firebase init error: $e');
   }
 
   final storageService = StorageService();
