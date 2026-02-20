@@ -103,6 +103,17 @@ class PushNotificationService {
       return;
     }
 
+    // iOS: allow notifications to show when app is in foreground
+    if (Platform.isIOS) {
+      _log('Setting iOS foreground presentation options...');
+      await _messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      _log('iOS foreground options set');
+    }
+
     // Setup local notifications for foreground
     _log('Setting up local notifications...');
     try {
