@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
 
 class VerifyCodeScreen extends StatefulWidget {
@@ -29,6 +30,8 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
     final success = await auth.verifyCode(widget.phone, _codeController.text);
 
     if (success && mounted) {
+      // Send FCM token to server after login
+      context.read<PushNotificationService>().registerToken();
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }

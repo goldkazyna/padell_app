@@ -10,6 +10,9 @@ import 'screens/tournaments_screen.dart';
 import 'screens/rating_screen.dart';
 import 'screens/profile_screen.dart';
 
+/// Global navigator key for navigation from push notifications
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 class PadelApp extends StatelessWidget {
   const PadelApp({super.key});
 
@@ -19,6 +22,7 @@ class PadelApp extends StatelessWidget {
       title: 'Padel',
       theme: AppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: Consumer<AuthProvider>(
         builder: (_, auth, __) {
           switch (auth.status) {

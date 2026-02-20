@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "549656324072",
+    "project_id": "padel-kz",
+    "storage_bucket": "padel-kz.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:549656324072:android:81c7814471c1d93c2f265d",
+        "android_client_info": {
+          "package_name": "com.padelkz.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtkDLHyx0gpUUQ_o7roOJ4A-kThaUp-V8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

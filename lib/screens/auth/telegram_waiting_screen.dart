@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
 
 class TelegramWaitingScreen extends StatefulWidget {
@@ -28,6 +29,8 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
 
   void _onAuthChanged() {
     if (_authProvider.isAuthenticated && mounted) {
+      // Send FCM token to server after telegram login
+      context.read<PushNotificationService>().registerToken();
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
