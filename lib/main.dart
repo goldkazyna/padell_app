@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,12 @@ import 'providers/profile_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
 
   final storageService = StorageService();
   final apiService = ApiService();
@@ -28,7 +34,13 @@ void main() async {
   final ratingService = RatingService(apiService, storageService);
   final profileService = ProfileService(apiService, storageService);
   final pushService = PushNotificationService(apiService, storageService, navigatorKey);
-  pushService.initialize();
+  if (!kIsWeb) {
+    try {
+      pushService.initialize();
+    } catch (e) {
+      debugPrint('Push init error: $e');
+    }
+  }
 
   runApp(
     MultiProvider(
