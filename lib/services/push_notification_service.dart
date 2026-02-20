@@ -25,54 +25,91 @@ class PushNotificationService {
   static const _channelName = 'Уведомления';
   static const _channelDescription = 'Уведомления о турнирах и матчах';
 
+  /// In-memory log buffer — visible on screen via showDebugLog()
+  final List<String> _logs = [];
+  String get debugLog => _logs.join('\n');
+
   PushNotificationService(
     this._apiService,
     this._storageService,
     this._navigatorKey,
   );
 
+  void _log(String msg) {
+    final time = DateTime.now().toString().substring(11, 19);
+    final line = '[$time] $msg';
+    _logs.add(line);
+    debugPrint('[PUSH] $msg');
+  }
+
+  /// Show debug log dialog on screen
+  void showDebugLog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        title: const Text('Push Debug Log', style: TextStyle(color: Colors.white, fontSize: 16)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Text(
+              _logs.isEmpty ? 'No logs yet' : _logs.join('\n'),
+              style: const TextStyle(color: Colors.green, fontSize: 11, fontFamily: 'monospace'),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> initialize() async {
-    debugPrint('[PUSH] ===== PUSH INIT START =====');
-    debugPrint('[PUSH] Platform: ${Platform.operatingSystem}');
+    _log('===== PUSH INIT START =====');
+    _log('Platform: ${Platform.operatingSystem}');
 
     // Register background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    debugPrint('[PUSH] Background handler registered');
+    _log('Background handler registered');
 
     // Check if Firebase is initialized
     try {
       final apps = Firebase.apps;
-      debugPrint('[PUSH] Firebase apps: ${apps.map((a) => a.name).toList()}');
+      _log('Firebase apps: ${apps.map((a) => a.name).toList()}');
     } catch (e) {
-      debugPrint('[PUSH] Firebase apps check error: $e');
+      _log('Firebase apps check error: $e');
     }
 
     // Request permissions
-    debugPrint('[PUSH] Requesting permissions...');
+    _log('Requesting permissions...');
     try {
       final settings = await _messaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
       );
-      debugPrint('[PUSH] Permission status: ${settings.authorizationStatus}');
+      _log('Permission status: ${settings.authorizationStatus}');
 
       if (settings.authorizationStatus != AuthorizationStatus.authorized) {
-        debugPrint('[PUSH] ===== PUSH INIT ABORTED (not authorized) =====');
+        _log('===== PUSH INIT ABORTED (not authorized) =====');
         return;
       }
     } catch (e) {
-      debugPrint('[PUSH] Permission request error: $e');
+      _log('Permission request error: $e');
       return;
     }
 
     // Setup local notifications for foreground
-    debugPrint('[PUSH] Setting up local notifications...');
+    _log('Setting up local notifications...');
     try {
       await _setupLocalNotifications();
-      debugPrint('[PUSH] Local notifications setup OK');
+      _log('Local notifications setup OK');
     } catch (e) {
-      debugPrint('[PUSH] Local notifications setup error: $e');
+      _log('Local notifications setup error: $e');
     }
 
     // Listen to foreground messages
@@ -84,40 +121,41 @@ class PushNotificationService {
     // Check if app was opened from notification (app terminated)
     final initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) {
-      debugPrint('[PUSH] App opened from notification: ${initialMessage.data}');
+      _log('App opened from notification: ${initialMessage.data}');
       _handleNotificationTap(initialMessage);
     }
 
     // Get APNs token (iOS only)
     if (Platform.isIOS) {
-      debugPrint('[PUSH] Getting APNs token...');
+      _log('Getting APNs token...');
       try {
         final apnsToken = await _messaging.getAPNSToken();
-        debugPrint('[PUSH] APNs token: ${apnsToken != null ? "${apnsToken.substring(0, 20)}..." : "NULL"}');
-        if (apnsToken == null) {
-          debugPrint('[PUSH] WARNING: APNs token is null! FCM will not work on iOS.');
-          debugPrint('[PUSH] Check: 1) Push Notifications capability 2) APNs key in Firebase 3) Entitlements');
+        if (apnsToken != null) {
+          _log('APNs token: ${apnsToken.substring(0, 20)}...');
+        } else {
+          _log('APNs token: NULL!');
+          _log('Check: 1) Entitlements 2) APNs key in Firebase 3) Provisioning profile');
         }
       } catch (e) {
-        debugPrint('[PUSH] APNs token error: $e');
+        _log('APNs token error: $e');
       }
     }
 
     // Get and send FCM token
-    debugPrint('[PUSH] Getting FCM token...');
+    _log('Getting FCM token...');
     await registerToken();
 
     // Subscribe to topics
-    debugPrint('[PUSH] Subscribing to topics...');
+    _log('Subscribing to topics...');
     await _subscribeToTopics();
 
     // Listen for token refresh
     _messaging.onTokenRefresh.listen((token) {
-      debugPrint('[PUSH] Token refreshed: ${token.substring(0, 20)}...');
+      _log('Token refreshed: ${token.substring(0, 20)}...');
       _sendTokenToServer(token);
     });
 
-    debugPrint('[PUSH] ===== PUSH INIT COMPLETE =====');
+    _log('===== PUSH INIT COMPLETE =====');
   }
 
   /// Public method — call after login to send FCM token to server
@@ -125,17 +163,17 @@ class PushNotificationService {
     try {
       final token = await _messaging.getToken();
       if (token != null) {
-        debugPrint('[PUSH] FCM Token: ${token.substring(0, 30)}...');
+        _log('FCM Token: ${token.substring(0, 30)}...');
         await _sendTokenToServer(token);
       } else {
-        debugPrint('[PUSH] FCM Token is NULL!');
+        _log('FCM Token is NULL!');
         if (Platform.isIOS) {
-          debugPrint('[PUSH] iOS: Check APNs configuration. FCM requires APNs token first.');
+          _log('iOS: FCM requires APNs token first.');
         }
       }
     } catch (e, stack) {
-      debugPrint('[PUSH] Error getting FCM token: $e');
-      debugPrint('[PUSH] Stack: $stack');
+      _log('Error getting FCM token: $e');
+      _log('Stack: $stack');
     }
   }
 
@@ -143,9 +181,9 @@ class PushNotificationService {
     try {
       await _messaging.subscribeToTopic('all_users');
       await _messaging.subscribeToTopic('tournaments');
-      debugPrint('[PUSH] Subscribed to topics: all_users, tournaments');
+      _log('Subscribed to topics OK');
     } catch (e) {
-      debugPrint('[PUSH] Error subscribing to topics: $e');
+      _log('Error subscribing to topics: $e');
     }
   }
 
@@ -183,12 +221,11 @@ class PushNotificationService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    debugPrint('[PUSH] Foreground message: ${message.notification?.title}');
+    _log('Foreground message: ${message.notification?.title}');
 
     final notification = message.notification;
     if (notification == null) return;
 
-    // Encode type and id into payload for local notification tap
     final type = message.data['type'] ?? '';
     final tournamentId = message.data['tournament_id'] ?? '';
     final payload = '$type|$tournamentId';
@@ -212,9 +249,8 @@ class PushNotificationService {
     );
   }
 
-  /// Handle tap on local notification (foreground notifications)
   void _onNotificationTapped(NotificationResponse details) {
-    debugPrint('[PUSH] Local notification tapped: ${details.payload}');
+    _log('Local notification tapped: ${details.payload}');
     final payload = details.payload;
     if (payload == null || payload.isEmpty) return;
 
@@ -225,16 +261,15 @@ class PushNotificationService {
     _navigateByType(type, id);
   }
 
-  /// Handle tap on FCM notification (background/terminated)
   void _handleNotificationTap(RemoteMessage message) {
-    debugPrint('[PUSH] Notification tap: ${message.data}');
+    _log('Notification tap: ${message.data}');
     final type = message.data['type'] ?? '';
     final tournamentId = message.data['tournament_id'] ?? '';
     _navigateByType(type, tournamentId);
   }
 
   void _navigateByType(String type, String id) {
-    debugPrint('[PUSH] Navigate: type=$type, id=$id');
+    _log('Navigate: type=$type, id=$id');
     if (type == 'tournament' && id.isNotEmpty) {
       final tournamentId = int.tryParse(id);
       if (tournamentId != null) {
@@ -246,26 +281,25 @@ class PushNotificationService {
         );
       }
     }
-    // type: "test" — do nothing, just a test push
   }
 
   Future<void> _sendTokenToServer(String fcmToken) async {
     try {
       final authToken = await _storageService.getToken();
       if (authToken == null) {
-        debugPrint('[PUSH] No auth token, skipping server registration');
+        _log('No auth token, skipping server registration');
         return;
       }
 
-      debugPrint('[PUSH] Sending FCM token to server (platform: ${Platform.isIOS ? "ios" : "android"})...');
+      _log('Sending to server (${Platform.isIOS ? "ios" : "android"})...');
       final response = await _apiService.post(
         '/devices/register',
         {'token': fcmToken, 'platform': Platform.isIOS ? 'ios' : 'android'},
         authToken,
       );
-      debugPrint('[PUSH] Server response: $response');
+      _log('Server response: $response');
     } catch (e) {
-      debugPrint('[PUSH] Error sending FCM token to server: $e');
+      _log('Error sending to server: $e');
     }
   }
 }

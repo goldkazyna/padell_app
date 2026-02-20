@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
+import '../services/push_notification_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats.dart';
@@ -53,6 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   TournamentHistory(),
                   SizedBox(height: 24),
                   ProfileMenu(),
+                  SizedBox(height: 16),
+                  _PushDebugButton(),
                   SizedBox(height: 20),
                 ],
               ),
@@ -60,6 +63,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _PushDebugButton extends StatelessWidget {
+  const _PushDebugButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          context.read<PushNotificationService>().showDebugLog(context);
+        },
+        child: const Text(
+          'Push Debug Log',
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        ),
+      ),
     );
   }
 }
