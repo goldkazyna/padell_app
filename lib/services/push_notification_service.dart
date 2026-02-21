@@ -35,6 +35,31 @@ class PushNotificationService {
     this._navigatorKey,
   );
 
+  /// Clear app badge count (iOS)
+  Future<void> clearBadge() async {
+    try {
+      if (Platform.isIOS) {
+        // Show and immediately cancel a notification with badge 0 to reset
+        await _localNotifications.show(
+          999,
+          null,
+          null,
+          const NotificationDetails(
+            iOS: DarwinNotificationDetails(
+              presentAlert: false,
+              presentSound: false,
+              badgeNumber: 0,
+            ),
+          ),
+        );
+        await _localNotifications.cancel(999);
+      }
+      _log('Badge cleared');
+    } catch (e) {
+      _log('Clear badge error: $e');
+    }
+  }
+
   void _log(String msg) {
     final time = DateTime.now().toString().substring(11, 19);
     final line = '[$time] $msg';
@@ -102,6 +127,9 @@ class PushNotificationService {
       _log('Permission request error: $e');
       return;
     }
+
+    // Clear badge on app open
+    clearBadge();
 
     // iOS: allow notifications to show when app is in foreground
     if (Platform.isIOS) {
