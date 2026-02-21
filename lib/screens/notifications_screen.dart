@@ -13,15 +13,34 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final _apiService = ApiService();
   final _storageService = StorageService();
+  final _scrollController = ScrollController();
 
   List<Map<String, dynamic>> _notifications = [];
   bool _isLoading = true;
+  bool _isLoadingMore = false;
   String? _error;
+  String? _nextPageUrl;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadNotifications();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoadingMore &&
+        _nextPageUrl != null) {
+      _loadMore();
+    }
   }
 
   Future<void> _loadNotifications() async {
@@ -33,9 +52,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     try {
       final token = await _storageService.getToken();
       final response = await _apiService.get('/notifications', token);
-      final list = response['notifications'] as List<dynamic>? ?? [];
+      final list = response['data'] as List<dynamic>? ?? [];
       setState(() {
         _notifications = list.cast<Map<String, dynamic>>();
+        _nextPageUrl = response['next_page_url'] as String?;
         _isLoading = false;
       });
 
@@ -50,6 +70,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _error = 'Не удалось загрузить уведомления';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_nextPageUrl == null || _isLoadingMore) return;
+
+    setState(() => _isLoadingMore = true);
+
+    try {
+      final token = await _storageService.getToken();
+      // Extract page parameter from next_page_url
+      final uri = Uri.parse(_nextPageUrl!);
+      final page = uri.queryParameters['page'] ?? '2';
+      final response =
+          await _apiService.get('/notifications?page=$page', token);
+      final list = response['data'] as List<dynamic>? ?? [];
+      setState(() {
+        _notifications.addAll(list.cast<Map<String, dynamic>>());
+        _nextPageUrl = response['next_page_url'] as String?;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingMore = false);
     }
   }
 
@@ -148,12 +191,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               backgroundColor: AppTheme.card,
                               onRefresh: _loadNotifications,
                               child: ListView.separated(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                itemCount: _notifications.length,
+                                controller: _scrollController,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 4),
+                                itemCount: _notifications.length +
+                                    (_isLoadingMore ? 1 : 0),
                                 separatorBuilder: (_, __) =>
                                     const SizedBox(height: 8),
                                 itemBuilder: (_, index) {
+                                  if (index == _notifications.length) {
+                                    return const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 16),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: AppTheme.accent,
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                   return _NotificationCard(
                                     notification: _notifications[index],
                                   );
