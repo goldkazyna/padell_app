@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
+import '../services/push_notification_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import 'tournament_detail_screen.dart';
@@ -60,10 +62,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _isLoading = false;
       });
 
-      // Mark all as read
+      // Mark all as read and clear badge
       if (_notifications.any((n) => n['read_at'] == null)) {
         try {
           await _apiService.post('/notifications/read-all', {}, token);
+          if (mounted) {
+            context.read<PushNotificationService>().setBadge(0);
+          }
         } catch (_) {}
       }
     } catch (e) {

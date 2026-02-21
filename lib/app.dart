@@ -57,8 +57,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Clear badge on app open
-    _clearBadge();
+    // Update badge with unread count
+    _updateBadge();
   }
 
   @override
@@ -70,13 +70,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _clearBadge();
+      _updateBadge();
     }
   }
 
-  void _clearBadge() {
+  void _updateBadge() {
     try {
-      context.read<PushNotificationService>().clearBadge();
+      context.read<PushNotificationService>().updateBadge();
     } catch (_) {}
   }
 

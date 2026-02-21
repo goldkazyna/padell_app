@@ -35,28 +35,40 @@ class PushNotificationService {
     this._navigatorKey,
   );
 
-  /// Clear app badge count (iOS)
-  Future<void> clearBadge() async {
+  /// Set app badge to specific number (iOS)
+  Future<void> setBadge(int count) async {
     try {
       if (Platform.isIOS) {
-        // Show and immediately cancel a notification with badge 0 to reset
         await _localNotifications.show(
           999,
           null,
           null,
-          const NotificationDetails(
+          NotificationDetails(
             iOS: DarwinNotificationDetails(
               presentAlert: false,
               presentSound: false,
-              badgeNumber: 0,
+              badgeNumber: count,
             ),
           ),
         );
         await _localNotifications.cancel(999);
       }
-      _log('Badge cleared');
+      _log('Badge set to $count');
     } catch (e) {
-      _log('Clear badge error: $e');
+      _log('Set badge error: $e');
+    }
+  }
+
+  /// Fetch unread count from API and update badge
+  Future<void> updateBadge() async {
+    try {
+      final token = await _storageService.getToken();
+      if (token == null) return;
+      final response = await _apiService.get('/notifications/unread-count', token);
+      final count = response['count'] as int? ?? 0;
+      await setBadge(count);
+    } catch (e) {
+      _log('Update badge error: $e');
     }
   }
 
@@ -128,8 +140,8 @@ class PushNotificationService {
       return;
     }
 
-    // Clear badge on app open
-    clearBadge();
+    // Update badge with actual unread count
+    updateBadge();
 
     // iOS: allow notifications to show when app is in foreground
     if (Platform.isIOS) {
