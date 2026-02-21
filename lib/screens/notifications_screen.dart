@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import 'tournament_detail_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -93,6 +94,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       });
     } catch (e) {
       setState(() => _isLoadingMore = false);
+    }
+  }
+
+  void _onNotificationTap(Map<String, dynamic> notification) {
+    final type = notification['type'] as String? ?? '';
+    final data = notification['data'] as Map<String, dynamic>? ?? {};
+    final tournamentId = data['tournament_id'] ?? notification['tournament_id'];
+
+    debugPrint('[NOTIF] Tap: type=$type, data=$data, tournament_id=$tournamentId');
+
+    if (tournamentId != null) {
+      final id = int.tryParse(tournamentId.toString());
+      if (id != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TournamentDetailScreen(tournamentId: id),
+          ),
+        );
+      }
     }
   }
 
@@ -213,6 +234,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   }
                                   return _NotificationCard(
                                     notification: _notifications[index],
+                                    onTap: () => _onNotificationTap(
+                                        _notifications[index]),
                                   );
                                 },
                               ),
@@ -227,8 +250,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
 class _NotificationCard extends StatelessWidget {
   final Map<String, dynamic> notification;
+  final VoidCallback? onTap;
 
-  const _NotificationCard({required this.notification});
+  const _NotificationCard({required this.notification, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +261,9 @@ class _NotificationCard extends StatelessWidget {
     final createdAt = notification['created_at'] as String? ?? '';
     final isRead = notification['read_at'] != null;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: isRead ? AppTheme.card : const Color(0xFF1A2A1A),
@@ -314,6 +340,7 @@ class _NotificationCard extends StatelessWidget {
               ),
             ),
         ],
+      ),
       ),
     );
   }
