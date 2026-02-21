@@ -78,6 +78,35 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> multipartPost(
+    String endpoint,
+    Map<String, String> fields,
+    String? filePath,
+    String fileField, [
+    String? token,
+  ]) async {
+    try {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl$endpoint'),
+      );
+      request.headers.addAll({
+        'Accept': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      });
+      request.fields.addAll(fields);
+      if (filePath != null) {
+        request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
+      }
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      return _handleResponse(response);
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Ошибка сети. Проверьте подключение к интернету.');
+    }
+  }
+
   Map<String, dynamic> _handleResponse(http.Response response) {
     final body = jsonDecode(response.body) as Map<String, dynamic>;
 

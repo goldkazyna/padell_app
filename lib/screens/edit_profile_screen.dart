@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/api_service.dart';
@@ -14,9 +16,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _lastNameController = TextEditingController();
-  final _firstNameController = TextEditingController();
-  final _patronymicController = TextEditingController();
+  final _nameController = TextEditingController();
   final _ageController = TextEditingController();
 
   String? _city;
@@ -26,6 +26,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isSaving = false;
   bool _isLoading = true;
 
+  File? _pickedImage;
+  String? _currentAvatarUrl;
+
   @override
   void initState() {
     super.initState();
@@ -34,9 +37,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
-    _lastNameController.dispose();
-    _firstNameController.dispose();
-    _patronymicController.dispose();
+    _nameController.dispose();
     _ageController.dispose();
     super.dispose();
   }
@@ -50,14 +51,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       debugPrint('[EDIT_PROFILE] user data: $user');
 
       setState(() {
-        _lastNameController.text = user['last_name'] as String? ?? '';
-        _firstNameController.text = user['first_name'] as String? ?? '';
-        _patronymicController.text = user['patronymic'] as String? ?? '';
+        _nameController.text = user['name'] as String? ?? '';
         _city = user['city'] as String?;
         _gender = user['gender'] as String?;
-        _ageController.text = (user['age'] != null) ? user['age'].toString() : '';
+        _ageController.text =
+            (user['age'] != null) ? user['age'].toString() : '';
         _hand = user['hand'] as String?;
         _position = user['position'] as String?;
+        _currentAvatarUrl = user['avatar'] as String?;
         _isLoading = false;
       });
     } catch (e) {
@@ -66,15 +67,94 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFF3A3A3A),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: AppTheme.accent),
+              title: const Text('Камера',
+                  style: TextStyle(color: AppTheme.textPrimary)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _takePhoto(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: AppTheme.accent),
+              title: const Text('Галерея',
+                  style: TextStyle(color: AppTheme.textPrimary)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _takePhoto(ImageSource.gallery);
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _takePhoto(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 80,
+      );
+      if (picked != null) {
+        setState(() => _pickedImage = File(picked.path));
+      }
+    } catch (e) {
+      debugPrint('[EDIT_PROFILE] pick image error: $e');
+    }
+  }
+
   Future<void> _save() async {
     setState(() => _isSaving = true);
 
     try {
       final token = await StorageService().getToken();
+
+      // Upload avatar if picked
+      if (_pickedImage != null) {
+        try {
+          await ApiService().multipartPost(
+            '/profile/avatar',
+            {},
+            _pickedImage!.path,
+            'avatar',
+            token,
+          );
+          debugPrint('[EDIT_PROFILE] avatar uploaded');
+        } catch (e) {
+          debugPrint('[EDIT_PROFILE] avatar upload error: $e');
+        }
+      }
+
+      // Save profile data
       final body = <String, dynamic>{
-        'last_name': _lastNameController.text.trim(),
-        'first_name': _firstNameController.text.trim(),
-        'patronymic': _patronymicController.text.trim(),
+        'name': _nameController.text.trim(),
       };
       if (_city != null) body['city'] = _city;
       if (_gender != null) body['gender'] = _gender;
@@ -88,7 +168,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       await ApiService().put('/profile', body, token);
 
-      // Refresh profile data
       if (mounted) {
         context.read<ProfileProvider>().loadProfile();
         Navigator.pop(context);
@@ -117,7 +196,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   Container(
@@ -176,7 +256,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Expanded(
               child: _isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: AppTheme.accent),
+                      child:
+                          CircularProgressIndicator(color: AppTheme.accent),
                     )
                   : SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -188,13 +269,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           Center(child: _buildAvatar()),
                           const SizedBox(height: 24),
 
-                          // ЛИЧНЫЕ ДАННЫЕ
-                          _buildSectionLabel('ЛИЧНЫЕ ДАННЫЕ'),
+                          // ФИО
+                          _buildSectionLabel('ФИО'),
                           const SizedBox(height: 8),
-                          _buildTextField('Фамилия', _lastNameController),
-                          _buildTextField('Имя', _firstNameController),
-                          _buildTextField('Отчество', _patronymicController,
-                              isLast: true),
+                          _buildSingleTextField('Имя', _nameController),
                           const SizedBox(height: 24),
 
                           // МЕСТОПОЛОЖЕНИЕ
@@ -238,7 +316,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             options: ['right', 'left', 'any'],
                             labels: ['Справа', 'Слева', 'Любая'],
                             selected: _position,
-                            onChanged: (v) => setState(() => _position = v),
+                            onChanged: (v) =>
+                                setState(() => _position = v),
                           ),
                           const SizedBox(height: 40),
                         ],
@@ -255,45 +334,67 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = context.read<ProfileProvider>().user;
     final initials = user?.initials ?? '??';
 
-    return Stack(
-      children: [
-        Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            color: AppTheme.accent,
-            borderRadius: BorderRadius.circular(24),
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Stack(
+        children: [
+          Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              color: AppTheme.accent,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: _pickedImage != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.file(_pickedImage!, fit: BoxFit.cover),
+                  )
+                : _currentAvatarUrl != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.network(
+                          _currentAvatarUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              _buildInitialsWidget(initials),
+                        ),
+                      )
+                    : _buildInitialsWidget(initials),
           ),
-          child: Center(
-            child: Text(
-              initials,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: AppTheme.card,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppTheme.background, width: 2),
+              ),
+              child: const Icon(
+                Icons.camera_alt_outlined,
+                color: AppTheme.textSecondary,
+                size: 14,
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInitialsWidget(String initials) {
+    return Center(
+      child: Text(
+        initials,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
         ),
-        Positioned(
-          right: 0,
-          bottom: 0,
-          child: Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: AppTheme.card,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppTheme.background, width: 2),
-            ),
-            child: const Icon(
-              Icons.camera_alt_outlined,
-              color: AppTheme.textSecondary,
-              size: 14,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -309,36 +410,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller,
-      {bool isLast = false}) {
+  Widget _buildSingleTextField(String label, TextEditingController controller) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: AppTheme.card,
-        borderRadius: isLast
-            ? const BorderRadius.only(
-                bottomLeft: Radius.circular(14),
-                bottomRight: Radius.circular(14),
-              )
-            : (label == 'Фамилия'
-                ? const BorderRadius.only(
-                    topLeft: Radius.circular(14),
-                    topRight: Radius.circular(14),
-                  )
-                : BorderRadius.zero),
-        border: Border(
-          left: const BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
-          right: const BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
-          top: label == 'Фамилия'
-              ? const BorderSide(color: Color(0xFF2A2A2A), width: 0.5)
-              : BorderSide.none,
-          bottom: const BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
-        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
           SizedBox(
-            width: 90,
+            width: 50,
             child: Text(
               label,
               style: const TextStyle(
@@ -385,17 +468,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    'Выберите город',
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                const SizedBox(height: 8),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF3A3A3A),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Выберите город',
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 ...cities.map((city) => ListTile(
                       title: Text(
                         city,
@@ -521,14 +612,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: GestureDetector(
             onTap: () => onChanged(options[i]),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
                 color: isSelected ? AppTheme.accent : AppTheme.card,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected
-                      ? AppTheme.accent
-                      : const Color(0xFF2A2A2A),
+                  color:
+                      isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
                   width: 0.5,
                 ),
               ),
