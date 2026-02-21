@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../screens/notification_settings_screen.dart';
 import '../../theme/app_theme.dart';
 
 class ProfileMenu extends StatelessWidget {
@@ -30,11 +31,16 @@ class ProfileMenu extends StatelessWidget {
         const SizedBox(height: 8),
         _buildMenuItem(
           context,
-          Icons.settings_outlined,
-          'Настройки',
-          'Уведомления, язык, тема',
-          const Color(0xFF888888),
-          onTap: () {},
+          Icons.notifications_outlined,
+          'Уведомления',
+          'Настройки уведомлений',
+          const Color(0xFFF59E0B),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const NotificationSettingsScreen(),
+            ),
+          ),
         ),
         const SizedBox(height: 8),
         _buildMenuItem(
