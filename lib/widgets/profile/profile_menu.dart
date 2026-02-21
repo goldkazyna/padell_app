@@ -13,24 +13,6 @@ class ProfileMenu extends StatelessWidget {
       children: [
         _buildMenuItem(
           context,
-          Icons.account_balance_wallet_outlined,
-          'Кошелёк',
-          'Баланс: 15 000 ₸',
-          const Color(0xFF22C55E),
-          onTap: () {},
-        ),
-        const SizedBox(height: 8),
-        _buildMenuItem(
-          context,
-          Icons.analytics_outlined,
-          'Статистика',
-          'Подробная аналитика',
-          const Color(0xFF3B82F6),
-          onTap: () {},
-        ),
-        const SizedBox(height: 8),
-        _buildMenuItem(
-          context,
           Icons.notifications_outlined,
           'Уведомления',
           'Настройки уведомлений',
