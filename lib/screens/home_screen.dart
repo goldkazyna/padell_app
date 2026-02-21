@@ -8,6 +8,7 @@ import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../theme/app_theme.dart';
+import 'tournament_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int)? onNavigateToTab;
@@ -76,7 +77,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   NearestTournamentCard(
                     tournament: home.nearestTournament,
                     onRegister: () {
-                      // TODO: Navigate to tournament details
+                      if (home.nearestTournament != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => TournamentDetailScreen(
+                              tournamentId: home.nearestTournament!.id,
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                   const SizedBox(height: 28),
@@ -85,7 +95,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   ActiveTournamentCard(
                     tournament: home.activeTournament,
                     onTap: () {
-                      // TODO: Navigate to tournament details
+                      if (home.activeTournament != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => TournamentDetailScreen(
+                              tournamentId: home.activeTournament!.id,
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                   const SizedBox(height: 28),
@@ -100,7 +119,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   UpcomingList(
                     tournaments: home.upcomingTournaments,
                     onTap: (tournament) {
-                      // TODO: Navigate to tournament details
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TournamentDetailScreen(
+                            tournamentId: tournament.id,
+                          ),
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 20),

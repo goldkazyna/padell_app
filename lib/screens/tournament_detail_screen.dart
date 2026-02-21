@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../theme/app_theme.dart';
 import '../models/tournament.dart';
 import '../providers/tournament_provider.dart';
@@ -130,7 +131,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
           _buildCircleButton(
             icon: Icons.ios_share,
-            onTap: () {},
+            onTap: () => _shareTournament(),
           ),
         ],
       ),
@@ -151,6 +152,28 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         child: Icon(icon, color: AppTheme.textPrimary, size: 22),
       ),
     );
+  }
+
+  void _shareTournament() {
+    final tournament = context.read<TournamentProvider>().selectedTournament;
+    if (tournament == null) return;
+
+    final levelText = '${tournament.minLevel} – ${tournament.maxLevel}';
+    final spotsText = tournament.spotsLeft > 0
+        ? 'Свободных мест: ${tournament.spotsLeft}'
+        : 'Мест нет';
+
+    final text = '${tournament.name}\n\n'
+        '${tournament.typeName} · ${tournament.levelCategoryText}\n'
+        '${tournament.dateFormatted}, ${tournament.dayOfWeek}\n'
+        '${tournament.time}\n'
+        '${tournament.club.name}\n'
+        'Уровень: $levelText\n'
+        'Стоимость: ${tournament.priceText}\n'
+        '$spotsText\n\n'
+        'Padel KZ — скачай приложение и записывайся на турниры!';
+
+    Share.share(text);
   }
 
   // === Теги ===
