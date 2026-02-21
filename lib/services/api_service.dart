@@ -47,6 +47,24 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> put(
+    String endpoint,
+    Map<String, dynamic> body, [
+    String? token,
+  ]) async {
+    try {
+      final response = await _client.put(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: _headers(token),
+        body: jsonEncode(body),
+      );
+      return _handleResponse(response);
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Ошибка сети. Проверьте подключение к интернету.');
+    }
+  }
+
   Future<Map<String, dynamic>> get(String endpoint, [String? token]) async {
     try {
       final response = await _client.get(

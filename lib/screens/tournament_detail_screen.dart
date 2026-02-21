@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_theme.dart';
 import '../models/tournament.dart';
 import '../providers/tournament_provider.dart';
@@ -771,22 +772,17 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                 ),
               ),
 
-              // Кнопка чат
-              _buildOrganizerAction(
-                icon: Icons.chat_bubble_outline,
-                color: AppTheme.textSecondary,
-                bgColor: const Color(0xFF2A2A2A),
-                onTap: () {},
-              ),
-              const SizedBox(width: 8),
-
               // Кнопка звонок
-              _buildOrganizerAction(
-                icon: Icons.phone,
-                color: Colors.white,
-                bgColor: AppTheme.accent,
-                onTap: () {},
-              ),
+              if (orgPhone.isNotEmpty)
+                _buildOrganizerAction(
+                  icon: Icons.phone,
+                  color: Colors.white,
+                  bgColor: AppTheme.accent,
+                  onTap: () {
+                    final phone = orgPhone.replaceAll(RegExp(r'[^\d+]'), '');
+                    launchUrl(Uri.parse('tel:$phone'));
+                  },
+                ),
             ],
           ),
         ),

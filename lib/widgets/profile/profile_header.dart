@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -78,7 +79,7 @@ class ProfileHeader extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const _EditProfilePlaceholder(),
+                          builder: (_) => const EditProfileScreen(),
                         ),
                       );
                     },
@@ -167,30 +168,3 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-class _EditProfilePlaceholder extends StatelessWidget {
-  const _EditProfilePlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        backgroundColor: AppTheme.background,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Редактировать профиль',
-          style: TextStyle(color: AppTheme.textPrimary, fontSize: 18),
-        ),
-      ),
-      body: const Center(
-        child: Text(
-          'Скоро здесь будет редактирование профиля',
-          style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
-        ),
-      ),
-    );
-  }
-}
