@@ -264,7 +264,24 @@ class _NotificationCard extends StatelessWidget {
     final title = notification['title'] as String? ?? '';
     final body = notification['body'] as String? ?? '';
     final createdAt = notification['created_at'] as String? ?? '';
+    final type = notification['type'] as String? ?? '';
     final isRead = notification['read_at'] != null;
+
+    IconData iconData;
+    Color iconColor;
+    switch (type) {
+      case 'registration_approved':
+        iconData = Icons.check_circle_outline;
+        iconColor = AppTheme.accent;
+        break;
+      case 'registration_rejected':
+        iconData = Icons.cancel_outlined;
+        iconColor = AppTheme.error;
+        break;
+      default:
+        iconData = Icons.notifications_outlined;
+        iconColor = AppTheme.accent;
+    }
 
     return GestureDetector(
       onTap: onTap,
@@ -287,12 +304,12 @@ class _NotificationCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppTheme.accent.withAlpha(25),
+              color: iconColor.withAlpha(25),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.notifications_outlined,
-              color: AppTheme.accent,
+            child: Icon(
+              iconData,
+              color: iconColor,
               size: 20,
             ),
           ),

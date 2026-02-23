@@ -321,7 +321,12 @@ class PushNotificationService {
 
   void _navigateByType(String type, String id) {
     _log('Navigate: type=$type, id=$id');
-    if (type == 'tournament' && id.isNotEmpty) {
+    const tournamentTypes = {
+      'tournament',
+      'registration_approved',
+      'registration_rejected',
+    };
+    if (tournamentTypes.contains(type) && id.isNotEmpty) {
       final tournamentId = int.tryParse(id);
       if (tournamentId != null) {
         _navigatorKey.currentState?.push(
