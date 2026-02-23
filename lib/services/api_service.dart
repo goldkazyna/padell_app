@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -96,7 +97,20 @@ class ApiService {
       });
       request.fields.addAll(fields);
       if (filePath != null) {
-        final file = await http.MultipartFile.fromPath(fileField, filePath);
+        MediaType? contentType;
+        final lowerPath = filePath.toLowerCase();
+        if (lowerPath.endsWith('.webp')) {
+          contentType = MediaType('image', 'webp');
+        } else if (lowerPath.endsWith('.jpg') || lowerPath.endsWith('.jpeg')) {
+          contentType = MediaType('image', 'jpeg');
+        } else if (lowerPath.endsWith('.png')) {
+          contentType = MediaType('image', 'png');
+        }
+        final file = await http.MultipartFile.fromPath(
+          fileField,
+          filePath,
+          contentType: contentType,
+        );
         request.files.add(file);
       }
       final streamedResponse =
