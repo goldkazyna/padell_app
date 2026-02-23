@@ -96,9 +96,11 @@ class ApiService {
       });
       request.fields.addAll(fields);
       if (filePath != null) {
-        request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
+        final file = await http.MultipartFile.fromPath(fileField, filePath);
+        request.files.add(file);
       }
-      final streamedResponse = await request.send();
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 30));
       final response = await http.Response.fromStream(streamedResponse);
       return _handleResponse(response);
     } catch (e) {

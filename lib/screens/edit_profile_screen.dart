@@ -164,16 +164,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // Upload avatar if picked
       if (_pickedImage != null) {
         try {
-          await ApiService().multipartPost(
+          final fileSize = await _pickedImage!.length();
+          debugPrint(
+              '[EDIT_PROFILE] uploading avatar: ${_pickedImage!.path} (${fileSize ~/ 1024}KB)');
+          final avatarResponse = await ApiService().multipartPost(
             '/profile/avatar',
             {},
             _pickedImage!.path,
             'avatar',
             token,
           );
-          debugPrint('[EDIT_PROFILE] avatar uploaded');
+          debugPrint('[EDIT_PROFILE] avatar response: $avatarResponse');
         } catch (e) {
           debugPrint('[EDIT_PROFILE] avatar upload error: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Ошибка загрузки фото: $e'),
+                backgroundColor: AppTheme.error,
+              ),
+            );
+          }
         }
       }
 
