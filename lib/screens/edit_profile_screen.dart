@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/api_service.dart';
@@ -123,7 +125,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         imageQuality: 80,
       );
       if (picked != null) {
-        setState(() => _pickedImage = File(picked.path));
+        // Convert to WebP for smaller file size
+        final dir = await getTemporaryDirectory();
+        final targetPath =
+            '${dir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}.webp';
+
+        final compressed = await FlutterImageCompress.compressAndGetFile(
+          picked.path,
+          targetPath,
+          format: CompressFormat.webp,
+          quality: 80,
+          minWidth: 512,
+          minHeight: 512,
+        );
+
+        if (compressed != null) {
+          final originalSize = await File(picked.path).length();
+          final compressedSize = await compressed.length();
+          debugPrint(
+              '[EDIT_PROFILE] WebP: ${originalSize ~/ 1024}KB -> ${compressedSize ~/ 1024}KB');
+          setState(() => _pickedImage = File(compressed.path));
+        } else {
+          // Fallback to original if compression fails
+          setState(() => _pickedImage = File(picked.path));
+        }
       }
     } catch (e) {
       debugPrint('[EDIT_PROFILE] pick image error: $e');
