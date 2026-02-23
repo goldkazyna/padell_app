@@ -125,16 +125,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         imageQuality: 80,
       );
       if (picked != null) {
-        // Convert to WebP for smaller file size
+        // Compress image for smaller file size
         final dir = await getTemporaryDirectory();
         final targetPath =
-            '${dir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}.webp';
+            '${dir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
         final compressed = await FlutterImageCompress.compressAndGetFile(
           picked.path,
           targetPath,
-          format: CompressFormat.webp,
-          quality: 80,
+          format: CompressFormat.jpeg,
+          quality: 75,
           minWidth: 512,
           minHeight: 512,
         );
@@ -143,7 +143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           final originalSize = await File(picked.path).length();
           final compressedSize = await compressed.length();
           debugPrint(
-              '[EDIT_PROFILE] WebP: ${originalSize ~/ 1024}KB -> ${compressedSize ~/ 1024}KB');
+              '[EDIT_PROFILE] compressed: ${originalSize ~/ 1024}KB -> ${compressedSize ~/ 1024}KB');
           setState(() => _pickedImage = File(compressed.path));
         } else {
           // Fallback to original if compression fails
