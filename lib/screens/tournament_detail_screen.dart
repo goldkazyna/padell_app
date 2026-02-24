@@ -967,6 +967,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       );
     }
 
+    // Мест нет, но турнир открыт — кнопка подписки
+    if (t.spotsLeft <= 0 && t.status == 'open' && !t.isRegistered) {
+      return _buildSubscribeButton(t);
+    }
+
     if (t.blockReason != null) {
       return GestureDetector(
         onTap: () => _onRefresh(t.id),
@@ -987,11 +992,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
         ),
       );
-    }
-
-    // Мест нет, но турнир открыт — кнопка подписки
-    if (t.spotsLeft <= 0 && t.status == 'open' && !t.isRegistered) {
-      return _buildSubscribeButton(t);
     }
 
     // Мест нет — нажатие обновляет данные
@@ -1258,6 +1258,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       );
     }
 
+    // No spots, but tournament is open — subscribe button
+    if (t.spotsLeft <= 0 && t.status == 'open' && !t.isRegistered) {
+      return _buildSubscribeButton(t);
+    }
+
     // Block reason
     if (t.blockReason != null) {
       return GestureDetector(
@@ -1279,11 +1284,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
         ),
       );
-    }
-
-    // No spots, but tournament is open — subscribe button
-    if (t.spotsLeft <= 0 && t.status == 'open' && !t.isRegistered) {
-      return _buildSubscribeButton(t);
     }
 
     // No spots
