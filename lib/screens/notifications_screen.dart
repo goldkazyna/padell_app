@@ -278,6 +278,10 @@ class _NotificationCard extends StatelessWidget {
         iconData = Icons.cancel_outlined;
         iconColor = AppTheme.error;
         break;
+      case 'slot_available':
+        iconData = Icons.notification_important_outlined;
+        iconColor = AppTheme.accent;
+        break;
       default:
         iconData = Icons.notifications_outlined;
         iconColor = AppTheme.accent;

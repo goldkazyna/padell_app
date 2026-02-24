@@ -257,6 +257,7 @@ class Tournament {
   final String? registrationStatus;
   final bool canRegister;
   final String? blockReason;
+  final bool isSubscribed;
   final TournamentResult? myResult;
   final List<TournamentParticipant> participants;
   final List<TournamentTeam> teams;
@@ -283,6 +284,7 @@ class Tournament {
     this.registrationStatus,
     this.canRegister = true,
     this.blockReason,
+    this.isSubscribed = false,
     this.myResult,
     this.participants = const [],
     this.teams = const [],
@@ -338,6 +340,7 @@ class Tournament {
       registrationStatus: json['registration_status'] as String?,
       canRegister: json['can_register'] as bool? ?? true,
       blockReason: json['block_reason'] as String?,
+      isSubscribed: json['is_subscribed'] as bool? ?? false,
       myResult: json['my_result'] != null
           ? TournamentResult.fromJson(json['my_result'] as Map<String, dynamic>)
           : null,

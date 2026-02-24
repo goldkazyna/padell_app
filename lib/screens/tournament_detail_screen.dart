@@ -825,7 +825,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     if (t.registrationStatus == 'pending') return true;
     if (t.isRegistered) return true;
     if (t.blockReason != null) return true;
-    // Мест нет — не показываем панель
+    // Мест нет, но турнир открыт — показываем кнопку подписки
+    if (t.spotsLeft <= 0 && t.status == 'open' && !t.isRegistered) return true;
     return false;
   }
 
@@ -988,6 +989,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       );
     }
 
+    // Мест нет, но турнир открыт — кнопка подписки
+    if (t.spotsLeft <= 0 && t.status == 'open' && !t.isRegistered) {
+      return _buildSubscribeButton(t);
+    }
+
     // Мест нет — нажатие обновляет данные
     return GestureDetector(
       onTap: () => _onRefresh(t.id),
@@ -1041,6 +1047,71 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   void _onRefresh(int id) {
     context.read<TournamentProvider>().loadTournamentDetails(id);
+  }
+
+  Widget _buildSubscribeButton(Tournament t) {
+    if (t.isSubscribed) {
+      return OutlinedButton(
+        onPressed: () => _onUnsubscribe(t.id),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppTheme.accent,
+          side: const BorderSide(color: AppTheme.accent, width: 1),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.notifications_active, size: 20),
+            SizedBox(width: 6),
+            Text('Подписка активна', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      );
+    }
+
+    return ElevatedButton(
+      onPressed: () => _onSubscribe(t.id),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppTheme.accent,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        elevation: 0,
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.notifications_none, size: 20),
+          SizedBox(width: 6),
+          Text('Уведомить о свободном месте', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  void _onSubscribe(int id) async {
+    final provider = context.read<TournamentProvider>();
+    final result = await provider.subscribeToTournament(id);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.message),
+          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
+        ),
+      );
+    }
+  }
+
+  void _onUnsubscribe(int id) async {
+    final provider = context.read<TournamentProvider>();
+    final result = await provider.unsubscribeFromTournament(id);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.message),
+          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
+        ),
+      );
+    }
   }
 
   // === My team card ===
@@ -1208,6 +1279,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
         ),
       );
+    }
+
+    // No spots, but tournament is open — subscribe button
+    if (t.spotsLeft <= 0 && t.status == 'open' && !t.isRegistered) {
+      return _buildSubscribeButton(t);
     }
 
     // No spots

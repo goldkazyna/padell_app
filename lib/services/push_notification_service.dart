@@ -325,6 +325,7 @@ class PushNotificationService {
       'tournament',
       'registration_approved',
       'registration_rejected',
+      'slot_available',
     };
     if (tournamentTypes.contains(type) && id.isNotEmpty) {
       final tournamentId = int.tryParse(id);

@@ -80,4 +80,16 @@ class TournamentService {
     final response = await _api.post('/tournaments/$tournamentId/cancel-team', {}, token);
     return response['message'] as String;
   }
+
+  // === Subscribe to slot availability ===
+
+  Future<String> subscribe(int tournamentId, String token) async {
+    final response = await _api.post('/tournaments/$tournamentId/subscribe', {}, token);
+    return response['message'] as String;
+  }
+
+  Future<String> unsubscribe(int tournamentId, String token) async {
+    final response = await _api.post('/tournaments/$tournamentId/unsubscribe', {}, token);
+    return response['message'] as String;
+  }
 }

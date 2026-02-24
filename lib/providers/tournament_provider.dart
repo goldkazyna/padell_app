@@ -287,6 +287,60 @@ class TournamentProvider extends ChangeNotifier {
     }
   }
 
+  // === Подписка на свободное место ===
+
+  Future<({bool success, String message})> subscribeToTournament(int id) async {
+    final token = await _storage.getToken();
+    if (token == null) return (success: false, message: 'Нет авторизации');
+
+    _isActionLoading = true;
+    notifyListeners();
+
+    try {
+      final message = await _service.subscribe(id, token);
+      await loadTournamentDetails(id);
+      _isActionLoading = false;
+      notifyListeners();
+      return (success: true, message: message);
+    } on ApiException catch (e) {
+      _isActionLoading = false;
+      notifyListeners();
+      loadTournamentDetails(id);
+      return (success: false, message: e.message);
+    } catch (e) {
+      _isActionLoading = false;
+      notifyListeners();
+      loadTournamentDetails(id);
+      return (success: false, message: 'Ошибка: $e');
+    }
+  }
+
+  Future<({bool success, String message})> unsubscribeFromTournament(int id) async {
+    final token = await _storage.getToken();
+    if (token == null) return (success: false, message: 'Нет авторизации');
+
+    _isActionLoading = true;
+    notifyListeners();
+
+    try {
+      final message = await _service.unsubscribe(id, token);
+      await loadTournamentDetails(id);
+      _isActionLoading = false;
+      notifyListeners();
+      return (success: true, message: message);
+    } on ApiException catch (e) {
+      _isActionLoading = false;
+      notifyListeners();
+      loadTournamentDetails(id);
+      return (success: false, message: e.message);
+    } catch (e) {
+      _isActionLoading = false;
+      notifyListeners();
+      loadTournamentDetails(id);
+      return (success: false, message: 'Ошибка: $e');
+    }
+  }
+
   void clearSelectedTournament() {
     _selectedTournament = null;
     notifyListeners();
