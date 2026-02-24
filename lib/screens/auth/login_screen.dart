@@ -16,6 +16,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _showPhoneLogin = false;
+  int _secretTapCount = 0;
 
   String get _fullPhone => '7${_phoneController.text.replaceAll(RegExp(r'[^\d]'), '')}';
 
@@ -52,6 +54,61 @@ class _LoginScreenState extends State<LoginScreen> {
     // TODO: Open terms URL
   }
 
+  void _onSecretTap() {
+    _secretTapCount++;
+    if (_secretTapCount >= 5) {
+      _secretTapCount = 0;
+      _showSecretDialog();
+    }
+  }
+
+  void _showSecretDialog() {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        title: const Text(
+          'Введите код',
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+        ),
+        content: TextField(
+          controller: controller,
+          obscureText: true,
+          keyboardType: TextInputType.number,
+          style: const TextStyle(color: AppTheme.textPrimary),
+          decoration: InputDecoration(
+            hintText: '••••••••',
+            hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+            filled: true,
+            fillColor: AppTheme.background,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Отмена', style: TextStyle(color: AppTheme.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.text == '05070507') {
+                Navigator.pop(ctx);
+                setState(() => _showPhoneLogin = true);
+              } else {
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('OK', style: TextStyle(color: AppTheme.accent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,154 +138,162 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // Title
-                const Text(
-                  'Вход',
-                  style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                // Title — secret tap target
+                GestureDetector(
+                  onTap: _onSecretTap,
+                  child: const Text(
+                    'Вход',
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Введите номер телефона для входа',
-                  style: TextStyle(
+                Text(
+                  _showPhoneLogin
+                      ? 'Введите номер телефона для входа'
+                      : 'Войдите через Telegram для продолжения',
+                  style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 15,
                   ),
                 ),
                 const SizedBox(height: 32),
 
-                // Phone label
-                const Text(
-                  'Номер телефона',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                // Phone input
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 16,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10),
-                    _PhoneInputFormatter(),
-                  ],
-                  decoration: InputDecoration(
-                    prefixText: '+7  ',
-                    prefixStyle: const TextStyle(
+                // Phone login (hidden by default)
+                if (_showPhoneLogin) ...[
+                  // Phone label
+                  const Text(
+                    'Номер телефона',
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Phone input
+                  TextFormField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
                       fontSize: 16,
                     ),
-                    hintText: '(000) 000-00-00',
-                    hintStyle: TextStyle(
-                      color: AppTheme.textSecondary.withValues(alpha: 0.5),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                      _PhoneInputFormatter(),
+                    ],
+                    decoration: InputDecoration(
+                      prefixText: '+7  ',
+                      prefixStyle: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 16,
+                      ),
+                      hintText: '(000) 000-00-00',
+                      hintStyle: TextStyle(
+                        color: AppTheme.textSecondary.withValues(alpha: 0.5),
+                      ),
+                      filled: true,
+                      fillColor: AppTheme.card,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(color: AppTheme.accent),
+                      ),
                     ),
-                    filled: true,
-                    fillColor: AppTheme.card,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: AppTheme.accent),
-                    ),
+                    validator: (value) {
+                      final digits = value?.replaceAll(RegExp(r'[^\d]'), '') ?? '';
+                      if (digits.length < 10) {
+                        return 'Введите корректный номер';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    final digits = value?.replaceAll(RegExp(r'[^\d]'), '') ?? '';
-                    if (digits.length < 10) {
-                      return 'Введите корректный номер';
-                    }
-                    return null;
-                  },
-                ),
 
-                // Error message
-                Consumer<AuthProvider>(
-                  builder: (_, auth, __) {
-                    if (auth.error == null) return const SizedBox.shrink();
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: Text(
-                        auth.error!,
-                        style: const TextStyle(
-                          color: AppTheme.error,
-                          fontSize: 14,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Continue button
-                Consumer<AuthProvider>(
-                  builder: (_, auth, __) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: auth.isLoading ? null : _sendCode,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.accent,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                  // Error message
+                  Consumer<AuthProvider>(
+                    builder: (_, auth, __) {
+                      if (auth.error == null) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          auth.error!,
+                          style: const TextStyle(
+                            color: AppTheme.error,
+                            fontSize: 14,
                           ),
-                          disabledBackgroundColor: AppTheme.accent.withValues(alpha: 0.5),
-                          elevation: 0,
                         ),
-                        child: auth.isLoading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text(
-                                'Продолжить',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
 
-                // Divider with "или"
-                Row(
-                  children: [
-                    Expanded(child: Container(height: 1, color: AppTheme.card)),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'или',
-                        style: TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 14,
+                  // Continue button
+                  Consumer<AuthProvider>(
+                    builder: (_, auth, __) {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: auth.isLoading ? null : _sendCode,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.accent,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            disabledBackgroundColor: AppTheme.accent.withValues(alpha: 0.5),
+                            elevation: 0,
+                          ),
+                          child: auth.isLoading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'Продолжить',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Divider with "или"
+                  Row(
+                    children: [
+                      Expanded(child: Container(height: 1, color: AppTheme.card)),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'или',
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(child: Container(height: 1, color: AppTheme.card)),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                      Expanded(child: Container(height: 1, color: AppTheme.card)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                ],
 
                 // Telegram button
                 SizedBox(
