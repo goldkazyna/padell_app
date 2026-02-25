@@ -348,7 +348,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                const Center(
+                  child: Text(
+                    'Developed by Dudnikov Denis',
+                    style: TextStyle(
+                      color: Color(0xFF3A3A3A),
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
               ],
             ),
           ),
