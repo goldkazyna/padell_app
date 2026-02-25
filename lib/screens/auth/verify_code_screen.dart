@@ -30,8 +30,9 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
     final success = await auth.verifyCode(widget.phone, _codeController.text);
 
     if (success && mounted) {
-      // Send FCM token to server after login
+      // Send FCM token and accept terms after login
       context.read<PushNotificationService>().registerToken();
+      context.read<AuthProvider>().acceptTerms();
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }

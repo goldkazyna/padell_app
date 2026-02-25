@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
+import '../services/api_service.dart';
 import '../services/storage_service.dart';
 
 enum AuthStatus {
@@ -124,6 +125,17 @@ class AuthProvider extends ChangeNotifier {
     if (result.success && result.user != null) {
       _user = result.user;
       notifyListeners();
+    }
+  }
+
+  Future<void> acceptTerms() async {
+    try {
+      final token = await _storageService.getToken();
+      if (token == null) return;
+      await ApiService().post('/auth/accept-terms', {'version': '1.0'}, token);
+      debugPrint('[AUTH] Terms accepted');
+    } catch (e) {
+      debugPrint('[AUTH] Accept terms error: $e');
     }
   }
 

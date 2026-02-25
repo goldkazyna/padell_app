@@ -29,8 +29,9 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
 
   void _onAuthChanged() {
     if (_authProvider.isAuthenticated && mounted) {
-      // Send FCM token to server after telegram login
+      // Send FCM token and accept terms after telegram login
       context.read<PushNotificationService>().registerToken();
+      _authProvider.acceptTerms();
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
