@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import 'verify_code_screen.dart';
 import 'telegram_waiting_screen.dart';
+import 'legal_document_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +19,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _showPhoneLogin = false;
   int _secretTapCount = 0;
+  bool _termsAccepted = false;
+  bool _consentAccepted = false;
+
+  bool get _allAccepted => _termsAccepted && _consentAccepted;
 
   String get _fullPhone => '7${_phoneController.text.replaceAll(RegExp(r'[^\d]'), '')}';
 
@@ -50,8 +55,28 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _openTerms() {
-    // TODO: Open terms URL
+  void _openTermsDocument() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const LegalDocumentScreen(
+          title: 'Пользовательское соглашение',
+          assetPath: 'assets/legal/terms.html',
+        ),
+      ),
+    );
+  }
+
+  void _openConsentDocument() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const LegalDocumentScreen(
+          title: 'Согласие на обработку данных',
+          assetPath: 'assets/legal/consent.html',
+        ),
+      ),
+    );
   }
 
   void _onSecretTap() {
@@ -243,14 +268,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: auth.isLoading ? null : _sendCode,
+                          onPressed: auth.isLoading || !_allAccepted ? null : _sendCode,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accent,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            disabledBackgroundColor: AppTheme.accent.withValues(alpha: 0.5),
+                            disabledBackgroundColor: AppTheme.accent.withValues(alpha: 0.3),
                             elevation: 0,
                           ),
                           child: auth.isLoading
@@ -300,7 +325,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton.icon(
-                    onPressed: _openTelegram,
+                    onPressed: _allAccepted ? _openTelegram : null,
                     icon: const Icon(Icons.send, size: 20),
                     label: const Text(
                       'Войти через Telegram',
@@ -315,6 +340,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
+                      disabledBackgroundColor: const Color(0xFF38A5E1).withValues(alpha: 0.3),
                       elevation: 0,
                     ),
                   ),
@@ -322,32 +348,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const Spacer(),
 
-                // Terms link
-                Center(
-                  child: GestureDetector(
-                    onTap: _openTerms,
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 13,
-                        ),
-                        children: [
-                          const TextSpan(text: 'Продолжая, вы соглашаетесь с '),
-                          TextSpan(
-                            text: 'условиями',
-                            style: TextStyle(
-                              color: AppTheme.accent,
-                              decoration: TextDecoration.underline,
-                              decorationColor: AppTheme.accent,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                // Checkboxes for legal documents
+                _buildCheckboxRow(
+                  value: _termsAccepted,
+                  onChanged: (v) => setState(() => _termsAccepted = v ?? false),
+                  text: 'Пользовательское соглашение',
+                  onTap: _openTermsDocument,
                 ),
+                const SizedBox(height: 8),
+                _buildCheckboxRow(
+                  value: _consentAccepted,
+                  onChanged: (v) => setState(() => _consentAccepted = v ?? false),
+                  text: 'Согласие на обработку персональных данных',
+                  onTap: _openConsentDocument,
+                ),
+
                 const SizedBox(height: 16),
                 const Center(
                   child: Text(
@@ -363,6 +378,50 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCheckboxRow({
+    required bool value,
+    required ValueChanged<bool?> onChanged,
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 22,
+            height: 22,
+            child: Checkbox(
+              value: value,
+              onChanged: onChanged,
+              activeColor: AppTheme.accent,
+              checkColor: Colors.white,
+              side: const BorderSide(color: AppTheme.textSecondary, width: 1.5),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: GestureDetector(
+              onTap: onTap,
+              child: Text(
+                text,
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontSize: 13,
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppTheme.accent,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
