@@ -33,6 +33,15 @@ class ProfileMenu extends StatelessWidget {
           AppTheme.error,
           onTap: () => _showLogoutDialog(context),
         ),
+        const SizedBox(height: 8),
+        _buildMenuItem(
+          context,
+          Icons.delete_forever_outlined,
+          'Удалить аккаунт',
+          'Безвозвратное удаление',
+          AppTheme.error,
+          onTap: () => _showDeleteAccountDialog(context),
+        ),
       ],
     );
   }
@@ -68,6 +77,72 @@ class ProfileMenu extends StatelessWidget {
             },
             child: const Text(
               'Выйти',
+              style: TextStyle(color: AppTheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final passwordController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Удалить аккаунт',
+          style: TextStyle(color: AppTheme.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Это действие необратимо. Все ваши данные будут удалены.',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              style: const TextStyle(color: AppTheme.textPrimary),
+              decoration: InputDecoration(
+                hintText: 'Пароль (если есть)',
+                hintStyle: TextStyle(
+                    color: AppTheme.textSecondary.withAlpha(128)),
+                filled: true,
+                fillColor: AppTheme.background,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text(
+              'Отмена',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              final password = passwordController.text.isNotEmpty
+                  ? passwordController.text
+                  : null;
+              context.read<AuthProvider>().deleteAccount(password);
+            },
+            child: const Text(
+              'Удалить',
               style: TextStyle(color: AppTheme.error),
             ),
           ),

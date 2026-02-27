@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import 'verify_code_screen.dart';
 import 'telegram_waiting_screen.dart';
+import 'email_login_screen.dart';
 import 'legal_document_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -342,6 +343,63 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       disabledBackgroundColor: const Color(0xFF38A5E1).withValues(alpha: 0.3),
                       elevation: 0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Divider "или"
+                Row(
+                  children: [
+                    Expanded(child: Container(height: 1, color: AppTheme.card)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'или',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Container(height: 1, color: AppTheme.card)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Email login button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    onPressed: _allAccepted
+                        ? () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const EmailLoginScreen(),
+                              ),
+                            )
+                        : null,
+                    icon: const Icon(Icons.email_outlined, size: 20),
+                    label: const Text(
+                      'Войти через Email',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.textPrimary,
+                      side: BorderSide(
+                        color: _allAccepted
+                            ? const Color(0xFF2A2A2A)
+                            : const Color(0xFF2A2A2A).withValues(alpha: 0.3),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      disabledForegroundColor:
+                          AppTheme.textPrimary.withValues(alpha: 0.3),
                     ),
                   ),
                 ),

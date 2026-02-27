@@ -141,5 +141,128 @@ class AuthService {
     }
   }
 
+  Future<AuthResult> register(String name, String email, String password) async {
+    try {
+      final response = await _api.post('/auth/register', {
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': password,
+      });
+
+      if (response['success'] == true) {
+        final token = response['token'] as String;
+        final userData = response['user'] as Map<String, dynamic>;
+
+        if (!userData.containsKey('level_name')) {
+          userData['level_name'] = '';
+        }
+
+        final user = User.fromJson(userData);
+        await _storage.saveToken(token);
+
+        return AuthResult(success: true, token: token, user: user);
+      }
+
+      return AuthResult(
+        success: false,
+        message: response['message'] as String? ?? 'Ошибка регистрации',
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> login(String email, String password) async {
+    try {
+      final response = await _api.post('/auth/login', {
+        'email': email,
+        'password': password,
+      });
+
+      if (response['success'] == true) {
+        final token = response['token'] as String;
+        final userData = response['user'] as Map<String, dynamic>;
+
+        if (!userData.containsKey('level_name')) {
+          userData['level_name'] = '';
+        }
+
+        final user = User.fromJson(userData);
+        await _storage.saveToken(token);
+
+        return AuthResult(success: true, token: token, user: user);
+      }
+
+      return AuthResult(
+        success: false,
+        message: response['message'] as String? ?? 'Неверный email или пароль',
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> forgotPassword(String email) async {
+    try {
+      final response = await _api.post('/auth/forgot-password', {
+        'email': email,
+      });
+
+      return AuthResult(
+        success: response['success'] == true,
+        message: response['message'] as String?,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> resetPassword(
+      String email, String token, String password) async {
+    try {
+      final response = await _api.post('/auth/reset-password', {
+        'email': email,
+        'token': token,
+        'password': password,
+        'password_confirmation': password,
+      });
+
+      return AuthResult(
+        success: response['success'] == true,
+        message: response['message'] as String?,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> deleteAccount([String? password]) async {
+    final token = await _storage.getToken();
+    if (token == null) {
+      return AuthResult(success: false, message: 'Не авторизован');
+    }
+
+    try {
+      final body = <String, dynamic>{};
+      if (password != null && password.isNotEmpty) {
+        body['password'] = password;
+      }
+      final response = await _api.delete('/auth/account', body, token);
+
+      if (response['success'] == true) {
+        await _storage.deleteToken();
+        return AuthResult(success: true, message: response['message'] as String?);
+      }
+
+      return AuthResult(
+        success: false,
+        message: response['message'] as String? ?? 'Ошибка удаления аккаунта',
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
   Future<bool> hasToken() => _storage.hasToken();
 }

@@ -66,6 +66,26 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> delete(
+    String endpoint, [
+    Map<String, dynamic>? body,
+    String? token,
+  ]) async {
+    try {
+      final request = http.Request('DELETE', Uri.parse('$baseUrl$endpoint'));
+      request.headers.addAll(_headers(token));
+      if (body != null) {
+        request.body = jsonEncode(body);
+      }
+      final streamedResponse = await _client.send(request);
+      final response = await http.Response.fromStream(streamedResponse);
+      return _handleResponse(response);
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Ошибка сети. Проверьте подключение к интернету.');
+    }
+  }
+
   Future<Map<String, dynamic>> get(String endpoint, [String? token]) async {
     try {
       final response = await _client.get(

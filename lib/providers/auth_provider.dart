@@ -144,6 +144,115 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // --- Email Auth ---
+
+  Future<bool> emailRegister(String name, String email, String password) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _authService.register(name, email, password);
+
+      _isLoading = false;
+
+      if (result.success && result.user != null) {
+        _user = result.user;
+        _status = AuthStatus.authenticated;
+        _error = null;
+      } else {
+        _error = result.message;
+      }
+      notifyListeners();
+
+      return result.success;
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Ошибка сети: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> emailLogin(String email, String password) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _authService.login(email, password);
+
+      _isLoading = false;
+
+      if (result.success && result.user != null) {
+        _user = result.user;
+        _status = AuthStatus.authenticated;
+        _error = null;
+      } else {
+        _error = result.message;
+      }
+      notifyListeners();
+
+      return result.success;
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Ошибка сети: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> forgotPassword(String email) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _authService.forgotPassword(email);
+
+      _isLoading = false;
+      if (!result.success) {
+        _error = result.message;
+      }
+      notifyListeners();
+
+      return {'success': result.success, 'message': result.message ?? ''};
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Ошибка сети: $e';
+      notifyListeners();
+      return {'success': false, 'message': _error};
+    }
+  }
+
+  Future<bool> deleteAccount([String? password]) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _authService.deleteAccount(password);
+
+      _isLoading = false;
+
+      if (result.success) {
+        _user = null;
+        _status = AuthStatus.unauthenticated;
+        _error = null;
+      } else {
+        _error = result.message;
+      }
+      notifyListeners();
+
+      return result.success;
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Ошибка сети: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
   // --- Telegram Auth ---
 
   Future<String> startTelegramAuth() async {
