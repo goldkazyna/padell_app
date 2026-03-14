@@ -31,16 +31,32 @@ class MyRankCard extends StatelessWidget {
               color: AppTheme.accent.withAlpha(40),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Center(
-              child: Text(
-                c.initials,
-                style: const TextStyle(
-                  color: AppTheme.accent,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            clipBehavior: Clip.antiAlias,
+            child: c.avatar != null
+                ? Image.network(
+                    c.avatar!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(
+                      child: Text(
+                        c.initials,
+                        style: const TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      c.initials,
+                      style: const TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
           ),
           const SizedBox(width: 14),
           Expanded(

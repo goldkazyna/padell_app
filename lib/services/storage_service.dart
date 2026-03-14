@@ -1,26 +1,53 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class StorageService {
   static const _tokenKey = 'auth_token';
   static const _onboardingKey = 'onboarding_seen';
 
-  final FlutterSecureStorage _storage;
+  final FlutterSecureStorage? _storage;
+  final Map<String, String> _webStorage = {};
 
   StorageService()
-      : _storage = const FlutterSecureStorage(
-          aOptions: AndroidOptions(encryptedSharedPreferences: true),
-        );
+      : _storage = kIsWeb
+            ? null
+            : const FlutterSecureStorage(
+                aOptions: AndroidOptions(encryptedSharedPreferences: true),
+              );
+
+  Future<void> _write(String key, String value) async {
+    if (kIsWeb) {
+      _webStorage[key] = value;
+    } else {
+      await _storage!.write(key: key, value: value);
+    }
+  }
+
+  Future<String?> _read(String key) async {
+    if (kIsWeb) {
+      return _webStorage[key];
+    }
+    return _storage!.read(key: key);
+  }
+
+  Future<void> _delete(String key) async {
+    if (kIsWeb) {
+      _webStorage.remove(key);
+    } else {
+      await _storage!.delete(key: key);
+    }
+  }
 
   Future<void> saveToken(String token) async {
-    await _storage.write(key: _tokenKey, value: token);
+    await _write(_tokenKey, token);
   }
 
   Future<String?> getToken() async {
-    return _storage.read(key: _tokenKey);
+    return _read(_tokenKey);
   }
 
   Future<void> deleteToken() async {
-    await _storage.delete(key: _tokenKey);
+    await _delete(_tokenKey);
   }
 
   Future<bool> hasToken() async {
@@ -29,11 +56,11 @@ class StorageService {
   }
 
   Future<bool> hasSeenOnboarding() async {
-    final value = await _storage.read(key: _onboardingKey);
+    final value = await _read(_onboardingKey);
     return value == 'true';
   }
 
   Future<void> setOnboardingSeen() async {
-    await _storage.write(key: _onboardingKey, value: 'true');
+    await _write(_onboardingKey, 'true');
   }
 }

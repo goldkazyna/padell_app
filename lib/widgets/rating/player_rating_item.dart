@@ -41,16 +41,32 @@ class PlayerRatingItem extends StatelessWidget {
                   : const Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Center(
-              child: Text(
-                player.initials,
-                style: TextStyle(
-                  color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            clipBehavior: Clip.antiAlias,
+            child: player.avatar != null
+                ? Image.network(
+                    player.avatar!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(
+                      child: Text(
+                        player.initials,
+                        style: TextStyle(
+                          color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      player.initials,
+                      style: TextStyle(
+                        color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
           ),
           const SizedBox(width: 12),
 

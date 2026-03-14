@@ -90,6 +90,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                           _buildDateTimeRow(tournament),
                           const SizedBox(height: 8),
                           _buildLevelPriceRow(tournament),
+                          if (tournament.registrationStatus == 'pending' && tournament.club.paymentUrl != null)
+                            _buildPaymentButton(tournament),
                           const SizedBox(height: 28),
                           if (tournament.isTeamTournament) ...[
                             TeamListSection(
@@ -284,6 +286,36 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         ),
       ],
     ));
+  }
+
+  // === Кнопка оплаты ===
+  Widget _buildPaymentButton(Tournament t) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton.icon(
+          onPressed: () async {
+            final url = Uri.parse(t.club.paymentUrl!);
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            }
+          },
+          icon: const Icon(Icons.payment, size: 20),
+          label: const Text(
+            'Оплатить',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.accent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            elevation: 0,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildInfoCard({
@@ -842,11 +874,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: _buildActionButton(t, provider),
-        ),
+        child: _buildActionButton(t, provider),
       ),
     );
   }
@@ -854,16 +882,20 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   Widget _buildActionButton(Tournament t, TournamentProvider provider) {
     // Загрузка
     if (provider.isActionLoading) {
-      return Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF2A2A2A),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: const Center(
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(color: AppTheme.accent, strokeWidth: 2.5),
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF2A2A2A),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const Center(
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(color: AppTheme.accent, strokeWidth: 2.5),
+            ),
           ),
         ),
       );
@@ -877,73 +909,97 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     // block_reason != null → показать причину
 
     if (t.canRegister && !t.isRegistered) {
-      return ElevatedButton(
-        onPressed: () => _onRegister(t.id),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.accent,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          elevation: 0,
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.add, size: 20),
-            SizedBox(width: 6),
-            Text('Записаться', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-          ],
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton(
+          onPressed: () => _onRegister(t.id),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.accent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            elevation: 0,
+          ),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add, size: 20),
+              SizedBox(width: 6),
+              Text('Записаться', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            ],
+          ),
         ),
       );
     }
 
-    // Заявка на модерации (pending)
+    // Заявка на модерации (pending) — можно отменить
     if (t.registrationStatus == 'pending') {
-      return GestureDetector(
-        onTap: () => _onRefresh(t.id),
-        child: Container(
-          decoration: BoxDecoration(
-            color: _pendingColor,
-            borderRadius: BorderRadius.circular(14),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.access_time, color: _pendingColor, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                'Заявка на модерации',
+                style: TextStyle(color: _pendingColor, fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+            ],
           ),
-          child: const Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.access_time, color: Colors.white, size: 20),
-                SizedBox(width: 6),
-                Text(
-                  'Заявка на модерации',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ],
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton(
+              onPressed: () => _onCancel(t.id),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.error,
+                side: const BorderSide(color: AppTheme.error, width: 1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.close, size: 20),
+                  SizedBox(width: 6),
+                  Text('Отменить заявку', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       );
     }
 
     if (t.isRegistered && t.status == 'open') {
-      return OutlinedButton(
-        onPressed: () => _onCancel(t.id),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppTheme.error,
-          side: const BorderSide(color: AppTheme.error, width: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.close, size: 20),
-            SizedBox(width: 6),
-            Text('Отменить запись', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-          ],
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: OutlinedButton(
+          onPressed: () => _onCancel(t.id),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppTheme.error,
+            side: const BorderSide(color: AppTheme.error, width: 1),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.close, size: 20),
+              SizedBox(width: 6),
+              Text('Отменить запись', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            ],
+          ),
         ),
       );
     }
 
     if (t.isRegistered) {
-      return GestureDetector(
-        onTap: () => _onRefresh(t.id),
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
         child: Container(
           decoration: BoxDecoration(
             color: AppTheme.accent.withAlpha(25),
@@ -1019,16 +1075,59 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
+  void _showResultDialog(bool success, String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                success ? Icons.check_circle : Icons.error_outline,
+                color: success ? AppTheme.accent : AppTheme.error,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: success ? AppTheme.accent : AppTheme.error,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: const Text('ОК', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _onRegister(int id) async {
     final provider = context.read<TournamentProvider>();
     final result = await provider.registerForTournament(id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result.message),
-          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
-        ),
-      );
+      _showResultDialog(result.success, result.message);
     }
   }
 
@@ -1036,12 +1135,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final provider = context.read<TournamentProvider>();
     final result = await provider.cancelRegistration(id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result.message),
-          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
-        ),
-      );
+      _showResultDialog(result.success, result.message);
     }
   }
 
@@ -1329,12 +1423,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final provider = context.read<TournamentProvider>();
     final result = await provider.cancelTeamRegistration(id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result.message),
-          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
-        ),
-      );
+      _showResultDialog(result.success, result.message);
     }
   }
 }

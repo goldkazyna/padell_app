@@ -27,6 +27,50 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String get _fullPhone => '7${_phoneController.text.replaceAll(RegExp(r'[^\d]'), '')}';
 
+  void _showAcceptHint() {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.info_outline, color: AppTheme.accent, size: 48),
+              const SizedBox(height: 16),
+              const Text(
+                'Для продолжения необходимо принять пользовательское соглашение и дать согласие на обработку персональных данных',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: const Text('Понятно', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _phoneController.dispose();
@@ -326,7 +370,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton.icon(
-                    onPressed: _allAccepted ? _openTelegram : null,
+                    onPressed: _allAccepted ? _openTelegram : _showAcceptHint,
                     icon: const Icon(Icons.send, size: 20),
                     label: const Text(
                       'Войти через Telegram',
@@ -336,12 +380,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF38A5E1),
-                      foregroundColor: Colors.white,
+                      backgroundColor: _allAccepted
+                          ? const Color(0xFF38A5E1)
+                          : const Color(0xFF38A5E1).withValues(alpha: 0.3),
+                      foregroundColor: _allAccepted
+                          ? Colors.white
+                          : Colors.white.withValues(alpha: 0.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      disabledBackgroundColor: const Color(0xFF38A5E1).withValues(alpha: 0.3),
                       elevation: 0,
                     ),
                   ),
@@ -379,7 +426,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 builder: (_) => const EmailLoginScreen(),
                               ),
                             )
-                        : null,
+                        : _showAcceptHint,
                     icon: const Icon(Icons.email_outlined, size: 20),
                     label: const Text(
                       'Войти через Email',
@@ -389,7 +436,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.textPrimary,
+                      foregroundColor: _allAccepted
+                          ? AppTheme.textPrimary
+                          : AppTheme.textPrimary.withValues(alpha: 0.3),
                       side: BorderSide(
                         color: _allAccepted
                             ? const Color(0xFF2A2A2A)
@@ -398,8 +447,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      disabledForegroundColor:
-                          AppTheme.textPrimary.withValues(alpha: 0.3),
                     ),
                   ),
                 ),

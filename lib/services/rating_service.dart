@@ -4,8 +4,6 @@ import 'storage_service.dart';
 class RatingPlayer {
   final int id;
   final String name;
-  final String firstName;
-  final String lastName;
   final String? avatar;
   final int rating;
   final double level;
@@ -15,8 +13,6 @@ class RatingPlayer {
   RatingPlayer({
     required this.id,
     required this.name,
-    required this.firstName,
-    required this.lastName,
     this.avatar,
     required this.rating,
     required this.level,
@@ -25,9 +21,11 @@ class RatingPlayer {
   });
 
   String get initials {
-    final first = firstName.isNotEmpty ? firstName[0] : '';
-    final last = lastName.isNotEmpty ? lastName[0] : '';
-    return '$first$last'.toUpperCase();
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.isNotEmpty ? name[0].toUpperCase() : '?';
   }
 
   factory RatingPlayer.fromJson(Map<String, dynamic> json) {
@@ -42,8 +40,6 @@ class RatingPlayer {
     return RatingPlayer(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
-      firstName: json['first_name'] as String? ?? '',
-      lastName: json['last_name'] as String? ?? '',
       avatar: json['avatar'] as String?,
       rating: json['rating'] as int? ?? 0,
       level: level,
@@ -56,8 +52,6 @@ class RatingPlayer {
 class MyRatingCard {
   final int id;
   final String name;
-  final String firstName;
-  final String lastName;
   final String? avatar;
   final int rating;
   final double level;
@@ -69,8 +63,6 @@ class MyRatingCard {
   MyRatingCard({
     required this.id,
     required this.name,
-    required this.firstName,
-    required this.lastName,
     this.avatar,
     required this.rating,
     required this.level,
@@ -81,9 +73,11 @@ class MyRatingCard {
   });
 
   String get initials {
-    final first = firstName.isNotEmpty ? firstName[0] : '';
-    final last = lastName.isNotEmpty ? lastName[0] : '';
-    return '$first$last'.toUpperCase();
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.isNotEmpty ? name[0].toUpperCase() : '?';
   }
 
   factory MyRatingCard.fromJson(Map<String, dynamic> json) {
@@ -98,8 +92,6 @@ class MyRatingCard {
     return MyRatingCard(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
-      firstName: json['first_name'] as String? ?? '',
-      lastName: json['last_name'] as String? ?? '',
       avatar: json['avatar'] as String?,
       rating: json['rating'] as int? ?? 0,
       level: level,

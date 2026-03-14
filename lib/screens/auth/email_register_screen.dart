@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
@@ -20,6 +21,10 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  String _phone = '';
+  String? _city;
+
+  static const _cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе'];
 
   @override
   void dispose() {
@@ -30,6 +35,63 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
     super.dispose();
   }
 
+  void _showCityPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFF3A3A3A),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Выберите город',
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ..._cities.map((city) => ListTile(
+                  title: Text(
+                    city,
+                    style: TextStyle(
+                      color: city == _city
+                          ? AppTheme.accent
+                          : AppTheme.textPrimary,
+                      fontWeight: city == _city
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
+                  ),
+                  trailing: city == _city
+                      ? const Icon(Icons.check, color: AppTheme.accent)
+                      : null,
+                  onTap: () {
+                    setState(() => _city = city);
+                    Navigator.pop(ctx);
+                  },
+                )),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -38,6 +100,8 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
       _nameController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text,
+      phone: _phone.isNotEmpty ? _phone : null,
+      city: _city,
     );
 
     if (success && mounted) {
@@ -149,6 +213,69 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                         }
                         return null;
                       },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Phone field
+                    const Text(
+                      'Телефон',
+                      style:
+                          TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    IntlPhoneField(
+                      decoration: _inputDecoration(''),
+                      initialCountryCode: 'KZ',
+                      languageCode: 'ru',
+                      style: const TextStyle(
+                          color: AppTheme.textPrimary, fontSize: 16),
+                      dropdownTextStyle: const TextStyle(
+                          color: AppTheme.textPrimary, fontSize: 16),
+                      dropdownIcon: const Icon(Icons.arrow_drop_down, color: AppTheme.textSecondary),
+                      flagsButtonPadding: const EdgeInsets.only(left: 12),
+                      disableLengthCheck: false,
+                      onChanged: (phone) {
+                        _phone = phone.completeNumber;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // City field
+                    const Text(
+                      'Город',
+                      style:
+                          TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: _showCityPicker,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.card,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _city ?? 'Выберите город',
+                                style: TextStyle(
+                                  color: _city != null
+                                      ? AppTheme.textPrimary
+                                      : AppTheme.textSecondary.withValues(alpha: 0.5),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.chevron_right,
+                              color: AppTheme.textSecondary,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
 

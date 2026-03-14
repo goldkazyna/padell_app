@@ -141,14 +141,18 @@ class AuthService {
     }
   }
 
-  Future<AuthResult> register(String name, String email, String password) async {
+  Future<AuthResult> register(String name, String email, String password, {String? phone, String? city}) async {
     try {
-      final response = await _api.post('/auth/register', {
+      final body = {
         'name': name,
         'email': email,
         'password': password,
         'password_confirmation': password,
-      });
+      };
+      if (phone != null) body['phone'] = phone;
+      if (city != null) body['city'] = city;
+
+      final response = await _api.post('/auth/register', body);
 
       if (response['success'] == true) {
         final token = response['token'] as String;

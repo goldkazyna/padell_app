@@ -5,8 +5,9 @@ class Club {
   final String name;
   final String? phone;
   final String? address;
+  final String? paymentUrl;
 
-  Club({required this.id, required this.name, this.phone, this.address});
+  Club({required this.id, required this.name, this.phone, this.address, this.paymentUrl});
 
   factory Club.fromJson(Map<String, dynamic> json) {
     return Club(
@@ -14,6 +15,7 @@ class Club {
       name: json['name'] as String,
       phone: json['phone'] as String?,
       address: json['address'] as String?,
+      paymentUrl: json['payment_url'] as String?,
     );
   }
 

@@ -51,7 +51,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
-            child: Column(
+            child: SingleChildScrollView(
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
@@ -228,7 +229,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   },
                 ),
 
-                const Spacer(),
+                const SizedBox(height: 32),
 
                 // Register link
                 Center(
@@ -263,6 +264,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 ),
                 const SizedBox(height: 24),
               ],
+            ),
             ),
           ),
         ),

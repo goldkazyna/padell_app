@@ -23,11 +23,15 @@ void main() async {
   debugPrint('[APP] ===== APP START =====');
   debugPrint('[APP] kIsWeb: $kIsWeb');
 
-  try {
-    await Firebase.initializeApp();
-    debugPrint('[APP] Firebase initialized OK');
-  } catch (e) {
-    debugPrint('[APP] Firebase init error: $e');
+  if (!kIsWeb) {
+    try {
+      await Firebase.initializeApp();
+      debugPrint('[APP] Firebase initialized OK');
+    } catch (e) {
+      debugPrint('[APP] Firebase init error: $e');
+    }
+  } else {
+    debugPrint('[APP] Skipping Firebase on web');
   }
 
   final storageService = StorageService();

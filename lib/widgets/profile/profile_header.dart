@@ -99,6 +99,57 @@ class ProfileHeader extends StatelessWidget {
                   ),
                 ],
               ),
+              // Предупреждение о незаполненном профиле
+              if (user != null && user.isProfileIncomplete)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const EditProfileScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF59E0B).withAlpha(15),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFFF59E0B).withAlpha(60),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Color(0xFFF59E0B),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              _getMissingFieldsText(user),
+                              style: const TextStyle(
+                                color: Color(0xFFF59E0B),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.chevron_right,
+                            color: Color(0xFFF59E0B),
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               const SizedBox(height: 14),
               Builder(builder: (_) {
                 final level = double.tryParse(user?.level ?? '0') ?? 0;
@@ -152,6 +203,13 @@ class ProfileHeader extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _getMissingFieldsText(dynamic user) {
+    final missing = <String>[];
+    if (user.city == null || user.city.isEmpty) missing.add('город');
+    if (user.gender == null || user.gender.isEmpty) missing.add('пол');
+    return 'Укажите ${missing.join(' и ')} в настройках профиля';
   }
 
   Widget _buildInitials(dynamic user) {
