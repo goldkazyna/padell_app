@@ -56,6 +56,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
+  bool _updateDialogShown = false;
 
   @override
   void initState() {
@@ -77,7 +78,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       final needsUpdate = VersionService.isVersionLower(currentVersion, info.latestVersion);
       final forceUpdate = VersionService.isVersionLower(currentVersion, info.minVersion);
 
-      if (needsUpdate && mounted) {
+      if (needsUpdate && mounted && !_updateDialogShown) {
+        _updateDialogShown = true;
         _showUpdateDialog(info, forceUpdate || info.forceUpdate);
       }
     } catch (_) {}
@@ -166,6 +168,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _updateBadge();
+      _updateDialogShown = false;
+      _checkForUpdate();
     }
   }
 
