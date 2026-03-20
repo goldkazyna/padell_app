@@ -232,10 +232,17 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   }
 
   Future<void> _submitScore(int id) async {
+    // Проверяем что хотя бы в одном сете счёт не 0:0
+    final allZero = _sets.every((s) => (s['team_a'] ?? 0) == 0 && (s['team_b'] ?? 0) == 0);
+    if (allZero) {
+      if (mounted) _showSnackBar('Введите счёт хотя бы в одном сете');
+      return;
+    }
+
     final result = await context
         .read<ChallengeProvider>()
         .submitScore(id, _sets);
-    _showSnackBar(result.message);
+    if (mounted) _showSnackBar(result.message);
   }
 
   void _addSet() {
@@ -671,7 +678,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               ),
               alignment: Alignment.center,
               child: const Text(
-                'Сохранить результат',
+                'Завершить поединок',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
