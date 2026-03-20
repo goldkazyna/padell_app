@@ -67,6 +67,11 @@ class ChallengeService {
     return Challenge.fromJson(response['data'] as Map<String, dynamic>);
   }
 
+  Future<Map<String, dynamic>> confirmScore(int id, String token) async {
+    final response = await _api.post('/challenges/$id/confirm-score', {}, token);
+    return response;
+  }
+
   Future<String> cancel(int id, String token) async {
     final response = await _api.post('/challenges/$id/cancel', {}, token);
     return response['message'] as String;

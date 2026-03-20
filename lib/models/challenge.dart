@@ -27,6 +27,7 @@ class ChallengePlayer {
   final int? ratingBefore;
   final int? ratingAfter;
   final int? ratingChange;
+  final bool scoreConfirmed;
   final bool isMe;
 
   ChallengePlayer({
@@ -42,6 +43,7 @@ class ChallengePlayer {
     this.ratingBefore,
     this.ratingAfter,
     this.ratingChange,
+    this.scoreConfirmed = false,
     this.isMe = false,
   });
 
@@ -67,6 +69,7 @@ class ChallengePlayer {
       ratingBefore: json['rating_before'] as int?,
       ratingAfter: json['rating_after'] as int?,
       ratingChange: json['rating_change'] as int?,
+      scoreConfirmed: json['score_confirmed'] as bool? ?? false,
       isMe: json['is_me'] as bool? ?? false,
     );
   }
@@ -96,6 +99,7 @@ class ChallengePlayer {
   bool get isConfirmed => status == 'confirmed';
   bool get isPending => status == 'pending';
   bool get isInvited => status == 'invited';
+  bool get hasConfirmedScore => scoreConfirmed;
 }
 
 class ChallengeClub {
@@ -221,6 +225,7 @@ class Challenge {
   bool get isFriendly => type == 'friendly';
   bool get isOpen => status == 'open';
   bool get isReady => status == 'ready';
+  bool get isPendingConfirmation => status == 'pending_confirmation';
   bool get isCompleted => status == 'completed';
   bool get isFull => availablePositions.isEmpty;
 

@@ -292,6 +292,30 @@ class ChallengeProvider extends ChangeNotifier {
     }
   }
 
+  // === Подтвердить счёт ===
+
+  Future<({bool success, String message})> confirmScore(int id) async {
+    final token = await _storage.getToken();
+    if (token == null) return (success: false, message: 'Нет авторизации');
+
+    _isActionLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await _service.confirmScore(id, token);
+      final message = response['message'] as String? ?? 'Готово';
+      if (response['data'] != null) {
+        _currentChallenge = Challenge.fromJson(response['data'] as Map<String, dynamic>);
+      }
+      return (success: true, message: message);
+    } catch (e) {
+      return (success: false, message: 'Ошибка: $e');
+    } finally {
+      _isActionLoading = false;
+      notifyListeners();
+    }
+  }
+
   // === Отменить челлендж ===
 
   Future<({bool success, String message})> cancelChallenge(int id) async {

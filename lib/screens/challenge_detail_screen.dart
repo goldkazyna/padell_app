@@ -170,6 +170,12 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     _showSnackBar(result.message);
   }
 
+  Future<void> _confirmScore(int id) async {
+    final result =
+        await context.read<ChallengeProvider>().confirmScore(id);
+    if (mounted) _showSnackBar(result.message);
+  }
+
   Future<void> _cancelChallenge(int id) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -220,8 +226,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         await context.read<ChallengeProvider>().declineChallenge(id);
     if (result.success && mounted) {
       Navigator.pop(context);
+      return;
     }
-    _showSnackBar(result.message);
+    if (mounted) _showSnackBar(result.message);
   }
 
   Future<void> _submitScore(int id) async {
@@ -370,9 +377,11 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           ),
                           const SizedBox(height: 16),
                           // Score section for in_progress
-                          if (challenge.status == 'in_progress' &&
-                              challenge.isCreator)
+                          if (challenge.status == 'in_progress')
                             _buildScoreInput(challenge),
+                          // Pending confirmation section
+                          if (challenge.isPendingConfirmation)
+                            _buildPendingConfirmation(challenge),
                           // Result section for completed
                           if (challenge.isCompleted)
                             _buildResultCard(challenge),
@@ -604,72 +613,252 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               teamB: teamB,
               scoreA: _sets[i]['team_a'],
               scoreB: _sets[i]['team_b'],
-              isEditable: true,
-              onScoreChanged: (a, b) => _updateSet(i, a, b),
-              onDelete: i > 0 ? () => _removeSet(i) : null,
+              isEditable: challenge.isCreator,
+              onScoreChanged: challenge.isCreator ? (a, b) => _updateSet(i, a, b) : null,
+              onDelete: challenge.isCreator && i > 0 ? () => _removeSet(i) : null,
             ),
           );
         }),
         const SizedBox(height: 8),
-        // Add set button
-        GestureDetector(
-          onTap: _addSet,
-          child: Container(
-            width: double.infinity,
-            height: 44,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppTheme.accent,
-                width: 1.5,
+        if (challenge.isCreator) ...[
+          // Add set button
+          GestureDetector(
+            onTap: _addSet,
+            child: Container(
+              width: double.infinity,
+              height: 44,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.accent,
+                  width: 1.5,
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, color: AppTheme.accent, size: 20),
+                  SizedBox(width: 6),
+                  Text(
+                    'Добавить сет',
+                    style: TextStyle(
+                      color: AppTheme.accent,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          const SizedBox(height: 12),
+          // Submit score button
+          GestureDetector(
+            onTap: () => _submitScore(challenge.id),
+            child: Container(
+              width: double.infinity,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppTheme.accent,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.accent.withAlpha(76),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: const Text(
+                'Сохранить результат',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ] else ...[
+          // Info for non-creator
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
               children: [
-                Icon(Icons.add, color: AppTheme.accent, size: 20),
-                SizedBox(width: 6),
-                Text(
-                  'Добавить сет',
-                  style: TextStyle(
-                    color: AppTheme.accent,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                Icon(Icons.info_outline, color: AppTheme.textSecondary, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Счёт вводит создатель поединка. После завершения вы сможете подтвердить результат.',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+        ],
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildPendingConfirmation(Challenge challenge) {
+    final score = challenge.score;
+    final myPlayer = challenge.players.where((p) => p.isMe).firstOrNull;
+    final alreadyConfirmed = myPlayer?.scoreConfirmed ?? false;
+    final isLoading = context.watch<ChallengeProvider>().isActionLoading;
+
+    // Подсчёт счёта
+    int teamAWins = 0, teamBWins = 0;
+    if (score != null) {
+      for (final s in score) {
+        if (s.teamA > s.teamB) teamAWins++;
+        else if (s.teamB > s.teamA) teamBWins++;
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'РЕЗУЛЬТАТ',
+          style: TextStyle(
+            color: AppTheme.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
         ),
         const SizedBox(height: 12),
-        // Submit score button
-        GestureDetector(
-          onTap: () => _submitScore(challenge.id),
-          child: Container(
+        // Score summary
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          ),
+          child: Column(
+            children: [
+              // Total score
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('$teamAWins', style: const TextStyle(color: AppTheme.textPrimary, fontSize: 36, fontWeight: FontWeight.w700)),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(':', style: TextStyle(color: AppTheme.textSecondary, fontSize: 36, fontWeight: FontWeight.w700)),
+                  ),
+                  Text('$teamBWins', style: const TextStyle(color: AppTheme.textPrimary, fontSize: 36, fontWeight: FontWeight.w700)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // Sets
+              if (score != null)
+                ...score.asMap().entries.map((entry) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    'Сет ${entry.key + 1}    ${entry.value.teamA} : ${entry.value.teamB}',
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                  ),
+                )),
+              const SizedBox(height: 16),
+              // Confirmation status
+              ...challenge.players.map((player) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: player.scoreConfirmed ? AppTheme.accent : const Color(0xFF2A2A2A),
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      alignment: Alignment.center,
+                      child: player.avatar != null
+                          ? Image.network(player.avatar!, fit: BoxFit.cover, width: 28, height: 28,
+                              errorBuilder: (_, __, ___) => Text(player.initials, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)))
+                          : Text(player.initials, style: TextStyle(color: player.scoreConfirmed ? Colors.black : Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        player.fullName,
+                        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Icon(
+                      player.scoreConfirmed ? Icons.check_circle : Icons.schedule,
+                      color: player.scoreConfirmed ? AppTheme.accent : AppTheme.textSecondary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      player.scoreConfirmed ? 'Подтвердил' : 'Ожидание',
+                      style: TextStyle(
+                        color: player.scoreConfirmed ? AppTheme.accent : AppTheme.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Confirm button
+        if (!alreadyConfirmed)
+          GestureDetector(
+            onTap: isLoading ? null : () => _confirmScore(challenge.id),
+            child: Container(
+              width: double.infinity,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppTheme.accent,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.accent.withAlpha(76),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: isLoading
+                  ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                  : const Text('Подтверждаю счёт', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+            ),
+          )
+        else
+          Container(
             width: double.infinity,
             height: 48,
             decoration: BoxDecoration(
-              color: AppTheme.accent,
+              color: AppTheme.accent.withAlpha(40),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.accent.withAlpha(76),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
             ),
             alignment: Alignment.center,
-            child: const Text(
-              'Сохранить результат',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.check, color: AppTheme.accent, size: 20),
+                SizedBox(width: 8),
+                Text('Вы подтвердили счёт', style: TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w600)),
+              ],
             ),
           ),
-        ),
         const SizedBox(height: 16),
       ],
     );
@@ -862,19 +1051,44 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       );
     }
 
-    // Open + participant + creator
-    if (challenge.isOpen && challenge.isParticipant && challenge.isCreator && challenge.confirmedCount < 4) {
-      // Если все места заняты но есть invited — показать ожидание
-      if (challenge.isFull && challenge.confirmedCount < 4) {
+    // Open or Ready + participant + creator
+    if ((challenge.isOpen || challenge.isReady) && challenge.isParticipant && challenge.isCreator) {
+      final canStart = challenge.confirmedCount >= 4 || challenge.isReady;
+
+      // Подсказка
+      if (!canStart) {
+        final remaining = 4 - challenge.confirmedCount;
+        final hasInvited = challenge.players.any((p) => p.isInvited);
+        String hint;
+        if (hasInvited) {
+          hint = 'Ожидание подтверждения приглашённых игроков';
+        } else {
+          hint = 'Для начала нужно ещё $remaining ${remaining == 1 ? 'игрок' : 'игрока'}';
+        }
         buttons.add(
-          _buildOutlineButton(
-            label: 'Ожидание подтверждения игроков',
-            color: AppTheme.textSecondary,
-            onTap: null,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              hint,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 13,
+              ),
+            ),
           ),
         );
-        buttons.add(const SizedBox(height: 10));
       }
+
+      // Кнопка «Начать» — всегда видна, активна только когда все на месте
+      buttons.add(
+        _buildPrimaryButton(
+          label: 'Начать поединок',
+          onTap: canStart && !isLoading ? () => _startChallenge(challenge.id) : null,
+          isLoading: isLoading && canStart,
+        ),
+      );
+      buttons.add(const SizedBox(height: 10));
       buttons.add(
         _buildOutlineButton(
           label: 'Отменить поединок',
@@ -884,8 +1098,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       );
     }
 
-    // Open + participant + NOT creator => leave
-    if (challenge.isOpen && challenge.isParticipant && !challenge.isCreator) {
+    // Open + participant + NOT creator + NOT invited => leave
+    if (challenge.isOpen && challenge.isParticipant && !challenge.isCreator && challenge.myStatus != 'invited') {
       buttons.add(
         _buildOutlineButton(
           label: 'Покинуть',
@@ -893,23 +1107,6 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           onTap: isLoading ? null : () => _leaveChallenge(challenge.id),
         ),
       );
-    }
-
-    // Ready (or all 4 confirmed) + creator => start + cancel
-    if ((challenge.isReady || (challenge.isOpen && challenge.confirmedCount >= 4)) && challenge.isCreator) {
-      buttons.addAll([
-        _buildPrimaryButton(
-          label: 'Начать поединок',
-          onTap: isLoading ? null : () => _startChallenge(challenge.id),
-          isLoading: isLoading,
-        ),
-        const SizedBox(height: 10),
-        _buildOutlineButton(
-          label: 'Отменить',
-          color: AppTheme.error,
-          onTap: isLoading ? null : () => _cancelChallenge(challenge.id),
-        ),
-      ]);
     }
 
     if (buttons.isEmpty) return const SizedBox.shrink();
@@ -931,15 +1128,15 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         width: double.infinity,
         height: 48,
         decoration: BoxDecoration(
-          color: onTap != null ? AppTheme.accent : AppTheme.accent.withAlpha(128),
+          color: onTap != null ? AppTheme.accent : AppTheme.accent.withAlpha(40),
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          boxShadow: onTap != null ? [
             BoxShadow(
               color: AppTheme.accent.withAlpha(76),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
-          ],
+          ] : [],
         ),
         alignment: Alignment.center,
         child: isLoading

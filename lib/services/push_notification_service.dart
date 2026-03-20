@@ -7,6 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
 import '../screens/tournament_detail_screen.dart';
+import '../screens/challenge_detail_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -281,7 +282,8 @@ class PushNotificationService {
 
     final type = message.data['type'] ?? '';
     final tournamentId = message.data['tournament_id'] ?? '';
-    final payload = '$type|$tournamentId';
+    final challengeId = message.data['challenge_id'] ?? '';
+    final payload = '$type|$tournamentId|$challengeId';
 
     _localNotifications.show(
       notification.hashCode,
@@ -309,33 +311,56 @@ class PushNotificationService {
 
     final parts = payload.split('|');
     final type = parts[0];
-    final id = parts.length > 1 ? parts[1] : '';
+    final tournamentId = parts.length > 1 ? parts[1] : '';
+    final challengeId = parts.length > 2 ? parts[2] : '';
 
-    _navigateByType(type, id);
+    _navigateByType(type, tournamentId, challengeId);
   }
 
   void _handleNotificationTap(RemoteMessage message) {
     _log('Notification tap: ${message.data}');
     final type = message.data['type'] ?? '';
     final tournamentId = message.data['tournament_id'] ?? '';
-    _navigateByType(type, tournamentId);
+    final challengeId = message.data['challenge_id'] ?? '';
+    _navigateByType(type, tournamentId, challengeId);
   }
 
-  void _navigateByType(String type, String id) {
-    _log('Navigate: type=$type, id=$id');
+  void _navigateByType(String type, String tournamentId, String challengeId) {
+    _log('Navigate: type=$type, tournamentId=$tournamentId, challengeId=$challengeId');
+
+    // Challenge types
+    const challengeTypes = {
+      'challenge_invite',
+      'challenge_joined',
+      'challenge_ready',
+      'challenge_confirm_score',
+      'challenge_result',
+    };
+    if (challengeTypes.contains(type) && challengeId.isNotEmpty) {
+      final id = int.tryParse(challengeId);
+      if (id != null) {
+        _navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (_) => ChallengeDetailScreen(challengeId: id),
+          ),
+        );
+      }
+      return;
+    }
+
+    // Tournament types
     const tournamentTypes = {
       'tournament',
       'registration_approved',
       'registration_rejected',
       'slot_available',
     };
-    if (tournamentTypes.contains(type) && id.isNotEmpty) {
-      final tournamentId = int.tryParse(id);
-      if (tournamentId != null) {
+    if (tournamentTypes.contains(type) && tournamentId.isNotEmpty) {
+      final id = int.tryParse(tournamentId);
+      if (id != null) {
         _navigatorKey.currentState?.push(
           MaterialPageRoute(
-            builder: (_) =>
-                TournamentDetailScreen(tournamentId: tournamentId),
+            builder: (_) => TournamentDetailScreen(tournamentId: id),
           ),
         );
       }
