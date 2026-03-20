@@ -146,15 +146,16 @@ class PushNotificationService {
     // Update badge with actual unread count
     updateBadge();
 
-    // iOS: allow notifications to show when app is in foreground
+    // iOS: НЕ показываем system notification в foreground — используем local notification
+    // чтобы избежать дублирования и сохранить навигацию по tap
     if (Platform.isIOS) {
-      _log('Setting iOS foreground presentation options...');
+      _log('Setting iOS foreground presentation options (no alert)...');
       await _messaging.setForegroundNotificationPresentationOptions(
-        alert: true,
+        alert: false,
         badge: true,
-        sound: true,
+        sound: false,
       );
-      _log('iOS foreground options set');
+      _log('iOS foreground options set (alert disabled)');
     }
 
     // Setup local notifications for foreground
@@ -298,7 +299,10 @@ class PushNotificationService {
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: const DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+        ),
       ),
       payload: payload,
     );
