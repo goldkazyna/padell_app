@@ -146,16 +146,16 @@ class PushNotificationService {
     // Update badge with actual unread count
     updateBadge();
 
-    // iOS: НЕ показываем system notification в foreground — используем local notification
-    // чтобы избежать дублирования и сохранить навигацию по tap
+    // iOS: Firebase сам показывает foreground notification
+    // Local notifications на iOS не работают из-за конфликта делегатов
     if (Platform.isIOS) {
-      _log('Setting iOS foreground presentation options (no alert)...');
+      _log('Setting iOS foreground presentation options (alert ON)...');
       await _messaging.setForegroundNotificationPresentationOptions(
-        alert: false,
+        alert: true,
         badge: true,
-        sound: false,
+        sound: true,
       );
-      _log('iOS foreground options set (alert disabled)');
+      _log('iOS foreground options set (alert enabled)');
     }
 
     // Setup local notifications for foreground
@@ -295,7 +295,14 @@ class PushNotificationService {
     final challengeId = message.data['challenge_id'] ?? '';
     final payload = '$type|$tournamentId|$challengeId';
 
-    _log('Showing local notification (hashCode=${notification.hashCode})...');
+    // iOS: Firebase сам показывает notification через setForegroundNotificationPresentationOptions
+    // Android: показываем через local notifications (у Firebase нет foreground display на Android)
+    if (Platform.isIOS) {
+      _log('iOS — Firebase shows notification, skipping local');
+      return;
+    }
+
+    _log('Android — showing local notification (hashCode=${notification.hashCode})...');
     _localNotifications.show(
       notification.hashCode,
       notification.title,
@@ -308,10 +315,6 @@ class PushNotificationService {
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentSound: true,
         ),
       ),
       payload: payload,
