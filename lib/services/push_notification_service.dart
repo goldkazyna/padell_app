@@ -249,6 +249,9 @@ class PushNotificationService {
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
+      defaultPresentAlert: true,
+      defaultPresentSound: true,
+      defaultPresentBadge: true,
     );
     const initSettings = InitializationSettings(
       android: androidSettings,
@@ -276,16 +279,23 @@ class PushNotificationService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    _log('Foreground message: ${message.notification?.title}');
+    _log('=== FOREGROUND MSG ===');
+    _log('Title: ${message.notification?.title}');
+    _log('Body: ${message.notification?.body}');
+    _log('Data: ${message.data}');
 
     final notification = message.notification;
-    if (notification == null) return;
+    if (notification == null) {
+      _log('Notification is NULL — skip');
+      return;
+    }
 
     final type = message.data['type'] ?? '';
     final tournamentId = message.data['tournament_id'] ?? '';
     final challengeId = message.data['challenge_id'] ?? '';
     final payload = '$type|$tournamentId|$challengeId';
 
+    _log('Showing local notification (hashCode=${notification.hashCode})...');
     _localNotifications.show(
       notification.hashCode,
       notification.title,
@@ -305,7 +315,11 @@ class PushNotificationService {
         ),
       ),
       payload: payload,
-    );
+    ).then((_) {
+      _log('Local notification show() completed OK');
+    }).catchError((e) {
+      _log('Local notification show() ERROR: $e');
+    });
   }
 
   void _onNotificationTapped(NotificationResponse details) {
