@@ -158,54 +158,37 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
   }
 
   Widget _buildDayPicker() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-      child: SizedBox(
-        height: 76,
-        child: Row(
-          children: [
-            // Стрелка влево
-            GestureDetector(
-              onTap: () => _changeWeek(-1),
-              child: Container(
-                width: 28,
-                height: 76,
-                alignment: Alignment.center,
-                child: const Icon(Icons.chevron_left,
-                    color: AppTheme.textSecondary, size: 20),
-              ),
-            ),
-            // Дни
-            Expanded(
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _weekDays.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 6),
-                itemBuilder: (context, index) {
-                  final day = _weekDays[index];
-                  final isSelected = day.date == _selectedDate;
-                  final occ = _occupancy[day.date] ?? 0;
-                  return _DayChip(
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        if (details.primaryVelocity != null) {
+          if (details.primaryVelocity! < -200) {
+            _changeWeek(1); // свайп влево → следующая неделя
+          } else if (details.primaryVelocity! > 200) {
+            _changeWeek(-1); // свайп вправо → предыдущая неделя
+          }
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+        child: SizedBox(
+          height: 76,
+          child: Row(
+            children: _weekDays.map((day) {
+              final isSelected = day.date == _selectedDate;
+              final occ = _occupancy[day.date] ?? 0;
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  child: _DayChip(
                     day: day,
                     isSelected: isSelected,
                     occupancy: occ,
                     onTap: () => _selectDate(day.date),
-                  );
-                },
-              ),
-            ),
-            // Стрелка вправо
-            GestureDetector(
-              onTap: () => _changeWeek(1),
-              child: Container(
-                width: 28,
-                height: 76,
-                alignment: Alignment.center,
-                child: const Icon(Icons.chevron_right,
-                    color: AppTheme.textSecondary, size: 20),
-              ),
-            ),
-          ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
