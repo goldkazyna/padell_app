@@ -16,45 +16,71 @@ class CourtScheduleScreen extends StatefulWidget {
 
 class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
   late String _selectedDate;
-  late List<Map<String, String>> _weekDays;
+  late List<_DayInfo> _weekDays;
   int _selectedCourtIndex = 0;
+  Map<String, int> _occupancy = {};
 
   @override
   void initState() {
     super.initState();
-    _selectedDate = _formatDate(DateTime.now());
-    _weekDays = _generateWeek(DateTime.now());
+    final now = DateTime.now();
+    _selectedDate = _fmt(now);
+    _weekDays = _buildWeek(now);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CourtProvider>().loadSchedule(widget.club.id, _selectedDate);
+      _loadData();
     });
   }
 
-  String _formatDate(DateTime d) =>
+  String _fmt(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-  List<Map<String, String>> _generateWeek(DateTime from) {
+  List<_DayInfo> _buildWeek(DateTime from) {
     final monday = from.subtract(Duration(days: from.weekday - 1));
-    const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-    const monthNames = ['', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    const dn = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    const mn = ['', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
     return List.generate(7, (i) {
       final d = monday.add(Duration(days: i));
-      return {
-        'date': _formatDate(d),
-        'dayName': dayNames[i],
-        'dayNum': d.day.toString(),
-        'month': monthNames[d.month],
-      };
+      return _DayInfo(
+        date: _fmt(d),
+        dayName: dn[i],
+        dayNum: d.day.toString(),
+        month: mn[d.month],
+        isToday: _fmt(d) == _fmt(DateTime.now()),
+      );
     });
+  }
+
+  void _loadData() {
+    context.read<CourtProvider>().loadSchedule(widget.club.id, _selectedDate);
+    _loadOccupancy();
+  }
+
+  Future<void> _loadOccupancy() async {
+    try {
+      final provider = context.read<CourtProvider>();
+      final response = await provider.courtService.getWeekOccupancy(
+        widget.club.id,
+        _weekDays[0].date,
+      );
+      if (response['success'] == true && mounted) {
+        final occ = response['occupancy'] as Map<String, dynamic>? ?? {};
+        setState(() {
+          _occupancy = occ.map((k, v) => MapEntry(k, (v as num).toInt()));
+        });
+      }
+    } catch (_) {}
   }
 
   void _changeWeek(int delta) {
-    final current = DateTime.parse(_weekDays[0]['date']!);
-    final newWeek = current.add(Duration(days: 7 * delta));
+    final current = DateTime.parse(_weekDays[0].date);
+    final newStart = current.add(Duration(days: 7 * delta));
     setState(() {
-      _weekDays = _generateWeek(newWeek);
-      _selectedDate = _weekDays[0]['date']!;
+      _weekDays = _buildWeek(newStart);
+      _selectedDate = _weekDays[0].date;
+      _selectedCourtIndex = 0;
+      _occupancy = {};
     });
-    context.read<CourtProvider>().loadSchedule(widget.club.id, _selectedDate);
+    _loadData();
   }
 
   void _selectDate(String date) {
@@ -79,47 +105,47 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.club.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+            Text(widget.club.name,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             if (widget.club.address != null)
-              Text(widget.club.address!, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
+              Text(widget.club.address!,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.w500)),
           ],
         ),
       ),
       body: Column(
         children: [
-          // Неделя
-          _buildWeekSelector(),
-          const SizedBox(height: 12),
-
-          // Контент
+          _buildDayPicker(),
+          const SizedBox(height: 8),
           Expanded(
             child: Consumer<CourtProvider>(
               builder: (context, provider, _) {
                 if (provider.isScheduleLoading) {
-                  return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+                  return const Center(
+                      child: CircularProgressIndicator(color: AppTheme.accent));
                 }
                 if (provider.scheduleError != null) {
                   return Center(
-                    child: Text(provider.scheduleError!, style: const TextStyle(color: AppTheme.textSecondary)),
-                  );
+                      child: Text(provider.scheduleError!,
+                          style: const TextStyle(color: AppTheme.textSecondary)));
                 }
-                if (provider.scheduleData == null) {
-                  return const SizedBox.shrink();
-                }
+                if (provider.scheduleData == null) return const SizedBox.shrink();
 
-                final courts = provider.scheduleData!['courts'] as List<dynamic>? ?? [];
+                final courts =
+                    provider.scheduleData!['courts'] as List<dynamic>? ?? [];
                 if (courts.isEmpty) {
                   return const Center(
-                    child: Text('Нет доступных кортов', style: TextStyle(color: AppTheme.textSecondary)),
-                  );
+                      child: Text('Нет доступных кортов',
+                          style: TextStyle(color: AppTheme.textSecondary)));
                 }
 
                 return Column(
                   children: [
-                    // Табы кортов
                     _buildCourtTabs(courts),
                     const SizedBox(height: 8),
-                    // Слоты
                     Expanded(child: _buildSlots(courts)),
                   ],
                 );
@@ -131,94 +157,56 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     );
   }
 
-  Widget _buildWeekSelector() {
+  Widget _buildDayPicker() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => _changeWeek(-1),
-            child: Container(
-              width: 36, height: 36,
-              decoration: BoxDecoration(
-                color: AppTheme.card,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: SizedBox(
+        height: 76,
+        child: Row(
+          children: [
+            // Стрелка влево
+            GestureDetector(
+              onTap: () => _changeWeek(-1),
+              child: Container(
+                width: 28,
+                height: 76,
+                alignment: Alignment.center,
+                child: const Icon(Icons.chevron_left,
+                    color: AppTheme.textSecondary, size: 20),
               ),
-              child: const Icon(Icons.chevron_left, color: AppTheme.textSecondary, size: 20),
             ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: SizedBox(
-              height: 60,
+            // Дни
+            Expanded(
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _weekDays.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 4),
+                separatorBuilder: (_, __) => const SizedBox(width: 6),
                 itemBuilder: (context, index) {
                   final day = _weekDays[index];
-                  final isSelected = day['date'] == _selectedDate;
-                  final isToday = day['date'] == _formatDate(DateTime.now());
-                  return GestureDetector(
-                    onTap: () => _selectDate(day['date']!),
-                    child: Container(
-                      width: 44,
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppTheme.accent : AppTheme.card,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isToday && !isSelected ? AppTheme.accent : (isSelected ? AppTheme.accent : const Color(0xFF2A2A2A)),
-                          width: 0.5,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            day['dayName']!,
-                            style: TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.black : const Color(0xFF52525B),
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            day['dayNum']!,
-                            style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w800,
-                              color: isSelected ? Colors.black : (isToday ? AppTheme.accent : AppTheme.textSecondary),
-                            ),
-                          ),
-                          Text(
-                            day['month']!,
-                            style: TextStyle(
-                              fontSize: 9, fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.black.withAlpha(150) : const Color(0xFF52525B),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  final isSelected = day.date == _selectedDate;
+                  final occ = _occupancy[day.date] ?? 0;
+                  return _DayChip(
+                    day: day,
+                    isSelected: isSelected,
+                    occupancy: occ,
+                    onTap: () => _selectDate(day.date),
                   );
                 },
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () => _changeWeek(1),
-            child: Container(
-              width: 36, height: 36,
-              decoration: BoxDecoration(
-                color: AppTheme.card,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+            // Стрелка вправо
+            GestureDetector(
+              onTap: () => _changeWeek(1),
+              child: Container(
+                width: 28,
+                height: 76,
+                alignment: Alignment.center,
+                child: const Icon(Icons.chevron_right,
+                    color: AppTheme.textSecondary, size: 20),
               ),
-              child: const Icon(Icons.chevron_right, color: AppTheme.textSecondary, size: 20),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -237,10 +225,14 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                 margin: EdgeInsets.only(left: i > 0 ? 6 : 0),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: isActive ? const Color(0xFF3B82F6) : AppTheme.card,
+                  color: isActive
+                      ? const Color(0xFF3B82F6)
+                      : AppTheme.card,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: isActive ? const Color(0xFF3B82F6) : const Color(0xFF2A2A2A),
+                    color: isActive
+                        ? const Color(0xFF3B82F6)
+                        : const Color(0xFF2A2A2A),
                     width: 0.5,
                   ),
                 ),
@@ -248,7 +240,8 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                   court['name'] as String? ?? 'Корт ${i + 1}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
                     color: isActive ? Colors.white : AppTheme.textSecondary,
                   ),
                 ),
@@ -266,12 +259,13 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     final court = courts[_selectedCourtIndex] as Map<String, dynamic>;
     final courtId = court['id'] as int;
     final slots = court['slots'] as List<dynamic>? ?? [];
-    final coaches = (context.read<CourtProvider>().scheduleData?['coaches'] as List<dynamic>?) ?? [];
+    final coaches =
+        (context.read<CourtProvider>().scheduleData?['coaches'] as List<dynamic>?) ?? [];
 
     if (slots.isEmpty) {
       return const Center(
-        child: Text('Нет слотов на этот день', style: TextStyle(color: AppTheme.textSecondary)),
-      );
+          child: Text('Нет слотов на этот день',
+              style: TextStyle(color: AppTheme.textSecondary)));
     }
 
     return ListView.builder(
@@ -284,14 +278,17 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
         final price = (slot['price'] as num?)?.toDouble();
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 4),
+          padding: const EdgeInsets.only(bottom: 3),
           child: Row(
             children: [
               SizedBox(
-                width: 50,
+                width: 48,
                 child: Text(
                   time,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF71717A)),
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF52525B)),
                 ),
               ),
               Expanded(
@@ -317,23 +314,29 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                         }
                       : null,
                   child: Container(
-                    height: 48,
+                    height: 46,
                     decoration: BoxDecoration(
-                      color: _slotColor(status),
+                      color: _slotBg(status),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _slotBorderColor(status), width: 0.5),
+                      border: Border.all(color: _slotBorder(status), width: 0.5),
                     ),
                     child: Center(
                       child: status == 'free'
                           ? Text(
-                              '${_formatPrice(price ?? 0)} ₸',
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.accent),
+                              '${_fmtPrice(price ?? 0)} ₸',
+                              style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.accent),
                             )
                           : Text(
                               status == 'booked' ? 'Занято' : 'Заблок.',
                               style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w600,
-                                color: status == 'booked' ? const Color(0xFF3B82F6) : const Color(0xFF52525B),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: status == 'booked'
+                                    ? const Color(0xFF3B82F6)
+                                    : const Color(0xFF3F3F46),
                               ),
                             ),
                     ),
@@ -347,26 +350,143 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     );
   }
 
-  Color _slotColor(String status) {
-    switch (status) {
-      case 'free': return AppTheme.accent.withAlpha(15);
-      case 'booked': return const Color(0xFF3B82F6).withAlpha(20);
-      default: return const Color(0xFF71717A).withAlpha(15);
+  Color _slotBg(String s) {
+    switch (s) {
+      case 'free':
+        return AppTheme.accent.withAlpha(15);
+      case 'booked':
+        return const Color(0xFF3B82F6).withAlpha(18);
+      default:
+        return const Color(0xFF71717A).withAlpha(12);
     }
   }
 
-  Color _slotBorderColor(String status) {
-    switch (status) {
-      case 'free': return AppTheme.accent.withAlpha(40);
-      case 'booked': return const Color(0xFF3B82F6).withAlpha(40);
-      default: return const Color(0xFF71717A).withAlpha(30);
+  Color _slotBorder(String s) {
+    switch (s) {
+      case 'free':
+        return AppTheme.accent.withAlpha(40);
+      case 'booked':
+        return const Color(0xFF3B82F6).withAlpha(35);
+      default:
+        return const Color(0xFF71717A).withAlpha(25);
     }
   }
 
-  String _formatPrice(double price) {
-    return price.toInt().toString().replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+$)'),
-      (m) => '${m[1]} ',
+  String _fmtPrice(double p) {
+    return p.toInt().toString().replaceAllMapped(
+        RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]} ');
+  }
+}
+
+// --- Модели и виджеты ---
+
+class _DayInfo {
+  final String date, dayName, dayNum, month;
+  final bool isToday;
+  _DayInfo(
+      {required this.date,
+      required this.dayName,
+      required this.dayNum,
+      required this.month,
+      required this.isToday});
+}
+
+class _DayChip extends StatelessWidget {
+  final _DayInfo day;
+  final bool isSelected;
+  final int occupancy;
+  final VoidCallback onTap;
+
+  const _DayChip({
+    required this.day,
+    required this.isSelected,
+    required this.occupancy,
+    required this.onTap,
+  });
+
+  Color _occColor(int occ) {
+    if (occ >= 80) return const Color(0xFFEF4444);
+    if (occ >= 40) return const Color(0xFFFB923C);
+    return const Color(0xFF22C55E);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 56,
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.accent : AppTheme.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: day.isToday && !isSelected
+                ? AppTheme.accent
+                : (isSelected ? AppTheme.accent : const Color(0xFF2A2A2A)),
+            width: isSelected ? 1.5 : 0.5,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              day.dayName,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: isSelected ? Colors.black : const Color(0xFF52525B),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              day.dayNum,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: isSelected
+                    ? Colors.black
+                    : (day.isToday ? AppTheme.accent : const Color(0xFFD4D4D8)),
+              ),
+            ),
+            Text(
+              day.month,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: isSelected
+                    ? Colors.black.withAlpha(150)
+                    : const Color(0xFF52525B),
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Прогресс-бар загруженности
+            Container(
+              width: 36,
+              height: 3,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Colors.black.withAlpha(30)
+                    : const Color(0xFF2A2A2A),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FractionallySizedBox(
+                  widthFactor: occupancy / 100,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.black.withAlpha(100)
+                          : _occColor(occupancy),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

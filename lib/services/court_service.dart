@@ -61,6 +61,13 @@ class CourtService {
     return response;
   }
 
+  /// Загруженность по неделе
+  Future<Map<String, dynamic>> getWeekOccupancy(int clubId, String startDate) async {
+    final token = await _getToken();
+    final response = await _api.get('/courts/clubs/$clubId/week-occupancy?start_date=$startDate', token);
+    return response;
+  }
+
   /// Отмена бронирования
   Future<Map<String, dynamic>> cancelBooking(int bookingId) async {
     final token = await _getToken();

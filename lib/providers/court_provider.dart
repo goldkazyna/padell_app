@@ -8,6 +8,8 @@ class CourtProvider extends ChangeNotifier {
 
   CourtProvider(this._courtService);
 
+  CourtService get courtService => _courtService;
+
   // Клубы
   bool _isLoading = false;
   String? _error;
