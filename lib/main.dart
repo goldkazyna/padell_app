@@ -18,6 +18,8 @@ import 'providers/home_provider.dart';
 import 'providers/rating_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/challenge_provider.dart';
+import 'services/court_service.dart';
+import 'providers/court_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +46,7 @@ void main() async {
   final ratingService = RatingService(apiService, storageService);
   final profileService = ProfileService(apiService, storageService);
   final challengeService = ChallengeService(apiService);
+  final courtService = CourtService(apiService, storageService);
   final pushService = PushNotificationService(apiService, storageService, navigatorKey);
   if (!kIsWeb) {
     try {
@@ -73,6 +76,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => ChallengeProvider(challengeService, storageService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CourtProvider(courtService),
         ),
         Provider<ProfileService>.value(value: profileService),
         Provider<PushNotificationService>.value(value: pushService),

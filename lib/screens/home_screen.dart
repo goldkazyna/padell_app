@@ -10,6 +10,7 @@ import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
 import '../theme/app_theme.dart';
 import 'tournament_detail_screen.dart';
+import 'club_select_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int)? onNavigateToTab;
@@ -75,7 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 20),
                   CourtBookingBanner(
                     onTap: () {
-                      // TODO: навигация на экран выбора клуба
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ClubSelectScreen()),
+                      );
                     },
                   ),
                   const SizedBox(height: 28),
