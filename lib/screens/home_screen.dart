@@ -7,6 +7,7 @@ import '../widgets/home/nearest_tournament_card.dart';
 import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
+import '../widgets/home/court_booking_banner.dart';
 import '../theme/app_theme.dart';
 import 'tournament_detail_screen.dart';
 
@@ -71,6 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   const HomeHeader(),
                   const SizedBox(height: 20),
                   const HomeStats(),
+                  const SizedBox(height: 20),
+                  CourtBookingBanner(
+                    onTap: () {
+                      // TODO: навигация на экран выбора клуба
+                    },
+                  ),
                   const SizedBox(height: 28),
                   const SectionTitle(title: 'Ближайший турнир'),
                   const SizedBox(height: 12),
