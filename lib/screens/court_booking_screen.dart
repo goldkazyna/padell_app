@@ -38,7 +38,10 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
   int _selectedSlots = 1;
   int? _selectedCoachId;
   final _commentController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
   bool _isBooking = false;
+  bool _initialized = false;
 
   int get _maxSlots {
     int count = 0;
@@ -119,6 +122,8 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       date: widget.date,
       startTime: widget.startTime,
       slots: _selectedSlots,
+      clientName: _nameController.text.isNotEmpty ? _nameController.text : null,
+      clientPhone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
       coachId: _selectedCoachId,
       comment: _commentController.text.isNotEmpty ? _commentController.text : null,
     );
@@ -147,15 +152,30 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     }
   }
 
+  String _formatPhone(String phone) {
+    final digits = phone.replaceAll(RegExp(r'[^\d]'), '');
+    if (digits.isNotEmpty && !digits.startsWith('+')) {
+      return '+$digits';
+    }
+    return phone.startsWith('+') ? phone : '+$phone';
+  }
+
   @override
   void dispose() {
     _commentController.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.read<HomeProvider>().user;
+    if (!_initialized && user != null) {
+      _nameController.text = user.name;
+      _phoneController.text = _formatPhone(user.phone);
+      _initialized = true;
+    }
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -196,10 +216,16 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
               const SizedBox(height: 20),
             ],
 
-            // Имя и телефон
-            _sectionLabel('Ваши данные'),
+            // Имя
+            _sectionLabel('Имя'),
             const SizedBox(height: 8),
-            _buildInfoCard(user?.name ?? '', user?.phone ?? ''),
+            _buildInput(_nameController, 'Введите имя'),
+            const SizedBox(height: 14),
+
+            // Телефон
+            _sectionLabel('Телефон'),
+            const SizedBox(height: 8),
+            _buildInput(_phoneController, '+7 777 123 4567'),
             const SizedBox(height: 16),
 
             // Комментарий
@@ -427,29 +453,22 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  Widget _buildInfoCard(String name, String phone) {
+  Widget _buildInput(TextEditingController controller, String hint) {
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.person_outline, color: Color(0xFF71717A), size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-                if (phone.isNotEmpty)
-                  Text(phone, style: const TextStyle(fontSize: 12, color: Color(0xFF71717A))),
-              ],
-            ),
-          ),
-        ],
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(color: Color(0xFF52525B), fontSize: 14),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        ),
       ),
     );
   }

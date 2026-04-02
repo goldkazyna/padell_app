@@ -110,6 +110,8 @@ class CourtProvider extends ChangeNotifier {
     required String date,
     required String startTime,
     required int slots,
+    String? clientName,
+    String? clientPhone,
     int? coachId,
     String? comment,
   }) async {
@@ -120,6 +122,8 @@ class CourtProvider extends ChangeNotifier {
         date: date,
         startTime: startTime,
         slots: slots,
+        clientName: clientName,
+        clientPhone: clientPhone,
         coachId: coachId,
         comment: comment,
       );
