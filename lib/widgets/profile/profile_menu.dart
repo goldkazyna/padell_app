@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../screens/notification_settings_screen.dart';
+import '../../screens/my_bookings_screen.dart';
 import '../../theme/app_theme.dart';
 
 class ProfileMenu extends StatelessWidget {
@@ -11,6 +12,18 @@ class ProfileMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _buildMenuItem(
+          context,
+          Icons.sports_tennis,
+          'Мои бронирования',
+          'Забронированные корты',
+          const Color(0xFF3B82F6),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
+          ),
+        ),
+        const SizedBox(height: 8),
         _buildMenuItem(
           context,
           Icons.notifications_outlined,

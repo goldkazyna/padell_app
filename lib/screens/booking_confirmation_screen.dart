@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'my_bookings_screen.dart';
 
 class BookingConfirmationScreen extends StatelessWidget {
   final Map<String, dynamic> booking;
@@ -100,6 +101,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()));
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -108,8 +110,29 @@ class BookingConfirmationScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Center(
-                      child: Text('На главную',
+                      child: Text('Мои бронирования',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: AppTheme.card,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+                    ),
+                    child: const Center(
+                      child: Text('На главную',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textSecondary)),
                     ),
                   ),
                 ),
