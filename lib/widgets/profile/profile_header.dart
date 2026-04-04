@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
@@ -49,7 +50,7 @@ class ProfileHeader extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user?.name ?? 'Пользователь',
+                          user?.name ?? AppLocalizations.of(context)!.profileUser,
                           style: const TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 18,
@@ -132,7 +133,7 @@ class ProfileHeader extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              _getMissingFieldsText(user),
+                              _getMissingFieldsText(context, user),
                               style: const TextStyle(
                                 color: Color(0xFFF59E0B),
                                 fontSize: 13,
@@ -168,7 +169,7 @@ class ProfileHeader extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Уровень ${user?.level ?? '-'}',
+                          AppLocalizations.of(context)!.profileLevelLabel(user?.level ?? '-'),
                           style: const TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 13,
@@ -205,11 +206,12 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  String _getMissingFieldsText(dynamic user) {
+  String _getMissingFieldsText(BuildContext context, dynamic user) {
+    final l = AppLocalizations.of(context)!;
     final missing = <String>[];
-    if (user.city == null || user.city.isEmpty) missing.add('город');
-    if (user.gender == null || user.gender.isEmpty) missing.add('пол');
-    return 'Укажите ${missing.join(' и ')} в настройках профиля';
+    if (user.city == null || user.city.isEmpty) missing.add(l.profileMissingCity);
+    if (user.gender == null || user.gender.isEmpty) missing.add(l.profileMissingGender);
+    return l.profileMissingFields(missing.join(l.profileMissingAnd));
   }
 
   Widget _buildInitials(dynamic user) {

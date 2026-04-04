@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
 import '../../theme/app_theme.dart';
 
@@ -13,6 +14,7 @@ class ProfileStats extends StatelessWidget {
         final user = profile.user;
         final stats = profile.statistics;
 
+        final l = AppLocalizations.of(context)!;
         return Column(
           children: [
             Row(
@@ -20,21 +22,21 @@ class ProfileStats extends StatelessWidget {
                 _buildStatCard(
                   Icons.trending_up,
                   '${user?.rating ?? 0}',
-                  'РЕЙТИНГ',
+                  l.rating,
                   const Color(0xFF22C55E),
                 ),
                 const SizedBox(width: 10),
                 _buildStatCard(
                   Icons.bar_chart,
                   user?.level ?? '-',
-                  'УРОВЕНЬ',
+                  l.level,
                   const Color(0xFF22C55E),
                 ),
                 const SizedBox(width: 10),
                 _buildStatCard(
                   Icons.military_tech_outlined,
                   user?.place != null ? '#${user!.place}' : '-',
-                  'МЕСТО',
+                  l.place,
                   const Color(0xFF22C55E),
                 ),
               ],
@@ -45,21 +47,21 @@ class ProfileStats extends StatelessWidget {
                 _buildStatCard(
                   Icons.grid_view,
                   stats != null ? '${stats.matchesPlayed}' : '-',
-                  'МАТЧЕЙ',
+                  l.matches,
                   const Color(0xFF3B82F6),
                 ),
                 const SizedBox(width: 10),
                 _buildStatCard(
                   Icons.check_circle_outline,
                   stats != null ? '${stats.wins}' : '-',
-                  'ПОБЕД',
+                  l.wins,
                   const Color(0xFF22C55E),
                 ),
                 const SizedBox(width: 10),
                 _buildStatCard(
                   Icons.star_outline,
                   stats != null ? '${stats.winrate}%' : '-',
-                  'ВИНРЕЙТ',
+                  l.winrate,
                   const Color(0xFFFBBF24),
                 ),
               ],

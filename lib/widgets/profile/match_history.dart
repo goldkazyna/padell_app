@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/match.dart';
 import '../../providers/profile_provider.dart';
 import '../../theme/app_theme.dart';
@@ -16,9 +17,9 @@ class MatchHistory extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'История матчей',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.matchHistory,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -42,10 +43,10 @@ class MatchHistory extends StatelessWidget {
                   border: Border.all(
                       color: const Color(0xFF2A2A2A), width: 0.5),
                 ),
-                child: const Text(
-                  'Пока нет матчей',
+                child: Text(
+                  AppLocalizations.of(context)!.noMatchesYet,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                   ),
@@ -84,9 +85,9 @@ class MatchHistory extends StatelessWidget {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text(
-                          'Загрузить ещё',
-                          style: TextStyle(
+                      : Text(
+                          AppLocalizations.of(context)!.loadMore,
+                          style: const TextStyle(
                             color: AppTheme.accent,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -217,7 +218,7 @@ class _MatchCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                isWin ? 'Победа' : 'Поражение',
+                isWin ? AppLocalizations.of(context)!.winResult : AppLocalizations.of(context)!.lossResult,
                 style: TextStyle(
                   color: resultColor,
                   fontSize: 11,

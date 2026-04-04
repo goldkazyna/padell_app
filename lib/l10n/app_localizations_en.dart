@@ -753,4 +753,174 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ratingFilterAll => 'All';
+
+  @override
+  String get profileUser => 'User';
+
+  @override
+  String profileLevelLabel(String level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get profileMissingCity => 'city';
+
+  @override
+  String get profileMissingGender => 'gender';
+
+  @override
+  String profileMissingFields(String fields) {
+    return 'Please specify $fields in profile settings';
+  }
+
+  @override
+  String get profileMissingAnd => ' and ';
+
+  @override
+  String get tournamentHistory => 'Tournament History';
+
+  @override
+  String get allButton => 'All';
+
+  @override
+  String get noFinishedTournamentsYet => 'No finished tournaments yet';
+
+  @override
+  String placeLabel(int place) {
+    return '$place place';
+  }
+
+  @override
+  String get matchHistory => 'Match History';
+
+  @override
+  String get noMatchesYet => 'No matches yet';
+
+  @override
+  String get loadMore => 'Load more';
+
+  @override
+  String get winResult => 'Win';
+
+  @override
+  String get lossResult => 'Loss';
+
+  @override
+  String get achievements => 'Achievements';
+
+  @override
+  String get achievementFirstWin => 'First\nwin';
+
+  @override
+  String get achievementFiveWins => '5 wins\nin a row';
+
+  @override
+  String get achievementTopTen => 'Top 10\nrating';
+
+  @override
+  String get achievementTenTournaments => '10 tournaments';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get saveProfile => 'Save';
+
+  @override
+  String get sectionName => 'NAME';
+
+  @override
+  String get fieldName => 'Name';
+
+  @override
+  String get notSpecified => 'Not specified';
+
+  @override
+  String get sectionLocation => 'LOCATION';
+
+  @override
+  String get fieldCity => 'City';
+
+  @override
+  String get cityNotSpecified => 'Not specified';
+
+  @override
+  String get selectCity => 'Select city';
+
+  @override
+  String get sectionGender => 'GENDER';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get sectionAge => 'AGE';
+
+  @override
+  String get fieldAge => 'Age';
+
+  @override
+  String get ageNotSpecified => 'Not specified';
+
+  @override
+  String get sectionHand => 'DOMINANT HAND';
+
+  @override
+  String get handRight => 'Right';
+
+  @override
+  String get handLeft => 'Left';
+
+  @override
+  String get sectionPosition => 'COURT POSITION';
+
+  @override
+  String get positionRight => 'Right';
+
+  @override
+  String get positionLeft => 'Left';
+
+  @override
+  String get positionAny => 'Any';
+
+  @override
+  String get photoCamera => 'Camera';
+
+  @override
+  String get photoGallery => 'Gallery';
+
+  @override
+  String photoUploadError(String error) {
+    return 'Photo upload error: $error';
+  }
+
+  @override
+  String saveError(String error) {
+    return 'Save error: $error';
+  }
+
+  @override
+  String get logoutTitle => 'Log Out';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to log out?';
+
+  @override
+  String get deleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountWarning =>
+      'This action is irreversible. All your data will be deleted.';
+
+  @override
+  String get deleteAccountPassword => 'Password (if any)';
+
+  @override
+  String get deleteButton => 'Delete';
+
+  @override
+  String get notificationSettingsMenu => 'Notification settings';
 }

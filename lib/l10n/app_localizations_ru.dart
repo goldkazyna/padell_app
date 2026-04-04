@@ -754,4 +754,174 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ratingFilterAll => 'Все';
+
+  @override
+  String get profileUser => 'Пользователь';
+
+  @override
+  String profileLevelLabel(String level) {
+    return 'Уровень $level';
+  }
+
+  @override
+  String get profileMissingCity => 'город';
+
+  @override
+  String get profileMissingGender => 'пол';
+
+  @override
+  String profileMissingFields(String fields) {
+    return 'Укажите $fields в настройках профиля';
+  }
+
+  @override
+  String get profileMissingAnd => ' и ';
+
+  @override
+  String get tournamentHistory => 'История турниров';
+
+  @override
+  String get allButton => 'Все';
+
+  @override
+  String get noFinishedTournamentsYet => 'Пока нет завершённых турниров';
+
+  @override
+  String placeLabel(int place) {
+    return '$place место';
+  }
+
+  @override
+  String get matchHistory => 'История матчей';
+
+  @override
+  String get noMatchesYet => 'Пока нет матчей';
+
+  @override
+  String get loadMore => 'Загрузить ещё';
+
+  @override
+  String get winResult => 'Победа';
+
+  @override
+  String get lossResult => 'Поражение';
+
+  @override
+  String get achievements => 'Достижения';
+
+  @override
+  String get achievementFirstWin => 'Первая\nпобеда';
+
+  @override
+  String get achievementFiveWins => '5 побед\nподряд';
+
+  @override
+  String get achievementTopTen => 'Топ-10\nрейтинга';
+
+  @override
+  String get achievementTenTournaments => '10 турниров';
+
+  @override
+  String get editProfile => 'Редактировать';
+
+  @override
+  String get saveProfile => 'Сохранить';
+
+  @override
+  String get sectionName => 'ФИО';
+
+  @override
+  String get fieldName => 'Имя';
+
+  @override
+  String get notSpecified => 'Не указано';
+
+  @override
+  String get sectionLocation => 'МЕСТОПОЛОЖЕНИЕ';
+
+  @override
+  String get fieldCity => 'Город';
+
+  @override
+  String get cityNotSpecified => 'Не указан';
+
+  @override
+  String get selectCity => 'Выберите город';
+
+  @override
+  String get sectionGender => 'ПОЛ';
+
+  @override
+  String get genderMale => 'Мужской';
+
+  @override
+  String get genderFemale => 'Женский';
+
+  @override
+  String get sectionAge => 'ВОЗРАСТ';
+
+  @override
+  String get fieldAge => 'Лет';
+
+  @override
+  String get ageNotSpecified => 'Не указан';
+
+  @override
+  String get sectionHand => 'ВЕДУЩАЯ РУКА';
+
+  @override
+  String get handRight => 'Правша';
+
+  @override
+  String get handLeft => 'Левша';
+
+  @override
+  String get sectionPosition => 'ПОЗИЦИЯ НА КОРТЕ';
+
+  @override
+  String get positionRight => 'Справа';
+
+  @override
+  String get positionLeft => 'Слева';
+
+  @override
+  String get positionAny => 'Любая';
+
+  @override
+  String get photoCamera => 'Камера';
+
+  @override
+  String get photoGallery => 'Галерея';
+
+  @override
+  String photoUploadError(String error) {
+    return 'Ошибка загрузки фото: $error';
+  }
+
+  @override
+  String saveError(String error) {
+    return 'Ошибка сохранения: $error';
+  }
+
+  @override
+  String get logoutTitle => 'Выход';
+
+  @override
+  String get logoutConfirm => 'Вы уверены, что хотите выйти?';
+
+  @override
+  String get deleteAccountTitle => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountWarning =>
+      'Это действие необратимо. Все ваши данные будут удалены.';
+
+  @override
+  String get deleteAccountPassword => 'Пароль (если есть)';
+
+  @override
+  String get deleteButton => 'Удалить';
+
+  @override
+  String get notificationSettingsMenu => 'Настройки уведомлений';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 
 class AchievementsSection extends StatelessWidget {
@@ -6,15 +7,15 @@ class AchievementsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Column(
       children: [
-        // Заголовок
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Достижения',
-              style: TextStyle(
+            Text(
+              l.achievements,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -22,8 +23,8 @@ class AchievementsSection extends StatelessWidget {
               ),
             ),
             Text(
-              'Все',
-              style: TextStyle(
+              l.allButton,
+              style: const TextStyle(
                 color: AppTheme.accent,
                 fontSize: 14,
               ),
@@ -32,19 +33,18 @@ class AchievementsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Горизонтальный скролл
         SizedBox(
           height: 100,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              _buildAchievement(Icons.emoji_events, 'Первая\nпобеда', const Color(0xFFEF4444)),
+              _buildAchievement(Icons.emoji_events, l.achievementFirstWin, const Color(0xFFEF4444)),
               const SizedBox(width: 10),
-              _buildAchievement(Icons.bolt, '5 побед\nподряд', const Color(0xFF22C55E)),
+              _buildAchievement(Icons.bolt, l.achievementFiveWins, const Color(0xFF22C55E)),
               const SizedBox(width: 10),
-              _buildAchievement(Icons.star, 'Топ-10\nрейтинга', const Color(0xFF3B82F6)),
+              _buildAchievement(Icons.star, l.achievementTopTen, const Color(0xFF3B82F6)),
               const SizedBox(width: 10),
-              _buildAchievement(Icons.calendar_month, '10 турниров', const Color(0xFFA855F7)),
+              _buildAchievement(Icons.calendar_month, l.achievementTenTournaments, const Color(0xFFA855F7)),
             ],
           ),
         ),

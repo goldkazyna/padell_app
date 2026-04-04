@@ -31,8 +31,8 @@ class ProfileMenu extends StatelessWidget {
         _buildMenuItem(
           context,
           Icons.notifications_outlined,
-          'Уведомления',
-          'Настройки уведомлений',
+          AppLocalizations.of(context)!.notifications,
+          AppLocalizations.of(context)!.notificationSettingsMenu,
           const Color(0xFFF59E0B),
           onTap: () => Navigator.push(
             context,
@@ -45,8 +45,8 @@ class ProfileMenu extends StatelessWidget {
         _buildMenuItem(
           context,
           Icons.logout,
-          'Выйти',
-          'Выйти из аккаунта',
+          AppLocalizations.of(context)!.logout,
+          AppLocalizations.of(context)!.logoutSubtitle,
           AppTheme.error,
           onTap: () => _showLogoutDialog(context),
         ),
@@ -54,8 +54,8 @@ class ProfileMenu extends StatelessWidget {
         _buildMenuItem(
           context,
           Icons.delete_forever_outlined,
-          'Удалить аккаунт',
-          'Безвозвратное удаление',
+          AppLocalizations.of(context)!.deleteAccount,
+          AppLocalizations.of(context)!.deleteAccountSubtitle,
           AppTheme.error,
           onTap: () => _showDeleteAccountDialog(context),
         ),
@@ -64,6 +64,7 @@ class ProfileMenu extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -71,20 +72,20 @@ class ProfileMenu extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'Выход',
-          style: TextStyle(color: AppTheme.textPrimary),
+        title: Text(
+          l.logoutTitle,
+          style: const TextStyle(color: AppTheme.textPrimary),
         ),
-        content: const Text(
-          'Вы уверены, что хотите выйти?',
-          style: TextStyle(color: AppTheme.textSecondary),
+        content: Text(
+          l.logoutConfirm,
+          style: const TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Отмена',
-              style: TextStyle(color: AppTheme.textSecondary),
+            child: Text(
+              l.cancel,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           ),
           TextButton(
@@ -92,9 +93,9 @@ class ProfileMenu extends StatelessWidget {
               Navigator.pop(ctx);
               context.read<AuthProvider>().logout();
             },
-            child: const Text(
-              'Выйти',
-              style: TextStyle(color: AppTheme.error),
+            child: Text(
+              l.logout,
+              style: const TextStyle(color: AppTheme.error),
             ),
           ),
         ],
@@ -103,6 +104,7 @@ class ProfileMenu extends StatelessWidget {
   }
 
   void _showDeleteAccountDialog(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final passwordController = TextEditingController();
     showDialog(
       context: context,
@@ -111,17 +113,17 @@ class ProfileMenu extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'Удалить аккаунт',
-          style: TextStyle(color: AppTheme.textPrimary),
+        title: Text(
+          l.deleteAccountTitle,
+          style: const TextStyle(color: AppTheme.textPrimary),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Это действие необратимо. Все ваши данные будут удалены.',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+            Text(
+              l.deleteAccountWarning,
+              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -129,7 +131,7 @@ class ProfileMenu extends StatelessWidget {
               obscureText: true,
               style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
-                hintText: 'Пароль (если есть)',
+                hintText: l.deleteAccountPassword,
                 hintStyle: TextStyle(
                     color: AppTheme.textSecondary.withAlpha(128)),
                 filled: true,
@@ -145,9 +147,9 @@ class ProfileMenu extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Отмена',
-              style: TextStyle(color: AppTheme.textSecondary),
+            child: Text(
+              l.cancel,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           ),
           TextButton(
@@ -158,9 +160,9 @@ class ProfileMenu extends StatelessWidget {
                   : null;
               context.read<AuthProvider>().deleteAccount(password);
             },
-            child: const Text(
-              'Удалить',
-              style: TextStyle(color: AppTheme.error),
+            child: Text(
+              l.deleteButton,
+              style: const TextStyle(color: AppTheme.error),
             ),
           ),
         ],

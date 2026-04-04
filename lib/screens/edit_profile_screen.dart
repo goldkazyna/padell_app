@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -92,8 +93,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: AppTheme.accent),
-              title: const Text('Камера',
-                  style: TextStyle(color: AppTheme.textPrimary)),
+              title: Text(AppLocalizations.of(context)!.photoCamera,
+                  style: const TextStyle(color: AppTheme.textPrimary)),
               onTap: () {
                 Navigator.pop(ctx);
                 _takePhoto(ImageSource.camera);
@@ -101,8 +102,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: AppTheme.accent),
-              title: const Text('Галерея',
-                  style: TextStyle(color: AppTheme.textPrimary)),
+              title: Text(AppLocalizations.of(context)!.photoGallery,
+                  style: const TextStyle(color: AppTheme.textPrimary)),
               onTap: () {
                 Navigator.pop(ctx);
                 _takePhoto(ImageSource.gallery);
@@ -180,7 +181,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Ошибка загрузки фото: $e'),
+                content: Text(AppLocalizations.of(context)!.photoUploadError(e.toString())),
                 backgroundColor: AppTheme.error,
               ),
             );
@@ -213,7 +214,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Ошибка сохранения: $e'),
+            content: Text(AppLocalizations.of(context)!.saveError(e.toString())),
             backgroundColor: AppTheme.error,
           ),
         );
@@ -255,9 +256,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
-                    'Редактировать',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.editProfile,
+                    style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -275,9 +276,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         )
                       : GestureDetector(
                           onTap: _save,
-                          child: const Text(
-                            'Сохранить',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.saveProfile,
+                            style: const TextStyle(
                               color: AppTheme.accent,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -306,51 +307,51 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           const SizedBox(height: 24),
 
                           // ФИО
-                          _buildSectionLabel('ФИО'),
+                          _buildSectionLabel(AppLocalizations.of(context)!.sectionName),
                           const SizedBox(height: 8),
-                          _buildSingleTextField('Имя', _nameController),
+                          _buildSingleTextField(AppLocalizations.of(context)!.fieldName, _nameController),
                           const SizedBox(height: 24),
 
                           // МЕСТОПОЛОЖЕНИЕ
-                          _buildSectionLabel('МЕСТОПОЛОЖЕНИЕ'),
+                          _buildSectionLabel(AppLocalizations.of(context)!.sectionLocation),
                           const SizedBox(height: 8),
                           _buildCitySelector(),
                           const SizedBox(height: 24),
 
                           // ПОЛ
-                          _buildSectionLabel('ПОЛ'),
+                          _buildSectionLabel(AppLocalizations.of(context)!.sectionGender),
                           const SizedBox(height: 8),
                           _buildToggleRow(
                             options: ['male', 'female'],
-                            labels: ['Мужской', 'Женский'],
+                            labels: [AppLocalizations.of(context)!.genderMale, AppLocalizations.of(context)!.genderFemale],
                             selected: _gender,
                             onChanged: (v) => setState(() => _gender = v),
                           ),
                           const SizedBox(height: 24),
 
                           // ВОЗРАСТ
-                          _buildSectionLabel('ВОЗРАСТ'),
+                          _buildSectionLabel(AppLocalizations.of(context)!.sectionAge),
                           const SizedBox(height: 8),
                           _buildAgeField(),
                           const SizedBox(height: 24),
 
                           // ВЕДУЩАЯ РУКА
-                          _buildSectionLabel('ВЕДУЩАЯ РУКА'),
+                          _buildSectionLabel(AppLocalizations.of(context)!.sectionHand),
                           const SizedBox(height: 8),
                           _buildToggleRow(
                             options: ['right', 'left'],
-                            labels: ['Правша', 'Левша'],
+                            labels: [AppLocalizations.of(context)!.handRight, AppLocalizations.of(context)!.handLeft],
                             selected: _hand,
                             onChanged: (v) => setState(() => _hand = v),
                           ),
                           const SizedBox(height: 24),
 
                           // ПОЗИЦИЯ НА КОРТЕ
-                          _buildSectionLabel('ПОЗИЦИЯ НА КОРТЕ'),
+                          _buildSectionLabel(AppLocalizations.of(context)!.sectionPosition),
                           const SizedBox(height: 8),
                           _buildToggleRow(
                             options: ['right', 'left', 'any'],
-                            labels: ['Справа', 'Слева', 'Любая'],
+                            labels: [AppLocalizations.of(context)!.positionRight, AppLocalizations.of(context)!.positionLeft, AppLocalizations.of(context)!.positionAny],
                             selected: _position,
                             onChanged: (v) =>
                                 setState(() => _position = v),
@@ -476,7 +477,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               textAlign: TextAlign.right,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Не указано',
+                hintText: AppLocalizations.of(context)!.notSpecified,
                 hintStyle: TextStyle(
                   color: AppTheme.textSecondary.withAlpha(100),
                   fontSize: 15,
@@ -514,9 +515,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Выберите город',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.selectCity,
+                  style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -558,9 +559,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         child: Row(
           children: [
-            const Text(
-              'Город',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.fieldCity,
+              style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 15,
               ),
@@ -568,7 +569,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                _city ?? 'Не указан',
+                _city ?? AppLocalizations.of(context)!.cityNotSpecified,
                 style: TextStyle(
                   color: _city != null
                       ? AppTheme.textPrimary
@@ -599,9 +600,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       child: Row(
         children: [
-          const Text(
-            'Лет',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.fieldAge,
+            style: const TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 15,
             ),
@@ -621,7 +622,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Не указан',
+                hintText: AppLocalizations.of(context)!.ageNotSpecified,
                 hintStyle: TextStyle(
                   color: AppTheme.textSecondary.withAlpha(100),
                   fontSize: 15,

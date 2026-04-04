@@ -1471,6 +1471,324 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Все'**
   String get ratingFilterAll;
+
+  /// No description provided for @profileUser.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользователь'**
+  String get profileUser;
+
+  /// No description provided for @profileLevelLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень {level}'**
+  String profileLevelLabel(String level);
+
+  /// No description provided for @profileMissingCity.
+  ///
+  /// In ru, this message translates to:
+  /// **'город'**
+  String get profileMissingCity;
+
+  /// No description provided for @profileMissingGender.
+  ///
+  /// In ru, this message translates to:
+  /// **'пол'**
+  String get profileMissingGender;
+
+  /// No description provided for @profileMissingFields.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите {fields} в настройках профиля'**
+  String profileMissingFields(String fields);
+
+  /// No description provided for @profileMissingAnd.
+  ///
+  /// In ru, this message translates to:
+  /// **' и '**
+  String get profileMissingAnd;
+
+  /// No description provided for @tournamentHistory.
+  ///
+  /// In ru, this message translates to:
+  /// **'История турниров'**
+  String get tournamentHistory;
+
+  /// No description provided for @allButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все'**
+  String get allButton;
+
+  /// No description provided for @noFinishedTournamentsYet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет завершённых турниров'**
+  String get noFinishedTournamentsYet;
+
+  /// No description provided for @placeLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'{place} место'**
+  String placeLabel(int place);
+
+  /// No description provided for @matchHistory.
+  ///
+  /// In ru, this message translates to:
+  /// **'История матчей'**
+  String get matchHistory;
+
+  /// No description provided for @noMatchesYet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет матчей'**
+  String get noMatchesYet;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузить ещё'**
+  String get loadMore;
+
+  /// No description provided for @winResult.
+  ///
+  /// In ru, this message translates to:
+  /// **'Победа'**
+  String get winResult;
+
+  /// No description provided for @lossResult.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поражение'**
+  String get lossResult;
+
+  /// No description provided for @achievements.
+  ///
+  /// In ru, this message translates to:
+  /// **'Достижения'**
+  String get achievements;
+
+  /// No description provided for @achievementFirstWin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Первая\nпобеда'**
+  String get achievementFirstWin;
+
+  /// No description provided for @achievementFiveWins.
+  ///
+  /// In ru, this message translates to:
+  /// **'5 побед\nподряд'**
+  String get achievementFiveWins;
+
+  /// No description provided for @achievementTopTen.
+  ///
+  /// In ru, this message translates to:
+  /// **'Топ-10\nрейтинга'**
+  String get achievementTopTen;
+
+  /// No description provided for @achievementTenTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'10 турниров'**
+  String get achievementTenTournaments;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In ru, this message translates to:
+  /// **'Редактировать'**
+  String get editProfile;
+
+  /// No description provided for @saveProfile.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сохранить'**
+  String get saveProfile;
+
+  /// No description provided for @sectionName.
+  ///
+  /// In ru, this message translates to:
+  /// **'ФИО'**
+  String get sectionName;
+
+  /// No description provided for @fieldName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя'**
+  String get fieldName;
+
+  /// No description provided for @notSpecified.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не указано'**
+  String get notSpecified;
+
+  /// No description provided for @sectionLocation.
+  ///
+  /// In ru, this message translates to:
+  /// **'МЕСТОПОЛОЖЕНИЕ'**
+  String get sectionLocation;
+
+  /// No description provided for @fieldCity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Город'**
+  String get fieldCity;
+
+  /// No description provided for @cityNotSpecified.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не указан'**
+  String get cityNotSpecified;
+
+  /// No description provided for @selectCity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите город'**
+  String get selectCity;
+
+  /// No description provided for @sectionGender.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОЛ'**
+  String get sectionGender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мужской'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In ru, this message translates to:
+  /// **'Женский'**
+  String get genderFemale;
+
+  /// No description provided for @sectionAge.
+  ///
+  /// In ru, this message translates to:
+  /// **'ВОЗРАСТ'**
+  String get sectionAge;
+
+  /// No description provided for @fieldAge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лет'**
+  String get fieldAge;
+
+  /// No description provided for @ageNotSpecified.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не указан'**
+  String get ageNotSpecified;
+
+  /// No description provided for @sectionHand.
+  ///
+  /// In ru, this message translates to:
+  /// **'ВЕДУЩАЯ РУКА'**
+  String get sectionHand;
+
+  /// No description provided for @handRight.
+  ///
+  /// In ru, this message translates to:
+  /// **'Правша'**
+  String get handRight;
+
+  /// No description provided for @handLeft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Левша'**
+  String get handLeft;
+
+  /// No description provided for @sectionPosition.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОЗИЦИЯ НА КОРТЕ'**
+  String get sectionPosition;
+
+  /// No description provided for @positionRight.
+  ///
+  /// In ru, this message translates to:
+  /// **'Справа'**
+  String get positionRight;
+
+  /// No description provided for @positionLeft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Слева'**
+  String get positionLeft;
+
+  /// No description provided for @positionAny.
+  ///
+  /// In ru, this message translates to:
+  /// **'Любая'**
+  String get positionAny;
+
+  /// No description provided for @photoCamera.
+  ///
+  /// In ru, this message translates to:
+  /// **'Камера'**
+  String get photoCamera;
+
+  /// No description provided for @photoGallery.
+  ///
+  /// In ru, this message translates to:
+  /// **'Галерея'**
+  String get photoGallery;
+
+  /// No description provided for @photoUploadError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка загрузки фото: {error}'**
+  String photoUploadError(String error);
+
+  /// No description provided for @saveError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка сохранения: {error}'**
+  String saveError(String error);
+
+  /// No description provided for @logoutTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выход'**
+  String get logoutTitle;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены, что хотите выйти?'**
+  String get logoutConfirm;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить аккаунт'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In ru, this message translates to:
+  /// **'Это действие необратимо. Все ваши данные будут удалены.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @deleteAccountPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль (если есть)'**
+  String get deleteAccountPassword;
+
+  /// No description provided for @deleteButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить'**
+  String get deleteButton;
+
+  /// No description provided for @notificationSettingsMenu.
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки уведомлений'**
+  String get notificationSettingsMenu;
 }
 
 class _AppLocalizationsDelegate

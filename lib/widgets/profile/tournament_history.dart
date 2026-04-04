@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../providers/profile_provider.dart';
 import '../../screens/tournament_results_screen.dart';
@@ -20,9 +21,9 @@ class TournamentHistory extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'История турниров',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.tournamentHistory,
+                  style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -33,9 +34,9 @@ class TournamentHistory extends StatelessWidget {
                     onTap: () {
                       // TODO: показать все турниры
                     },
-                    child: const Text(
-                      'Все',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.allButton,
+                      style: const TextStyle(
                         color: AppTheme.accent,
                         fontSize: 14,
                       ),
@@ -61,10 +62,10 @@ class TournamentHistory extends StatelessWidget {
                   border: Border.all(
                       color: const Color(0xFF2A2A2A), width: 0.5),
                 ),
-                child: const Text(
-                  'Пока нет завершённых турниров',
+                child: Text(
+                  AppLocalizations.of(context)!.noFinishedTournamentsYet,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                   ),
@@ -181,7 +182,7 @@ class _TournamentHistoryCard extends StatelessWidget {
                     Icon(Icons.emoji_events, color: placeColor, size: 14),
                     const SizedBox(width: 4),
                     Text(
-                      '$place место',
+                      AppLocalizations.of(context)!.placeLabel(place),
                       style: TextStyle(
                         color: placeColor,
                         fontSize: 13,
