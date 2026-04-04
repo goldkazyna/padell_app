@@ -98,5 +98,12 @@
 
   "language": "Language",
   "russian": "Русский",
-  "english": "English"
+  "english": "English",
+
+  "register": "Register",
+  "registered": "Registered",
+  "levelShort": "Lvl. {level}",
+  "noAvailableTournaments": "No available tournaments",
+  "notInTournaments": "You are not in any tournaments",
+  "noUpcomingTournaments": "No upcoming tournaments"
 }

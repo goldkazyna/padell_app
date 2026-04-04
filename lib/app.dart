@@ -17,6 +17,7 @@ import 'screens/tournaments_screen.dart';
 import 'screens/rating_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/challenges_screen.dart';
+import 'l10n/app_localizations.dart';
 
 /// Global navigator key for navigation from push notifications
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -219,31 +220,31 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           unselectedItemColor: AppTheme.textSecondary,
           selectedFontSize: 12,
           unselectedFontSize: 12,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Главная',
+              icon: const Icon(Icons.home_outlined),
+              activeIcon: const Icon(Icons.home),
+              label: AppLocalizations.of(context)!.navHome,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events_outlined),
-              activeIcon: Icon(Icons.emoji_events),
-              label: 'Турниры',
+              icon: const Icon(Icons.emoji_events_outlined),
+              activeIcon: const Icon(Icons.emoji_events),
+              label: AppLocalizations.of(context)!.navTournaments,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.sports_tennis_outlined),
-              activeIcon: Icon(Icons.sports_tennis),
-              label: 'Поединок',
+              icon: const Icon(Icons.sports_tennis_outlined),
+              activeIcon: const Icon(Icons.sports_tennis),
+              label: AppLocalizations.of(context)!.navChallenges,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.leaderboard_outlined),
-              activeIcon: Icon(Icons.leaderboard),
-              label: 'Рейтинг',
+              icon: const Icon(Icons.leaderboard_outlined),
+              activeIcon: const Icon(Icons.leaderboard),
+              label: AppLocalizations.of(context)!.navRating,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Профиль',
+              icon: const Icon(Icons.person_outline),
+              activeIcon: const Icon(Icons.person),
+              label: AppLocalizations.of(context)!.navProfile,
             ),
           ],
         ),

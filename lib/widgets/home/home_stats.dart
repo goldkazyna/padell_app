@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/home_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class HomeStats extends StatelessWidget {
   const HomeStats({super.key});
@@ -17,11 +18,11 @@ class HomeStats extends StatelessWidget {
 
         return Row(
           children: [
-            _buildStatCard(Icons.trending_up, rating, 'РЕЙТИНГ'),
+            _buildStatCard(Icons.trending_up, rating, AppLocalizations.of(context)!.rating),
             const SizedBox(width: 12),
-            _buildStatCard(Icons.bar_chart, level, 'УРОВЕНЬ'),
+            _buildStatCard(Icons.bar_chart, level, AppLocalizations.of(context)!.level),
             const SizedBox(width: 12),
-            _buildStatCard(Icons.military_tech_outlined, place, 'МЕСТО'),
+            _buildStatCard(Icons.military_tech_outlined, place, AppLocalizations.of(context)!.place),
           ],
         );
       },

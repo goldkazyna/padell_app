@@ -595,6 +595,42 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'English'**
   String get english;
+
+  /// No description provided for @register.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записаться'**
+  String get register;
+
+  /// No description provided for @registered.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы записаны'**
+  String get registered;
+
+  /// No description provided for @levelShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ур. {level}'**
+  String levelShort(String level);
+
+  /// No description provided for @noAvailableTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет доступных турниров'**
+  String get noAvailableTournaments;
+
+  /// No description provided for @notInTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы не участвуете в турнирах'**
+  String get notInTournaments;
+
+  /// No description provided for @noUpcomingTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет предстоящих турниров'**
+  String get noUpcomingTournaments;
 }
 
 class _AppLocalizationsDelegate

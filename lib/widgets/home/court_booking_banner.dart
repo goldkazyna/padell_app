@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class CourtBookingBanner extends StatelessWidget {
   final VoidCallback onTap;
@@ -34,9 +35,9 @@ class CourtBookingBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Забронировать корт',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.bookCourt,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -44,7 +45,7 @@ class CourtBookingBanner extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Выберите клуб и удобное время',
+                    AppLocalizations.of(context)!.bookCourtSubtitle,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,

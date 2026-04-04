@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class UpcomingList extends StatelessWidget {
   final List<Tournament> tournaments;
@@ -15,7 +16,7 @@ class UpcomingList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tournaments.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmptyState(context);
     }
 
     return Column(
@@ -104,7 +105,7 @@ class UpcomingList extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -112,10 +113,10 @@ class UpcomingList extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
-          'Нет предстоящих турниров',
-          style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+          AppLocalizations.of(context)!.noUpcomingTournaments,
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
         ),
       ),
     );

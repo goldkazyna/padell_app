@@ -102,5 +102,13 @@
 
   "language": "Язык",
   "russian": "Русский",
-  "english": "English"
+  "english": "English",
+
+  "register": "Записаться",
+  "registered": "Вы записаны",
+  "levelShort": "Ур. {level}",
+  "@levelShort": { "placeholders": { "level": { "type": "String" } } },
+  "noAvailableTournaments": "Нет доступных турниров",
+  "notInTournaments": "Вы не участвуете в турнирах",
+  "noUpcomingTournaments": "Нет предстоящих турниров"
 }

@@ -270,4 +270,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get registered => 'Registered';
+
+  @override
+  String levelShort(String level) {
+    return 'Lvl. $level';
+  }
+
+  @override
+  String get noAvailableTournaments => 'No available tournaments';
+
+  @override
+  String get notInTournaments => 'You are not in any tournaments';
+
+  @override
+  String get noUpcomingTournaments => 'No upcoming tournaments';
 }

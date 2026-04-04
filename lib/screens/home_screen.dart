@@ -9,6 +9,7 @@ import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
 import 'club_select_screen.dart';
 
@@ -54,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => home.loadHomeData(),
-                    child: const Text('Повторить'),
+                    child: Text(AppLocalizations.of(context)!.retry),
                   ),
                 ],
               ),
@@ -83,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 28),
-                  const SectionTitle(title: 'Ближайший турнир'),
+                  SectionTitle(title: AppLocalizations.of(context)!.nearestTournament),
                   const SizedBox(height: 12),
                   NearestTournamentCard(
                     tournament: home.nearestTournament,
@@ -101,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 28),
-                  const SectionTitle(title: 'Активный турнир'),
+                  SectionTitle(title: AppLocalizations.of(context)!.activeTournament),
                   const SizedBox(height: 12),
                   ActiveTournamentCard(
                     tournament: home.activeTournament,
@@ -120,8 +121,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 28),
                   SectionTitle(
-                    title: 'Скоро',
-                    trailing: 'Все',
+                    title: AppLocalizations.of(context)!.upcoming,
+                    trailing: AppLocalizations.of(context)!.all,
                     onTrailingTap: () {
                       widget.onNavigateToTab?.call(1); // Tournaments tab
                     },

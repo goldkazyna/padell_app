@@ -271,4 +271,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get register => 'Записаться';
+
+  @override
+  String get registered => 'Вы записаны';
+
+  @override
+  String levelShort(String level) {
+    return 'Ур. $level';
+  }
+
+  @override
+  String get noAvailableTournaments => 'Нет доступных турниров';
+
+  @override
+  String get notInTournaments => 'Вы не участвуете в турнирах';
+
+  @override
+  String get noUpcomingTournaments => 'Нет предстоящих турниров';
 }

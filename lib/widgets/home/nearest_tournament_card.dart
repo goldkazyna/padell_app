@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class NearestTournamentCard extends StatelessWidget {
   final Tournament? tournament;
@@ -15,7 +16,7 @@ class NearestTournamentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tournament == null) {
-      return _buildEmptyState();
+      return _buildEmptyState(context);
     }
 
     final t = tournament!;
@@ -75,7 +76,7 @@ class NearestTournamentCard extends StatelessWidget {
               const SizedBox(width: 8),
               _buildInfoChip(t.priceText, AppTheme.textSecondary),
               const SizedBox(width: 8),
-              _buildInfoChip('Ур. ${t.levelText}', AppTheme.textSecondary),
+              _buildInfoChip(AppLocalizations.of(context)!.levelShort(t.levelText), AppTheme.textSecondary),
             ],
           ),
           const SizedBox(height: 16),
@@ -99,11 +100,11 @@ class NearestTournamentCard extends StatelessWidget {
                     color: AppTheme.accent,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Text(
-                        'Записаться',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.register,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -140,7 +141,7 @@ class NearestTournamentCard extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -148,14 +149,14 @@ class NearestTournamentCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
-      child: const Center(
+      child: Center(
         child: Column(
           children: [
-            Icon(Icons.event_available, color: AppTheme.textSecondary, size: 40),
-            SizedBox(height: 12),
+            const Icon(Icons.event_available, color: AppTheme.textSecondary, size: 40),
+            const SizedBox(height: 12),
             Text(
-              'Нет доступных турниров',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              AppLocalizations.of(context)!.noAvailableTournaments,
+              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
           ],
         ),
