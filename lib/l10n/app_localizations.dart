@@ -518,6 +518,12 @@ abstract class AppLocalizations {
   /// **'Уведомления'**
   String get notifications;
 
+  /// No description provided for @notifCategoryGeneral.
+  ///
+  /// In ru, this message translates to:
+  /// **'Общие'**
+  String get notifCategoryGeneral;
+
   /// No description provided for @notificationSettings.
   ///
   /// In ru, this message translates to:

@@ -233,6 +233,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
+  String get notifCategoryGeneral => 'General';
+
+  @override
   String get notificationSettings => 'Notification settings';
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/home_provider.dart';
-import '../../screens/notifications_screen.dart';
+import '../../screens/notification_categories_screen.dart';
 import '../../services/api_service.dart';
 import '../../services/storage_service.dart';
 import '../../theme/app_theme.dart';
@@ -34,7 +34,7 @@ class _HomeHeaderState extends State<HomeHeader> {
   void _openNotifications() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      MaterialPageRoute(builder: (_) => const NotificationCategoriesScreen()),
     );
     // Refresh unread count when coming back
     _checkUnread();

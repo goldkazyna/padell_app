@@ -234,6 +234,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notifications => 'Уведомления';
 
   @override
+  String get notifCategoryGeneral => 'Общие';
+
+  @override
   String get notificationSettings => 'Настройки уведомлений';
 
   @override

@@ -8,7 +8,9 @@ import '../theme/app_theme.dart';
 import 'tournament_detail_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
+  final String? category;
+
+  const NotificationsScreen({super.key, this.category});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -55,7 +57,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     try {
       final token = await _storageService.getToken();
-      final response = await _apiService.get('/notifications', token);
+      final catParam = widget.category != null ? '?category=${widget.category}' : '';
+      final response = await _apiService.get('/notifications$catParam', token);
       final list = response['data'] as List<dynamic>? ?? [];
       setState(() {
         _notifications = list.cast<Map<String, dynamic>>();
@@ -63,11 +66,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _isLoading = false;
       });
 
-      // Mark all as read and clear badge
+      // Mark as read
       if (_notifications.any((n) => n['read_at'] == null)) {
         try {
-          await _apiService.post('/notifications/read-all', {}, token);
-          if (mounted) {
+          final readParam = widget.category != null ? '?category=${widget.category}' : '';
+          await _apiService.post('/notifications/read-all$readParam', {}, token);
+          if (mounted && widget.category == null) {
             context.read<PushNotificationService>().setBadge(0);
           }
         } catch (_) {}
@@ -90,8 +94,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       // Extract page parameter from next_page_url
       final uri = Uri.parse(_nextPageUrl!);
       final page = uri.queryParameters['page'] ?? '2';
+      final catParam = widget.category != null ? '&category=${widget.category}' : '';
       final response =
-          await _apiService.get('/notifications?page=$page', token);
+          await _apiService.get('/notifications?page=$page$catParam', token);
       final list = response['data'] as List<dynamic>? ?? [];
       setState(() {
         _notifications.addAll(list.cast<Map<String, dynamic>>());
