@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
 import '../../providers/tournament_provider.dart';
@@ -77,11 +78,11 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
           const SizedBox(height: 20),
 
           // Title
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Выбрать партнёра',
-              style: TextStyle(
+              AppLocalizations.of(context)!.choosePartner,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -99,7 +100,7 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
               style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
               onChanged: _onPhoneChanged,
               decoration: InputDecoration(
-                hintText: 'Введите номер телефона',
+                hintText: AppLocalizations.of(context)!.enterPhoneNumber,
                 hintStyle: const TextStyle(color: AppTheme.textSecondary),
                 prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
                 filled: true,
@@ -142,11 +143,11 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
               final selected = provider.selectedPartner;
 
               if (results.isEmpty && _phoneController.text.replaceAll(RegExp(r'\D'), '').length >= 5) {
-                return const Padding(
-                  padding: EdgeInsets.all(24),
+                return Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Text(
-                    'Игроки не найдены',
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    AppLocalizations.of(context)!.playersNotFound,
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                   ),
                 );
               }
@@ -195,7 +196,7 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
                             child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                           )
                         : Text(
-                            'Записаться с ${selected.name.split(' ').first}',
+                            AppLocalizations.of(context)!.registerWith(selected.name.split(' ').first),
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),

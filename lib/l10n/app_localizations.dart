@@ -631,6 +631,324 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Нет предстоящих турниров'**
   String get noUpcomingTournaments;
+
+  /// No description provided for @tournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турниры'**
+  String get tournaments;
+
+  /// No description provided for @openTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открытые'**
+  String get openTab;
+
+  /// No description provided for @myTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои'**
+  String get myTab;
+
+  /// No description provided for @archiveTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Архив'**
+  String get archiveTab;
+
+  /// No description provided for @noOpenTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет открытых турниров'**
+  String get noOpenTournaments;
+
+  /// No description provided for @notRegisteredForTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы не записаны на турниры'**
+  String get notRegisteredForTournaments;
+
+  /// No description provided for @noFinishedTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет завершённых турниров'**
+  String get noFinishedTournaments;
+
+  /// No description provided for @tournamentRegistered.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записан'**
+  String get tournamentRegistered;
+
+  /// No description provided for @noSpotsLeft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мест нет'**
+  String get noSpotsLeft;
+
+  /// No description provided for @failedToLoadTournament.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось загрузить турнир'**
+  String get failedToLoadTournament;
+
+  /// No description provided for @shareFreeSpots.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободных мест: {count}'**
+  String shareFreeSpots(int count);
+
+  /// No description provided for @shareLevel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень: {level}'**
+  String shareLevel(String level);
+
+  /// No description provided for @shareCost.
+  ///
+  /// In ru, this message translates to:
+  /// **'Стоимость: {cost}'**
+  String shareCost(String cost);
+
+  /// No description provided for @shareAppPromo.
+  ///
+  /// In ru, this message translates to:
+  /// **'Padel KZ — скачай приложение и записывайся на турниры!'**
+  String get shareAppPromo;
+
+  /// No description provided for @noSpotsLeftUpper.
+  ///
+  /// In ru, this message translates to:
+  /// **'МЕСТ НЕТ'**
+  String get noSpotsLeftUpper;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'ДАТА'**
+  String get dateLabel;
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'ВРЕМЯ'**
+  String get timeLabel;
+
+  /// No description provided for @levelLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'УРОВЕНЬ'**
+  String get levelLabel;
+
+  /// No description provided for @costLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'СТОИМОСТЬ'**
+  String get costLabel;
+
+  /// No description provided for @perPerson.
+  ///
+  /// In ru, this message translates to:
+  /// **'за человека'**
+  String get perPerson;
+
+  /// No description provided for @pay.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплатить'**
+  String get pay;
+
+  /// No description provided for @pendingModeration.
+  ///
+  /// In ru, this message translates to:
+  /// **'На модерации'**
+  String get pendingModeration;
+
+  /// No description provided for @participants.
+  ///
+  /// In ru, this message translates to:
+  /// **'Участники'**
+  String get participants;
+
+  /// No description provided for @countOfMax.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} из {max}'**
+  String countOfMax(int count, int max);
+
+  /// No description provided for @noParticipantsYet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет участников'**
+  String get noParticipantsYet;
+
+  /// No description provided for @spotsLeftCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ещё {count} свободных мест'**
+  String spotsLeftCount(int count);
+
+  /// No description provided for @pendingStatus.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидание'**
+  String get pendingStatus;
+
+  /// No description provided for @organizer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организатор'**
+  String get organizer;
+
+  /// No description provided for @registerButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записаться'**
+  String get registerButton;
+
+  /// No description provided for @applicationPending.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заявка на модерации'**
+  String get applicationPending;
+
+  /// No description provided for @cancelApplication.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменить заявку'**
+  String get cancelApplication;
+
+  /// No description provided for @cancelRegistration.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменить запись'**
+  String get cancelRegistration;
+
+  /// No description provided for @youAreParticipating.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы участвуете'**
+  String get youAreParticipating;
+
+  /// No description provided for @ok.
+  ///
+  /// In ru, this message translates to:
+  /// **'ОК'**
+  String get ok;
+
+  /// No description provided for @choosePartner.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрать партнёра'**
+  String get choosePartner;
+
+  /// No description provided for @subscriptionActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подписка активна'**
+  String get subscriptionActive;
+
+  /// No description provided for @notifyOnFreeSpot.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомить о свободном месте'**
+  String get notifyOnFreeSpot;
+
+  /// No description provided for @matchesLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'МАТЧЕЙ'**
+  String get matchesLabel;
+
+  /// No description provided for @winsLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОБЕДЫ'**
+  String get winsLabel;
+
+  /// No description provided for @ratingLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'РЕЙТИНГ'**
+  String get ratingLabel;
+
+  /// No description provided for @matchesTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Матчи'**
+  String get matchesTitle;
+
+  /// No description provided for @roundsCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} раундов'**
+  String roundsCount(int count);
+
+  /// No description provided for @resultDraw.
+  ///
+  /// In ru, this message translates to:
+  /// **'НИЧЬЯ'**
+  String get resultDraw;
+
+  /// No description provided for @resultWin.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОБЕДА'**
+  String get resultWin;
+
+  /// No description provided for @resultLoss.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОРАЖЕНИЕ'**
+  String get resultLoss;
+
+  /// No description provided for @placeResult.
+  ///
+  /// In ru, this message translates to:
+  /// **'{place} место'**
+  String placeResult(int place);
+
+  /// No description provided for @teamConfirmed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтверждена'**
+  String get teamConfirmed;
+
+  /// No description provided for @yourTeam.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваша команда'**
+  String get yourTeam;
+
+  /// No description provided for @teams.
+  ///
+  /// In ru, this message translates to:
+  /// **'Команды'**
+  String get teams;
+
+  /// No description provided for @noTeamsYet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет команд'**
+  String get noTeamsYet;
+
+  /// No description provided for @enterPhoneNumber.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите номер телефона'**
+  String get enterPhoneNumber;
+
+  /// No description provided for @playersNotFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игроки не найдены'**
+  String get playersNotFound;
+
+  /// No description provided for @registerWith.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записаться с {name}'**
+  String registerWith(String name);
 }
 
 class _AppLocalizationsDelegate

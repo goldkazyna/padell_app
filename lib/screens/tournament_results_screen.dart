@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/tournament.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
@@ -145,15 +146,16 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
     final losses = summary?['losses'] ?? 0;
     final ratingChange = summary?['rating_change'] ?? 0;
 
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        _buildSummaryCard('$matchesCount', 'МАТЧЕЙ'),
+        _buildSummaryCard('$matchesCount', l10n.matchesLabel),
         const SizedBox(width: 10),
-        _buildSummaryCard('$wins / $losses', 'ПОБЕДЫ'),
+        _buildSummaryCard('$wins / $losses', l10n.winsLabel),
         const SizedBox(width: 10),
         _buildSummaryCard(
           ratingChange >= 0 ? '+$ratingChange' : '$ratingChange',
-          'РЕЙТИНГ',
+          l10n.ratingLabel,
           valueColor:
               ratingChange >= 0 ? AppTheme.accent : const Color(0xFFEF4444),
         ),
@@ -201,22 +203,23 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
     final formatName = tournament?['format_name'] ?? '';
     final matchesCount = matches.length;
 
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Матчи',
-              style: TextStyle(
+            Text(
+              l10n.matchesTitle,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              '$formatName · $matchesCount раундов',
+              '$formatName · ${l10n.roundsCount(matchesCount)}',
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 13,
@@ -338,7 +341,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              isDraw ? 'НИЧЬЯ' : isWin ? 'ПОБЕДА' : 'ПОРАЖЕНИЕ',
+              isDraw ? AppLocalizations.of(context)!.resultDraw : isWin ? AppLocalizations.of(context)!.resultWin : AppLocalizations.of(context)!.resultLoss,
               style: TextStyle(
                 color: resultColor,
                 fontSize: 12,

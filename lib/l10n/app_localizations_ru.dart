@@ -291,4 +291,180 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noUpcomingTournaments => 'Нет предстоящих турниров';
+
+  @override
+  String get tournaments => 'Турниры';
+
+  @override
+  String get openTab => 'Открытые';
+
+  @override
+  String get myTab => 'Мои';
+
+  @override
+  String get archiveTab => 'Архив';
+
+  @override
+  String get noOpenTournaments => 'Нет открытых турниров';
+
+  @override
+  String get notRegisteredForTournaments => 'Вы не записаны на турниры';
+
+  @override
+  String get noFinishedTournaments => 'Нет завершённых турниров';
+
+  @override
+  String get tournamentRegistered => 'Записан';
+
+  @override
+  String get noSpotsLeft => 'Мест нет';
+
+  @override
+  String get failedToLoadTournament => 'Не удалось загрузить турнир';
+
+  @override
+  String shareFreeSpots(int count) {
+    return 'Свободных мест: $count';
+  }
+
+  @override
+  String shareLevel(String level) {
+    return 'Уровень: $level';
+  }
+
+  @override
+  String shareCost(String cost) {
+    return 'Стоимость: $cost';
+  }
+
+  @override
+  String get shareAppPromo =>
+      'Padel KZ — скачай приложение и записывайся на турниры!';
+
+  @override
+  String get noSpotsLeftUpper => 'МЕСТ НЕТ';
+
+  @override
+  String get dateLabel => 'ДАТА';
+
+  @override
+  String get timeLabel => 'ВРЕМЯ';
+
+  @override
+  String get levelLabel => 'УРОВЕНЬ';
+
+  @override
+  String get costLabel => 'СТОИМОСТЬ';
+
+  @override
+  String get perPerson => 'за человека';
+
+  @override
+  String get pay => 'Оплатить';
+
+  @override
+  String get pendingModeration => 'На модерации';
+
+  @override
+  String get participants => 'Участники';
+
+  @override
+  String countOfMax(int count, int max) {
+    return '$count из $max';
+  }
+
+  @override
+  String get noParticipantsYet => 'Пока нет участников';
+
+  @override
+  String spotsLeftCount(int count) {
+    return 'Ещё $count свободных мест';
+  }
+
+  @override
+  String get pendingStatus => 'Ожидание';
+
+  @override
+  String get organizer => 'Организатор';
+
+  @override
+  String get registerButton => 'Записаться';
+
+  @override
+  String get applicationPending => 'Заявка на модерации';
+
+  @override
+  String get cancelApplication => 'Отменить заявку';
+
+  @override
+  String get cancelRegistration => 'Отменить запись';
+
+  @override
+  String get youAreParticipating => 'Вы участвуете';
+
+  @override
+  String get ok => 'ОК';
+
+  @override
+  String get choosePartner => 'Выбрать партнёра';
+
+  @override
+  String get subscriptionActive => 'Подписка активна';
+
+  @override
+  String get notifyOnFreeSpot => 'Уведомить о свободном месте';
+
+  @override
+  String get matchesLabel => 'МАТЧЕЙ';
+
+  @override
+  String get winsLabel => 'ПОБЕДЫ';
+
+  @override
+  String get ratingLabel => 'РЕЙТИНГ';
+
+  @override
+  String get matchesTitle => 'Матчи';
+
+  @override
+  String roundsCount(int count) {
+    return '$count раундов';
+  }
+
+  @override
+  String get resultDraw => 'НИЧЬЯ';
+
+  @override
+  String get resultWin => 'ПОБЕДА';
+
+  @override
+  String get resultLoss => 'ПОРАЖЕНИЕ';
+
+  @override
+  String placeResult(int place) {
+    return '$place место';
+  }
+
+  @override
+  String get teamConfirmed => 'Подтверждена';
+
+  @override
+  String get yourTeam => 'Ваша команда';
+
+  @override
+  String get teams => 'Команды';
+
+  @override
+  String get noTeamsYet => 'Пока нет команд';
+
+  @override
+  String get enterPhoneNumber => 'Введите номер телефона';
+
+  @override
+  String get playersNotFound => 'Игроки не найдены';
+
+  @override
+  String registerWith(String name) {
+    return 'Записаться с $name';
+  }
 }

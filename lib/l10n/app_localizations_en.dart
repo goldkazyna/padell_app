@@ -290,4 +290,181 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noUpcomingTournaments => 'No upcoming tournaments';
+
+  @override
+  String get tournaments => 'Tournaments';
+
+  @override
+  String get openTab => 'Open';
+
+  @override
+  String get myTab => 'My';
+
+  @override
+  String get archiveTab => 'Archive';
+
+  @override
+  String get noOpenTournaments => 'No open tournaments';
+
+  @override
+  String get notRegisteredForTournaments =>
+      'You are not registered for any tournaments';
+
+  @override
+  String get noFinishedTournaments => 'No finished tournaments';
+
+  @override
+  String get tournamentRegistered => 'Registered';
+
+  @override
+  String get noSpotsLeft => 'No spots';
+
+  @override
+  String get failedToLoadTournament => 'Failed to load tournament';
+
+  @override
+  String shareFreeSpots(int count) {
+    return 'Free spots: $count';
+  }
+
+  @override
+  String shareLevel(String level) {
+    return 'Level: $level';
+  }
+
+  @override
+  String shareCost(String cost) {
+    return 'Cost: $cost';
+  }
+
+  @override
+  String get shareAppPromo =>
+      'Padel KZ — download the app and register for tournaments!';
+
+  @override
+  String get noSpotsLeftUpper => 'NO SPOTS';
+
+  @override
+  String get dateLabel => 'DATE';
+
+  @override
+  String get timeLabel => 'TIME';
+
+  @override
+  String get levelLabel => 'LEVEL';
+
+  @override
+  String get costLabel => 'COST';
+
+  @override
+  String get perPerson => 'per person';
+
+  @override
+  String get pay => 'Pay';
+
+  @override
+  String get pendingModeration => 'Pending moderation';
+
+  @override
+  String get participants => 'Participants';
+
+  @override
+  String countOfMax(int count, int max) {
+    return '$count of $max';
+  }
+
+  @override
+  String get noParticipantsYet => 'No participants yet';
+
+  @override
+  String spotsLeftCount(int count) {
+    return '$count more spots available';
+  }
+
+  @override
+  String get pendingStatus => 'Pending';
+
+  @override
+  String get organizer => 'Organizer';
+
+  @override
+  String get registerButton => 'Register';
+
+  @override
+  String get applicationPending => 'Application pending';
+
+  @override
+  String get cancelApplication => 'Cancel application';
+
+  @override
+  String get cancelRegistration => 'Cancel registration';
+
+  @override
+  String get youAreParticipating => 'You are participating';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get choosePartner => 'Choose partner';
+
+  @override
+  String get subscriptionActive => 'Subscription active';
+
+  @override
+  String get notifyOnFreeSpot => 'Notify when spot opens';
+
+  @override
+  String get matchesLabel => 'MATCHES';
+
+  @override
+  String get winsLabel => 'WINS';
+
+  @override
+  String get ratingLabel => 'RATING';
+
+  @override
+  String get matchesTitle => 'Matches';
+
+  @override
+  String roundsCount(int count) {
+    return '$count rounds';
+  }
+
+  @override
+  String get resultDraw => 'DRAW';
+
+  @override
+  String get resultWin => 'WIN';
+
+  @override
+  String get resultLoss => 'LOSS';
+
+  @override
+  String placeResult(int place) {
+    return '$place place';
+  }
+
+  @override
+  String get teamConfirmed => 'Confirmed';
+
+  @override
+  String get yourTeam => 'Your team';
+
+  @override
+  String get teams => 'Teams';
+
+  @override
+  String get noTeamsYet => 'No teams yet';
+
+  @override
+  String get enterPhoneNumber => 'Enter phone number';
+
+  @override
+  String get playersNotFound => 'Players not found';
+
+  @override
+  String registerWith(String name) {
+    return 'Register with $name';
+  }
 }

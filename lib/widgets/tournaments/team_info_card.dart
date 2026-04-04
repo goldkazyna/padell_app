@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
 
@@ -11,9 +12,10 @@ class TeamInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isPending = team.isPending;
     final statusColor = isPending ? _pendingColor : AppTheme.accent;
-    final statusText = isPending ? 'На модерации' : 'Подтверждена';
+    final statusText = isPending ? l10n.pendingModeration : l10n.teamConfirmed;
     final statusIcon = isPending ? Icons.access_time : Icons.check_circle;
 
     return Container(
@@ -31,9 +33,9 @@ class TeamInfoCard extends StatelessWidget {
             children: [
               Icon(Icons.groups, color: statusColor, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Ваша команда',
-                style: TextStyle(
+              Text(
+                l10n.yourTeam,
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,

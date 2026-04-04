@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../models/tournament.dart';
 import '../providers/tournament_provider.dart';
@@ -48,11 +49,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               child: Column(
                 children: [
                   _buildAppBar(context),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
-                        'Не удалось загрузить турнир',
-                        style: TextStyle(color: AppTheme.textSecondary),
+                        AppLocalizations.of(context)!.failedToLoadTournament,
+                        style: const TextStyle(color: AppTheme.textSecondary),
                       ),
                     ),
                   ),
@@ -161,28 +162,30 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final tournament = context.read<TournamentProvider>().selectedTournament;
     if (tournament == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final levelText = '${tournament.minLevel} – ${tournament.maxLevel}';
     final spotsText = tournament.spotsLeft > 0
-        ? 'Свободных мест: ${tournament.spotsLeft}'
-        : 'Мест нет';
+        ? l10n.shareFreeSpots(tournament.spotsLeft)
+        : l10n.noSpotsLeft;
 
     final text = '${tournament.name}\n\n'
         '${tournament.typeName} · ${tournament.levelCategoryText}\n'
         '${tournament.dateFormatted}, ${tournament.dayOfWeek}\n'
         '${tournament.time}\n'
         '${tournament.club.name}\n'
-        'Уровень: $levelText\n'
-        'Стоимость: ${tournament.priceText}\n'
+        '${l10n.shareLevel(levelText)}\n'
+        '${l10n.shareCost(tournament.priceText)}\n'
         '$spotsText\n\n'
-        'Padel KZ — скачай приложение и записывайся на турниры!';
+        '${l10n.shareAppPromo}';
 
     Share.share(text);
   }
 
   // === Теги ===
   Widget _buildTags(Tournament t) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = t.isFull ? AppTheme.error : AppTheme.accent;
-    final statusText = t.isFull ? 'МЕСТ НЕТ' : t.statusName.toUpperCase();
+    final statusText = t.isFull ? l10n.noSpotsLeftUpper : t.statusName.toUpperCase();
 
     return Row(
       children: [
@@ -246,18 +249,19 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   // === Дата и Время ===
   Widget _buildDateTimeRow(Tournament t) {
+    final l10n = AppLocalizations.of(context)!;
     return IntrinsicHeight(child: Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildInfoCard(
-          label: 'ДАТА',
+          label: l10n.dateLabel,
           icon: Icons.calendar_today_outlined,
           value: t.dateFormatted,
           subtitle: t.dayOfWeek,
         ),
         const SizedBox(width: 8),
         _buildInfoCard(
-          label: 'ВРЕМЯ',
+          label: l10n.timeLabel,
           icon: Icons.access_time_outlined,
           value: t.time,
           subtitle: '',
@@ -268,21 +272,22 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   // === Уровень и Стоимость ===
   Widget _buildLevelPriceRow(Tournament t) {
+    final l10n = AppLocalizations.of(context)!;
     return IntrinsicHeight(child: Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildInfoCard(
-          label: 'УРОВЕНЬ',
+          label: l10n.levelLabel,
           icon: Icons.signal_cellular_alt,
           value: '${t.minLevel} – ${t.maxLevel}',
           subtitle: t.levelCategoryText,
         ),
         const SizedBox(width: 8),
         _buildInfoCard(
-          label: 'СТОИМОСТЬ',
+          label: l10n.costLabel,
           value: t.priceText,
           valueColor: AppTheme.accent,
-          subtitle: 'за человека',
+          subtitle: l10n.perPerson,
         ),
       ],
     ));
@@ -303,9 +308,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             }
           },
           icon: const Icon(Icons.payment, size: 20),
-          label: const Text(
-            'Оплатить',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          label: Text(
+            AppLocalizations.of(context)!.pay,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.accent,
@@ -385,6 +390,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   // === Участники ===
   Widget _buildParticipantsSection(Tournament t, int? currentUserId) {
+    final l10n = AppLocalizations.of(context)!;
     final pending = t.participants.where((p) => p.status == 'pending').toList();
     final registered = t.participants.where((p) => p.status != 'pending').toList();
 
@@ -395,9 +401,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         if (pending.isNotEmpty) ...[
           Row(
             children: [
-              const Text(
-                'На модерации',
-                style: TextStyle(
+              Text(
+                l10n.pendingModeration,
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -421,9 +427,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         // === Участники ===
         Row(
           children: [
-            const Text(
-              'Участники',
-              style: TextStyle(
+            Text(
+              l10n.participants,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -435,7 +441,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             ],
             const Spacer(),
             Text(
-              '${t.participantsCount} из ${t.maxParticipants}',
+              l10n.countOfMax(t.participantsCount, t.maxParticipants),
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 14,
@@ -454,10 +460,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Пока нет участников',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                l10n.noParticipantsYet,
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
             ),
           )
@@ -494,7 +500,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Ещё ${t.spotsLeft} свободных мест',
+                    l10n.spotsLeftCount(t.spotsLeft),
                     style: const TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
@@ -609,14 +615,14 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: _pendingColor.withAlpha(60), width: 0.5),
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.access_time, color: _pendingColor, size: 14),
-                SizedBox(width: 4),
+                const Icon(Icons.access_time, color: _pendingColor, size: 14),
+                const SizedBox(width: 4),
                 Text(
-                  'Ожидание',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.pendingStatus,
+                  style: const TextStyle(
                     color: _pendingColor,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -738,9 +744,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       children: [
         Container(height: 0.5, color: const Color(0xFF2A2A2A)),
         const SizedBox(height: 20),
-        const Text(
-          'Организатор',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.organizer,
+          style: const TextStyle(
             color: AppTheme.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -920,12 +926,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add, size: 20),
-              SizedBox(width: 6),
-              Text('Записаться', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Icon(Icons.add, size: 20),
+              const SizedBox(width: 6),
+              Text(AppLocalizations.of(context)!.registerButton, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ],
           ),
         ),
@@ -943,7 +949,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               Icon(Icons.access_time, color: _pendingColor, size: 16),
               const SizedBox(width: 6),
               Text(
-                'Заявка на модерации',
+                AppLocalizations.of(context)!.applicationPending,
                 style: TextStyle(color: _pendingColor, fontSize: 13, fontWeight: FontWeight.w600),
               ),
             ],
@@ -959,12 +965,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                 side: const BorderSide(color: AppTheme.error, width: 1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.close, size: 20),
-                  SizedBox(width: 6),
-                  Text('Отменить заявку', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const Icon(Icons.close, size: 20),
+                  const SizedBox(width: 6),
+                  Text(AppLocalizations.of(context)!.cancelApplication, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
@@ -984,12 +990,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             side: const BorderSide(color: AppTheme.error, width: 1),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.close, size: 20),
-              SizedBox(width: 6),
-              Text('Отменить запись', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Icon(Icons.close, size: 20),
+              const SizedBox(width: 6),
+              Text(AppLocalizations.of(context)!.cancelRegistration, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ],
           ),
         ),
@@ -1006,15 +1012,15 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppTheme.accent.withAlpha(60)),
           ),
-          child: const Center(
+          child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.check_circle, color: AppTheme.accent, size: 20),
-                SizedBox(width: 6),
+                const Icon(Icons.check_circle, color: AppTheme.accent, size: 20),
+                const SizedBox(width: 6),
                 Text(
-                  'Вы участвуете',
-                  style: TextStyle(color: AppTheme.accent, fontSize: 16, fontWeight: FontWeight.w600),
+                  AppLocalizations.of(context)!.youAreParticipating,
+                  style: const TextStyle(color: AppTheme.accent, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -1058,15 +1064,15 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           color: const Color(0xFF2A2A2A),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Center(
+        child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
-              SizedBox(width: 6),
+              const Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
+              const SizedBox(width: 6),
               Text(
-                'Мест нет',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
+                AppLocalizations.of(context)!.noSpotsLeft,
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -1113,7 +1119,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 0,
                   ),
-                  child: const Text('ОК', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  child: Text(AppLocalizations.of(context)!.ok, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -1152,12 +1158,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           side: const BorderSide(color: AppTheme.accent, width: 1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.notifications_active, size: 20),
-            SizedBox(width: 6),
-            Text('Подписка активна', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const Icon(Icons.notifications_active, size: 20),
+            const SizedBox(width: 6),
+            Text(AppLocalizations.of(context)!.subscriptionActive, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ],
         ),
       );
@@ -1171,12 +1177,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         elevation: 0,
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.notifications_none, size: 20),
-          SizedBox(width: 6),
-          Text('Уведомить о свободном месте', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+          const Icon(Icons.notifications_none, size: 20),
+          const SizedBox(width: 6),
+          Text(AppLocalizations.of(context)!.notifyOnFreeSpot, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -1268,12 +1274,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.group_add, size: 20),
-            SizedBox(width: 6),
-            Text('Выбрать партнёра', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const Icon(Icons.group_add, size: 20),
+            const SizedBox(width: 6),
+            Text(AppLocalizations.of(context)!.choosePartner, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ],
         ),
       );
@@ -1288,15 +1294,15 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             color: _pendingColor,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Center(
+          child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.access_time, color: Colors.white, size: 20),
-                SizedBox(width: 6),
+                const Icon(Icons.access_time, color: Colors.white, size: 20),
+                const SizedBox(width: 6),
                 Text(
-                  'Заявка на модерации',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  AppLocalizations.of(context)!.applicationPending,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -1314,12 +1320,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           side: const BorderSide(color: AppTheme.error, width: 1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.close, size: 20),
-            SizedBox(width: 6),
-            Text('Отменить запись', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const Icon(Icons.close, size: 20),
+            const SizedBox(width: 6),
+            Text(AppLocalizations.of(context)!.cancelRegistration, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ],
         ),
       );
@@ -1335,15 +1341,15 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppTheme.accent.withAlpha(60)),
           ),
-          child: const Center(
+          child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.check_circle, color: AppTheme.accent, size: 20),
-                SizedBox(width: 6),
+                const Icon(Icons.check_circle, color: AppTheme.accent, size: 20),
+                const SizedBox(width: 6),
                 Text(
-                  'Вы участвуете',
-                  style: TextStyle(color: AppTheme.accent, fontSize: 16, fontWeight: FontWeight.w600),
+                  AppLocalizations.of(context)!.youAreParticipating,
+                  style: const TextStyle(color: AppTheme.accent, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -1388,15 +1394,15 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           color: const Color(0xFF2A2A2A),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Center(
+        child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
-              SizedBox(width: 6),
+              const Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
+              const SizedBox(width: 6),
               Text(
-                'Мест нет',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
+                AppLocalizations.of(context)!.noSpotsLeft,
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),

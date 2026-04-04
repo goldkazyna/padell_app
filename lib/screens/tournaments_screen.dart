@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../providers/tournament_provider.dart';
 import '../widgets/tournaments/tournament_card.dart';
@@ -30,11 +31,11 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Text(
-                'Турниры',
-                style: TextStyle(
+                AppLocalizations.of(context)!.tournaments,
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -59,10 +60,10 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 unselectedLabelStyle: const TextStyle(fontSize: 14),
                 dividerColor: Colors.transparent,
-                tabs: const [
-                  Tab(text: 'Открытые'),
-                  Tab(text: 'Мои'),
-                  Tab(text: 'Архив'),
+                tabs: [
+                  Tab(text: AppLocalizations.of(context)!.openTab),
+                  Tab(text: AppLocalizations.of(context)!.myTab),
+                  Tab(text: AppLocalizations.of(context)!.archiveTab),
                 ],
               ),
             ),
@@ -104,10 +105,10 @@ class _OpenTab extends StatelessWidget {
         }
 
         if (provider.openTournaments.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'Нет открытых турниров',
-              style: TextStyle(color: AppTheme.textSecondary),
+              AppLocalizations.of(context)!.noOpenTournaments,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }
@@ -145,10 +146,10 @@ class _MyTab extends StatelessWidget {
         }
 
         if (provider.myTournaments.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'Вы не записаны на турниры',
-              style: TextStyle(color: AppTheme.textSecondary),
+              AppLocalizations.of(context)!.notRegisteredForTournaments,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }
@@ -186,10 +187,10 @@ class _ArchiveTab extends StatelessWidget {
         }
 
         if (provider.archiveTournaments.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'Нет завершённых турниров',
-              style: TextStyle(color: AppTheme.textSecondary),
+              AppLocalizations.of(context)!.noFinishedTournaments,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }

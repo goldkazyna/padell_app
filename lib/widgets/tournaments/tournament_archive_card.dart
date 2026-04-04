@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
 
@@ -9,7 +10,7 @@ class TournamentArchiveCard extends StatelessWidget {
   final String type;
   final Color typeColor;
   final String club;
-  final String place;
+  final int? placeNumber;
   final String ratingChange;
   final bool isPositive;
 
@@ -21,7 +22,7 @@ class TournamentArchiveCard extends StatelessWidget {
     required this.type,
     required this.typeColor,
     required this.club,
-    required this.place,
+    required this.placeNumber,
     required this.ratingChange,
     required this.isPositive,
   });
@@ -36,7 +37,7 @@ class TournamentArchiveCard extends StatelessWidget {
       type: t.typeName,
       typeColor: t.typeColor,
       club: t.club.name,
-      place: result != null ? '${result.place} место' : '-',
+      placeNumber: result?.place,
       ratingChange: change >= 0 ? '+$change' : '$change',
       isPositive: change >= 0,
     );
@@ -44,6 +45,8 @@ class TournamentArchiveCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final place = placeNumber != null ? l10n.placeResult(placeNumber!) : '-';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
 
@@ -187,7 +188,7 @@ class TournamentCard extends StatelessWidget {
                       ),
                     ),
                     // Action button
-                    _buildActionButton(),
+                    _buildActionButton(context),
                   ],
                 ),
               ],
@@ -216,7 +217,8 @@ class TournamentCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (isRegistered) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -224,14 +226,14 @@ class TournamentCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppTheme.accent, width: 1.5),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check, color: AppTheme.accent, size: 14),
-            SizedBox(width: 5),
+            const Icon(Icons.check, color: AppTheme.accent, size: 14),
+            const SizedBox(width: 5),
             Text(
-              'Записан',
-              style: TextStyle(
+              l10n.tournamentRegistered,
+              style: const TextStyle(
                 color: AppTheme.accent,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -249,9 +251,9 @@ class TournamentCard extends StatelessWidget {
           color: AppTheme.error,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Text(
-          'Мест нет',
-          style: TextStyle(
+        child: Text(
+          l10n.noSpotsLeft,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 12,
             fontWeight: FontWeight.w700,
@@ -273,9 +275,9 @@ class TournamentCard extends StatelessWidget {
           ),
         ],
       ),
-      child: const Text(
-        'Записаться',
-        style: TextStyle(
+      child: Text(
+        l10n.register,
+        style: const TextStyle(
           color: Colors.black,
           fontSize: 12,
           fontWeight: FontWeight.w700,

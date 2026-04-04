@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
 
@@ -16,6 +17,7 @@ class TeamListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final pending = tournament.teams.where((t) => t.isPending).toList();
     final approved = tournament.teams.where((t) => t.isApproved).toList();
 
@@ -26,9 +28,9 @@ class TeamListSection extends StatelessWidget {
         if (pending.isNotEmpty) ...[
           Row(
             children: [
-              const Text(
-                'На модерации',
-                style: TextStyle(
+              Text(
+                l10n.pendingModeration,
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -41,7 +43,7 @@ class TeamListSection extends StatelessWidget {
           const SizedBox(height: 12),
           ...pending.map((team) => Padding(
             padding: const EdgeInsets.only(bottom: 6),
-            child: _buildTeamRow(team: team, isPending: true),
+            child: _buildTeamRow(context: context, team: team, isPending: true),
           )),
           const SizedBox(height: 24),
         ],
@@ -49,9 +51,9 @@ class TeamListSection extends StatelessWidget {
         // Approved teams
         Row(
           children: [
-            const Text(
-              'Команды',
-              style: TextStyle(
+            Text(
+              l10n.teams,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -63,7 +65,7 @@ class TeamListSection extends StatelessWidget {
             ],
             const Spacer(),
             Text(
-              '${tournament.participantsCount} из ${tournament.maxParticipants}',
+              l10n.countOfMax(tournament.participantsCount, tournament.maxParticipants),
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 14,
@@ -82,10 +84,10 @@ class TeamListSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Пока нет команд',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                l10n.noTeamsYet,
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
             ),
           )
@@ -94,7 +96,7 @@ class TeamListSection extends StatelessWidget {
             final team = approved[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 6),
-              child: _buildTeamRow(team: team, isPending: false, index: index + 1),
+              child: _buildTeamRow(context: context, team: team, isPending: false, index: index + 1),
             );
           }),
 
@@ -117,7 +119,7 @@ class TeamListSection extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Ещё ${tournament.spotsLeft} свободных мест',
+                    l10n.spotsLeftCount(tournament.spotsLeft),
                     style: const TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
@@ -132,6 +134,7 @@ class TeamListSection extends StatelessWidget {
   }
 
   Widget _buildTeamRow({
+    required BuildContext context,
     required TournamentTeam team,
     required bool isPending,
     int? index,
@@ -194,14 +197,14 @@ class TeamListSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: _pendingColor.withAlpha(60), width: 0.5),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.access_time, color: _pendingColor, size: 14),
-                    SizedBox(width: 4),
+                    const Icon(Icons.access_time, color: _pendingColor, size: 14),
+                    const SizedBox(width: 4),
                     Text(
-                      'Ожидание',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.pendingStatus,
+                      style: const TextStyle(
                         color: _pendingColor,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
