@@ -5,6 +5,7 @@ import '../providers/challenge_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/challenge.dart';
 import '../widgets/challenges/court_widget.dart';
+import '../l10n/app_localizations.dart';
 
 class CreateChallengeScreen extends StatefulWidget {
   const CreateChallengeScreen({super.key});
@@ -126,13 +127,13 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Добавить игрока',
-                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+                  Text(
+                    AppLocalizations.of(context)!.challengeAddPlayer,
+                    style: const TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Позиция $position · ${position <= 2 ? "Команда A" : "Команда B"}',
+                    AppLocalizations.of(context)!.challengePositionTeam(position, position <= 2 ? AppLocalizations.of(context)!.challengeTeamA : AppLocalizations.of(context)!.challengeTeamB),
                     style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                   ),
                   const SizedBox(height: 16),
@@ -141,7 +142,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     keyboardType: TextInputType.phone,
                     style: const TextStyle(color: AppTheme.textPrimary),
                     decoration: InputDecoration(
-                      hintText: 'Номер телефона',
+                      hintText: AppLocalizations.of(context)!.challengePhoneHint,
                       hintStyle: const TextStyle(color: AppTheme.textSecondary),
                       filled: true,
                       fillColor: AppTheme.background,
@@ -247,9 +248,9 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     ),
                     const SizedBox(height: 12),
                   ] else if (!isSearching && phoneController.text.trim().isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 12),
-                      child: Text('Никого не найдено', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(AppLocalizations.of(context)!.challengeNobodyFound, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     ),
                   ],
                   // Open slot button
@@ -269,9 +270,9 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                         border: Border.all(color: AppTheme.accent, width: 1.5),
                       ),
                       alignment: Alignment.center,
-                      child: const Text(
-                        'Оставить открытым',
-                        style: TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w600),
+                      child: Text(
+                        AppLocalizations.of(context)!.challengeLeaveOpen,
+                        style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -307,7 +308,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
         status: 'confirmed',
         firstName: firstName,
         lastName: lastName,
-        fullName: name.isNotEmpty ? name : 'Вы',
+        fullName: name.isNotEmpty ? name : AppLocalizations.of(context)!.challengeYou,
         rating: user?.rating ?? 0,
         level: double.tryParse(user?.level ?? '0') ?? 0.0,
         isMe: true,
@@ -317,9 +318,9 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
         id: 0,
         position: _myPosition,
         status: 'confirmed',
-        firstName: 'Вы',
+        firstName: AppLocalizations.of(context)!.challengeYou,
         lastName: '',
-        fullName: 'Вы',
+        fullName: AppLocalizations.of(context)!.challengeYou,
         rating: 0,
         level: 0,
         isMe: true,
@@ -343,7 +344,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
 
   Future<void> _create() async {
     if (_selectedDate == null || _selectedTime == null) {
-      _showAlert('Укажите дату и время', isError: true);
+      _showAlert(AppLocalizations.of(context)!.challengeSpecifyDateTime, isError: true);
       return;
     }
 
@@ -397,7 +398,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          isError ? 'Ошибка' : 'Готово',
+          isError ? AppLocalizations.of(context)!.challengeErrorTitle : AppLocalizations.of(context)!.challengeDoneTitle,
           style: TextStyle(
             color: isError ? AppTheme.error : AppTheme.accent,
             fontSize: 18,
@@ -419,9 +420,12 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
   }
 
   String _formatDate(DateTime date) {
-    const months = [
-      'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
+    final l10n = AppLocalizations.of(context)!;
+    final months = [
+      l10n.challengeMonthJan, l10n.challengeMonthFeb, l10n.challengeMonthMar,
+      l10n.challengeMonthApr, l10n.challengeMonthMay, l10n.challengeMonthJun,
+      l10n.challengeMonthJul, l10n.challengeMonthAug, l10n.challengeMonthSep,
+      l10n.challengeMonthOct, l10n.challengeMonthNov, l10n.challengeMonthDec,
     ];
     return '${date.day} ${months[date.month - 1]}';
   }
@@ -457,10 +461,10 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Новый поединок',
-                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
+                      AppLocalizations.of(context)!.challengeNewTitle,
+                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -481,13 +485,13 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                       children: [
                         Expanded(child: _buildPickerField(
                           icon: Icons.calendar_today,
-                          label: _selectedDate != null ? _formatDate(_selectedDate!) : 'Дата',
+                          label: _selectedDate != null ? _formatDate(_selectedDate!) : AppLocalizations.of(context)!.challengeDatePlaceholder,
                           onTap: _pickDate,
                         )),
                         const SizedBox(width: 12),
                         Expanded(child: _buildPickerField(
                           icon: Icons.access_time,
-                          label: _selectedTime != null ? _formatTime(_selectedTime!) : 'Время',
+                          label: _selectedTime != null ? _formatTime(_selectedTime!) : AppLocalizations.of(context)!.challengeTimePlaceholder,
                           onTap: _pickTime,
                         )),
                       ],
@@ -499,19 +503,19 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     const SizedBox(height: 16),
 
                     // Type
-                    const Text('Тип поединка', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    Text(AppLocalizations.of(context)!.challengeType, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Expanded(child: _buildTypeChip(label: 'Рейтинговый', value: 'rated')),
+                        Expanded(child: _buildTypeChip(label: AppLocalizations.of(context)!.challengeRated, value: 'rated')),
                         const SizedBox(width: 12),
-                        Expanded(child: _buildTypeChip(label: 'Товарищеский', value: 'friendly')),
+                        Expanded(child: _buildTypeChip(label: AppLocalizations.of(context)!.challengeFriendly, value: 'friendly')),
                       ],
                     ),
                     const SizedBox(height: 16),
 
                     // Min level
-                    const Text('Мин. уровень', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    Text(AppLocalizations.of(context)!.challengeMinLevel, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     const SizedBox(height: 8),
                     _buildLevelButtons(
                       selected: _minLevel,
@@ -525,7 +529,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     const SizedBox(height: 12),
 
                     // Max level
-                    const Text('Макс. уровень', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    Text(AppLocalizations.of(context)!.challengeMaxLevel, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     const SizedBox(height: 8),
                     _buildLevelButtons(
                       selected: _maxLevel,
@@ -537,9 +541,9 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     const SizedBox(height: 24),
 
                     // Court
-                    const Text(
-                      'РАССТАНОВКА НА КОРТЕ',
-                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                    Text(
+                      AppLocalizations.of(context)!.challengeCourtLayout,
+                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 0.5),
                     ),
                     const SizedBox(height: 12),
                     CourtWidget(
@@ -572,9 +576,9 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                           width: 22, height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                         )
-                      : const Text(
-                          'Создать поединок',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                      : Text(
+                          AppLocalizations.of(context)!.challengeCreateButton,
+                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
                         ),
                 ),
               ),
@@ -586,7 +590,8 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
   }
 
   Widget _buildPickerField({required IconData icon, required String label, required VoidCallback onTap}) {
-    final isPlaceholder = label == 'Дата' || label == 'Время';
+    final l10n = AppLocalizations.of(context)!;
+    final isPlaceholder = label == l10n.challengeDatePlaceholder || label == l10n.challengeTimePlaceholder;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -633,16 +638,16 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
               Icon(Icons.location_on, color: AppTheme.textSecondary, size: 20),
               const SizedBox(width: 10),
               Text(
-                _loadingClubs ? 'Загрузка...' : 'Клуб (необязательно)',
+                _loadingClubs ? AppLocalizations.of(context)!.challengeLoadingClubs : AppLocalizations.of(context)!.challengeClubOptional,
                 style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
             ],
           ),
           icon: const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
           items: [
-            const DropdownMenuItem<int?>(
+            DropdownMenuItem<int?>(
               value: null,
-              child: Text('Без клуба', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+              child: Text(AppLocalizations.of(context)!.challengeNoClub, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
             ),
             ..._clubs.map((c) => DropdownMenuItem<int?>(
               value: c['id'] as int,

@@ -5,6 +5,7 @@ import '../providers/challenge_provider.dart';
 import '../models/challenge.dart';
 import '../widgets/challenges/court_widget.dart';
 import '../widgets/challenges/score_input_widget.dart';
+import '../l10n/app_localizations.dart';
 
 class ChallengeDetailScreen extends StatefulWidget {
   final int challengeId;
@@ -72,18 +73,18 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Выберите позицию',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.challengeChoosePosition,
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Позиции 1-2 — Команда A, 3-4 — Команда B',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.challengePositionHint,
+                style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 13,
                 ),
@@ -130,7 +131,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              pos <= 2 ? 'Команда A' : 'Команда B',
+                              pos <= 2 ? AppLocalizations.of(context)!.challengeTeamA : AppLocalizations.of(context)!.challengeTeamB,
                               style: const TextStyle(
                                 color: AppTheme.textPrimary,
                                 fontSize: 15,
@@ -181,16 +182,16 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
-        title: const Text('Отменить поединок?', style: TextStyle(color: AppTheme.textPrimary)),
-        content: const Text('Вы уверены, что хотите отменить поединок?', style: TextStyle(color: AppTheme.textSecondary)),
+        title: Text(AppLocalizations.of(context)!.challengeCancelTitle, style: const TextStyle(color: AppTheme.textPrimary)),
+        content: Text(AppLocalizations.of(context)!.challengeCancelConfirm, style: const TextStyle(color: AppTheme.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Нет'),
+            child: Text(AppLocalizations.of(context)!.no),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Да, отменить', style: TextStyle(color: AppTheme.error)),
+            child: Text(AppLocalizations.of(context)!.challengeYesCancel, style: const TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -235,7 +236,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     // Проверяем что хотя бы в одном сете счёт не 0:0
     final allZero = _sets.every((s) => (s['team_a'] ?? 0) == 0 && (s['team_b'] ?? 0) == 0);
     if (allZero) {
-      if (mounted) _showSnackBar('Введите счёт хотя бы в одном сете');
+      if (mounted) _showSnackBar(AppLocalizations.of(context)!.challengeEnterScore);
       return;
     }
 
@@ -315,8 +316,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                                 color: AppTheme.accent,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Text(
-                                'Повторить',
+                              child: Text(
+                                AppLocalizations.of(context)!.retry,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
@@ -337,11 +338,11 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               return Column(
                 children: [
                   _buildHeader(),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
-                        'Поединок не найден',
-                        style: TextStyle(color: AppTheme.textSecondary),
+                        AppLocalizations.of(context)!.challengeNotFound,
+                        style: const TextStyle(color: AppTheme.textSecondary),
                       ),
                     ),
                   ),
@@ -431,10 +432,10 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Поединок',
-              style: TextStyle(
+              AppLocalizations.of(context)!.challenge,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -555,7 +556,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Уровень ${challenge.levelText}',
+                  AppLocalizations.of(context)!.challengeLevel(challenge.levelText),
                   style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 14,
@@ -601,9 +602,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'СЧЁТ',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.challengeScore,
+          style: const TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -641,14 +642,14 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                   width: 1.5,
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add, color: AppTheme.accent, size: 20),
-                  SizedBox(width: 6),
+                  const Icon(Icons.add, color: AppTheme.accent, size: 20),
+                  const SizedBox(width: 6),
                   Text(
-                    'Добавить сет',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.challengeAddSet,
+                    style: const TextStyle(
                       color: AppTheme.accent,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -677,9 +678,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 ],
               ),
               alignment: Alignment.center,
-              child: const Text(
-                'Завершить поединок',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.challengeFinish,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -697,7 +698,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Счёт вводит создатель поединка. После завершения вы сможете подтвердить результат.',
+                    AppLocalizations.of(context)!.challengeScoreCreatorHint,
                     style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
@@ -731,9 +732,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'РЕЗУЛЬТАТ',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.challengeResult,
+          style: const TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -770,7 +771,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 ...score.asMap().entries.map((entry) => Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
-                    'Сет ${entry.key + 1}    ${entry.value.teamA} : ${entry.value.teamB}',
+                    AppLocalizations.of(context)!.challengeSetScore(entry.key + 1, entry.value.teamA, entry.value.teamB),
                     style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                   ),
                 )),
@@ -810,7 +811,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      player.scoreConfirmed ? 'Подтвердил' : 'Ожидание',
+                      player.scoreConfirmed ? AppLocalizations.of(context)!.challengeConfirmed : AppLocalizations.of(context)!.challengeWaiting,
                       style: TextStyle(
                         color: player.scoreConfirmed ? AppTheme.accent : AppTheme.textSecondary,
                         fontSize: 12,
@@ -845,7 +846,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               alignment: Alignment.center,
               child: isLoading
                   ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
-                  : const Text('Подтверждаю счёт', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                  : Text(AppLocalizations.of(context)!.challengeConfirmScore, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
             ),
           )
         else
@@ -859,10 +860,10 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.check, color: AppTheme.accent, size: 20),
-                SizedBox(width: 8),
-                Text('Вы подтвердили счёт', style: TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w600)),
+              children: [
+                const Icon(Icons.check, color: AppTheme.accent, size: 20),
+                const SizedBox(width: 8),
+                Text(AppLocalizations.of(context)!.challengeScoreConfirmed, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -887,14 +888,15 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
 
     String resultText;
     Color resultColor;
+    final l10n = AppLocalizations.of(context)!;
     if (totalA > totalB) {
-      resultText = 'Победа команды A';
+      resultText = l10n.challengeTeamAWin;
       resultColor = AppTheme.accent;
     } else if (totalB > totalA) {
-      resultText = 'Победа команды B';
+      resultText = l10n.challengeTeamBWin;
       resultColor = AppTheme.accent;
     } else {
-      resultText = 'Ничья';
+      resultText = l10n.challengeDraw;
       resultColor = const Color(0xFFEAB308);
     }
 
@@ -911,9 +913,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       ),
       child: Column(
         children: [
-          const Text(
-            'РЕЗУЛЬТАТ',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.challengeResult,
+            style: const TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -976,7 +978,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Сет ${i + 1}',
+                    AppLocalizations.of(context)!.challengeSetLabel(i + 1),
                     style: const TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
@@ -1032,13 +1034,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     if (challenge.myStatus == 'invited') {
       buttons.addAll([
         _buildPrimaryButton(
-          label: 'Принять',
+          label: AppLocalizations.of(context)!.challengeAccept,
           onTap: isLoading ? null : () => _acceptChallenge(challenge.id),
           isLoading: isLoading,
         ),
         const SizedBox(height: 10),
         _buildOutlineButton(
-          label: 'Отклонить',
+          label: AppLocalizations.of(context)!.challengeDecline,
           color: AppTheme.error,
           onTap: isLoading ? null : () => _declineChallenge(challenge.id),
         ),
@@ -1051,7 +1053,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         challenge.availablePositions.isNotEmpty) {
       buttons.add(
         _buildPrimaryButton(
-          label: 'Занять место',
+          label: AppLocalizations.of(context)!.challengeJoinSlot,
           onTap: isLoading ? null : () => _joinChallenge(challenge),
           isLoading: isLoading,
         ),
@@ -1068,9 +1070,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         final hasInvited = challenge.players.any((p) => p.isInvited);
         String hint;
         if (hasInvited) {
-          hint = 'Ожидание подтверждения приглашённых игроков';
+          hint = AppLocalizations.of(context)!.challengeWaitingInvites;
         } else {
-          hint = 'Для начала нужно ещё $remaining ${remaining == 1 ? 'игрок' : 'игрока'}';
+          hint = AppLocalizations.of(context)!.challengeNeedMorePlayers(remaining);
         }
         buttons.add(
           Padding(
@@ -1090,7 +1092,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       // Кнопка «Начать» — всегда видна, активна только когда все на месте
       buttons.add(
         _buildPrimaryButton(
-          label: 'Начать поединок',
+          label: AppLocalizations.of(context)!.challengeStart,
           onTap: canStart && !isLoading ? () => _startChallenge(challenge.id) : null,
           isLoading: isLoading && canStart,
         ),
@@ -1098,7 +1100,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       buttons.add(const SizedBox(height: 10));
       buttons.add(
         _buildOutlineButton(
-          label: 'Отменить поединок',
+          label: AppLocalizations.of(context)!.challengeCancelButton,
           color: AppTheme.error,
           onTap: isLoading ? null : () => _cancelChallenge(challenge.id),
         ),
@@ -1109,7 +1111,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     if (challenge.isOpen && challenge.isParticipant && !challenge.isCreator && challenge.myStatus != 'invited') {
       buttons.add(
         _buildOutlineButton(
-          label: 'Покинуть',
+          label: AppLocalizations.of(context)!.challengeLeave,
           color: AppTheme.error,
           onTap: isLoading ? null : () => _leaveChallenge(challenge.id),
         ),

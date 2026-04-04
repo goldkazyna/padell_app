@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_theme.dart';
 import '../../models/challenge.dart';
+import '../../l10n/app_localizations.dart';
 
 class ScoreInputWidget extends StatefulWidget {
   final int setIndex;
@@ -107,7 +108,7 @@ class _ScoreInputWidgetState extends State<ScoreInputWidget> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  'Сет ${widget.setIndex + 1}',
+                  AppLocalizations.of(context)!.challengeSetLabel(widget.setIndex + 1),
                   style: const TextStyle(
                     color: AppTheme.accent,
                     fontSize: 11,

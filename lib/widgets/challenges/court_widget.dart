@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../models/challenge.dart';
+import '../../l10n/app_localizations.dart';
 
 class CourtWidget extends StatelessWidget {
   final List<ChallengePlayer> players;
@@ -62,15 +63,17 @@ class CourtWidget extends StatelessWidget {
                     // Team A
                     Expanded(
                       child: _buildTeamColumn(
+                        context: context,
                         positions: [1, 2],
                         avatarSize: avatarSize,
                       ),
                     ),
                     // Center divider with label
-                    _buildDivider(),
+                    _buildDivider(context),
                     // Team B
                     Expanded(
                       child: _buildTeamColumn(
+                        context: context,
                         positions: [3, 4],
                         avatarSize: avatarSize,
                       ),
@@ -84,7 +87,7 @@ class CourtWidget extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Команда A',
+                      AppLocalizations.of(context)!.challengeTeamA,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppTheme.accent.withAlpha(102),
@@ -96,7 +99,7 @@ class CourtWidget extends StatelessWidget {
                   const SizedBox(width: 32),
                   Expanded(
                     child: Text(
-                      'Команда B',
+                      AppLocalizations.of(context)!.challengeTeamB,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppTheme.accent.withAlpha(102),
@@ -114,7 +117,7 @@ class CourtWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildDivider(BuildContext context) {
     return SizedBox(
       width: 32,
       child: Stack(
@@ -136,11 +139,11 @@ class CourtWidget extends StatelessWidget {
               color: AppTheme.accent.withAlpha(38),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: const RotatedBox(
+            child: RotatedBox(
               quarterTurns: 1,
               child: Text(
-                'СЕТКА',
-                style: TextStyle(
+                AppLocalizations.of(context)!.courtNet,
+                style: const TextStyle(
                   color: AppTheme.accent,
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -155,20 +158,21 @@ class CourtWidget extends StatelessWidget {
   }
 
   Widget _buildTeamColumn({
+    required BuildContext context,
     required List<int> positions,
     required double avatarSize,
   }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildPlayerSlot(positions[0], avatarSize),
+        _buildPlayerSlot(context, positions[0], avatarSize),
         const SizedBox(height: 16),
-        _buildPlayerSlot(positions[1], avatarSize),
+        _buildPlayerSlot(context, positions[1], avatarSize),
       ],
     );
   }
 
-  Widget _buildPlayerSlot(int position, double avatarSize) {
+  Widget _buildPlayerSlot(BuildContext context, int position, double avatarSize) {
     final player = _playerAt(position);
     final isFilled = player != null;
     final isMe = player?.isMe ?? false;
@@ -246,7 +250,7 @@ class CourtWidget extends StatelessWidget {
                     )).toList(),
                   )
                 : Text(
-                    isEditing ? 'Пригласить' : 'Свободно',
+                    isEditing ? AppLocalizations.of(context)!.courtInvite : AppLocalizations.of(context)!.courtFreeSlot,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppTheme.textSecondary,

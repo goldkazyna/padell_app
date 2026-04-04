@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/challenge_provider.dart';
 import '../widgets/challenges/challenge_card.dart';
+import '../l10n/app_localizations.dart';
 import 'create_challenge_screen.dart';
 import 'challenge_detail_screen.dart';
 
@@ -50,11 +51,11 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Text(
-                  'Поединок',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.challenge,
+                  style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -82,9 +83,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                   ),
                   unselectedLabelStyle: const TextStyle(fontSize: 14),
                   dividerColor: Colors.transparent,
-                  tabs: const [
-                    Tab(text: 'Открытые'),
-                    Tab(text: 'Мои'),
+                  tabs: [
+                    Tab(text: AppLocalizations.of(context)!.challengeOpenTab),
+                    Tab(text: AppLocalizations.of(context)!.challengeMyTab),
                   ],
                 ),
               ),
@@ -140,10 +141,10 @@ class _OpenTab extends StatelessWidget {
         }
 
         if (provider.openChallenges.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'Нет открытых поединков',
-              style: TextStyle(color: AppTheme.textSecondary),
+              AppLocalizations.of(context)!.noOpenChallenges,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }
@@ -186,10 +187,10 @@ class _MyTab extends StatelessWidget {
         }
 
         if (provider.myChallenges.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'У вас нет поединков',
-              style: TextStyle(color: AppTheme.textSecondary),
+              AppLocalizations.of(context)!.noMyChallenges,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }

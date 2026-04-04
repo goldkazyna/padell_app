@@ -467,4 +467,251 @@ class AppLocalizationsEn extends AppLocalizations {
   String registerWith(String name) {
     return 'Register with $name';
   }
+
+  @override
+  String get challenge => 'Challenge';
+
+  @override
+  String get challengeOpenTab => 'Open';
+
+  @override
+  String get challengeMyTab => 'My';
+
+  @override
+  String get noOpenChallenges => 'No open challenges';
+
+  @override
+  String get noMyChallenges => 'You have no challenges';
+
+  @override
+  String get challengeNotSpecified => 'Not specified';
+
+  @override
+  String challengeLevel(String level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get challengeRated => 'Rated';
+
+  @override
+  String get challengeFriendly => 'Friendly';
+
+  @override
+  String get challengeJoinSlot => 'Join';
+
+  @override
+  String get challengeDetails => 'Details';
+
+  @override
+  String get challengeChoosePosition => 'Choose position';
+
+  @override
+  String get challengePositionHint => 'Positions 1-2 — Team A, 3-4 — Team B';
+
+  @override
+  String get challengeTeamA => 'Team A';
+
+  @override
+  String get challengeTeamB => 'Team B';
+
+  @override
+  String get challengeCancelTitle => 'Cancel challenge?';
+
+  @override
+  String get challengeCancelConfirm =>
+      'Are you sure you want to cancel the challenge?';
+
+  @override
+  String get challengeYesCancel => 'Yes, cancel';
+
+  @override
+  String get challengeEnterScore => 'Enter score for at least one set';
+
+  @override
+  String get challengeNotFound => 'Challenge not found';
+
+  @override
+  String get challengeScore => 'SCORE';
+
+  @override
+  String get challengeAddSet => 'Add set';
+
+  @override
+  String get challengeFinish => 'Finish challenge';
+
+  @override
+  String get challengeScoreCreatorHint =>
+      'The score is entered by the challenge creator. After completion, you will be able to confirm the result.';
+
+  @override
+  String get challengeResult => 'RESULT';
+
+  @override
+  String challengeSetScore(int index, int scoreA, int scoreB) {
+    return 'Set $index    $scoreA : $scoreB';
+  }
+
+  @override
+  String get challengeConfirmed => 'Confirmed';
+
+  @override
+  String get challengeWaiting => 'Waiting';
+
+  @override
+  String get challengeConfirmScore => 'Confirm score';
+
+  @override
+  String get challengeScoreConfirmed => 'You confirmed the score';
+
+  @override
+  String get challengeTeamAWin => 'Team A wins';
+
+  @override
+  String get challengeTeamBWin => 'Team B wins';
+
+  @override
+  String get challengeDraw => 'Draw';
+
+  @override
+  String challengeSetLabel(int index) {
+    return 'Set $index';
+  }
+
+  @override
+  String get challengeAccept => 'Accept';
+
+  @override
+  String get challengeDecline => 'Decline';
+
+  @override
+  String get challengeWaitingInvites =>
+      'Waiting for invited players to confirm';
+
+  @override
+  String challengeNeedMorePlayers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'players',
+      one: 'player',
+    );
+    return '$count more $_temp0 needed';
+  }
+
+  @override
+  String get challengeStart => 'Start challenge';
+
+  @override
+  String get challengeCancelButton => 'Cancel challenge';
+
+  @override
+  String get challengeLeave => 'Leave';
+
+  @override
+  String get challengeAddPlayer => 'Add player';
+
+  @override
+  String challengePositionTeam(int position, String team) {
+    return 'Position $position · $team';
+  }
+
+  @override
+  String get challengePhoneHint => 'Phone number';
+
+  @override
+  String get challengeNobodyFound => 'Nobody found';
+
+  @override
+  String get challengeLeaveOpen => 'Leave open';
+
+  @override
+  String get challengeYou => 'You';
+
+  @override
+  String get challengeSpecifyDateTime => 'Specify date and time';
+
+  @override
+  String get challengeErrorTitle => 'Error';
+
+  @override
+  String get challengeDoneTitle => 'Done';
+
+  @override
+  String get challengeMonthJan => 'January';
+
+  @override
+  String get challengeMonthFeb => 'February';
+
+  @override
+  String get challengeMonthMar => 'March';
+
+  @override
+  String get challengeMonthApr => 'April';
+
+  @override
+  String get challengeMonthMay => 'May';
+
+  @override
+  String get challengeMonthJun => 'June';
+
+  @override
+  String get challengeMonthJul => 'July';
+
+  @override
+  String get challengeMonthAug => 'August';
+
+  @override
+  String get challengeMonthSep => 'September';
+
+  @override
+  String get challengeMonthOct => 'October';
+
+  @override
+  String get challengeMonthNov => 'November';
+
+  @override
+  String get challengeMonthDec => 'December';
+
+  @override
+  String get challengeNewTitle => 'New challenge';
+
+  @override
+  String get challengeDatePlaceholder => 'Date';
+
+  @override
+  String get challengeTimePlaceholder => 'Time';
+
+  @override
+  String get challengeType => 'Challenge type';
+
+  @override
+  String get challengeMinLevel => 'Min. level';
+
+  @override
+  String get challengeMaxLevel => 'Max. level';
+
+  @override
+  String get challengeCourtLayout => 'COURT LAYOUT';
+
+  @override
+  String get challengeCreateButton => 'Create challenge';
+
+  @override
+  String get challengeLoadingClubs => 'Loading...';
+
+  @override
+  String get challengeClubOptional => 'Club (optional)';
+
+  @override
+  String get challengeNoClub => 'No club';
+
+  @override
+  String get courtNet => 'NET';
+
+  @override
+  String get courtInvite => 'Invite';
+
+  @override
+  String get courtFreeSlot => 'Free';
 }

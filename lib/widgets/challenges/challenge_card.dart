@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../models/challenge.dart';
+import '../../l10n/app_localizations.dart';
 
 class ChallengeCard extends StatelessWidget {
   final Challenge challenge;
@@ -34,7 +35,7 @@ class ChallengeCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    challenge.club?.name ?? 'Поединок',
+                    challenge.club?.name ?? AppLocalizations.of(context)!.challenge,
                     style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
@@ -45,7 +46,7 @@ class ChallengeCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                _buildTypeBadge(),
+                _buildTypeBadge(context),
               ],
             ),
             const SizedBox(height: 10),
@@ -53,7 +54,7 @@ class ChallengeCard extends StatelessWidget {
             // Location
             _buildMetaRow(
               Icons.location_on,
-              challenge.club?.name ?? 'Не указано',
+              challenge.club?.name ?? AppLocalizations.of(context)!.challengeNotSpecified,
             ),
             const SizedBox(height: 6),
 
@@ -67,7 +68,7 @@ class ChallengeCard extends StatelessWidget {
             // Level
             _buildMetaRow(
               Icons.trending_up,
-              'Уровень ${challenge.levelText}',
+              AppLocalizations.of(context)!.challengeLevel(challenge.levelText),
             ),
             const SizedBox(height: 12),
 
@@ -76,7 +77,7 @@ class ChallengeCard extends StatelessWidget {
               children: [
                 Expanded(child: _buildSlots()),
                 const SizedBox(width: 12),
-                _buildActionButton(),
+                _buildActionButton(context),
               ],
             ),
           ],
@@ -85,10 +86,11 @@ class ChallengeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTypeBadge() {
+  Widget _buildTypeBadge(BuildContext context) {
     final isRated = challenge.isRated;
     final color = challenge.typeColor;
-    final label = isRated ? 'Рейтинговый' : 'Товарищеский';
+    final l10n = AppLocalizations.of(context)!;
+    final label = isRated ? l10n.challengeRated : l10n.challengeFriendly;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -191,7 +193,7 @@ class ChallengeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButton(BuildContext context) {
     final bool hasOpenSlot = challenge.availablePositions.isNotEmpty &&
         !challenge.isParticipant;
 
@@ -209,9 +211,9 @@ class ChallengeCard extends StatelessWidget {
             ),
           ],
         ),
-        child: const Text(
-          'Занять место',
-          style: TextStyle(
+        child: Text(
+          AppLocalizations.of(context)!.challengeJoinSlot,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -226,9 +228,9 @@ class ChallengeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppTheme.accent, width: 1.5),
       ),
-      child: const Text(
-        'Подробнее',
-        style: TextStyle(
+      child: Text(
+        AppLocalizations.of(context)!.challengeDetails,
+        style: const TextStyle(
           color: AppTheme.accent,
           fontSize: 13,
           fontWeight: FontWeight.w700,

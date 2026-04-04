@@ -467,4 +467,252 @@ class AppLocalizationsRu extends AppLocalizations {
   String registerWith(String name) {
     return 'Записаться с $name';
   }
+
+  @override
+  String get challenge => 'Поединок';
+
+  @override
+  String get challengeOpenTab => 'Открытые';
+
+  @override
+  String get challengeMyTab => 'Мои';
+
+  @override
+  String get noOpenChallenges => 'Нет открытых поединков';
+
+  @override
+  String get noMyChallenges => 'У вас нет поединков';
+
+  @override
+  String get challengeNotSpecified => 'Не указано';
+
+  @override
+  String challengeLevel(String level) {
+    return 'Уровень $level';
+  }
+
+  @override
+  String get challengeRated => 'Рейтинговый';
+
+  @override
+  String get challengeFriendly => 'Товарищеский';
+
+  @override
+  String get challengeJoinSlot => 'Занять место';
+
+  @override
+  String get challengeDetails => 'Подробнее';
+
+  @override
+  String get challengeChoosePosition => 'Выберите позицию';
+
+  @override
+  String get challengePositionHint =>
+      'Позиции 1-2 — Команда A, 3-4 — Команда B';
+
+  @override
+  String get challengeTeamA => 'Команда A';
+
+  @override
+  String get challengeTeamB => 'Команда B';
+
+  @override
+  String get challengeCancelTitle => 'Отменить поединок?';
+
+  @override
+  String get challengeCancelConfirm =>
+      'Вы уверены, что хотите отменить поединок?';
+
+  @override
+  String get challengeYesCancel => 'Да, отменить';
+
+  @override
+  String get challengeEnterScore => 'Введите счёт хотя бы в одном сете';
+
+  @override
+  String get challengeNotFound => 'Поединок не найден';
+
+  @override
+  String get challengeScore => 'СЧЁТ';
+
+  @override
+  String get challengeAddSet => 'Добавить сет';
+
+  @override
+  String get challengeFinish => 'Завершить поединок';
+
+  @override
+  String get challengeScoreCreatorHint =>
+      'Счёт вводит создатель поединка. После завершения вы сможете подтвердить результат.';
+
+  @override
+  String get challengeResult => 'РЕЗУЛЬТАТ';
+
+  @override
+  String challengeSetScore(int index, int scoreA, int scoreB) {
+    return 'Сет $index    $scoreA : $scoreB';
+  }
+
+  @override
+  String get challengeConfirmed => 'Подтвердил';
+
+  @override
+  String get challengeWaiting => 'Ожидание';
+
+  @override
+  String get challengeConfirmScore => 'Подтверждаю счёт';
+
+  @override
+  String get challengeScoreConfirmed => 'Вы подтвердили счёт';
+
+  @override
+  String get challengeTeamAWin => 'Победа команды A';
+
+  @override
+  String get challengeTeamBWin => 'Победа команды B';
+
+  @override
+  String get challengeDraw => 'Ничья';
+
+  @override
+  String challengeSetLabel(int index) {
+    return 'Сет $index';
+  }
+
+  @override
+  String get challengeAccept => 'Принять';
+
+  @override
+  String get challengeDecline => 'Отклонить';
+
+  @override
+  String get challengeWaitingInvites =>
+      'Ожидание подтверждения приглашённых игроков';
+
+  @override
+  String challengeNeedMorePlayers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'игрока',
+      one: 'игрок',
+    );
+    return 'Для начала нужно ещё $count $_temp0';
+  }
+
+  @override
+  String get challengeStart => 'Начать поединок';
+
+  @override
+  String get challengeCancelButton => 'Отменить поединок';
+
+  @override
+  String get challengeLeave => 'Покинуть';
+
+  @override
+  String get challengeAddPlayer => 'Добавить игрока';
+
+  @override
+  String challengePositionTeam(int position, String team) {
+    return 'Позиция $position · $team';
+  }
+
+  @override
+  String get challengePhoneHint => 'Номер телефона';
+
+  @override
+  String get challengeNobodyFound => 'Никого не найдено';
+
+  @override
+  String get challengeLeaveOpen => 'Оставить открытым';
+
+  @override
+  String get challengeYou => 'Вы';
+
+  @override
+  String get challengeSpecifyDateTime => 'Укажите дату и время';
+
+  @override
+  String get challengeErrorTitle => 'Ошибка';
+
+  @override
+  String get challengeDoneTitle => 'Готово';
+
+  @override
+  String get challengeMonthJan => 'января';
+
+  @override
+  String get challengeMonthFeb => 'февраля';
+
+  @override
+  String get challengeMonthMar => 'марта';
+
+  @override
+  String get challengeMonthApr => 'апреля';
+
+  @override
+  String get challengeMonthMay => 'мая';
+
+  @override
+  String get challengeMonthJun => 'июня';
+
+  @override
+  String get challengeMonthJul => 'июля';
+
+  @override
+  String get challengeMonthAug => 'августа';
+
+  @override
+  String get challengeMonthSep => 'сентября';
+
+  @override
+  String get challengeMonthOct => 'октября';
+
+  @override
+  String get challengeMonthNov => 'ноября';
+
+  @override
+  String get challengeMonthDec => 'декабря';
+
+  @override
+  String get challengeNewTitle => 'Новый поединок';
+
+  @override
+  String get challengeDatePlaceholder => 'Дата';
+
+  @override
+  String get challengeTimePlaceholder => 'Время';
+
+  @override
+  String get challengeType => 'Тип поединка';
+
+  @override
+  String get challengeMinLevel => 'Мин. уровень';
+
+  @override
+  String get challengeMaxLevel => 'Макс. уровень';
+
+  @override
+  String get challengeCourtLayout => 'РАССТАНОВКА НА КОРТЕ';
+
+  @override
+  String get challengeCreateButton => 'Создать поединок';
+
+  @override
+  String get challengeLoadingClubs => 'Загрузка...';
+
+  @override
+  String get challengeClubOptional => 'Клуб (необязательно)';
+
+  @override
+  String get challengeNoClub => 'Без клуба';
+
+  @override
+  String get courtNet => 'СЕТКА';
+
+  @override
+  String get courtInvite => 'Пригласить';
+
+  @override
+  String get courtFreeSlot => 'Свободно';
 }

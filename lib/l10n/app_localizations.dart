@@ -949,6 +949,462 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Записаться с {name}'**
   String registerWith(String name);
+
+  /// No description provided for @challenge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поединок'**
+  String get challenge;
+
+  /// No description provided for @challengeOpenTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открытые'**
+  String get challengeOpenTab;
+
+  /// No description provided for @challengeMyTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои'**
+  String get challengeMyTab;
+
+  /// No description provided for @noOpenChallenges.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет открытых поединков'**
+  String get noOpenChallenges;
+
+  /// No description provided for @noMyChallenges.
+  ///
+  /// In ru, this message translates to:
+  /// **'У вас нет поединков'**
+  String get noMyChallenges;
+
+  /// No description provided for @challengeNotSpecified.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не указано'**
+  String get challengeNotSpecified;
+
+  /// No description provided for @challengeLevel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень {level}'**
+  String challengeLevel(String level);
+
+  /// No description provided for @challengeRated.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинговый'**
+  String get challengeRated;
+
+  /// No description provided for @challengeFriendly.
+  ///
+  /// In ru, this message translates to:
+  /// **'Товарищеский'**
+  String get challengeFriendly;
+
+  /// No description provided for @challengeJoinSlot.
+  ///
+  /// In ru, this message translates to:
+  /// **'Занять место'**
+  String get challengeJoinSlot;
+
+  /// No description provided for @challengeDetails.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подробнее'**
+  String get challengeDetails;
+
+  /// No description provided for @challengeChoosePosition.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите позицию'**
+  String get challengeChoosePosition;
+
+  /// No description provided for @challengePositionHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Позиции 1-2 — Команда A, 3-4 — Команда B'**
+  String get challengePositionHint;
+
+  /// No description provided for @challengeTeamA.
+  ///
+  /// In ru, this message translates to:
+  /// **'Команда A'**
+  String get challengeTeamA;
+
+  /// No description provided for @challengeTeamB.
+  ///
+  /// In ru, this message translates to:
+  /// **'Команда B'**
+  String get challengeTeamB;
+
+  /// No description provided for @challengeCancelTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменить поединок?'**
+  String get challengeCancelTitle;
+
+  /// No description provided for @challengeCancelConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены, что хотите отменить поединок?'**
+  String get challengeCancelConfirm;
+
+  /// No description provided for @challengeYesCancel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Да, отменить'**
+  String get challengeYesCancel;
+
+  /// No description provided for @challengeEnterScore.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите счёт хотя бы в одном сете'**
+  String get challengeEnterScore;
+
+  /// No description provided for @challengeNotFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поединок не найден'**
+  String get challengeNotFound;
+
+  /// No description provided for @challengeScore.
+  ///
+  /// In ru, this message translates to:
+  /// **'СЧЁТ'**
+  String get challengeScore;
+
+  /// No description provided for @challengeAddSet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить сет'**
+  String get challengeAddSet;
+
+  /// No description provided for @challengeFinish.
+  ///
+  /// In ru, this message translates to:
+  /// **'Завершить поединок'**
+  String get challengeFinish;
+
+  /// No description provided for @challengeScoreCreatorHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Счёт вводит создатель поединка. После завершения вы сможете подтвердить результат.'**
+  String get challengeScoreCreatorHint;
+
+  /// No description provided for @challengeResult.
+  ///
+  /// In ru, this message translates to:
+  /// **'РЕЗУЛЬТАТ'**
+  String get challengeResult;
+
+  /// No description provided for @challengeSetScore.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сет {index}    {scoreA} : {scoreB}'**
+  String challengeSetScore(int index, int scoreA, int scoreB);
+
+  /// No description provided for @challengeConfirmed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердил'**
+  String get challengeConfirmed;
+
+  /// No description provided for @challengeWaiting.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидание'**
+  String get challengeWaiting;
+
+  /// No description provided for @challengeConfirmScore.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтверждаю счёт'**
+  String get challengeConfirmScore;
+
+  /// No description provided for @challengeScoreConfirmed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы подтвердили счёт'**
+  String get challengeScoreConfirmed;
+
+  /// No description provided for @challengeTeamAWin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Победа команды A'**
+  String get challengeTeamAWin;
+
+  /// No description provided for @challengeTeamBWin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Победа команды B'**
+  String get challengeTeamBWin;
+
+  /// No description provided for @challengeDraw.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ничья'**
+  String get challengeDraw;
+
+  /// No description provided for @challengeSetLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сет {index}'**
+  String challengeSetLabel(int index);
+
+  /// No description provided for @challengeAccept.
+  ///
+  /// In ru, this message translates to:
+  /// **'Принять'**
+  String get challengeAccept;
+
+  /// No description provided for @challengeDecline.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отклонить'**
+  String get challengeDecline;
+
+  /// No description provided for @challengeWaitingInvites.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидание подтверждения приглашённых игроков'**
+  String get challengeWaitingInvites;
+
+  /// No description provided for @challengeNeedMorePlayers.
+  ///
+  /// In ru, this message translates to:
+  /// **'Для начала нужно ещё {count} {count, plural, one{игрок} other{игрока}}'**
+  String challengeNeedMorePlayers(int count);
+
+  /// No description provided for @challengeStart.
+  ///
+  /// In ru, this message translates to:
+  /// **'Начать поединок'**
+  String get challengeStart;
+
+  /// No description provided for @challengeCancelButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменить поединок'**
+  String get challengeCancelButton;
+
+  /// No description provided for @challengeLeave.
+  ///
+  /// In ru, this message translates to:
+  /// **'Покинуть'**
+  String get challengeLeave;
+
+  /// No description provided for @challengeAddPlayer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить игрока'**
+  String get challengeAddPlayer;
+
+  /// No description provided for @challengePositionTeam.
+  ///
+  /// In ru, this message translates to:
+  /// **'Позиция {position} · {team}'**
+  String challengePositionTeam(int position, String team);
+
+  /// No description provided for @challengePhoneHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Номер телефона'**
+  String get challengePhoneHint;
+
+  /// No description provided for @challengeNobodyFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Никого не найдено'**
+  String get challengeNobodyFound;
+
+  /// No description provided for @challengeLeaveOpen.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оставить открытым'**
+  String get challengeLeaveOpen;
+
+  /// No description provided for @challengeYou.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы'**
+  String get challengeYou;
+
+  /// No description provided for @challengeSpecifyDateTime.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите дату и время'**
+  String get challengeSpecifyDateTime;
+
+  /// No description provided for @challengeErrorTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка'**
+  String get challengeErrorTitle;
+
+  /// No description provided for @challengeDoneTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Готово'**
+  String get challengeDoneTitle;
+
+  /// No description provided for @challengeMonthJan.
+  ///
+  /// In ru, this message translates to:
+  /// **'января'**
+  String get challengeMonthJan;
+
+  /// No description provided for @challengeMonthFeb.
+  ///
+  /// In ru, this message translates to:
+  /// **'февраля'**
+  String get challengeMonthFeb;
+
+  /// No description provided for @challengeMonthMar.
+  ///
+  /// In ru, this message translates to:
+  /// **'марта'**
+  String get challengeMonthMar;
+
+  /// No description provided for @challengeMonthApr.
+  ///
+  /// In ru, this message translates to:
+  /// **'апреля'**
+  String get challengeMonthApr;
+
+  /// No description provided for @challengeMonthMay.
+  ///
+  /// In ru, this message translates to:
+  /// **'мая'**
+  String get challengeMonthMay;
+
+  /// No description provided for @challengeMonthJun.
+  ///
+  /// In ru, this message translates to:
+  /// **'июня'**
+  String get challengeMonthJun;
+
+  /// No description provided for @challengeMonthJul.
+  ///
+  /// In ru, this message translates to:
+  /// **'июля'**
+  String get challengeMonthJul;
+
+  /// No description provided for @challengeMonthAug.
+  ///
+  /// In ru, this message translates to:
+  /// **'августа'**
+  String get challengeMonthAug;
+
+  /// No description provided for @challengeMonthSep.
+  ///
+  /// In ru, this message translates to:
+  /// **'сентября'**
+  String get challengeMonthSep;
+
+  /// No description provided for @challengeMonthOct.
+  ///
+  /// In ru, this message translates to:
+  /// **'октября'**
+  String get challengeMonthOct;
+
+  /// No description provided for @challengeMonthNov.
+  ///
+  /// In ru, this message translates to:
+  /// **'ноября'**
+  String get challengeMonthNov;
+
+  /// No description provided for @challengeMonthDec.
+  ///
+  /// In ru, this message translates to:
+  /// **'декабря'**
+  String get challengeMonthDec;
+
+  /// No description provided for @challengeNewTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Новый поединок'**
+  String get challengeNewTitle;
+
+  /// No description provided for @challengeDatePlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата'**
+  String get challengeDatePlaceholder;
+
+  /// No description provided for @challengeTimePlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Время'**
+  String get challengeTimePlaceholder;
+
+  /// No description provided for @challengeType.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тип поединка'**
+  String get challengeType;
+
+  /// No description provided for @challengeMinLevel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мин. уровень'**
+  String get challengeMinLevel;
+
+  /// No description provided for @challengeMaxLevel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Макс. уровень'**
+  String get challengeMaxLevel;
+
+  /// No description provided for @challengeCourtLayout.
+  ///
+  /// In ru, this message translates to:
+  /// **'РАССТАНОВКА НА КОРТЕ'**
+  String get challengeCourtLayout;
+
+  /// No description provided for @challengeCreateButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создать поединок'**
+  String get challengeCreateButton;
+
+  /// No description provided for @challengeLoadingClubs.
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка...'**
+  String get challengeLoadingClubs;
+
+  /// No description provided for @challengeClubOptional.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клуб (необязательно)'**
+  String get challengeClubOptional;
+
+  /// No description provided for @challengeNoClub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без клуба'**
+  String get challengeNoClub;
+
+  /// No description provided for @courtNet.
+  ///
+  /// In ru, this message translates to:
+  /// **'СЕТКА'**
+  String get courtNet;
+
+  /// No description provided for @courtInvite.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пригласить'**
+  String get courtInvite;
+
+  /// No description provided for @courtFreeSlot.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободно'**
+  String get courtFreeSlot;
 }
 
 class _AppLocalizationsDelegate
