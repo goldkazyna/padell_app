@@ -261,5 +261,20 @@
   "challengeNoClub": "Без клуба",
   "courtNet": "СЕТКА",
   "courtInvite": "Пригласить",
-  "courtFreeSlot": "Свободно"
+  "courtFreeSlot": "Свободно",
+
+  "ratingTitle": "Рейтинг",
+  "ratingSearchHint": "Поиск по имени...",
+  "ratingPlayerHeader": "ИГРОК",
+  "ratingPointsHeader": "ОЧКИ",
+  "ratingPlayersNotFound": "Игроки не найдены",
+  "ratingRemainingPlayers": "{count} игроков",
+  "@ratingRemainingPlayers": { "placeholders": { "count": { "type": "int" } } },
+  "ratingShowAll": "Показать всех",
+  "ratingMyPosition": "Моя позиция",
+  "ratingLevelPoints": "Уровень {level} · {rating} очков",
+  "@ratingLevelPoints": { "placeholders": { "level": { "type": "String" }, "rating": { "type": "int" } } },
+  "ratingOutOfPlayers": "из {count} игроков",
+  "@ratingOutOfPlayers": { "placeholders": { "count": { "type": "int" } } },
+  "ratingFilterAll": "Все"
 }

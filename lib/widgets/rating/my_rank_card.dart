@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/rating_service.dart';
 import '../../theme/app_theme.dart';
 
@@ -73,7 +74,7 @@ class MyRankCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Уровень ${c.level} · ${c.rating} очков',
+                  AppLocalizations.of(context)!.ratingLevelPoints(c.level.toString(), c.rating),
                   style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,
@@ -94,7 +95,7 @@ class MyRankCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'из ${c.totalPlayers} игроков',
+                AppLocalizations.of(context)!.ratingOutOfPlayers(c.totalPlayers),
                 style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 11,

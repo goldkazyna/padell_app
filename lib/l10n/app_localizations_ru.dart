@@ -715,4 +715,43 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get courtFreeSlot => 'Свободно';
+
+  @override
+  String get ratingTitle => 'Рейтинг';
+
+  @override
+  String get ratingSearchHint => 'Поиск по имени...';
+
+  @override
+  String get ratingPlayerHeader => 'ИГРОК';
+
+  @override
+  String get ratingPointsHeader => 'ОЧКИ';
+
+  @override
+  String get ratingPlayersNotFound => 'Игроки не найдены';
+
+  @override
+  String ratingRemainingPlayers(int count) {
+    return '$count игроков';
+  }
+
+  @override
+  String get ratingShowAll => 'Показать всех';
+
+  @override
+  String get ratingMyPosition => 'Моя позиция';
+
+  @override
+  String ratingLevelPoints(String level, int rating) {
+    return 'Уровень $level · $rating очков';
+  }
+
+  @override
+  String ratingOutOfPlayers(int count) {
+    return 'из $count игроков';
+  }
+
+  @override
+  String get ratingFilterAll => 'Все';
 }

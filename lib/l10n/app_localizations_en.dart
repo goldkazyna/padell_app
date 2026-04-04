@@ -714,4 +714,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get courtFreeSlot => 'Free';
+
+  @override
+  String get ratingTitle => 'Rating';
+
+  @override
+  String get ratingSearchHint => 'Search by name...';
+
+  @override
+  String get ratingPlayerHeader => 'PLAYER';
+
+  @override
+  String get ratingPointsHeader => 'POINTS';
+
+  @override
+  String get ratingPlayersNotFound => 'Players not found';
+
+  @override
+  String ratingRemainingPlayers(int count) {
+    return '$count players';
+  }
+
+  @override
+  String get ratingShowAll => 'Show all';
+
+  @override
+  String get ratingMyPosition => 'My position';
+
+  @override
+  String ratingLevelPoints(String level, int rating) {
+    return 'Level $level · $rating points';
+  }
+
+  @override
+  String ratingOutOfPlayers(int count) {
+    return 'of $count players';
+  }
+
+  @override
+  String get ratingFilterAll => 'All';
 }

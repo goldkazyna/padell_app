@@ -243,5 +243,20 @@
   "challengeNoClub": "No club",
   "courtNet": "NET",
   "courtInvite": "Invite",
-  "courtFreeSlot": "Free"
+  "courtFreeSlot": "Free",
+
+  "ratingTitle": "Rating",
+  "ratingSearchHint": "Search by name...",
+  "ratingPlayerHeader": "PLAYER",
+  "ratingPointsHeader": "POINTS",
+  "ratingPlayersNotFound": "Players not found",
+  "ratingRemainingPlayers": "{count} players",
+  "@ratingRemainingPlayers": { "placeholders": { "count": { "type": "int" } } },
+  "ratingShowAll": "Show all",
+  "ratingMyPosition": "My position",
+  "ratingLevelPoints": "Level {level} · {rating} points",
+  "@ratingLevelPoints": { "placeholders": { "level": { "type": "String" }, "rating": { "type": "int" } } },
+  "ratingOutOfPlayers": "of {count} players",
+  "@ratingOutOfPlayers": { "placeholders": { "count": { "type": "int" } } },
+  "ratingFilterAll": "All"
 }

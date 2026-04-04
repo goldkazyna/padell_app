@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/rating_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
@@ -45,9 +46,9 @@ class _RatingScreenState extends State<RatingScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Рейтинг',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.ratingTitle,
+                      style: const TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -89,7 +90,7 @@ class _RatingScreenState extends State<RatingScreen> {
                     controller: _searchController,
                     style: const TextStyle(color: AppTheme.textPrimary),
                     decoration: InputDecoration(
-                      hintText: 'Поиск по имени...',
+                      hintText: AppLocalizations.of(context)!.ratingSearchHint,
                       hintStyle: const TextStyle(color: AppTheme.textSecondary),
                       filled: true,
                       fillColor: AppTheme.card,
@@ -142,18 +143,18 @@ class _RatingScreenState extends State<RatingScreen> {
                       ),
                     ),
                     const SizedBox(width: 44),
-                    const Text(
-                      'ИГРОК',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.ratingPlayerHeader,
+                      style: const TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 12,
                         letterSpacing: 1,
                       ),
                     ),
                     const Spacer(),
-                    const Text(
-                      'ОЧКИ',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.ratingPointsHeader,
+                      style: const TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 12,
                         letterSpacing: 1,
@@ -185,7 +186,7 @@ class _RatingScreenState extends State<RatingScreen> {
 
   Widget _buildLevelFilters(RatingProvider rating) {
     final filters = ['all', '1', '2', '3', '4'];
-    final labels = ['Все', 'L1', 'L2', 'L3', 'L4'];
+    final labels = [AppLocalizations.of(context)!.ratingFilterAll, 'L1', 'L2', 'L3', 'L4'];
 
     return Row(
       children: List.generate(filters.length, (index) {
@@ -235,7 +236,7 @@ class _RatingScreenState extends State<RatingScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => rating.loadRating(),
-              child: const Text('Повторить'),
+              child: Text(AppLocalizations.of(context)!.retry),
             ),
           ],
         ),
@@ -243,10 +244,10 @@ class _RatingScreenState extends State<RatingScreen> {
     }
 
     if (rating.players.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'Игроки не найдены',
-          style: TextStyle(color: AppTheme.textSecondary),
+          AppLocalizations.of(context)!.ratingPlayersNotFound,
+          style: const TextStyle(color: AppTheme.textSecondary),
         ),
       );
     }
@@ -300,14 +301,14 @@ class _RatingScreenState extends State<RatingScreen> {
                 const Icon(Icons.more_horiz, color: AppTheme.textSecondary),
                 const SizedBox(width: 8),
                 Text(
-                  '$remaining игроков',
+                  AppLocalizations.of(context)!.ratingRemainingPlayers(remaining),
                   style: const TextStyle(color: AppTheme.textSecondary),
                 ),
               ],
               const SizedBox(width: 8),
-              const Text(
-                'Показать всех',
-                style: TextStyle(color: AppTheme.accent),
+              Text(
+                AppLocalizations.of(context)!.ratingShowAll,
+                style: const TextStyle(color: AppTheme.accent),
               ),
             ],
           ),
@@ -343,15 +344,15 @@ class _RatingScreenState extends State<RatingScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Row(
               children: [
-                Icon(Icons.more_horiz, color: AppTheme.textSecondary, size: 20),
-                SizedBox(width: 8),
+                const Icon(Icons.more_horiz, color: AppTheme.textSecondary, size: 20),
+                const SizedBox(width: 8),
                 Text(
-                  'Моя позиция',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.ratingMyPosition,
+                  style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,

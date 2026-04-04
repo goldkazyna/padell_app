@@ -1405,6 +1405,72 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Свободно'**
   String get courtFreeSlot;
+
+  /// No description provided for @ratingTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинг'**
+  String get ratingTitle;
+
+  /// No description provided for @ratingSearchHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поиск по имени...'**
+  String get ratingSearchHint;
+
+  /// No description provided for @ratingPlayerHeader.
+  ///
+  /// In ru, this message translates to:
+  /// **'ИГРОК'**
+  String get ratingPlayerHeader;
+
+  /// No description provided for @ratingPointsHeader.
+  ///
+  /// In ru, this message translates to:
+  /// **'ОЧКИ'**
+  String get ratingPointsHeader;
+
+  /// No description provided for @ratingPlayersNotFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игроки не найдены'**
+  String get ratingPlayersNotFound;
+
+  /// No description provided for @ratingRemainingPlayers.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} игроков'**
+  String ratingRemainingPlayers(int count);
+
+  /// No description provided for @ratingShowAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать всех'**
+  String get ratingShowAll;
+
+  /// No description provided for @ratingMyPosition.
+  ///
+  /// In ru, this message translates to:
+  /// **'Моя позиция'**
+  String get ratingMyPosition;
+
+  /// No description provided for @ratingLevelPoints.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень {level} · {rating} очков'**
+  String ratingLevelPoints(String level, int rating);
+
+  /// No description provided for @ratingOutOfPlayers.
+  ///
+  /// In ru, this message translates to:
+  /// **'из {count} игроков'**
+  String ratingOutOfPlayers(int count);
+
+  /// No description provided for @ratingFilterAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все'**
+  String get ratingFilterAll;
 }
 
 class _AppLocalizationsDelegate
