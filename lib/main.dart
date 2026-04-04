@@ -20,6 +20,7 @@ import 'providers/profile_provider.dart';
 import 'providers/challenge_provider.dart';
 import 'services/court_service.dart';
 import 'providers/court_provider.dart';
+import 'providers/locale_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,6 +80,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => CourtProvider(courtService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocaleProvider(storageService),
         ),
         Provider<ProfileService>.value(value: profileService),
         Provider<PushNotificationService>.value(value: pushService),

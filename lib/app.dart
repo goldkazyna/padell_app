@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/locale_provider.dart';
 import 'services/push_notification_service.dart';
 import 'services/api_service.dart';
 import 'services/version_service.dart';
@@ -24,11 +26,16 @@ class PadelApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = context.watch<LocaleProvider>();
+
     return MaterialApp(
       title: 'Padel',
       theme: AppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
+      locale: localeProvider.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: Consumer<AuthProvider>(
         builder: (_, auth, __) {
           switch (auth.status) {

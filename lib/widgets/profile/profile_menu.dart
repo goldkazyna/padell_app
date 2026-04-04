@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/locale_provider.dart';
 import '../../screens/notification_settings_screen.dart';
 import '../../screens/my_bookings_screen.dart';
 import '../../theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProfileMenu extends StatelessWidget {
   const ProfileMenu({super.key});
@@ -12,11 +14,13 @@ class ProfileMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _buildLanguageSwitcher(context),
+        const SizedBox(height: 8),
         _buildMenuItem(
           context,
           Icons.sports_tennis,
-          'Мои бронирования',
-          'Забронированные корты',
+          AppLocalizations.of(context)!.myBookings,
+          AppLocalizations.of(context)!.bookedCourts,
           const Color(0xFF3B82F6),
           onTap: () => Navigator.push(
             context,
@@ -157,6 +161,84 @@ class ProfileMenu extends StatelessWidget {
             child: const Text(
               'Удалить',
               style: TextStyle(color: AppTheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageSwitcher(BuildContext context) {
+    final localeProvider = context.watch<LocaleProvider>();
+    final l = AppLocalizations.of(context)!;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFF8B5CF6).withAlpha(25),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.language, color: Color(0xFF8B5CF6), size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(l.language, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.all(2),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => localeProvider.setLocale(const Locale('ru')),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: localeProvider.isRussian ? AppTheme.accent : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'RU',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: localeProvider.isRussian ? Colors.black : AppTheme.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => localeProvider.setLocale(const Locale('en')),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: localeProvider.isEnglish ? AppTheme.accent : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'EN',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: localeProvider.isEnglish ? Colors.black : AppTheme.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

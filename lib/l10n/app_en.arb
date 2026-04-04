@@ -1,0 +1,102 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Padel KZ",
+
+  "navHome": "Home",
+  "navTournaments": "Tournaments",
+  "navChallenges": "Challenges",
+  "navRating": "Rating",
+  "navProfile": "Profile",
+
+  "hello": "Hi, {name}!",
+  "welcome": "Welcome",
+
+  "bookCourt": "Book a Court",
+  "bookCourtSubtitle": "Choose a club and time",
+
+  "nearestTournament": "Nearest Tournament",
+  "activeTournament": "Active Tournament",
+  "upcoming": "Upcoming",
+  "all": "All",
+
+  "rating": "RATING",
+  "level": "LEVEL",
+  "place": "RANK",
+  "matches": "MATCHES",
+  "wins": "WINS",
+  "winrate": "WIN RATE",
+
+  "selectClub": "Select Club",
+  "searchClub": "Search club...",
+  "allCities": "All",
+  "courtsCount": "{count} {count, plural, one{court} other{courts}}",
+  "priceFrom": "from {price} ₸",
+  "noClubsFound": "No clubs found",
+
+  "booking": "Booking",
+  "court": "Court",
+  "date": "Date",
+  "time": "Time",
+  "start": "Start",
+  "duration": "Duration",
+  "total": "Total",
+  "coach": "Coach",
+  "coachOptional": "Coach (optional)",
+  "yourName": "Name",
+  "phone": "Phone",
+  "comment": "Comment",
+  "optional": "Optional",
+  "enterName": "Enter name",
+  "bookButton": "Book — {price} ₸",
+
+  "bookingConfirmed": "Booking Confirmed!",
+  "bookingConfirmedSubtitle": "You have successfully booked a court",
+  "myBookings": "My Bookings",
+  "goHome": "Go Home",
+
+  "upcomingBookings": "Upcoming",
+  "pastBookings": "Past",
+  "noUpcomingBookings": "No upcoming bookings",
+  "noPastBookings": "No past bookings",
+  "statusPending": "New request",
+  "statusConfirmed": "Confirmed",
+  "statusCancelled": "Cancelled",
+  "cancel": "Cancel",
+  "cancelBooking": "Cancel booking?",
+  "areYouSure": "Are you sure?",
+  "yes": "Yes",
+  "no": "No",
+  "yesCancelIt": "Yes, cancel",
+  "bookingCancelled": "Booking cancelled",
+  "cancelError": "Cancel error",
+
+  "occupied": "Occupied",
+  "blocked": "Blocked",
+  "free": "Free",
+  "noCourtsAvailable": "No courts available",
+  "noSlotsForDay": "No slots for this day",
+  "today": "Today",
+
+  "hourOne": "hour",
+  "hourFew": "hours",
+  "hourMany": "hours",
+
+  "notifications": "Notifications",
+  "notificationSettings": "Notification settings",
+  "bookedCourts": "Booked courts",
+
+  "logout": "Log out",
+  "logoutSubtitle": "Sign out of account",
+  "deleteAccount": "Delete account",
+  "deleteAccountSubtitle": "Permanent deletion",
+
+  "retry": "Retry",
+  "error": "Error",
+  "networkError": "Network error. Check your internet connection.",
+  "loadError": "Failed to load data",
+
+  "language": "Language",
+  "russian": "Русский",
+  "english": "English"
+}

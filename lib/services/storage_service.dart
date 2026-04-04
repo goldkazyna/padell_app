@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class StorageService {
   static const _tokenKey = 'auth_token';
   static const _onboardingKey = 'onboarding_seen';
+  static const _localeKey = 'app_locale';
 
   final FlutterSecureStorage? _storage;
   final Map<String, String> _webStorage = {};
@@ -62,5 +63,13 @@ class StorageService {
 
   Future<void> setOnboardingSeen() async {
     await _write(_onboardingKey, 'true');
+  }
+
+  Future<void> saveLocale(String locale) async {
+    await _write(_localeKey, locale);
+  }
+
+  Future<String?> getLocale() async {
+    return _read(_localeKey);
   }
 }
