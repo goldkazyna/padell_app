@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
@@ -126,17 +127,17 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
               ),
               const SizedBox(height: 24),
 
-              const Text(
-                'Подтвердите вход',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.confirmLogin,
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Нажмите Start в Telegram боте\nи вернитесь в приложение',
+              Text(
+                AppLocalizations.of(context)!.pressStartInTelegram,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppTheme.textSecondary,
@@ -146,9 +147,9 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
               const SizedBox(height: 32),
 
               if (_initError) ...[
-                const Text(
-                  'Не удалось подключиться',
-                  style: TextStyle(color: AppTheme.error, fontSize: 14),
+                Text(
+                  AppLocalizations.of(context)!.connectionFailed,
+                  style: const TextStyle(color: AppTheme.error, fontSize: 14),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -164,8 +165,8 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Попробовать снова',
+                    child: Text(
+                      AppLocalizations.of(context)!.tryAgain,
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
@@ -182,9 +183,9 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Ожидание подтверждения...',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.waitingForConfirmation,
+                  style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,
                   ),
@@ -198,8 +199,8 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
                   child: ElevatedButton.icon(
                     onPressed: _openTelegram,
                     icon: const Icon(Icons.send, size: 20),
-                    label: const Text(
-                      'Открыть Telegram',
+                    label: Text(
+                      AppLocalizations.of(context)!.openTelegram,
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
@@ -228,8 +229,8 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Отмена',
+                  child: Text(
+                    AppLocalizations.of(context)!.authCancel,
                     style: TextStyle(fontSize: 16),
                   ),
                 ),

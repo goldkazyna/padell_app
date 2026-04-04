@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 
@@ -32,7 +33,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() {
         _sent = true;
         _successMessage =
-            result['message'] as String? ?? 'Ссылка отправлена на email';
+            result['message'] as String? ?? AppLocalizations.of(context)!.linkSentToEmail;
       });
     }
   }
@@ -68,18 +69,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const SizedBox(height: 32),
 
                 // Title
-                const Text(
-                  'Восстановление пароля',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.passwordRecovery,
+                  style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Введите email для получения ссылки\nна сброс пароля',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.enterEmailForResetLink,
+                  style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 15,
                   ),
@@ -133,8 +134,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'Вернуться к входу',
+                      child: Text(
+                        AppLocalizations.of(context)!.backToLogin,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -184,11 +185,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Введите email';
+                        return AppLocalizations.of(context)!.enterEmail;
                       }
                       if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                           .hasMatch(value.trim())) {
-                        return 'Введите корректный email';
+                        return AppLocalizations.of(context)!.enterValidEmail;
                       }
                       return null;
                     },
@@ -240,8 +241,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
-                                  'Отправить ссылку',
+                              : Text(
+                                  AppLocalizations.of(context)!.sendLink,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
@@ -56,9 +57,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Выберите город',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.selectCityTitle,
+              style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -149,17 +150,17 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 32),
 
                     // Title
-                    const Text(
-                      'Регистрация',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.registrationTitle,
+                      style: const TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Создайте аккаунт для продолжения',
+                    Text(
+                      AppLocalizations.of(context)!.createAccountToContinue,
                       style: TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 15,
@@ -168,10 +169,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 32),
 
                     // Name field
-                    const Text(
-                      'ФИО',
-                      style:
-                          TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    Text(
+                      AppLocalizations.of(context)!.fullName,
+                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
@@ -179,10 +179,10 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       textCapitalization: TextCapitalization.words,
                       style: const TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
-                      decoration: _inputDecoration('Иванов Иван Иванович'),
+                      decoration: _inputDecoration(AppLocalizations.of(context)!.fullNamePlaceholder),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Введите ФИО';
+                          return AppLocalizations.of(context)!.enterFullName;
                         }
                         return null;
                       },
@@ -205,11 +205,11 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       decoration: _inputDecoration('example@mail.com'),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Введите email';
+                          return AppLocalizations.of(context)!.enterEmail;
                         }
                         if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                             .hasMatch(value.trim())) {
-                          return 'Введите корректный email';
+                          return AppLocalizations.of(context)!.enterValidEmail;
                         }
                         return null;
                       },
@@ -217,10 +217,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Phone field
-                    const Text(
-                      'Телефон',
-                      style:
-                          TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    Text(
+                      AppLocalizations.of(context)!.phoneLabel,
+                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     IntlPhoneField(
@@ -241,10 +240,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 16),
 
                     // City field
-                    const Text(
-                      'Город',
-                      style:
-                          TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    Text(
+                      AppLocalizations.of(context)!.cityLabel,
+                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
@@ -259,7 +257,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                _city ?? 'Выберите город',
+                                _city ?? AppLocalizations.of(context)!.selectCityTitle,
                                 style: TextStyle(
                                   color: _city != null
                                       ? AppTheme.textPrimary
@@ -280,10 +278,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Password field
-                    const Text(
-                      'Пароль',
-                      style:
-                          TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    Text(
+                      AppLocalizations.of(context)!.password,
+                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
@@ -292,7 +289,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       style: const TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
                       decoration:
-                          _inputDecoration('Минимум 6 символов').copyWith(
+                          _inputDecoration(AppLocalizations.of(context)!.minSixChars).copyWith(
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -307,10 +304,10 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Введите пароль';
+                          return AppLocalizations.of(context)!.enterPasswordHint;
                         }
                         if (value.length < 6) {
-                          return 'Пароль должен быть не менее 6 символов';
+                          return AppLocalizations.of(context)!.passwordMinLength;
                         }
                         return null;
                       },
@@ -318,10 +315,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Confirm password field
-                    const Text(
-                      'Подтверждение пароля',
-                      style:
-                          TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    Text(
+                      AppLocalizations.of(context)!.confirmPassword,
+                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
@@ -330,7 +326,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       style: const TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
                       decoration:
-                          _inputDecoration('Повторите пароль').copyWith(
+                          _inputDecoration(AppLocalizations.of(context)!.repeatPassword).copyWith(
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscureConfirm
@@ -345,10 +341,10 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Подтвердите пароль';
+                          return AppLocalizations.of(context)!.confirmPasswordHint;
                         }
                         if (value != _passwordController.text) {
-                          return 'Пароли не совпадают';
+                          return AppLocalizations.of(context)!.passwordsDontMatch;
                         }
                         return null;
                       },
@@ -400,8 +396,8 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text(
-                                    'Зарегистрироваться',
+                                : Text(
+                                    AppLocalizations.of(context)!.registerAction,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -419,8 +415,8 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            'Уже есть аккаунт? ',
+                          Text(
+                            AppLocalizations.of(context)!.alreadyHaveAccount,
                             style: TextStyle(
                               color: AppTheme.textSecondary,
                               fontSize: 14,
@@ -433,8 +429,8 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                                 builder: (_) => const EmailLoginScreen(),
                               ),
                             ),
-                            child: const Text(
-                              'Войти',
+                            child: Text(
+                              AppLocalizations.of(context)!.signInLink,
                               style: TextStyle(
                                 color: AppTheme.accent,
                                 fontSize: 14,

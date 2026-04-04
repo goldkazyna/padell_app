@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import 'verify_code_screen.dart';
@@ -40,10 +41,10 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const Icon(Icons.info_outline, color: AppTheme.accent, size: 48),
               const SizedBox(height: 16),
-              const Text(
-                'Для продолжения необходимо принять пользовательское соглашение и дать согласие на обработку персональных данных',
+              Text(
+                AppLocalizations.of(context)!.authAcceptHint,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
@@ -61,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 0,
                   ),
-                  child: const Text('Понятно', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  child: Text(AppLocalizations.of(context)!.understood, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -104,8 +105,8 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const LegalDocumentScreen(
-          title: 'Пользовательское соглашение',
+        builder: (_) => LegalDocumentScreen(
+          title: AppLocalizations.of(context)!.termsOfService,
           assetPath: 'assets/legal/terms.html',
         ),
       ),
@@ -116,8 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const LegalDocumentScreen(
-          title: 'Согласие на обработку данных',
+        builder: (_) => LegalDocumentScreen(
+          title: AppLocalizations.of(context)!.consentToProcessing,
           assetPath: 'assets/legal/consent.html',
         ),
       ),
@@ -138,9 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
-        title: const Text(
-          'Введите код',
-          style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+        title: Text(
+          AppLocalizations.of(context)!.enterCode,
+          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
         ),
         content: TextField(
           controller: controller,
@@ -161,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Отмена', style: TextStyle(color: AppTheme.textSecondary)),
+            child: Text(AppLocalizations.of(context)!.authCancel, style: const TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () {
@@ -211,9 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Title — secret tap target
                 GestureDetector(
                   onTap: _onSecretTap,
-                  child: const Text(
-                    'Вход',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.loginTitle,
+                    style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -223,8 +224,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 8),
                 Text(
                   _showPhoneLogin
-                      ? 'Введите номер телефона для входа'
-                      : 'Войдите через Telegram для продолжения',
+                      ? AppLocalizations.of(context)!.enterPhoneForLogin
+                      : AppLocalizations.of(context)!.loginViaTelegramToContinue,
                   style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 15,
@@ -235,9 +236,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Phone login (hidden by default)
                 if (_showPhoneLogin) ...[
                   // Phone label
-                  const Text(
-                    'Номер телефона',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.phoneNumber,
+                    style: const TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 14,
                     ),
@@ -282,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     validator: (value) {
                       final digits = value?.replaceAll(RegExp(r'[^\d]'), '') ?? '';
                       if (digits.length < 10) {
-                        return 'Введите корректный номер';
+                        return AppLocalizations.of(context)!.enterValidNumber;
                       }
                       return null;
                     },
@@ -332,8 +333,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
-                                  'Продолжить',
+                              : Text(
+                                  AppLocalizations.of(context)!.continueButton,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -349,11 +350,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     children: [
                       Expanded(child: Container(height: 1, color: AppTheme.card)),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'или',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.or,
+                          style: const TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 14,
                           ),
@@ -372,8 +373,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton.icon(
                     onPressed: _allAccepted ? _openTelegram : _showAcceptHint,
                     icon: const Icon(Icons.send, size: 20),
-                    label: const Text(
-                      'Войти через Telegram',
+                    label: Text(
+                      AppLocalizations.of(context)!.loginViaTelegram,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -395,15 +396,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Divider "или"
+                // Divider
                 Row(
                   children: [
                     Expanded(child: Container(height: 1, color: AppTheme.card)),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'или',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.or,
+                        style: const TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 14,
                         ),
@@ -428,8 +429,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             )
                         : _showAcceptHint,
                     icon: const Icon(Icons.email_outlined, size: 20),
-                    label: const Text(
-                      'Войти через Email',
+                    label: Text(
+                      AppLocalizations.of(context)!.loginViaEmail,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -457,14 +458,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 _buildCheckboxRow(
                   value: _termsAccepted,
                   onChanged: (v) => setState(() => _termsAccepted = v ?? false),
-                  text: 'Пользовательское соглашение',
+                  text: AppLocalizations.of(context)!.termsOfService,
                   onTap: _openTermsDocument,
                 ),
                 const SizedBox(height: 8),
                 _buildCheckboxRow(
                   value: _consentAccepted,
                   onChanged: (v) => setState(() => _consentAccepted = v ?? false),
-                  text: 'Согласие на обработку персональных данных',
+                  text: AppLocalizations.of(context)!.consentToProcessPersonalData,
                   onTap: _openConsentDocument,
                 ),
 

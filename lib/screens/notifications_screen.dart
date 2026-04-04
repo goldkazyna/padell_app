@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/push_notification_service.dart';
 import '../services/storage_service.dart';
@@ -73,7 +74,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       }
     } catch (e) {
       setState(() {
-        _error = 'Не удалось загрузить уведомления';
+        _error = 'error';
         _isLoading = false;
       });
     }
@@ -153,9 +154,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
-                    'Уведомления',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.notifications,
+                    style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -177,7 +178,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                _error!,
+                                AppLocalizations.of(context)!.failedToLoadNotifications,
                                 style: const TextStyle(
                                   color: AppTheme.textSecondary,
                                   fontSize: 15,
@@ -186,25 +187,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               const SizedBox(height: 12),
                               TextButton(
                                 onPressed: _loadNotifications,
-                                child: const Text('Повторить'),
+                                child: Text(AppLocalizations.of(context)!.retry),
                               ),
                             ],
                           ),
                         )
                       : _notifications.isEmpty
-                          ? const Center(
+                          ? Center(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.notifications_off_outlined,
                                     color: AppTheme.textSecondary,
                                     size: 48,
                                   ),
-                                  SizedBox(height: 12),
+                                  const SizedBox(height: 12),
                                   Text(
-                                    'Нет уведомлений',
-                                    style: TextStyle(
+                                    AppLocalizations.of(context)!.noNotifications,
+                                    style: const TextStyle(
                                       color: AppTheme.textSecondary,
                                       fontSize: 16,
                                     ),
@@ -345,7 +346,7 @@ class _NotificationCard extends StatelessWidget {
                 if (createdAt.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Text(
-                    _formatDate(createdAt),
+                    _formatDate(createdAt, AppLocalizations.of(context)!),
                     style: const TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 11,
@@ -371,18 +372,18 @@ class _NotificationCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(String dateStr) {
+  String _formatDate(String dateStr, AppLocalizations l10n) {
     try {
       final date = DateTime.parse(dateStr);
       final now = DateTime.now();
       final diff = now.difference(date);
 
       if (diff.inMinutes < 60) {
-        return '${diff.inMinutes} мин. назад';
+        return l10n.minutesAgo(diff.inMinutes);
       } else if (diff.inHours < 24) {
-        return '${diff.inHours} ч. назад';
+        return l10n.hoursAgo(diff.inHours);
       } else if (diff.inDays < 7) {
-        return '${diff.inDays} дн. назад';
+        return l10n.daysAgo(diff.inDays);
       }
       return '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}';
     } catch (_) {

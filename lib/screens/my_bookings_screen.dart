@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/court_provider.dart';
 import '../theme/app_theme.dart';
 
@@ -29,21 +30,22 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
   }
 
   Future<void> _cancelBooking(int id) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Отменить бронирование?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        content: const Text('Вы уверены?', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+        title: Text(l10n.cancelBooking, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        content: Text(l10n.areYouSure, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Нет', style: TextStyle(color: AppTheme.textSecondary)),
+            child: Text(l10n.no, style: const TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Да, отменить', style: TextStyle(color: AppTheme.error)),
+            child: Text(l10n.yesCancelIt, style: const TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -54,7 +56,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(success ? 'Бронирование отменено' : 'Ошибка отмены'),
+            content: Text(success ? l10n.bookingCancelled : l10n.cancelError),
             backgroundColor: success ? AppTheme.accent : AppTheme.error,
           ),
         );
@@ -73,8 +75,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Мои бронирования',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+        title: Text(AppLocalizations.of(context)!.myBookings,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
       ),
       body: Consumer<CourtProvider>(
         builder: (context, provider, _) {
@@ -109,7 +111,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Предстоящие'),
+                            Text(AppLocalizations.of(context)!.upcomingBookings),
                             if (provider.upcomingBookings.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               Container(
@@ -127,7 +129,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                           ],
                         ),
                       ),
-                      const Tab(text: 'Прошедшие'),
+                      Tab(text: AppLocalizations.of(context)!.pastBookings),
                     ],
                   ),
                 ),
@@ -163,7 +165,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
             ),
             const SizedBox(height: 12),
             Text(
-              isUpcoming ? 'Нет предстоящих бронирований' : 'Нет прошедших бронирований',
+              isUpcoming ? AppLocalizations.of(context)!.noUpcomingBookings : AppLocalizations.of(context)!.noPastBookings,
               style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
           ],
@@ -203,7 +205,7 @@ class _BookingCard extends StatelessWidget {
         RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]} ');
   }
 
-  String _formatDate(String? date) {
+  String _formatDate(String? date, AppLocalizations l10n) {
     if (date == null) return '';
     try {
       DateTime d;
@@ -213,8 +215,12 @@ class _BookingCard extends StatelessWidget {
       } else {
         d = DateTime.parse(date);
       }
-      const months = ['', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+      final months = [
+        '', l10n.challengeMonthJan, l10n.challengeMonthFeb, l10n.challengeMonthMar,
+        l10n.challengeMonthApr, l10n.challengeMonthMay, l10n.challengeMonthJun,
+        l10n.challengeMonthJul, l10n.challengeMonthAug, l10n.challengeMonthSep,
+        l10n.challengeMonthOct, l10n.challengeMonthNov, l10n.challengeMonthDec,
+      ];
       return '${d.day} ${months[d.month]} ${d.year}';
     } catch (_) {
       return date;
@@ -223,6 +229,7 @@ class _BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final club = booking['club'] as String? ?? '';
     final court = booking['court'] as String? ?? '';
     final date = booking['date'] as String? ?? '';
@@ -295,18 +302,18 @@ class _BookingCard extends StatelessWidget {
                 // Детали 2x2
                 Row(
                   children: [
-                    Expanded(child: _InfoItem(label: 'Дата', value: _formatDate(date))),
-                    Expanded(child: _InfoItem(label: 'Время', value: '$startTime — $endTime')),
+                    Expanded(child: _InfoItem(label: l10n.summaryDate, value: _formatDate(date, l10n))),
+                    Expanded(child: _InfoItem(label: l10n.summaryTime, value: '$startTime — $endTime')),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _InfoItem(label: 'Корт', value: court)),
+                    Expanded(child: _InfoItem(label: l10n.summaryCourt, value: court)),
                     Expanded(
                       child: coach != null
-                          ? _InfoItem(label: 'Тренер', value: coach, valueColor: const Color(0xFFA78BFA))
-                          : const _InfoItem(label: 'Тренер', value: '—'),
+                          ? _InfoItem(label: l10n.summaryCoach, value: coach, valueColor: const Color(0xFFA78BFA))
+                          : _InfoItem(label: l10n.summaryCoach, value: '—'),
                     ),
                   ],
                 ),
@@ -330,7 +337,7 @@ class _BookingCard extends StatelessWidget {
                           ),
                           if (coach != null && coachPrice > 0)
                             Text(
-                              '+ тренер ${_fmtPrice(coachPrice)} ₸',
+                              l10n.coachPlus(_fmtPrice(coachPrice)),
                               style: const TextStyle(fontSize: 11, color: Color(0xFFA78BFA)),
                             ),
                         ],
@@ -345,9 +352,9 @@ class _BookingCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: AppTheme.error.withAlpha(50), width: 0.5),
                             ),
-                            child: const Text(
-                              'Отменить',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.error),
+                            child: Text(
+                              l10n.cancel,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.error),
                             ),
                           ),
                         ),
@@ -371,20 +378,21 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String text;
     Color bg;
     Color fg;
 
     if (isCancelled) {
-      text = 'Отменено';
+      text = l10n.statusCancelled;
       bg = const Color(0xFF3F3F46).withAlpha(40);
       fg = const Color(0xFF71717A);
     } else if (isPending) {
-      text = 'Новая заявка';
+      text = l10n.statusPending;
       bg = AppTheme.error;
       fg = Colors.white;
     } else {
-      text = 'Подтверждено';
+      text = l10n.statusConfirmed;
       bg = AppTheme.accent.withAlpha(25);
       fg = AppTheme.accent;
     }

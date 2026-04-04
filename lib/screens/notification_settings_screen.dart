@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -42,7 +43,7 @@ class _NotificationSettingsScreenState
       });
     } catch (e) {
       setState(() {
-        _error = 'Не удалось загрузить настройки';
+        _error = 'error';
         _isLoading = false;
       });
     }
@@ -70,8 +71,8 @@ class _NotificationSettingsScreenState
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Ошибка сохранения настроек'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.settingsSaveError),
             backgroundColor: AppTheme.error,
           ),
         );
@@ -110,9 +111,9 @@ class _NotificationSettingsScreenState
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
-                    'Уведомления',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.notifications,
+                    style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -136,7 +137,7 @@ class _NotificationSettingsScreenState
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _error!,
+                        AppLocalizations.of(context)!.failedToLoadSettings,
                         style: const TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 15,
@@ -145,7 +146,7 @@ class _NotificationSettingsScreenState
                       const SizedBox(height: 12),
                       TextButton(
                         onPressed: _loadSettings,
-                        child: const Text('Повторить'),
+                        child: Text(AppLocalizations.of(context)!.retry),
                       ),
                     ],
                   ),
@@ -169,19 +170,19 @@ class _NotificationSettingsScreenState
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              'Только турниры моего уровня',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.onlyMyLevelTournaments,
+                              style: const TextStyle(
                                 color: AppTheme.textPrimary,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              'Получать уведомления только о турнирах, подходящих по вашему уровню',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.onlyMyLevelTournamentsDesc,
+                              style: const TextStyle(
                                 color: AppTheme.textSecondary,
                                 fontSize: 13,
                               ),

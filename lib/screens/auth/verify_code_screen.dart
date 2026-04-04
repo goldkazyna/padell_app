@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
@@ -66,9 +67,9 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Код подтверждения',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.verificationCode,
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -76,7 +77,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Код отправлен на $_formattedPhone',
+                AppLocalizations.of(context)!.codeSentTo(_formattedPhone),
                 style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 16,
@@ -148,8 +149,8 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                       onPressed: auth.isLoading
                           ? null
                           : () => auth.sendCode(widget.phone),
-                      child: const Text(
-                        'Отправить код повторно',
+                      child: Text(
+                        AppLocalizations.of(context)!.resendCode,
                         style: TextStyle(
                           color: AppTheme.accent,
                           fontSize: 14,
@@ -184,8 +185,8 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                                 strokeWidth: 2,
                               ),
                             )
-                          : const Text(
-                              'Подтвердить',
+                          : Text(
+                              AppLocalizations.of(context)!.confirmButton,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

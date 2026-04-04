@@ -924,4 +924,365 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationSettingsMenu => 'Настройки уведомлений';
+
+  @override
+  String get dayMon => 'Пн';
+
+  @override
+  String get dayTue => 'Вт';
+
+  @override
+  String get dayWed => 'Ср';
+
+  @override
+  String get dayThu => 'Чт';
+
+  @override
+  String get dayFri => 'Пт';
+
+  @override
+  String get daySat => 'Сб';
+
+  @override
+  String get daySun => 'Вс';
+
+  @override
+  String get monthShortJan => 'янв';
+
+  @override
+  String get monthShortFeb => 'фев';
+
+  @override
+  String get monthShortMar => 'мар';
+
+  @override
+  String get monthShortApr => 'апр';
+
+  @override
+  String get monthShortMay => 'май';
+
+  @override
+  String get monthShortJun => 'июн';
+
+  @override
+  String get monthShortJul => 'июл';
+
+  @override
+  String get monthShortAug => 'авг';
+
+  @override
+  String get monthShortSep => 'сен';
+
+  @override
+  String get monthShortOct => 'окт';
+
+  @override
+  String get monthShortNov => 'ноя';
+
+  @override
+  String get monthShortDec => 'дек';
+
+  @override
+  String courtDefault(int index) {
+    return 'Корт $index';
+  }
+
+  @override
+  String get bookingError => 'Ошибка бронирования';
+
+  @override
+  String get summaryClub => 'Клуб';
+
+  @override
+  String get summaryCourt => 'Корт';
+
+  @override
+  String get summaryDate => 'Дата';
+
+  @override
+  String get summaryStart => 'Начало';
+
+  @override
+  String get summaryTime => 'Время';
+
+  @override
+  String get summaryCoach => 'Тренер';
+
+  @override
+  String get summaryTotal => 'Итого';
+
+  @override
+  String courtPriceBreakdown(String courtPrice, String coachPrice) {
+    return 'Корт $courtPrice + Тренер $coachPrice ₸';
+  }
+
+  @override
+  String coachPlus(String price) {
+    return '+ тренер $price ₸';
+  }
+
+  @override
+  String get failedToLoadNotifications => 'Не удалось загрузить уведомления';
+
+  @override
+  String get noNotifications => 'Нет уведомлений';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count мин. назад';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count ч. назад';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '$count дн. назад';
+  }
+
+  @override
+  String get failedToLoadSettings => 'Не удалось загрузить настройки';
+
+  @override
+  String get settingsSaveError => 'Ошибка сохранения настроек';
+
+  @override
+  String get onlyMyLevelTournaments => 'Только турниры моего уровня';
+
+  @override
+  String get onlyMyLevelTournamentsDesc =>
+      'Получать уведомления только о турнирах, подходящих по вашему уровню';
+
+  @override
+  String get onboardingTitle1 => 'Участвуйте\nв турнирах';
+
+  @override
+  String get onboardingDesc1 =>
+      'Находите турниры по падел-теннису\nрядом с вами и регистрируйтесь в\nодин клик';
+
+  @override
+  String get onboardingTitle2 => 'Следите за\nрейтингом';
+
+  @override
+  String get onboardingDesc2 =>
+      'Отслеживайте свой прогресс и\nсравнивайте результаты с другими\nигроками';
+
+  @override
+  String get onboardingTitle3 => 'Находите\nпартнёров';
+
+  @override
+  String get onboardingDesc3 =>
+      'Ищите игроков своего уровня для\nсовместных тренировок и турниров';
+
+  @override
+  String get skip => 'Пропустить';
+
+  @override
+  String get next => 'Далее';
+
+  @override
+  String get getStarted => 'Начать';
+
+  @override
+  String get authAcceptHint =>
+      'Для продолжения необходимо принять пользовательское соглашение и дать согласие на обработку персональных данных';
+
+  @override
+  String get understood => 'Понятно';
+
+  @override
+  String get termsOfService => 'Пользовательское соглашение';
+
+  @override
+  String get consentToProcessing => 'Согласие на обработку данных';
+
+  @override
+  String get enterCode => 'Введите код';
+
+  @override
+  String get authCancel => 'Отмена';
+
+  @override
+  String get loginTitle => 'Вход';
+
+  @override
+  String get enterPhoneForLogin => 'Введите номер телефона для входа';
+
+  @override
+  String get loginViaTelegramToContinue =>
+      'Войдите через Telegram для продолжения';
+
+  @override
+  String get phoneNumber => 'Номер телефона';
+
+  @override
+  String get enterValidNumber => 'Введите корректный номер';
+
+  @override
+  String get continueButton => 'Продолжить';
+
+  @override
+  String get or => 'или';
+
+  @override
+  String get loginViaTelegram => 'Войти через Telegram';
+
+  @override
+  String get loginViaEmail => 'Войти через Email';
+
+  @override
+  String get consentToProcessPersonalData =>
+      'Согласие на обработку персональных данных';
+
+  @override
+  String get emailLoginTitle => 'Вход по Email';
+
+  @override
+  String get enterEmailAndPassword => 'Введите email и пароль для входа';
+
+  @override
+  String get password => 'Пароль';
+
+  @override
+  String get enterPassword => 'Введите пароль';
+
+  @override
+  String get forgotPassword => 'Забыли пароль?';
+
+  @override
+  String get signIn => 'Войти';
+
+  @override
+  String get noAccount => 'Нет аккаунта? ';
+
+  @override
+  String get registerLink => 'Зарегистрироваться';
+
+  @override
+  String get enterEmail => 'Введите email';
+
+  @override
+  String get enterValidEmail => 'Введите корректный email';
+
+  @override
+  String get registrationTitle => 'Регистрация';
+
+  @override
+  String get createAccountToContinue => 'Создайте аккаунт для продолжения';
+
+  @override
+  String get fullName => 'ФИО';
+
+  @override
+  String get fullNamePlaceholder => 'Иванов Иван Иванович';
+
+  @override
+  String get enterFullName => 'Введите ФИО';
+
+  @override
+  String get phoneLabel => 'Телефон';
+
+  @override
+  String get cityLabel => 'Город';
+
+  @override
+  String get selectCityTitle => 'Выберите город';
+
+  @override
+  String get minSixChars => 'Минимум 6 символов';
+
+  @override
+  String get enterPasswordHint => 'Введите пароль';
+
+  @override
+  String get passwordMinLength => 'Пароль должен быть не менее 6 символов';
+
+  @override
+  String get confirmPassword => 'Подтверждение пароля';
+
+  @override
+  String get repeatPassword => 'Повторите пароль';
+
+  @override
+  String get confirmPasswordHint => 'Подтвердите пароль';
+
+  @override
+  String get passwordsDontMatch => 'Пароли не совпадают';
+
+  @override
+  String get registerAction => 'Зарегистрироваться';
+
+  @override
+  String get alreadyHaveAccount => 'Уже есть аккаунт? ';
+
+  @override
+  String get signInLink => 'Войти';
+
+  @override
+  String get passwordRecovery => 'Восстановление пароля';
+
+  @override
+  String get enterEmailForResetLink =>
+      'Введите email для получения ссылки\nна сброс пароля';
+
+  @override
+  String get linkSentToEmail => 'Ссылка отправлена на email';
+
+  @override
+  String get backToLogin => 'Вернуться к входу';
+
+  @override
+  String get sendLink => 'Отправить ссылку';
+
+  @override
+  String get verificationCode => 'Код подтверждения';
+
+  @override
+  String codeSentTo(String phone) {
+    return 'Код отправлен на $phone';
+  }
+
+  @override
+  String get resendCode => 'Отправить код повторно';
+
+  @override
+  String get confirmButton => 'Подтвердить';
+
+  @override
+  String get confirmLogin => 'Подтвердите вход';
+
+  @override
+  String get pressStartInTelegram =>
+      'Нажмите Start в Telegram боте\nи вернитесь в приложение';
+
+  @override
+  String get connectionFailed => 'Не удалось подключиться';
+
+  @override
+  String get tryAgain => 'Попробовать снова';
+
+  @override
+  String get waitingForConfirmation => 'Ожидание подтверждения...';
+
+  @override
+  String get openTelegram => 'Открыть Telegram';
+
+  @override
+  String get updateAvailable => 'Доступно обновление';
+
+  @override
+  String get updateRequired =>
+      'Для продолжения работы необходимо обновить приложение';
+
+  @override
+  String get newVersionAvailable =>
+      'Вышла новая версия приложения с улучшениями';
+
+  @override
+  String get updateButton => 'Обновить';
+
+  @override
+  String get later => 'Позже';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
@@ -74,18 +75,18 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 const SizedBox(height: 32),
 
                 // Title
-                const Text(
-                  'Вход по Email',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.emailLoginTitle,
+                  style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Введите email и пароль для входа',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.enterEmailAndPassword,
+                  style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 15,
                   ),
@@ -107,11 +108,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   decoration: _inputDecoration('example@mail.com'),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Введите email';
+                      return AppLocalizations.of(context)!.enterEmail;
                     }
                     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                         .hasMatch(value.trim())) {
-                      return 'Введите корректный email';
+                      return AppLocalizations.of(context)!.enterValidEmail;
                     }
                     return null;
                   },
@@ -119,9 +120,9 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 const SizedBox(height: 16),
 
                 // Password field
-                const Text(
-                  'Пароль',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                Text(
+                  AppLocalizations.of(context)!.password,
+                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -129,7 +130,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   obscureText: _obscurePassword,
                   style: const TextStyle(
                       color: AppTheme.textPrimary, fontSize: 16),
-                  decoration: _inputDecoration('Введите пароль').copyWith(
+                  decoration: _inputDecoration(AppLocalizations.of(context)!.enterPassword).copyWith(
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -144,7 +145,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Введите пароль';
+                      return AppLocalizations.of(context)!.enterPassword;
                     }
                     return null;
                   },
@@ -164,8 +165,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       foregroundColor: AppTheme.accent,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
-                    child: const Text(
-                      'Забыли пароль?',
+                    child: Text(
+                      AppLocalizations.of(context)!.forgotPassword,
                       style: TextStyle(fontSize: 14),
                     ),
                   ),
@@ -217,8 +218,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text(
-                                'Войти',
+                            : Text(
+                                AppLocalizations.of(context)!.signIn,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -236,8 +237,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Нет аккаунта? ',
+                      Text(
+                        AppLocalizations.of(context)!.noAccount,
                         style: TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 14,
@@ -250,8 +251,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             builder: (_) => const EmailRegisterScreen(),
                           ),
                         ),
-                        child: const Text(
-                          'Зарегистрироваться',
+                        child: Text(
+                          AppLocalizations.of(context)!.registerLink,
                           style: TextStyle(
                             color: AppTheme.accent,
                             fontSize: 14,

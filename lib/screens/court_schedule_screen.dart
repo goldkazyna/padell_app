@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/club.dart';
 import '../providers/court_provider.dart';
 import '../theme/app_theme.dart';
@@ -16,35 +17,52 @@ class CourtScheduleScreen extends StatefulWidget {
 
 class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
   late String _selectedDate;
-  late List<_DayInfo> _weekDays;
+  List<_DayInfo>? _weekDays;
   int _selectedCourtIndex = 0;
   Map<String, int> _occupancy = {};
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
     final now = DateTime.now();
     _selectedDate = _fmt(now);
-    _weekDays = _buildWeek(now);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
     });
   }
 
+  void _ensureWeekBuilt(AppLocalizations l10n) {
+    if (!_initialized) {
+      _weekDays = _buildWeek(DateTime.now(), _localizedDayNames(l10n), _localizedMonthShorts(l10n));
+      _initialized = true;
+    }
+  }
+
   String _fmt(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-  List<_DayInfo> _buildWeek(DateTime from) {
+  List<String> _localizedDayNames(AppLocalizations l10n) => [
+    l10n.dayMon, l10n.dayTue, l10n.dayWed, l10n.dayThu, l10n.dayFri, l10n.daySat, l10n.daySun,
+  ];
+
+  List<String> _localizedMonthShorts(AppLocalizations l10n) => [
+    '', l10n.monthShortJan, l10n.monthShortFeb, l10n.monthShortMar, l10n.monthShortApr,
+    l10n.monthShortMay, l10n.monthShortJun, l10n.monthShortJul, l10n.monthShortAug,
+    l10n.monthShortSep, l10n.monthShortOct, l10n.monthShortNov, l10n.monthShortDec,
+  ];
+
+  List<_DayInfo> _buildWeek(DateTime from, [List<String>? dn, List<String>? mn]) {
     final monday = from.subtract(Duration(days: from.weekday - 1));
-    const dn = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-    const mn = ['', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    final dayNames = dn ?? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final monthNames = mn ?? ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return List.generate(7, (i) {
       final d = monday.add(Duration(days: i));
       return _DayInfo(
         date: _fmt(d),
-        dayName: dn[i],
+        dayName: dayNames[i],
         dayNum: d.day.toString(),
-        month: mn[d.month],
+        month: monthNames[d.month],
         isToday: _fmt(d) == _fmt(DateTime.now()),
       );
     });
@@ -60,7 +78,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
       final provider = context.read<CourtProvider>();
       final response = await provider.courtService.getWeekOccupancy(
         widget.club.id,
-        _weekDays[0].date,
+        _weekDays![0].date,
       );
       if (response['success'] == true && mounted) {
         final occ = response['occupancy'] as Map<String, dynamic>? ?? {};
@@ -72,11 +90,12 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
   }
 
   void _changeWeek(int delta) {
-    final current = DateTime.parse(_weekDays[0].date);
+    final l10n = AppLocalizations.of(context)!;
+    final current = DateTime.parse(_weekDays![0].date);
     final newStart = current.add(Duration(days: 7 * delta));
     setState(() {
-      _weekDays = _buildWeek(newStart);
-      _selectedDate = _weekDays[0].date;
+      _weekDays = _buildWeek(newStart, _localizedDayNames(l10n), _localizedMonthShorts(l10n));
+      _selectedDate = _weekDays![0].date;
       _selectedCourtIndex = 0;
       _occupancy = {};
     });
@@ -93,6 +112,8 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    _ensureWeekBuilt(l10n);
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
@@ -137,9 +158,9 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                 final courts =
                     provider.scheduleData!['courts'] as List<dynamic>? ?? [];
                 if (courts.isEmpty) {
-                  return const Center(
-                      child: Text('Нет доступных кортов',
-                          style: TextStyle(color: AppTheme.textSecondary)));
+                  return Center(
+                      child: Text(l10n.noCourtsAvailable,
+                          style: const TextStyle(color: AppTheme.textSecondary)));
                 }
 
                 return Column(
@@ -173,7 +194,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
         child: SizedBox(
           height: 76,
           child: Row(
-            children: _weekDays.map((day) {
+            children: _weekDays!.map((day) {
               final isSelected = day.date == _selectedDate;
               final occ = _occupancy[day.date] ?? 0;
               return Expanded(
@@ -220,7 +241,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                   ),
                 ),
                 child: Text(
-                  court['name'] as String? ?? 'Корт ${i + 1}',
+                  court['name'] as String? ?? AppLocalizations.of(context)!.courtDefault(i + 1),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
@@ -246,9 +267,9 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
         (context.read<CourtProvider>().scheduleData?['coaches'] as List<dynamic>?) ?? [];
 
     if (slots.isEmpty) {
-      return const Center(
-          child: Text('Нет слотов на этот день',
-              style: TextStyle(color: AppTheme.textSecondary)));
+      return Center(
+          child: Text(AppLocalizations.of(context)!.noSlotsForDay,
+              style: const TextStyle(color: AppTheme.textSecondary)));
     }
 
     return ListView.builder(
@@ -313,7 +334,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                                   color: AppTheme.accent),
                             )
                           : Text(
-                              status == 'booked' ? 'Занято' : 'Заблок.',
+                              status == 'booked' ? AppLocalizations.of(context)!.occupied : AppLocalizations.of(context)!.blocked,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,

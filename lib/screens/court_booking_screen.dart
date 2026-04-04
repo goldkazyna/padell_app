@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/club.dart';
 import '../providers/court_provider.dart';
 import '../providers/home_provider.dart';
@@ -86,11 +87,17 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
 
   double get _total => _courtTotal + _coachTotal;
 
-  String _formatDate(String date) {
+  List<String> _localizedMonths(AppLocalizations l10n) => [
+    '', l10n.challengeMonthJan, l10n.challengeMonthFeb, l10n.challengeMonthMar,
+    l10n.challengeMonthApr, l10n.challengeMonthMay, l10n.challengeMonthJun,
+    l10n.challengeMonthJul, l10n.challengeMonthAug, l10n.challengeMonthSep,
+    l10n.challengeMonthOct, l10n.challengeMonthNov, l10n.challengeMonthDec,
+  ];
+
+  String _formatDate(String date, AppLocalizations l10n) {
     final parts = date.split('-');
     if (parts.length != 3) return date;
-    const months = ['', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    final months = _localizedMonths(l10n);
     final day = int.tryParse(parts[2]) ?? 0;
     final month = int.tryParse(parts[1]) ?? 0;
     return '$day ${months[month]} ${parts[0]}';
@@ -145,7 +152,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result['message'] as String? ?? 'Ошибка бронирования'),
+          content: Text(result['message'] as String? ?? AppLocalizations.of(context)!.bookingError),
           backgroundColor: AppTheme.error,
         ),
       );
@@ -186,8 +193,8 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
           icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Бронирование',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+        title: Text(AppLocalizations.of(context)!.booking,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -199,7 +206,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             const SizedBox(height: 20),
 
             // Длительность
-            _sectionLabel('Длительность'),
+            _sectionLabel(AppLocalizations.of(context)!.duration),
             const SizedBox(height: 8),
             _buildDurationButtons(),
             const SizedBox(height: 16),
@@ -210,26 +217,26 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
 
             // Тренер
             if (widget.coaches.isNotEmpty) ...[
-              _sectionLabel('Тренер (необязательно)'),
+              _sectionLabel(AppLocalizations.of(context)!.coachOptional),
               const SizedBox(height: 8),
               _buildCoachChips(),
               const SizedBox(height: 20),
             ],
 
             // Имя
-            _sectionLabel('Имя'),
+            _sectionLabel(AppLocalizations.of(context)!.yourName),
             const SizedBox(height: 8),
-            _buildInput(_nameController, 'Введите имя'),
+            _buildInput(_nameController, AppLocalizations.of(context)!.enterName),
             const SizedBox(height: 14),
 
             // Телефон
-            _sectionLabel('Телефон'),
+            _sectionLabel(AppLocalizations.of(context)!.phone),
             const SizedBox(height: 8),
             _buildInput(_phoneController, '+7 777 123 4567'),
             const SizedBox(height: 16),
 
             // Комментарий
-            _sectionLabel('Комментарий'),
+            _sectionLabel(AppLocalizations.of(context)!.comment),
             const SizedBox(height: 8),
             _buildCommentField(),
             const SizedBox(height: 24),
@@ -265,10 +272,10 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       ),
       child: Column(
         children: [
-          _summaryRow('Клуб', widget.club.name),
-          _summaryRow('Корт', widget.courtName),
-          _summaryRow('Дата', _formatDate(widget.date)),
-          _summaryRow('Начало', widget.startTime),
+          _summaryRow(AppLocalizations.of(context)!.summaryClub, widget.club.name),
+          _summaryRow(AppLocalizations.of(context)!.summaryCourt, widget.courtName),
+          _summaryRow(AppLocalizations.of(context)!.summaryDate, _formatDate(widget.date, AppLocalizations.of(context)!)),
+          _summaryRow(AppLocalizations.of(context)!.summaryStart, widget.startTime),
         ],
       ),
     );
@@ -333,7 +340,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: _hourLabel(n),
+                        text: _hourLabel(n, AppLocalizations.of(context)!),
                         style: TextStyle(
                           fontSize: 11, fontWeight: FontWeight.w600,
                           color: isActive ? Colors.black.withAlpha(180) : const Color(0xFF71717A),
@@ -350,10 +357,10 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  String _hourLabel(int n) {
-    if (n == 1) return 'час';
-    if (n >= 2 && n <= 4) return 'часа';
-    return 'часов';
+  String _hourLabel(int n, AppLocalizations l10n) {
+    if (n == 1) return l10n.hourOne;
+    if (n >= 2 && n <= 4) return l10n.hourFew;
+    return l10n.hourMany;
   }
 
   Widget _buildTotalBlock() {
@@ -370,10 +377,10 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Итого', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFA1A1AA))),
+              Text(AppLocalizations.of(context)!.summaryTotal, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFA1A1AA))),
               if (_selectedCoachId != null)
                 Text(
-                  'Корт ${_fmtPrice(_courtTotal)} + Тренер ${_fmtPrice(_coachTotal)} ₸',
+                  AppLocalizations.of(context)!.courtPriceBreakdown(_fmtPrice(_courtTotal), _fmtPrice(_coachTotal)),
                   style: const TextStyle(fontSize: 10, color: Color(0xFF71717A)),
                 ),
             ],
@@ -484,11 +491,11 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         controller: _commentController,
         style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         maxLines: 2,
-        decoration: const InputDecoration(
-          hintText: 'Необязательно',
-          hintStyle: TextStyle(color: Color(0xFF52525B), fontSize: 14),
+        decoration: InputDecoration(
+          hintText: AppLocalizations.of(context)!.optional,
+          hintStyle: const TextStyle(color: Color(0xFF52525B), fontSize: 14),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.all(14),
+          contentPadding: const EdgeInsets.all(14),
         ),
       ),
     );
@@ -519,7 +526,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                     child: CircularProgressIndicator(
                         color: Colors.black, strokeWidth: 2.5))
                 : Text(
-                    'Забронировать — ${_fmtPrice(_total)} ₸',
+                    AppLocalizations.of(context)!.bookButton(_fmtPrice(_total)),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,

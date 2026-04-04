@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 
@@ -13,27 +14,28 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
+  static const _pageCount = 3;
 
-  final _pages = const [
+  List<_OnboardingPage> _buildPages(AppLocalizations l10n) => [
     _OnboardingPage(
       icon: Icons.emoji_events_outlined,
-      title: 'Участвуйте\nв турнирах',
-      description: 'Находите турниры по падел-теннису\nрядом с вами и регистрируйтесь в\nодин клик',
+      title: l10n.onboardingTitle1,
+      description: l10n.onboardingDesc1,
     ),
     _OnboardingPage(
       icon: Icons.trending_up,
-      title: 'Следите за\nрейтингом',
-      description: 'Отслеживайте свой прогресс и\nсравнивайте результаты с другими\nигроками',
+      title: l10n.onboardingTitle2,
+      description: l10n.onboardingDesc2,
     ),
     _OnboardingPage(
       icon: Icons.people_outline,
-      title: 'Находите\nпартнёров',
-      description: 'Ищите игроков своего уровня для\nсовместных тренировок и турниров',
+      title: l10n.onboardingTitle3,
+      description: l10n.onboardingDesc3,
     ),
   ];
 
   void _nextPage() {
-    if (_currentPage < _pages.length - 1) {
+    if (_currentPage < _pageCount - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -55,6 +57,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final pages = _buildPages(l10n);
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
@@ -67,9 +71,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.all(16),
                 child: TextButton(
                   onPressed: _goToLogin,
-                  child: const Text(
-                    'Пропустить',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.skip,
+                    style: const TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 14,
                     ),
@@ -82,9 +86,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 onPageChanged: (index) => setState(() => _currentPage = index),
-                itemBuilder: (_, index) => _pages[index],
+                itemBuilder: (_, index) => pages[index],
               ),
             ),
 
@@ -92,7 +96,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                _pages.length,
+                pages.length,
                 (index) => Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   width: index == _currentPage ? 24 : 8,
@@ -125,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    _currentPage < _pages.length - 1 ? 'Далее' : 'Начать',
+                    _currentPage < _pageCount - 1 ? l10n.next : l10n.getStarted,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

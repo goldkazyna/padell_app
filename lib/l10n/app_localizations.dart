@@ -1789,6 +1789,678 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Настройки уведомлений'**
   String get notificationSettingsMenu;
+
+  /// No description provided for @dayMon.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пн'**
+  String get dayMon;
+
+  /// No description provided for @dayTue.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вт'**
+  String get dayTue;
+
+  /// No description provided for @dayWed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ср'**
+  String get dayWed;
+
+  /// No description provided for @dayThu.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чт'**
+  String get dayThu;
+
+  /// No description provided for @dayFri.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пт'**
+  String get dayFri;
+
+  /// No description provided for @daySat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сб'**
+  String get daySat;
+
+  /// No description provided for @daySun.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вс'**
+  String get daySun;
+
+  /// No description provided for @monthShortJan.
+  ///
+  /// In ru, this message translates to:
+  /// **'янв'**
+  String get monthShortJan;
+
+  /// No description provided for @monthShortFeb.
+  ///
+  /// In ru, this message translates to:
+  /// **'фев'**
+  String get monthShortFeb;
+
+  /// No description provided for @monthShortMar.
+  ///
+  /// In ru, this message translates to:
+  /// **'мар'**
+  String get monthShortMar;
+
+  /// No description provided for @monthShortApr.
+  ///
+  /// In ru, this message translates to:
+  /// **'апр'**
+  String get monthShortApr;
+
+  /// No description provided for @monthShortMay.
+  ///
+  /// In ru, this message translates to:
+  /// **'май'**
+  String get monthShortMay;
+
+  /// No description provided for @monthShortJun.
+  ///
+  /// In ru, this message translates to:
+  /// **'июн'**
+  String get monthShortJun;
+
+  /// No description provided for @monthShortJul.
+  ///
+  /// In ru, this message translates to:
+  /// **'июл'**
+  String get monthShortJul;
+
+  /// No description provided for @monthShortAug.
+  ///
+  /// In ru, this message translates to:
+  /// **'авг'**
+  String get monthShortAug;
+
+  /// No description provided for @monthShortSep.
+  ///
+  /// In ru, this message translates to:
+  /// **'сен'**
+  String get monthShortSep;
+
+  /// No description provided for @monthShortOct.
+  ///
+  /// In ru, this message translates to:
+  /// **'окт'**
+  String get monthShortOct;
+
+  /// No description provided for @monthShortNov.
+  ///
+  /// In ru, this message translates to:
+  /// **'ноя'**
+  String get monthShortNov;
+
+  /// No description provided for @monthShortDec.
+  ///
+  /// In ru, this message translates to:
+  /// **'дек'**
+  String get monthShortDec;
+
+  /// No description provided for @courtDefault.
+  ///
+  /// In ru, this message translates to:
+  /// **'Корт {index}'**
+  String courtDefault(int index);
+
+  /// No description provided for @bookingError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка бронирования'**
+  String get bookingError;
+
+  /// No description provided for @summaryClub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клуб'**
+  String get summaryClub;
+
+  /// No description provided for @summaryCourt.
+  ///
+  /// In ru, this message translates to:
+  /// **'Корт'**
+  String get summaryCourt;
+
+  /// No description provided for @summaryDate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата'**
+  String get summaryDate;
+
+  /// No description provided for @summaryStart.
+  ///
+  /// In ru, this message translates to:
+  /// **'Начало'**
+  String get summaryStart;
+
+  /// No description provided for @summaryTime.
+  ///
+  /// In ru, this message translates to:
+  /// **'Время'**
+  String get summaryTime;
+
+  /// No description provided for @summaryCoach.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тренер'**
+  String get summaryCoach;
+
+  /// No description provided for @summaryTotal.
+  ///
+  /// In ru, this message translates to:
+  /// **'Итого'**
+  String get summaryTotal;
+
+  /// No description provided for @courtPriceBreakdown.
+  ///
+  /// In ru, this message translates to:
+  /// **'Корт {courtPrice} + Тренер {coachPrice} ₸'**
+  String courtPriceBreakdown(String courtPrice, String coachPrice);
+
+  /// No description provided for @coachPlus.
+  ///
+  /// In ru, this message translates to:
+  /// **'+ тренер {price} ₸'**
+  String coachPlus(String price);
+
+  /// No description provided for @failedToLoadNotifications.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось загрузить уведомления'**
+  String get failedToLoadNotifications;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет уведомлений'**
+  String get noNotifications;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} мин. назад'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} ч. назад'**
+  String hoursAgo(int count);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} дн. назад'**
+  String daysAgo(int count);
+
+  /// No description provided for @failedToLoadSettings.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось загрузить настройки'**
+  String get failedToLoadSettings;
+
+  /// No description provided for @settingsSaveError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка сохранения настроек'**
+  String get settingsSaveError;
+
+  /// No description provided for @onlyMyLevelTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Только турниры моего уровня'**
+  String get onlyMyLevelTournaments;
+
+  /// No description provided for @onlyMyLevelTournamentsDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Получать уведомления только о турнирах, подходящих по вашему уровню'**
+  String get onlyMyLevelTournamentsDesc;
+
+  /// No description provided for @onboardingTitle1.
+  ///
+  /// In ru, this message translates to:
+  /// **'Участвуйте\nв турнирах'**
+  String get onboardingTitle1;
+
+  /// No description provided for @onboardingDesc1.
+  ///
+  /// In ru, this message translates to:
+  /// **'Находите турниры по падел-теннису\nрядом с вами и регистрируйтесь в\nодин клик'**
+  String get onboardingDesc1;
+
+  /// No description provided for @onboardingTitle2.
+  ///
+  /// In ru, this message translates to:
+  /// **'Следите за\nрейтингом'**
+  String get onboardingTitle2;
+
+  /// No description provided for @onboardingDesc2.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отслеживайте свой прогресс и\nсравнивайте результаты с другими\nигроками'**
+  String get onboardingDesc2;
+
+  /// No description provided for @onboardingTitle3.
+  ///
+  /// In ru, this message translates to:
+  /// **'Находите\nпартнёров'**
+  String get onboardingTitle3;
+
+  /// No description provided for @onboardingDesc3.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ищите игроков своего уровня для\nсовместных тренировок и турниров'**
+  String get onboardingDesc3;
+
+  /// No description provided for @skip.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пропустить'**
+  String get skip;
+
+  /// No description provided for @next.
+  ///
+  /// In ru, this message translates to:
+  /// **'Далее'**
+  String get next;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In ru, this message translates to:
+  /// **'Начать'**
+  String get getStarted;
+
+  /// No description provided for @authAcceptHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Для продолжения необходимо принять пользовательское соглашение и дать согласие на обработку персональных данных'**
+  String get authAcceptHint;
+
+  /// No description provided for @understood.
+  ///
+  /// In ru, this message translates to:
+  /// **'Понятно'**
+  String get understood;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользовательское соглашение'**
+  String get termsOfService;
+
+  /// No description provided for @consentToProcessing.
+  ///
+  /// In ru, this message translates to:
+  /// **'Согласие на обработку данных'**
+  String get consentToProcessing;
+
+  /// No description provided for @enterCode.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите код'**
+  String get enterCode;
+
+  /// No description provided for @authCancel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отмена'**
+  String get authCancel;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вход'**
+  String get loginTitle;
+
+  /// No description provided for @enterPhoneForLogin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите номер телефона для входа'**
+  String get enterPhoneForLogin;
+
+  /// No description provided for @loginViaTelegramToContinue.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войдите через Telegram для продолжения'**
+  String get loginViaTelegramToContinue;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In ru, this message translates to:
+  /// **'Номер телефона'**
+  String get phoneNumber;
+
+  /// No description provided for @enterValidNumber.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите корректный номер'**
+  String get enterValidNumber;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Продолжить'**
+  String get continueButton;
+
+  /// No description provided for @or.
+  ///
+  /// In ru, this message translates to:
+  /// **'или'**
+  String get or;
+
+  /// No description provided for @loginViaTelegram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти через Telegram'**
+  String get loginViaTelegram;
+
+  /// No description provided for @loginViaEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти через Email'**
+  String get loginViaEmail;
+
+  /// No description provided for @consentToProcessPersonalData.
+  ///
+  /// In ru, this message translates to:
+  /// **'Согласие на обработку персональных данных'**
+  String get consentToProcessPersonalData;
+
+  /// No description provided for @emailLoginTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вход по Email'**
+  String get emailLoginTitle;
+
+  /// No description provided for @enterEmailAndPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите email и пароль для входа'**
+  String get enterEmailAndPassword;
+
+  /// No description provided for @password.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль'**
+  String get password;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите пароль'**
+  String get enterPassword;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Забыли пароль?'**
+  String get forgotPassword;
+
+  /// No description provided for @signIn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти'**
+  String get signIn;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет аккаунта? '**
+  String get noAccount;
+
+  /// No description provided for @registerLink.
+  ///
+  /// In ru, this message translates to:
+  /// **'Зарегистрироваться'**
+  String get registerLink;
+
+  /// No description provided for @enterEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите email'**
+  String get enterEmail;
+
+  /// No description provided for @enterValidEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите корректный email'**
+  String get enterValidEmail;
+
+  /// No description provided for @registrationTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Регистрация'**
+  String get registrationTitle;
+
+  /// No description provided for @createAccountToContinue.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создайте аккаунт для продолжения'**
+  String get createAccountToContinue;
+
+  /// No description provided for @fullName.
+  ///
+  /// In ru, this message translates to:
+  /// **'ФИО'**
+  String get fullName;
+
+  /// No description provided for @fullNamePlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Иванов Иван Иванович'**
+  String get fullNamePlaceholder;
+
+  /// No description provided for @enterFullName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ФИО'**
+  String get enterFullName;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Телефон'**
+  String get phoneLabel;
+
+  /// No description provided for @cityLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Город'**
+  String get cityLabel;
+
+  /// No description provided for @selectCityTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите город'**
+  String get selectCityTitle;
+
+  /// No description provided for @minSixChars.
+  ///
+  /// In ru, this message translates to:
+  /// **'Минимум 6 символов'**
+  String get minSixChars;
+
+  /// No description provided for @enterPasswordHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите пароль'**
+  String get enterPasswordHint;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль должен быть не менее 6 символов'**
+  String get passwordMinLength;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтверждение пароля'**
+  String get confirmPassword;
+
+  /// No description provided for @repeatPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Повторите пароль'**
+  String get repeatPassword;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердите пароль'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @passwordsDontMatch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароли не совпадают'**
+  String get passwordsDontMatch;
+
+  /// No description provided for @registerAction.
+  ///
+  /// In ru, this message translates to:
+  /// **'Зарегистрироваться'**
+  String get registerAction;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уже есть аккаунт? '**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @signInLink.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти'**
+  String get signInLink;
+
+  /// No description provided for @passwordRecovery.
+  ///
+  /// In ru, this message translates to:
+  /// **'Восстановление пароля'**
+  String get passwordRecovery;
+
+  /// No description provided for @enterEmailForResetLink.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите email для получения ссылки\nна сброс пароля'**
+  String get enterEmailForResetLink;
+
+  /// No description provided for @linkSentToEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ссылка отправлена на email'**
+  String get linkSentToEmail;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вернуться к входу'**
+  String get backToLogin;
+
+  /// No description provided for @sendLink.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отправить ссылку'**
+  String get sendLink;
+
+  /// No description provided for @verificationCode.
+  ///
+  /// In ru, this message translates to:
+  /// **'Код подтверждения'**
+  String get verificationCode;
+
+  /// No description provided for @codeSentTo.
+  ///
+  /// In ru, this message translates to:
+  /// **'Код отправлен на {phone}'**
+  String codeSentTo(String phone);
+
+  /// No description provided for @resendCode.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отправить код повторно'**
+  String get resendCode;
+
+  /// No description provided for @confirmButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердить'**
+  String get confirmButton;
+
+  /// No description provided for @confirmLogin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердите вход'**
+  String get confirmLogin;
+
+  /// No description provided for @pressStartInTelegram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нажмите Start в Telegram боте\nи вернитесь в приложение'**
+  String get pressStartInTelegram;
+
+  /// No description provided for @connectionFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось подключиться'**
+  String get connectionFailed;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In ru, this message translates to:
+  /// **'Попробовать снова'**
+  String get tryAgain;
+
+  /// No description provided for @waitingForConfirmation.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидание подтверждения...'**
+  String get waitingForConfirmation;
+
+  /// No description provided for @openTelegram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть Telegram'**
+  String get openTelegram;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Доступно обновление'**
+  String get updateAvailable;
+
+  /// No description provided for @updateRequired.
+  ///
+  /// In ru, this message translates to:
+  /// **'Для продолжения работы необходимо обновить приложение'**
+  String get updateRequired;
+
+  /// No description provided for @newVersionAvailable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вышла новая версия приложения с улучшениями'**
+  String get newVersionAvailable;
+
+  /// No description provided for @updateButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обновить'**
+  String get updateButton;
+
+  /// No description provided for @later.
+  ///
+  /// In ru, this message translates to:
+  /// **'Позже'**
+  String get later;
 }
 
 class _AppLocalizationsDelegate

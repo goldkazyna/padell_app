@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import 'my_bookings_screen.dart';
 
@@ -28,6 +29,7 @@ class BookingConfirmationScreen extends StatelessWidget {
     final coachPrice = (booking['coach_price'] as num?) ?? 0;
     final totalPrice = (booking['total_price'] as num?) ?? courtPrice;
 
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
@@ -49,14 +51,14 @@ class BookingConfirmationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              const Text(
-                'Бронь подтверждена!',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+              Text(
+                l10n.bookingConfirmed,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Вы успешно забронировали корт',
-                style: TextStyle(fontSize: 14, color: AppTheme.textSecondary),
+              Text(
+                l10n.bookingConfirmedSubtitle,
+                style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary),
               ),
               const SizedBox(height: 28),
 
@@ -71,23 +73,23 @@ class BookingConfirmationScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _row('Клуб', clubName),
-                    _row('Корт', court),
-                    _row('Дата', date),
-                    _row('Время', '$startTime — $endTime'),
-                    if (coachName != null) _row('Тренер', coachName, color: const Color(0xFFA78BFA)),
+                    _row(l10n.summaryClub, clubName),
+                    _row(l10n.summaryCourt, court),
+                    _row(l10n.summaryDate, date),
+                    _row(l10n.summaryTime, '$startTime — $endTime'),
+                    if (coachName != null) _row(l10n.summaryCoach, coachName, color: const Color(0xFFA78BFA)),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Divider(color: Color(0xFF2A2A2A), height: 1),
                     ),
-                    _row('Корт', '${_fmtPrice(courtPrice)} ₸', color: AppTheme.accent),
+                    _row(l10n.summaryCourt, '${_fmtPrice(courtPrice)} ₸', color: AppTheme.accent),
                     if (coachName != null && coachPrice > 0)
-                      _row('Тренер', '${_fmtPrice(coachPrice)} ₸', color: const Color(0xFFA78BFA)),
+                      _row(l10n.summaryCoach, '${_fmtPrice(coachPrice)} ₸', color: const Color(0xFFA78BFA)),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Divider(color: Color(0xFF2A2A2A), height: 1),
                     ),
-                    _row('Итого', '${_fmtPrice(totalPrice)} ₸',
+                    _row(l10n.summaryTotal, '${_fmtPrice(totalPrice)} ₸',
                         color: AppTheme.accent, bold: true, big: true),
                   ],
                 ),
@@ -109,9 +111,9 @@ class BookingConfirmationScreen extends StatelessWidget {
                       color: AppTheme.accent,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Center(
-                      child: Text('Мои бронирования',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black)),
+                    child: Center(
+                      child: Text(l10n.myBookings,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black)),
                     ),
                   ),
                 ),
@@ -130,9 +132,9 @@ class BookingConfirmationScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
                     ),
-                    child: const Center(
-                      child: Text('На главную',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textSecondary)),
+                    child: Center(
+                      child: Text(l10n.goHome,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textSecondary)),
                     ),
                   ),
                 ),

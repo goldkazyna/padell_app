@@ -923,4 +923,364 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationSettingsMenu => 'Notification settings';
+
+  @override
+  String get dayMon => 'Mon';
+
+  @override
+  String get dayTue => 'Tue';
+
+  @override
+  String get dayWed => 'Wed';
+
+  @override
+  String get dayThu => 'Thu';
+
+  @override
+  String get dayFri => 'Fri';
+
+  @override
+  String get daySat => 'Sat';
+
+  @override
+  String get daySun => 'Sun';
+
+  @override
+  String get monthShortJan => 'Jan';
+
+  @override
+  String get monthShortFeb => 'Feb';
+
+  @override
+  String get monthShortMar => 'Mar';
+
+  @override
+  String get monthShortApr => 'Apr';
+
+  @override
+  String get monthShortMay => 'May';
+
+  @override
+  String get monthShortJun => 'Jun';
+
+  @override
+  String get monthShortJul => 'Jul';
+
+  @override
+  String get monthShortAug => 'Aug';
+
+  @override
+  String get monthShortSep => 'Sep';
+
+  @override
+  String get monthShortOct => 'Oct';
+
+  @override
+  String get monthShortNov => 'Nov';
+
+  @override
+  String get monthShortDec => 'Dec';
+
+  @override
+  String courtDefault(int index) {
+    return 'Court $index';
+  }
+
+  @override
+  String get bookingError => 'Booking error';
+
+  @override
+  String get summaryClub => 'Club';
+
+  @override
+  String get summaryCourt => 'Court';
+
+  @override
+  String get summaryDate => 'Date';
+
+  @override
+  String get summaryStart => 'Start';
+
+  @override
+  String get summaryTime => 'Time';
+
+  @override
+  String get summaryCoach => 'Coach';
+
+  @override
+  String get summaryTotal => 'Total';
+
+  @override
+  String courtPriceBreakdown(String courtPrice, String coachPrice) {
+    return 'Court $courtPrice + Coach $coachPrice ₸';
+  }
+
+  @override
+  String coachPlus(String price) {
+    return '+ coach $price ₸';
+  }
+
+  @override
+  String get failedToLoadNotifications => 'Failed to load notifications';
+
+  @override
+  String get noNotifications => 'No notifications';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '$count d ago';
+  }
+
+  @override
+  String get failedToLoadSettings => 'Failed to load settings';
+
+  @override
+  String get settingsSaveError => 'Failed to save settings';
+
+  @override
+  String get onlyMyLevelTournaments => 'Only my level tournaments';
+
+  @override
+  String get onlyMyLevelTournamentsDesc =>
+      'Receive notifications only about tournaments matching your level';
+
+  @override
+  String get onboardingTitle1 => 'Join\ntournaments';
+
+  @override
+  String get onboardingDesc1 =>
+      'Find padel tennis tournaments\nnear you and register in\none click';
+
+  @override
+  String get onboardingTitle2 => 'Track your\nrating';
+
+  @override
+  String get onboardingDesc2 =>
+      'Track your progress and\ncompare results with other\nplayers';
+
+  @override
+  String get onboardingTitle3 => 'Find\npartners';
+
+  @override
+  String get onboardingDesc3 =>
+      'Find players at your level for\njoint training and tournaments';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get authAcceptHint =>
+      'To continue, you must accept the terms of service and consent to personal data processing';
+
+  @override
+  String get understood => 'Got it';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get consentToProcessing => 'Consent to Data Processing';
+
+  @override
+  String get enterCode => 'Enter code';
+
+  @override
+  String get authCancel => 'Cancel';
+
+  @override
+  String get loginTitle => 'Login';
+
+  @override
+  String get enterPhoneForLogin => 'Enter phone number to log in';
+
+  @override
+  String get loginViaTelegramToContinue => 'Log in via Telegram to continue';
+
+  @override
+  String get phoneNumber => 'Phone number';
+
+  @override
+  String get enterValidNumber => 'Enter a valid number';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get or => 'or';
+
+  @override
+  String get loginViaTelegram => 'Log in via Telegram';
+
+  @override
+  String get loginViaEmail => 'Log in via Email';
+
+  @override
+  String get consentToProcessPersonalData =>
+      'Consent to personal data processing';
+
+  @override
+  String get emailLoginTitle => 'Email Login';
+
+  @override
+  String get enterEmailAndPassword => 'Enter email and password to log in';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get enterPassword => 'Enter password';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get noAccount => 'No account? ';
+
+  @override
+  String get registerLink => 'Register';
+
+  @override
+  String get enterEmail => 'Enter email';
+
+  @override
+  String get enterValidEmail => 'Enter a valid email';
+
+  @override
+  String get registrationTitle => 'Registration';
+
+  @override
+  String get createAccountToContinue => 'Create an account to continue';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get fullNamePlaceholder => 'John Doe';
+
+  @override
+  String get enterFullName => 'Enter full name';
+
+  @override
+  String get phoneLabel => 'Phone';
+
+  @override
+  String get cityLabel => 'City';
+
+  @override
+  String get selectCityTitle => 'Select city';
+
+  @override
+  String get minSixChars => 'Minimum 6 characters';
+
+  @override
+  String get enterPasswordHint => 'Enter password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get confirmPassword => 'Confirm password';
+
+  @override
+  String get repeatPassword => 'Repeat password';
+
+  @override
+  String get confirmPasswordHint => 'Confirm password';
+
+  @override
+  String get passwordsDontMatch => 'Passwords don\'t match';
+
+  @override
+  String get registerAction => 'Register';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account? ';
+
+  @override
+  String get signInLink => 'Sign In';
+
+  @override
+  String get passwordRecovery => 'Password Recovery';
+
+  @override
+  String get enterEmailForResetLink =>
+      'Enter your email to receive\na password reset link';
+
+  @override
+  String get linkSentToEmail => 'Link sent to email';
+
+  @override
+  String get backToLogin => 'Back to login';
+
+  @override
+  String get sendLink => 'Send link';
+
+  @override
+  String get verificationCode => 'Verification Code';
+
+  @override
+  String codeSentTo(String phone) {
+    return 'Code sent to $phone';
+  }
+
+  @override
+  String get resendCode => 'Resend code';
+
+  @override
+  String get confirmButton => 'Confirm';
+
+  @override
+  String get confirmLogin => 'Confirm login';
+
+  @override
+  String get pressStartInTelegram =>
+      'Press Start in the Telegram bot\nand return to the app';
+
+  @override
+  String get connectionFailed => 'Connection failed';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get waitingForConfirmation => 'Waiting for confirmation...';
+
+  @override
+  String get openTelegram => 'Open Telegram';
+
+  @override
+  String get updateAvailable => 'Update Available';
+
+  @override
+  String get updateRequired =>
+      'An update is required to continue using the app';
+
+  @override
+  String get newVersionAvailable =>
+      'A new version with improvements is available';
+
+  @override
+  String get updateButton => 'Update';
+
+  @override
+  String get later => 'Later';
 }

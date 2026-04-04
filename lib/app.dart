@@ -17,7 +17,6 @@ import 'screens/tournaments_screen.dart';
 import 'screens/rating_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/challenges_screen.dart';
-import 'l10n/app_localizations.dart';
 
 /// Global navigator key for navigation from push notifications
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -110,9 +109,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               children: [
                 const Icon(Icons.system_update, color: AppTheme.accent, size: 48),
                 const SizedBox(height: 16),
-                const Text(
-                  'Доступно обновление',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.updateAvailable,
+                  style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -121,8 +120,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 const SizedBox(height: 8),
                 Text(
                   force
-                      ? 'Для продолжения работы необходимо обновить приложение'
-                      : 'Вышла новая версия приложения с улучшениями',
+                      ? AppLocalizations.of(context)!.updateRequired
+                      : AppLocalizations.of(context)!.newVersionAvailable,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppTheme.textSecondary,
@@ -146,15 +145,15 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
                     ),
-                    child: const Text('Обновить', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    child: Text(AppLocalizations.of(context)!.updateButton, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                   ),
                 ),
                 if (!force) ...[
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text(
-                      'Позже',
+                    child: Text(
+                      AppLocalizations.of(context)!.later,
                       style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                   ),

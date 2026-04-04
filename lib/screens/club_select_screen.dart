@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/court_provider.dart';
 import '../models/club.dart';
 import '../theme/app_theme.dart';
@@ -40,9 +41,9 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
           icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Выберите клуб',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+        title: Text(
+          AppLocalizations.of(context)!.selectClub,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
         ),
       ),
       body: Consumer<CourtProvider>(
@@ -61,12 +62,12 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
                   child: TextField(
                     controller: _searchController,
                     style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
-                    decoration: const InputDecoration(
-                      hintText: 'Поиск клуба...',
-                      hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
-                      prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary, size: 20),
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.searchClub,
+                      hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                      prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary, size: 20),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                     onChanged: (value) {
                       provider.setSearch(value);
@@ -84,7 +85,7 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     children: [
                       _CityChip(
-                        label: 'Все',
+                        label: AppLocalizations.of(context)!.allCities,
                         isSelected: provider.selectedCity == null,
                         onTap: () => provider.setCity(null),
                       ),
@@ -126,7 +127,7 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => provider.loadClubs(),
-              child: const Text('Повторить', style: TextStyle(color: AppTheme.accent)),
+              child: Text(AppLocalizations.of(context)!.retry, style: const TextStyle(color: AppTheme.accent)),
             ),
           ],
         ),
@@ -134,13 +135,13 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
     }
 
     if (provider.clubs.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.sports_tennis, size: 48, color: Color(0xFF3F3F46)),
-            SizedBox(height: 12),
-            Text('Клубов не найдено', style: TextStyle(color: AppTheme.textSecondary, fontSize: 15)),
+            const Icon(Icons.sports_tennis, size: 48, color: Color(0xFF3F3F46)),
+            const SizedBox(height: 12),
+            Text(AppLocalizations.of(context)!.noClubsFound, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15)),
           ],
         ),
       );
@@ -216,6 +217,7 @@ class _ClubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -269,13 +271,13 @@ class _ClubCard extends StatelessWidget {
                   Row(
                     children: [
                       _Tag(
-                        text: '${club.courtsCount} ${_courtLabel(club.courtsCount)}',
+                        text: l10n.courtsCount(club.courtsCount),
                         color: const Color(0xFF3B82F6),
                       ),
                       if (club.minPrice != null) ...[
                         const SizedBox(width: 6),
                         _Tag(
-                          text: 'от ${_formatPrice(club.minPrice!)} ₸',
+                          text: l10n.priceFrom(_formatPrice(club.minPrice!)),
                           color: AppTheme.accent,
                         ),
                       ],
@@ -288,12 +290,6 @@ class _ClubCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _courtLabel(int count) {
-    if (count == 1) return 'корт';
-    if (count >= 2 && count <= 4) return 'корта';
-    return 'кортов';
   }
 
   String _formatPrice(double price) {
