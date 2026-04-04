@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/home_provider.dart';
@@ -13,13 +14,31 @@ class HomeHeader extends StatefulWidget {
   State<HomeHeader> createState() => _HomeHeaderState();
 }
 
-class _HomeHeaderState extends State<HomeHeader> {
+class _HomeHeaderState extends State<HomeHeader> with WidgetsBindingObserver {
   int _unreadCount = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkUnread();
+    // Polling каждые 30 секунд
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _checkUnread());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkUnread();
+    }
   }
 
   Future<void> _checkUnread() async {
@@ -36,7 +55,6 @@ class _HomeHeaderState extends State<HomeHeader> {
       context,
       MaterialPageRoute(builder: (_) => const NotificationCategoriesScreen()),
     );
-    // Refresh unread count when coming back
     _checkUnread();
   }
 
