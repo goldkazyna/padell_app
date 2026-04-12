@@ -75,11 +75,7 @@ class TournamentHistory extends StatelessWidget {
               ...List.generate(
                 tournaments.length > 5 ? 5 : tournaments.length,
                 (i) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                        bottom: i < tournaments.length - 1 && i < 4 ? 8 : 0),
-                    child: _TournamentHistoryCard(tournament: tournaments[i]),
-                  );
+                  return _TournamentHistoryCard(tournament: tournaments[i]);
                 },
               ),
           ],
@@ -97,7 +93,8 @@ class _TournamentHistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final place = tournament.myResult?.place;
-    final placeColor = _placeColor(place);
+    final ratingChange = tournament.myResult?.ratingChange ?? 0;
+    final isPositive = ratingChange >= 0;
 
     return GestureDetector(
       onTap: () {
@@ -111,37 +108,14 @@ class _TournamentHistoryCard extends StatelessWidget {
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppTheme.card,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Color(0xFF1A1A1E), width: 0.5)),
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
         child: Row(
           children: [
-            SizedBox(
-              width: 44,
-              child: Column(
-                children: [
-                  Text(
-                    tournament.dayOfMonth,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    tournament.monthShort,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 14),
+            _buildPlaceIcon(place),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,64 +124,94 @@ class _TournamentHistoryCard extends StatelessWidget {
                     tournament.name,
                     style: const TextStyle(
                       color: AppTheme.textPrimary,
-                      fontSize: 15,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 3),
                   Text(
-                    tournament.club.name,
+                    tournament.dateFormatted,
                     style: const TextStyle(
                       color: AppTheme.textSecondary,
-                      fontSize: 13,
+                      fontSize: 11,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            if (place != null && place >= 1 && place <= 2)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: placeColor.withAlpha(25),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.emoji_events, color: placeColor, size: 14),
-                    const SizedBox(width: 4),
-                    Text(
-                      AppLocalizations.of(context)!.placeLabel(place),
-                      style: TextStyle(
-                        color: placeColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+            const Icon(Icons.chevron_right, size: 16, color: Color(0xFF3F3F46)),
+            SizedBox(
+              width: 50,
+              child: Text(
+                '${isPositive ? '+' : ''}$ratingChange',
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: isPositive ? AppTheme.accent : const Color(0xFFEF4444),
                 ),
               ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Color _placeColor(int? place) {
-    switch (place) {
-      case 1:
-        return const Color(0xFFFBBF24); // золото
-      case 2:
-        return const Color(0xFF9CA3AF); // серебро
-      case 3:
-        return const Color(0xFFCD7C32); // бронза
-      default:
-        return const Color(0xFF6B7280);
+  Widget _buildPlaceIcon(int? place) {
+    if (place == 1) {
+      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥇', style: TextStyle(fontSize: 32))));
+    } else if (place == 2) {
+      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥈', style: TextStyle(fontSize: 32))));
+    } else if (place == 3) {
+      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥉', style: TextStyle(fontSize: 32))));
+    } else if (place != null && place > 0) {
+      return SizedBox(
+        width: 48, height: 48,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$place',
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppTheme.accent,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Text(
+                'место',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 8,
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        width: 48, height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFF27272A),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(
+          child: Icon(Icons.emoji_events, size: 22, color: AppTheme.textSecondary),
+        ),
+      );
     }
   }
 }

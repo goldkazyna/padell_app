@@ -122,6 +122,54 @@ abstract class AppLocalizations {
   /// **'Поединок'**
   String get navChallenges;
 
+  /// No description provided for @navBooking.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бронирование'**
+  String get navBooking;
+
+  /// No description provided for @ratingTabRating.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинг'**
+  String get ratingTabRating;
+
+  /// No description provided for @ratingTabGrowth.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рост рейтинга'**
+  String get ratingTabGrowth;
+
+  /// No description provided for @ratingTabTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турниры'**
+  String get ratingTabTournaments;
+
+  /// No description provided for @growthPeriodWeek.
+  ///
+  /// In ru, this message translates to:
+  /// **'Неделя'**
+  String get growthPeriodWeek;
+
+  /// No description provided for @growthPeriodMonth.
+  ///
+  /// In ru, this message translates to:
+  /// **'Месяц'**
+  String get growthPeriodMonth;
+
+  /// No description provided for @growthPeriodAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Всё время'**
+  String get growthPeriodAll;
+
+  /// No description provided for @growthPoints.
+  ///
+  /// In ru, this message translates to:
+  /// **'+{points}'**
+  String growthPoints(int points);
+
   /// No description provided for @navRating.
   ///
   /// In ru, this message translates to:
@@ -1601,8 +1649,14 @@ abstract class AppLocalizations {
   /// No description provided for @editProfile.
   ///
   /// In ru, this message translates to:
-  /// **'Редактировать'**
+  /// **'Настройки профиля'**
   String get editProfile;
+
+  /// No description provided for @editProfileSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя, город, пол'**
+  String get editProfileSubtitle;
 
   /// No description provided for @saveProfile.
   ///

@@ -7,7 +7,8 @@ import '../theme/app_theme.dart';
 import 'court_schedule_screen.dart';
 
 class ClubSelectScreen extends StatefulWidget {
-  const ClubSelectScreen({super.key});
+  final bool showBack;
+  const ClubSelectScreen({super.key, this.showBack = true});
 
   @override
   State<ClubSelectScreen> createState() => _ClubSelectScreenState();
@@ -37,10 +38,13 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: widget.showBack
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios, size: 20),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
+        automaticallyImplyLeading: false,
         title: Text(
           AppLocalizations.of(context)!.selectClub,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
@@ -229,22 +233,45 @@ class _ClubCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Фото-заглушка
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E1E1E),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                image: club.logo != null
-                    ? DecorationImage(image: NetworkImage(club.logo!), fit: BoxFit.cover)
-                    : null,
+            // Лого клуба
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(color: const Color(0xFF1E1E1E)),
+                    if (club.logo != null)
+                      Image.network(
+                        club.logo!,
+                        fit: BoxFit.cover,
+                      )
+                    else
+                      const Center(
+                        child: Icon(Icons.sports_tennis, size: 40, color: Color(0xFF3F3F46)),
+                      ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 50,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              AppTheme.card,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: club.logo == null
-                  ? const Center(
-                      child: Icon(Icons.sports_tennis, size: 40, color: Color(0xFF3F3F46)),
-                    )
-                  : null,
             ),
             // Информация
             Padding(

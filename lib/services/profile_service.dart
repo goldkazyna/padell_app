@@ -106,12 +106,14 @@ class ProfileService {
     }
   }
 
-  Future<Map<String, dynamic>?> getTournamentResults(int tournamentId) async {
+  Future<Map<String, dynamic>?> getTournamentResults(int tournamentId, {int? playerId}) async {
     try {
       final token = await _storage.getToken();
       if (token == null) return null;
 
-      final response = await _api.get('/tournaments/$tournamentId/results', token);
+      var endpoint = '/tournaments/$tournamentId/results';
+      if (playerId != null) endpoint += '?player_id=$playerId';
+      final response = await _api.get(endpoint, token);
       debugPrint('=== TOURNAMENT RESULTS RAW ===');
       debugPrint('summary: ${response['summary']}');
       debugPrint('matches count: ${(response['matches'] as List?)?.length}');

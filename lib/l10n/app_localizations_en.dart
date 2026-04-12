@@ -21,6 +21,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navChallenges => 'Challenges';
 
   @override
+  String get navBooking => 'Booking';
+
+  @override
+  String get ratingTabRating => 'Rating';
+
+  @override
+  String get ratingTabGrowth => 'Growth';
+
+  @override
+  String get ratingTabTournaments => 'Tournaments';
+
+  @override
+  String get growthPeriodWeek => 'Week';
+
+  @override
+  String get growthPeriodMonth => 'Month';
+
+  @override
+  String get growthPeriodAll => 'All time';
+
+  @override
+  String growthPoints(int points) {
+    return '+$points';
+  }
+
+  @override
   String get navRating => 'Rating';
 
   @override
@@ -824,7 +850,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get achievementTenTournaments => '10 tournaments';
 
   @override
-  String get editProfile => 'Edit Profile';
+  String get editProfile => 'Profile Settings';
+
+  @override
+  String get editProfileSubtitle => 'Name, city, gender';
 
   @override
   String get saveProfile => 'Save';

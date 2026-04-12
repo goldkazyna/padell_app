@@ -6,6 +6,8 @@ class RatingProvider extends ChangeNotifier {
 
   RatingProvider(this._ratingService);
 
+  RatingService get service => _ratingService;
+
   bool _isLoading = false;
   bool _isLoadingMore = false;
   String? _error;

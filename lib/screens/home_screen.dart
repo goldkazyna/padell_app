@@ -12,6 +12,8 @@ import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
 import 'club_select_screen.dart';
+import 'create_challenge_screen.dart';
+import 'challenges_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int)? onNavigateToTab;
@@ -119,6 +121,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     },
                   ),
+                  const SizedBox(height: 12),
+                  // Поединки: создать + список
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildActionCard(
+                          title: AppLocalizations.of(context)!.challengeCreateButton,
+                          subtitle: 'Вызвать на игру',
+                          icon: Icons.add_circle_outline,
+                          gradient: const [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                          shadowColor: const Color(0xFF3B82F6),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateChallengeScreen()));
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _buildActionCard(
+                          title: 'Поединки',
+                          subtitle: 'Все вызовы',
+                          icon: Icons.sports_tennis,
+                          gradient: const [Color(0xFFF97316), Color(0xFFEA580C)],
+                          shadowColor: const Color(0xFFF97316),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ChallengesScreen()));
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 28),
                   SectionTitle(
                     title: AppLocalizations.of(context)!.upcoming,
@@ -147,6 +180,71 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildActionCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required List<Color> gradient,
+    required Color shadowColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: shadowColor.withAlpha(30),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(30),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: Colors.white, size: 18),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withAlpha(180),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

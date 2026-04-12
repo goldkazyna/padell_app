@@ -21,6 +21,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navChallenges => 'Поединок';
 
   @override
+  String get navBooking => 'Бронирование';
+
+  @override
+  String get ratingTabRating => 'Рейтинг';
+
+  @override
+  String get ratingTabGrowth => 'Рост рейтинга';
+
+  @override
+  String get ratingTabTournaments => 'Турниры';
+
+  @override
+  String get growthPeriodWeek => 'Неделя';
+
+  @override
+  String get growthPeriodMonth => 'Месяц';
+
+  @override
+  String get growthPeriodAll => 'Всё время';
+
+  @override
+  String growthPoints(int points) {
+    return '+$points';
+  }
+
+  @override
   String get navRating => 'Рейтинг';
 
   @override
@@ -825,7 +851,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get achievementTenTournaments => '10 турниров';
 
   @override
-  String get editProfile => 'Редактировать';
+  String get editProfile => 'Настройки профиля';
+
+  @override
+  String get editProfileSubtitle => 'Имя, город, пол';
 
   @override
   String get saveProfile => 'Сохранить';

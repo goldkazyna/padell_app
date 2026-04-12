@@ -4,8 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/rating_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/rating/my_rank_card.dart';
-import '../widgets/rating/player_rating_item.dart';
+import 'player_profile_screen.dart';
 
 class RatingScreen extends StatefulWidget {
   const RatingScreen({super.key});
@@ -17,12 +16,36 @@ class RatingScreen extends StatefulWidget {
 class _RatingScreenState extends State<RatingScreen> {
   final _searchController = TextEditingController();
   bool _showSearch = false;
+  int _currentTab = 0; // 0 = Rating, 1 = Growth
+
+  // Growth state
+  String _growthSearch = '';
+  String _growthPeriod = 'month';
+  List<GrowthPlayer> _growthPlayers = [];
+  int _myGrowth = 0;
+  int _myGrowthPlace = 0;
+  bool _growthLoading = false;
+  String? _growthError;
+
+  // Tournaments state
+  String _tournamentsSearch = '';
+  String _tournamentsPeriod = 'month';
+  List<TournamentsPlayer> _tournamentsPlayers = [];
+  int _myTournaments = 0;
+  int _myTournamentsChange = 0;
+  int _myTournamentsPlace = 0;
+  bool _tournamentsLoading = false;
+  String? _tournamentsError;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RatingProvider>().loadRating();
+      final provider = context.read<RatingProvider>();
+      provider.setSearchQuery('');
+      _searchController.clear();
+      _showSearch = false;
+      provider.loadRating();
     });
   }
 
@@ -32,181 +55,263 @@ class _RatingScreenState extends State<RatingScreen> {
     super.dispose();
   }
 
+  Future<void> _loadGrowth() async {
+    setState(() {
+      _growthLoading = true;
+      _growthError = null;
+    });
+
+    final result = await context.read<RatingProvider>().service.getGrowth(period: _growthPeriod, search: _growthSearch.isNotEmpty ? _growthSearch : null);
+
+    if (mounted) {
+      setState(() {
+        _growthLoading = false;
+        if (result.success) {
+          _growthPlayers = result.players;
+          _myGrowth = result.myGrowth;
+          _myGrowthPlace = result.myPlace;
+        } else {
+          _growthError = result.message;
+        }
+      });
+    }
+  }
+
+  Future<void> _loadTournaments() async {
+    setState(() { _tournamentsLoading = true; _tournamentsError = null; });
+
+    final result = await context.read<RatingProvider>().service.getTournaments(period: _tournamentsPeriod, search: _tournamentsSearch.isNotEmpty ? _tournamentsSearch : null);
+
+    if (mounted) {
+      setState(() {
+        _tournamentsLoading = false;
+        if (result.success) {
+          _tournamentsPlayers = result.players;
+          _myTournaments = result.myTournaments;
+          _myTournamentsChange = result.myChange;
+          _myTournamentsPlace = result.myPlace;
+        } else {
+          _tournamentsError = result.message;
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Consumer<RatingProvider>(
-        builder: (context, rating, _) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.ratingTitle,
-                      style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _showSearch = !_showSearch;
-                          if (!_showSearch) {
-                            _searchController.clear();
-                            rating.setSearchQuery('');
-                          }
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppTheme.card,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          _showSearch ? Icons.close : Icons.search,
-                          color: AppTheme.textPrimary,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    final l10n = AppLocalizations.of(context)!;
 
-              // Search field
-              if (_showSearch)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: TextField(
-                    controller: _searchController,
-                    style: const TextStyle(color: AppTheme.textPrimary),
-                    decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.ratingSearchHint,
-                      hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                      filled: true,
-                      fillColor: AppTheme.card,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                    onSubmitted: (value) {
-                      rating.setSearchQuery(value);
-                    },
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.ratingTitle,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-
-              const SizedBox(height: 16),
-
-              // My card
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: MyRankCard(card: rating.myCard),
-              ),
-              const SizedBox(height: 16),
-
-              // Level filters
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildLevelFilters(rating),
-              ),
-              const SizedBox(height: 16),
-
-              // Table header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 14),
-                    const Text(
-                      '#',
-                      style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
-                      ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showSearch = !_showSearch;
+                      if (!_showSearch) {
+                        _searchController.clear();
+                        if (_currentTab == 0) {
+                          context.read<RatingProvider>().setSearchQuery('');
+                        } else if (_currentTab == 1) {
+                          _growthSearch = '';
+                          _loadGrowth();
+                        } else if (_currentTab == 2) {
+                          _tournamentsSearch = '';
+                          _loadTournaments();
+                        }
+                      }
+                    });
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppTheme.card,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    const SizedBox(width: 44),
-                    Text(
-                      AppLocalizations.of(context)!.ratingPlayerHeader,
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
-                        letterSpacing: 1,
-                      ),
+                    child: Icon(
+                      _showSearch ? Icons.close : Icons.search,
+                      color: AppTheme.textPrimary,
+                      size: 20,
                     ),
-                    const Spacer(),
-                    Text(
-                      AppLocalizations.of(context)!.ratingPointsHeader,
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
+              ],
+            ),
+          ),
 
-              // Content
-              Expanded(
-                child: _buildContent(rating),
-              ),
+          const SizedBox(height: 12),
 
-              // Neighbors section (only when filter is 'all')
-              if (rating.neighbors.isNotEmpty &&
-                  !rating.isLoading &&
-                  rating.levelFilter == 'all' &&
-                  rating.searchQuery.isEmpty)
-                _buildNeighborsSection(rating),
-            ],
-          );
-        },
+          // Tabs: Рейтинг | Рост рейтинга
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
+              ),
+              child: Row(
+                children: [
+                  _buildTab(l10n.ratingTabRating, 0),
+                  _buildTab(l10n.ratingTabGrowth, 1),
+                  _buildTab(l10n.ratingTabTournaments, 2),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // Search field (only rating tab)
+          if (_showSearch)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: TextField(
+                controller: _searchController,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: InputDecoration(
+                  hintText: l10n.ratingSearchHint,
+                  hintStyle: const TextStyle(color: AppTheme.textSecondary),
+                  filled: true,
+                  fillColor: AppTheme.card,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
+                ),
+                onSubmitted: (value) {
+                  if (_currentTab == 0) {
+                    context.read<RatingProvider>().setSearchQuery(value);
+                  } else if (_currentTab == 1) {
+                    setState(() => _growthSearch = value);
+                    _loadGrowth();
+                  } else if (_currentTab == 2) {
+                    setState(() => _tournamentsSearch = value);
+                    _loadTournaments();
+                  }
+                },
+              ),
+            ),
+
+          // Content
+          Expanded(
+            child: _currentTab == 0 ? _buildRatingTab() : _currentTab == 1 ? _buildGrowthTab() : _buildTournamentsTab(),
+          ),
+        ],
       ),
     );
   }
 
+  Widget _buildTab(String label, int index) {
+    final isActive = _currentTab == index;
+    return GestureDetector(
+      onTap: () {
+        if (_currentTab != index) {
+          setState(() => _currentTab = index);
+          if (index == 1 && _growthPlayers.isEmpty) {
+            _loadGrowth();
+          } else if (index == 2 && _tournamentsPlayers.isEmpty) {
+            _loadTournaments();
+          }
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppTheme.accent : Colors.transparent,
+              width: 2,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ==================== RATING TAB ====================
+  Widget _buildRatingTab() {
+    return Consumer<RatingProvider>(
+      builder: (context, rating, _) {
+        return Column(
+          children: [
+            // Level filters
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _buildLevelFilters(rating),
+            ),
+            const SizedBox(height: 8),
+
+            // Table header
+            _buildTableHeader(),
+            const SizedBox(height: 4),
+
+            // List
+            Expanded(child: _buildRatingContent(rating)),
+
+            // My position
+            if (rating.myCard != null &&
+                rating.levelFilter == 'all' &&
+                rating.searchQuery.isEmpty)
+              _buildMyPositionBar(rating.myCard!),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildLevelFilters(RatingProvider rating) {
+    final l10n = AppLocalizations.of(context)!;
     final filters = ['all', '1', '2', '3', '4'];
-    final labels = [AppLocalizations.of(context)!.ratingFilterAll, 'L1', 'L2', 'L3', 'L4'];
+    final labels = [l10n.ratingFilterAll, 'L1', 'L2', 'L3', 'L4'];
 
     return Row(
       children: List.generate(filters.length, (index) {
         final isSelected = rating.levelFilter == filters[index];
         return Padding(
-          padding: EdgeInsets.only(right: index < filters.length - 1 ? 8 : 0),
+          padding: EdgeInsets.only(right: index < filters.length - 1 ? 6 : 0),
           child: GestureDetector(
             onTap: () => rating.setLevelFilter(filters[index]),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
               decoration: BoxDecoration(
                 color: isSelected ? AppTheme.accent : AppTheme.card,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
+                  width: 0.5,
+                ),
               ),
               child: Text(
                 labels[index],
                 style: TextStyle(
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  color: isSelected ? Colors.black : AppTheme.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -216,11 +321,29 @@ class _RatingScreenState extends State<RatingScreen> {
     );
   }
 
-  Widget _buildContent(RatingProvider rating) {
+  Widget _buildTableHeader() {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          const SizedBox(width: 4),
+          const Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+          const SizedBox(width: 48),
+          Text(l10n.ratingPlayerHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+          const Spacer(),
+          Text(l10n.ratingPointsHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+          const SizedBox(width: 4),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRatingContent(RatingProvider rating) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (rating.isLoading && rating.players.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppTheme.accent),
-      );
+      return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
     }
 
     if (rating.error != null && rating.players.isEmpty) {
@@ -228,88 +351,191 @@ class _RatingScreenState extends State<RatingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              rating.error!,
-              style: const TextStyle(color: AppTheme.textSecondary),
-              textAlign: TextAlign.center,
-            ),
+            Text(rating.error!, style: const TextStyle(color: AppTheme.textSecondary), textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => rating.loadRating(),
-              child: Text(AppLocalizations.of(context)!.retry),
-            ),
+            ElevatedButton(onPressed: () => rating.loadRating(), child: Text(l10n.retry)),
           ],
         ),
       );
     }
 
     if (rating.players.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context)!.ratingPlayersNotFound,
-          style: const TextStyle(color: AppTheme.textSecondary),
-        ),
-      );
+      return Center(child: Text(l10n.ratingPlayersNotFound, style: const TextStyle(color: AppTheme.textSecondary)));
     }
 
     return RefreshIndicator(
       onRefresh: () => rating.refresh(),
       color: AppTheme.accent,
       child: ListView.builder(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+        padding: const EdgeInsets.only(bottom: 20),
         itemCount: rating.players.length + (rating.hasMore ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index == rating.players.length) {
-            return _buildLoadMoreButton(rating);
-          }
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: PlayerRatingItem(player: rating.players[index]),
-          );
+          if (index == rating.players.length) return _buildLoadMoreButton(rating);
+          return _buildPlayerRow(rating.players[index]);
         },
       ),
     );
   }
 
+  Widget _buildPlayerRow(RatingPlayer player, {int? growthValue, int? tournamentsValue}) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PlayerProfileScreen(
+              playerId: player.id,
+              playerName: player.name,
+            ),
+          ),
+        );
+      },
+      child: _buildPlayerRowContent(player, growthValue: growthValue, tournamentsValue: tournamentsValue),
+    );
+  }
+
+  Widget _buildPlayerRowContent(RatingPlayer player, {int? growthValue, int? tournamentsValue}) {
+    final isMe = player.isMe;
+    final rankColor = player.position == 1
+        ? const Color(0xFFFACC15)
+        : player.position == 2
+            ? const Color(0xFF94A3B8)
+            : player.position == 3
+                ? const Color(0xFFF97316)
+                : const Color(0xFF52525B);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isMe ? AppTheme.accent.withAlpha(15) : Colors.transparent,
+        border: Border(
+          bottom: BorderSide(color: const Color(0xFF1A1A1E), width: 0.5),
+          left: isMe ? BorderSide(color: AppTheme.accent, width: 3) : BorderSide.none,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 28,
+            child: Text(
+              '${player.position}',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: isMe ? AppTheme.accent : rankColor, fontSize: 14, fontWeight: FontWeight.w700),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(
+              color: isMe ? AppTheme.accent.withAlpha(40) : const Color(0xFF27272A),
+              shape: BoxShape.circle,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: player.avatar != null
+                ? Image.network(player.avatar!, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(child: Text(player.initials, style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textPrimary, fontSize: 12, fontWeight: FontWeight.w700))))
+                : Center(child: Text(player.initials, style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textPrimary, fontSize: 12, fontWeight: FontWeight.w700))),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(player.name, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text('L${_getLevelCategory(player.level)} · ${player.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+              ],
+            ),
+          ),
+          if (tournamentsValue != null)
+            Text(
+              '$tournamentsValue',
+              style: TextStyle(
+                color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                fontSize: 15, fontWeight: FontWeight.w800,
+              ),
+            )
+          else if (growthValue != null)
+            Text(
+              '+$growthValue',
+              style: TextStyle(
+                color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
+                fontSize: 15, fontWeight: FontWeight.w800,
+              ),
+            )
+          else
+            Text(
+              '${player.rating}',
+              style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w800),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMyPositionBar(MyRatingCard card) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.accent.withAlpha(15),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.accent.withAlpha(80), width: 1),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 28,
+            child: Text('${card.place}', textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(color: const Color(0xFF27272A), shape: BoxShape.circle),
+            clipBehavior: Clip.antiAlias,
+            child: card.avatar != null
+                ? Image.network(card.avatar!, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(child: Text(card.initials, style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.w700))))
+                : Center(child: Text(card.initials, style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.w700))),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+                Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+              ],
+            ),
+          ),
+          Text('${card.rating}', style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800)),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLoadMoreButton(RatingProvider rating) {
+    final l10n = AppLocalizations.of(context)!;
     final remaining = rating.total - rating.players.length;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: GestureDetector(
         onTap: rating.isLoadingMore ? null : () => rating.loadMore(),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: AppTheme.card,
-            borderRadius: BorderRadius.circular(12),
-          ),
+          decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(12)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (rating.isLoadingMore)
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    color: AppTheme.accent,
-                    strokeWidth: 2,
-                  ),
-                )
+                const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: AppTheme.accent, strokeWidth: 2))
               else ...[
                 const Icon(Icons.more_horiz, color: AppTheme.textSecondary),
                 const SizedBox(width: 8),
-                Text(
-                  AppLocalizations.of(context)!.ratingRemainingPlayers(remaining),
-                  style: const TextStyle(color: AppTheme.textSecondary),
-                ),
+                Text(l10n.ratingRemainingPlayers(remaining), style: const TextStyle(color: AppTheme.textSecondary)),
               ],
               const SizedBox(width: 8),
-              Text(
-                AppLocalizations.of(context)!.ratingShowAll,
-                style: const TextStyle(color: AppTheme.accent),
-              ),
+              Text(l10n.ratingShowAll, style: const TextStyle(color: AppTheme.accent)),
             ],
           ),
         ),
@@ -317,59 +543,310 @@ class _RatingScreenState extends State<RatingScreen> {
     );
   }
 
-  Widget _buildNeighborsSection(RatingProvider rating) {
-    // Show only 1 neighbor above, me, 1 neighbor below (3 total)
-    final neighbors = rating.neighbors;
-    final meIndex = neighbors.indexWhere((p) => p.isMe);
+  // ==================== GROWTH TAB ====================
+  Widget _buildGrowthTab() {
+    final l10n = AppLocalizations.of(context)!;
 
-    List<RatingPlayer> displayNeighbors = [];
-    if (meIndex >= 0) {
-      final start = (meIndex - 1).clamp(0, neighbors.length);
-      final end = (meIndex + 2).clamp(0, neighbors.length);
-      displayNeighbors = neighbors.sublist(start, end);
-    } else if (neighbors.length <= 3) {
-      displayNeighbors = neighbors;
-    } else {
-      displayNeighbors = neighbors.sublist(0, 3);
-    }
+    return Column(
+      children: [
+        // Period filter
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              _buildPeriodChip(l10n.growthPeriodWeek, 'week'),
+              const SizedBox(width: 6),
+              _buildPeriodChip(l10n.growthPeriodMonth, 'month'),
+              const SizedBox(width: 6),
+              _buildPeriodChip(l10n.growthPeriodAll, 'all'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
-        border: Border(
-          top: BorderSide(color: Color(0xFF2A2A2A), width: 1),
+        // Table header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              const SizedBox(width: 4),
+              const Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 48),
+              Text(l10n.ratingPlayerHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              const Spacer(),
+              const Text('РОСТ', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 4),
+            ],
+          ),
+        ),
+        const SizedBox(height: 4),
+
+        // List
+        Expanded(child: _buildGrowthContent()),
+
+        // My growth bar
+        if (_myGrowth > 0 && !_growthLoading)
+          _buildMyGrowthBar(),
+      ],
+    );
+  }
+
+  Widget _buildPeriodChip(String label, String period) {
+    final isSelected = _growthPeriod == period;
+    return GestureDetector(
+      onTap: () {
+        if (_growthPeriod != period) {
+          setState(() => _growthPeriod = period);
+          _loadGrowth();
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.accent : AppTheme.card,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A), width: 0.5),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.black : AppTheme.textSecondary,
+            fontSize: 13, fontWeight: FontWeight.w700,
+          ),
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+
+  Widget _buildGrowthContent() {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (_growthLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+
+    if (_growthError != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(_growthError!, style: const TextStyle(color: AppTheme.textSecondary)),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: _loadGrowth, child: Text(l10n.retry)),
+          ],
+        ),
+      );
+    }
+
+    if (_growthPlayers.isEmpty) {
+      return const Center(child: Text('Нет данных за этот период', style: TextStyle(color: AppTheme.textSecondary)));
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadGrowth,
+      color: AppTheme.accent,
+      child: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 20),
+        itemCount: _growthPlayers.length,
+        itemBuilder: (context, index) {
+          final gp = _growthPlayers[index];
+          return _buildPlayerRow(gp.player, growthValue: gp.growth);
+        },
+      ),
+    );
+  }
+
+  Widget _buildMyGrowthBar() {
+    final rating = context.read<RatingProvider>();
+    final card = rating.myCard;
+    if (card == null) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.accent.withAlpha(15),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.accent.withAlpha(80), width: 1),
+      ),
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Row(
+          SizedBox(
+            width: 28,
+            child: Text('$_myGrowthPlace', textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(color: const Color(0xFF27272A), shape: BoxShape.circle),
+            clipBehavior: Clip.antiAlias,
+            child: card.avatar != null
+                ? Image.network(card.avatar!, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(child: Text(card.initials, style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.w700))))
+                : Center(child: Text(card.initials, style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.w700))),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.more_horiz, color: AppTheme.textSecondary, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  AppLocalizations.of(context)!.ratingMyPosition,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+                Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
               ],
             ),
           ),
-          ...displayNeighbors.map((player) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: PlayerRatingItem(player: player),
-            );
-          }),
-          const SizedBox(height: 8),
+          Text('+$_myGrowth', style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800)),
         ],
       ),
     );
+  }
+
+  // ==================== TOURNAMENTS TAB ====================
+  Widget _buildTournamentsTab() {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      children: [
+        // Period filter
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              _buildTournamentsPeriodChip(l10n.growthPeriodWeek, 'week'),
+              const SizedBox(width: 6),
+              _buildTournamentsPeriodChip(l10n.growthPeriodMonth, 'month'),
+              const SizedBox(width: 6),
+              _buildTournamentsPeriodChip(l10n.growthPeriodAll, 'all'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Table header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              const SizedBox(width: 4),
+              const Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 48),
+              Text(l10n.ratingPlayerHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              const Spacer(),
+              const Text('ТУРН.', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 4),
+            ],
+          ),
+        ),
+        const SizedBox(height: 4),
+
+        // List
+        Expanded(child: _buildTournamentsContent()),
+
+        // My bar
+        if (_myTournaments > 0 && !_tournamentsLoading)
+          _buildMyTournamentsBar(),
+      ],
+    );
+  }
+
+  Widget _buildTournamentsPeriodChip(String label, String period) {
+    final isSelected = _tournamentsPeriod == period;
+    return GestureDetector(
+      onTap: () {
+        if (_tournamentsPeriod != period) {
+          setState(() => _tournamentsPeriod = period);
+          _loadTournaments();
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.accent : AppTheme.card,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A), width: 0.5),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.black : AppTheme.textSecondary,
+            fontSize: 13, fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTournamentsContent() {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (_tournamentsLoading) return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+
+    if (_tournamentsError != null) {
+      return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(_tournamentsError!, style: const TextStyle(color: AppTheme.textSecondary)),
+        const SizedBox(height: 16),
+        ElevatedButton(onPressed: _loadTournaments, child: Text(l10n.retry)),
+      ]));
+    }
+
+    if (_tournamentsPlayers.isEmpty) {
+      return const Center(child: Text('Нет данных за этот период', style: TextStyle(color: AppTheme.textSecondary)));
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadTournaments,
+      color: AppTheme.accent,
+      child: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 20),
+        itemCount: _tournamentsPlayers.length,
+        itemBuilder: (context, index) {
+          final tp = _tournamentsPlayers[index];
+          return _buildPlayerRow(tp.player, tournamentsValue: tp.tournamentsCount);
+        },
+      ),
+    );
+  }
+
+  Widget _buildMyTournamentsBar() {
+    final rating = context.read<RatingProvider>();
+    final card = rating.myCard;
+    if (card == null) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.accent.withAlpha(15),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.accent.withAlpha(80), width: 1),
+      ),
+      child: Row(
+        children: [
+          SizedBox(width: 28, child: Text('$_myTournamentsPlace', textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700))),
+          const SizedBox(width: 10),
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(color: const Color(0xFF27272A), shape: BoxShape.circle),
+            clipBehavior: Clip.antiAlias,
+            child: card.avatar != null
+                ? Image.network(card.avatar!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Center(child: Text(card.initials, style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.w700))))
+                : Center(child: Text(card.initials, style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.w700))),
+          ),
+          const SizedBox(width: 10),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+            Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+          ])),
+          Text('$_myTournaments', style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800)),
+        ],
+      ),
+    );
+  }
+
+  String _getLevelCategory(double level) {
+    if (level >= 4.0) return '4';
+    if (level >= 3.0) return '3';
+    if (level >= 2.0) return '2';
+    return '1';
   }
 }

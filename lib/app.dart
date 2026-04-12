@@ -17,6 +17,7 @@ import 'screens/tournaments_screen.dart';
 import 'screens/rating_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/challenges_screen.dart';
+import 'screens/club_select_screen.dart';
 
 /// Global navigator key for navigation from push notifications
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -196,7 +197,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     final screens = [
       HomeScreen(onNavigateToTab: _navigateToTab),
       const TournamentsScreen(),
-      const ChallengesScreen(),
+      const ClubSelectScreen(showBack: false),
       const RatingScreen(),
       const ProfileScreen(),
     ];
@@ -231,9 +232,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               label: AppLocalizations.of(context)!.navTournaments,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.sports_tennis_outlined),
-              activeIcon: const Icon(Icons.sports_tennis),
-              label: AppLocalizations.of(context)!.navChallenges,
+              icon: const Icon(Icons.calendar_month_outlined),
+              activeIcon: const Icon(Icons.calendar_month),
+              label: AppLocalizations.of(context)!.navBooking,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.leaderboard_outlined),

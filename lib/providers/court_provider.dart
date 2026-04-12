@@ -11,7 +11,7 @@ class CourtProvider extends ChangeNotifier {
   CourtService get courtService => _courtService;
 
   // Клубы
-  bool _isLoading = false;
+  bool _isLoading = true;
   String? _error;
   List<Club> _clubs = [];
   List<String> _cities = [];

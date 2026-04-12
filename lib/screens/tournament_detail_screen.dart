@@ -1138,6 +1138,21 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   }
 
   void _onCancel(int id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Отменить заявку?', style: TextStyle(color: AppTheme.textPrimary)),
+        content: const Text('Вы уверены, что хотите отозвать заявку на турнир?', style: TextStyle(color: AppTheme.textSecondary)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Нет', style: TextStyle(color: AppTheme.textSecondary))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Да, отменить', style: TextStyle(color: AppTheme.error))),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
     final provider = context.read<TournamentProvider>();
     final result = await provider.cancelRegistration(id);
     if (mounted) {
@@ -1426,6 +1441,21 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   }
 
   void _onCancelTeam(int id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Отменить заявку?', style: TextStyle(color: AppTheme.textPrimary)),
+        content: const Text('Вы уверены, что хотите отозвать заявку команды на турнир?', style: TextStyle(color: AppTheme.textSecondary)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Нет', style: TextStyle(color: AppTheme.textSecondary))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Да, отменить', style: TextStyle(color: AppTheme.error))),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
     final provider = context.read<TournamentProvider>();
     final result = await provider.cancelTeamRegistration(id);
     if (mounted) {
