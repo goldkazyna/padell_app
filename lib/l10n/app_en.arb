@@ -389,6 +389,8 @@
   "settingsSaveError": "Failed to save settings",
   "onlyMyLevelTournaments": "Only my level tournaments",
   "onlyMyLevelTournamentsDesc": "Receive notifications only about tournaments matching your level",
+  "notifyClubsTitle": "Notifications from clubs",
+  "notifyClubsDesc": "Choose clubs you want to receive new tournament notifications from",
 
   "onboardingTitle1": "Join\ntournaments",
   "onboardingDesc1": "Find padel tennis tournaments\nnear you and register in\none click",

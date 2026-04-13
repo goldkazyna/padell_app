@@ -101,7 +101,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
       _nameController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text,
-      phone: _phone.isNotEmpty ? _phone : null,
+      phone: _phone,
       city: _city,
     );
 
@@ -217,62 +217,131 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Phone field
-                    Text(
-                      AppLocalizations.of(context)!.phoneLabel,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    Row(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.phoneLabel,
+                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                        ),
+                        const Text(' *', style: TextStyle(color: AppTheme.error, fontSize: 14)),
+                      ],
                     ),
                     const SizedBox(height: 8),
-                    IntlPhoneField(
-                      decoration: _inputDecoration(''),
-                      initialCountryCode: 'KZ',
-                      languageCode: 'ru',
-                      style: const TextStyle(
-                          color: AppTheme.textPrimary, fontSize: 16),
-                      dropdownTextStyle: const TextStyle(
-                          color: AppTheme.textPrimary, fontSize: 16),
-                      dropdownIcon: const Icon(Icons.arrow_drop_down, color: AppTheme.textSecondary),
-                      flagsButtonPadding: const EdgeInsets.only(left: 12),
-                      disableLengthCheck: false,
-                      onChanged: (phone) {
-                        _phone = phone.completeNumber;
+                    FormField<String>(
+                      validator: (_) {
+                        if (_phone.isEmpty) {
+                          return AppLocalizations.of(context)!.enterValidNumber;
+                        }
+                        return null;
                       },
+                      builder: (state) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          IntlPhoneField(
+                            decoration: _inputDecoration('').copyWith(
+                              enabledBorder: state.hasError
+                                  ? OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      borderSide: const BorderSide(color: AppTheme.error),
+                                    )
+                                  : null,
+                            ),
+                            initialCountryCode: 'KZ',
+                            languageCode: 'ru',
+                            style: const TextStyle(
+                                color: AppTheme.textPrimary, fontSize: 16),
+                            dropdownTextStyle: const TextStyle(
+                                color: AppTheme.textPrimary, fontSize: 16),
+                            dropdownIcon: const Icon(Icons.arrow_drop_down, color: AppTheme.textSecondary),
+                            flagsButtonPadding: const EdgeInsets.only(left: 12),
+                            disableLengthCheck: false,
+                            onChanged: (phone) {
+                              _phone = phone.completeNumber;
+                              state.didChange(_phone);
+                            },
+                          ),
+                          if (state.hasError)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, top: 4),
+                              child: Text(
+                                state.errorText!,
+                                style: const TextStyle(color: AppTheme.error, fontSize: 12),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
 
                     // City field
-                    Text(
-                      AppLocalizations.of(context)!.cityLabel,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    Row(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.cityLabel,
+                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                        ),
+                        const Text(' *', style: TextStyle(color: AppTheme.error, fontSize: 14)),
+                      ],
                     ),
                     const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: _showCityPicker,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                        decoration: BoxDecoration(
-                          color: AppTheme.card,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _city ?? AppLocalizations.of(context)!.selectCityTitle,
-                                style: TextStyle(
-                                  color: _city != null
-                                      ? AppTheme.textPrimary
-                                      : AppTheme.textSecondary.withValues(alpha: 0.5),
-                                  fontSize: 16,
-                                ),
+                    FormField<String>(
+                      validator: (_) {
+                        if (_city == null) {
+                          return AppLocalizations.of(context)!.selectCityTitle;
+                        }
+                        return null;
+                      },
+                      builder: (state) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              _showCityPicker();
+                              // Обновим состояние FormField после выбора
+                              Future.delayed(const Duration(milliseconds: 500), () {
+                                state.didChange(_city);
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              decoration: BoxDecoration(
+                                color: AppTheme.card,
+                                borderRadius: BorderRadius.circular(16),
+                                border: state.hasError
+                                    ? Border.all(color: AppTheme.error)
+                                    : null,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      _city ?? AppLocalizations.of(context)!.selectCityTitle,
+                                      style: TextStyle(
+                                        color: _city != null
+                                            ? AppTheme.textPrimary
+                                            : AppTheme.textSecondary.withValues(alpha: 0.5),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                    color: AppTheme.textSecondary,
+                                    size: 20,
+                                  ),
+                                ],
                               ),
                             ),
-                            const Icon(
-                              Icons.chevron_right,
-                              color: AppTheme.textSecondary,
-                              size: 20,
+                          ),
+                          if (state.hasError)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, top: 8),
+                              child: Text(
+                                state.errorText!,
+                                style: const TextStyle(color: AppTheme.error, fontSize: 12),
+                              ),
                             ),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16),

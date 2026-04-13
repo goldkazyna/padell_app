@@ -1102,6 +1102,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receive notifications only about tournaments matching your level';
 
   @override
+  String get notifyClubsTitle => 'Notifications from clubs';
+
+  @override
+  String get notifyClubsDesc =>
+      'Choose clubs you want to receive new tournament notifications from';
+
+  @override
   String get onboardingTitle1 => 'Join\ntournaments';
 
   @override

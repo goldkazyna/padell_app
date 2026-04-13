@@ -2096,6 +2096,18 @@ abstract class AppLocalizations {
   /// **'Получать уведомления только о турнирах, подходящих по вашему уровню'**
   String get onlyMyLevelTournamentsDesc;
 
+  /// No description provided for @notifyClubsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления от клубов'**
+  String get notifyClubsTitle;
+
+  /// No description provided for @notifyClubsDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите клубы, от которых хотите получать уведомления о новых турнирах'**
+  String get notifyClubsDesc;
+
   /// No description provided for @onboardingTitle1.
   ///
   /// In ru, this message translates to:

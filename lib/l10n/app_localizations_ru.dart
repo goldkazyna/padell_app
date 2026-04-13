@@ -1104,6 +1104,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Получать уведомления только о турнирах, подходящих по вашему уровню';
 
   @override
+  String get notifyClubsTitle => 'Уведомления от клубов';
+
+  @override
+  String get notifyClubsDesc =>
+      'Выберите клубы, от которых хотите получать уведомления о новых турнирах';
+
+  @override
   String get onboardingTitle1 => 'Участвуйте\nв турнирах';
 
   @override
