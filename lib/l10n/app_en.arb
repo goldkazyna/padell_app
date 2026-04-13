@@ -127,6 +127,9 @@
   "tournamentRegistered": "Registered",
   "noSpotsLeft": "No spots",
 
+  "clubTournamentsCount": "{count} {count, plural, one{tournament} other{tournaments}}",
+  "@clubTournamentsCount": { "placeholders": { "count": { "type": "int" } } },
+
   "failedToLoadTournament": "Failed to load tournament",
   "shareFreeSpots": "Free spots: {count}",
   "shareLevel": "Level: {level}",
@@ -178,6 +181,7 @@
   "registerWith": "Register with {name}",
 
   "challenge": "Challenge",
+  "challengeHint": "Find opponents and play rated or friendly matches",
   "challengeOpenTab": "Open",
   "challengeMyTab": "My",
   "noOpenChallenges": "No open challenges",

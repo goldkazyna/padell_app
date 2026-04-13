@@ -16,6 +16,7 @@ class TournamentCard extends StatelessWidget {
   final String level;
   final bool isRegistered;
   final bool isFull;
+  final bool flat;
 
   const TournamentCard({
     super.key,
@@ -31,6 +32,7 @@ class TournamentCard extends StatelessWidget {
     required this.level,
     this.isRegistered = false,
     this.isFull = false,
+    this.flat = false,
   });
 
   factory TournamentCard.fromTournament(Tournament t) {
@@ -53,12 +55,14 @@ class TournamentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF1E1E1E), width: 1),
-      ),
-      clipBehavior: Clip.antiAlias,
+      decoration: flat
+          ? null
+          : BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFF1E1E1E), width: 1),
+            ),
+      clipBehavior: flat ? Clip.none : Clip.antiAlias,
       child: Column(
         children: [
           // Date strip

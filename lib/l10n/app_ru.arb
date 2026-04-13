@@ -133,6 +133,9 @@
   "tournamentRegistered": "Записан",
   "noSpotsLeft": "Мест нет",
 
+  "clubTournamentsCount": "{count} {count, plural, one{турнир} few{турнира} other{турниров}}",
+  "@clubTournamentsCount": { "placeholders": { "count": { "type": "int" } } },
+
   "failedToLoadTournament": "Не удалось загрузить турнир",
   "shareFreeSpots": "Свободных мест: {count}",
   "@shareFreeSpots": { "placeholders": { "count": { "type": "int" } } },
@@ -192,6 +195,7 @@
   "@registerWith": { "placeholders": { "name": { "type": "String" } } },
 
   "challenge": "Поединок",
+  "challengeHint": "Находите соперников и играйте рейтинговые или товарищеские матчи",
   "challengeOpenTab": "Открытые",
   "challengeMyTab": "Мои",
   "noOpenChallenges": "Нет открытых поединков",

@@ -740,6 +740,12 @@ abstract class AppLocalizations {
   /// **'Мест нет'**
   String get noSpotsLeft;
 
+  /// No description provided for @clubTournamentsCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} {count, plural, one{турнир} few{турнира} other{турниров}}'**
+  String clubTournamentsCount(int count);
+
   /// No description provided for @failedToLoadTournament.
   ///
   /// In ru, this message translates to:
@@ -1009,6 +1015,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Поединок'**
   String get challenge;
+
+  /// No description provided for @challengeHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Находите соперников и играйте рейтинговые или товарищеские матчи'**
+  String get challengeHint;
 
   /// No description provided for @challengeOpenTab.
   ///

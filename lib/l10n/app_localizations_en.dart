@@ -349,6 +349,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSpotsLeft => 'No spots';
 
   @override
+  String clubTournamentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tournaments',
+      one: 'tournament',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
   String get failedToLoadTournament => 'Failed to load tournament';
 
   @override
@@ -499,6 +510,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get challenge => 'Challenge';
+
+  @override
+  String get challengeHint =>
+      'Find opponents and play rated or friendly matches';
 
   @override
   String get challengeOpenTab => 'Open';

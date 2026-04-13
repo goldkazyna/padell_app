@@ -349,6 +349,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noSpotsLeft => 'Мест нет';
 
   @override
+  String clubTournamentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'турниров',
+      few: 'турнира',
+      one: 'турнир',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
   String get failedToLoadTournament => 'Не удалось загрузить турнир';
 
   @override
@@ -499,6 +511,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get challenge => 'Поединок';
+
+  @override
+  String get challengeHint =>
+      'Находите соперников и играйте рейтинговые или товарищеские матчи';
 
   @override
   String get challengeOpenTab => 'Открытые';
