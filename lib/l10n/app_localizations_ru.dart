@@ -815,12 +815,33 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileMissingGender => 'пол';
 
   @override
+  String get profileMissingPhone => 'телефон';
+
+  @override
   String profileMissingFields(String fields) {
     return 'Укажите $fields в настройках профиля';
   }
 
   @override
   String get profileMissingAnd => ' и ';
+
+  @override
+  String get profileBannerTitle => 'Заполните профиль';
+
+  @override
+  String get profileBannerDesc =>
+      'Без этих данных нельзя записаться на турнир.';
+
+  @override
+  String profileBannerMissing(String fields) {
+    return 'Не заполнено: $fields';
+  }
+
+  @override
+  String get profileBannerCta => 'Дозаполнить';
+
+  @override
+  String get profileBannerSeparator => ' · ';
 
   @override
   String get tournamentHistory => 'История турниров';

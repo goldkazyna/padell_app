@@ -1562,6 +1562,12 @@ abstract class AppLocalizations {
   /// **'пол'**
   String get profileMissingGender;
 
+  /// No description provided for @profileMissingPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'телефон'**
+  String get profileMissingPhone;
+
   /// No description provided for @profileMissingFields.
   ///
   /// In ru, this message translates to:
@@ -1573,6 +1579,36 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **' и '**
   String get profileMissingAnd;
+
+  /// No description provided for @profileBannerTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заполните профиль'**
+  String get profileBannerTitle;
+
+  /// No description provided for @profileBannerDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без этих данных нельзя записаться на турнир.'**
+  String get profileBannerDesc;
+
+  /// No description provided for @profileBannerMissing.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не заполнено: {fields}'**
+  String profileBannerMissing(String fields);
+
+  /// No description provided for @profileBannerCta.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дозаполнить'**
+  String get profileBannerCta;
+
+  /// No description provided for @profileBannerSeparator.
+  ///
+  /// In ru, this message translates to:
+  /// **' · '**
+  String get profileBannerSeparator;
 
   /// No description provided for @tournamentHistory.
   ///

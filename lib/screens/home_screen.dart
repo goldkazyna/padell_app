@@ -8,6 +8,7 @@ import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
+import '../widgets/home/profile_incomplete_banner.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
@@ -74,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const HomeHeader(),
+                  const ProfileIncompleteBanner(),
                   const SizedBox(height: 20),
                   const HomeStats(),
                   const SizedBox(height: 20),

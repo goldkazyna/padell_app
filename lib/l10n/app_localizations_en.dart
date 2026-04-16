@@ -813,12 +813,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMissingGender => 'gender';
 
   @override
+  String get profileMissingPhone => 'phone';
+
+  @override
   String profileMissingFields(String fields) {
     return 'Please specify $fields in profile settings';
   }
 
   @override
   String get profileMissingAnd => ' and ';
+
+  @override
+  String get profileBannerTitle => 'Complete your profile';
+
+  @override
+  String get profileBannerDesc =>
+      'Without this info you can\'t register for tournaments.';
+
+  @override
+  String profileBannerMissing(String fields) {
+    return 'Missing: $fields';
+  }
+
+  @override
+  String get profileBannerCta => 'Complete';
+
+  @override
+  String get profileBannerSeparator => ' · ';
 
   @override
   String get tournamentHistory => 'Tournament History';
