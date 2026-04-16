@@ -1730,6 +1730,36 @@ abstract class AppLocalizations {
   /// **'Не указано'**
   String get notSpecified;
 
+  /// No description provided for @sectionPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'ТЕЛЕФОН'**
+  String get sectionPhone;
+
+  /// No description provided for @fieldPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Телефон'**
+  String get fieldPhone;
+
+  /// No description provided for @phoneHintEdit.
+  ///
+  /// In ru, this message translates to:
+  /// **'+7 (___) ___-__-__'**
+  String get phoneHintEdit;
+
+  /// No description provided for @phoneLockedHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Телефон нельзя изменить'**
+  String get phoneLockedHint;
+
+  /// No description provided for @phoneInvalidFormat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите корректный номер'**
+  String get phoneInvalidFormat;
+
   /// No description provided for @sectionLocation.
   ///
   /// In ru, this message translates to:

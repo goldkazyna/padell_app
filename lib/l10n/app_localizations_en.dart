@@ -904,6 +904,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notSpecified => 'Not specified';
 
   @override
+  String get sectionPhone => 'PHONE';
+
+  @override
+  String get fieldPhone => 'Phone';
+
+  @override
+  String get phoneHintEdit => '+7 (___) ___-__-__';
+
+  @override
+  String get phoneLockedHint => 'Phone cannot be changed';
+
+  @override
+  String get phoneInvalidFormat => 'Enter a valid number';
+
+  @override
   String get sectionLocation => 'LOCATION';
 
   @override

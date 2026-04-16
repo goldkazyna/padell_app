@@ -906,6 +906,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notSpecified => 'Не указано';
 
   @override
+  String get sectionPhone => 'ТЕЛЕФОН';
+
+  @override
+  String get fieldPhone => 'Телефон';
+
+  @override
+  String get phoneHintEdit => '+7 (___) ___-__-__';
+
+  @override
+  String get phoneLockedHint => 'Телефон нельзя изменить';
+
+  @override
+  String get phoneInvalidFormat => 'Введите корректный номер';
+
+  @override
   String get sectionLocation => 'МЕСТОПОЛОЖЕНИЕ';
 
   @override

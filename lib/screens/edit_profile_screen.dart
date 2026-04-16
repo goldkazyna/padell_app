@@ -21,16 +21,21 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   String? _city;
   String? _gender;
   String? _hand;
   String? _position;
+  String _initialPhone = '';
+  String? _phoneError;
   bool _isSaving = false;
   bool _isLoading = true;
 
   File? _pickedImage;
   String? _currentAvatarUrl;
+
+  bool get _phoneLocked => _initialPhone.isNotEmpty;
 
   @override
   void initState() {
@@ -42,6 +47,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _ageController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -53,6 +59,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       debugPrint('[EDIT_PROFILE] user data: $user');
 
+      final phone = (user['phone'] as String? ?? '').trim();
+
       setState(() {
         _nameController.text = user['name'] as String? ?? '';
         _city = user['city'] as String?;
@@ -62,6 +70,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _hand = user['hand'] as String?;
         _position = user['position'] as String?;
         _currentAvatarUrl = user['avatar'] as String?;
+        _initialPhone = phone;
+        _phoneController.text = phone.isNotEmpty ? _formatPhoneDisplay(phone) : '';
         _isLoading = false;
       });
     } catch (e) {
@@ -156,8 +166,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  String _formatPhoneDisplay(String digits) {
+    if (digits.length != 11) return digits;
+    return '+${digits[0]} ${digits.substring(1, 4)} ${digits.substring(4, 7)} ${digits.substring(7, 9)} ${digits.substring(9)}';
+  }
+
+  String _normalizePhone(String raw) {
+    var digits = raw.replaceAll(RegExp(r'[^\d]'), '');
+    if (digits.length == 11 && digits.startsWith('8')) {
+      digits = '7${digits.substring(1)}';
+    } else if (digits.length == 10) {
+      digits = '7$digits';
+    }
+    return digits;
+  }
+
   Future<void> _save() async {
-    setState(() => _isSaving = true);
+    // Валидация телефона если редактируется
+    if (!_phoneLocked && _phoneController.text.trim().isNotEmpty) {
+      final digits = _normalizePhone(_phoneController.text);
+      if (digits.length != 11 || !digits.startsWith('7')) {
+        setState(() => _phoneError = AppLocalizations.of(context)!.phoneInvalidFormat);
+        return;
+      }
+    }
+    setState(() {
+      _phoneError = null;
+      _isSaving = true;
+    });
 
     try {
       final token = await StorageService().getToken();
@@ -200,6 +236,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
       if (_hand != null) body['hand'] = _hand;
       if (_position != null) body['position'] = _position;
+      if (!_phoneLocked && _phoneController.text.trim().isNotEmpty) {
+        body['phone'] = _normalizePhone(_phoneController.text);
+      }
 
       debugPrint('[EDIT_PROFILE] saving: $body');
 
@@ -310,6 +349,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           _buildSectionLabel(AppLocalizations.of(context)!.sectionName),
                           const SizedBox(height: 8),
                           _buildSingleTextField(AppLocalizations.of(context)!.fieldName, _nameController),
+                          const SizedBox(height: 24),
+
+                          // ТЕЛЕФОН
+                          _buildSectionLabel(AppLocalizations.of(context)!.sectionPhone),
+                          const SizedBox(height: 8),
+                          _buildPhoneField(),
                           const SizedBox(height: 24),
 
                           // МЕСТОПОЛОЖЕНИЕ
@@ -587,6 +632,90 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPhoneField() {
+    final locked = _phoneLocked;
+    final l = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          ),
+          child: Row(
+            children: [
+              Text(
+                l.fieldPhone,
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 15,
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _phoneController,
+                  readOnly: locked,
+                  enabled: !locked,
+                  keyboardType: TextInputType.phone,
+                  style: TextStyle(
+                    color: locked
+                        ? AppTheme.textSecondary
+                        : AppTheme.textPrimary,
+                    fontSize: 15,
+                  ),
+                  textAlign: TextAlign.right,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: l.phoneHintEdit,
+                    hintStyle: TextStyle(
+                      color: AppTheme.textSecondary.withAlpha(100),
+                      fontSize: 15,
+                    ),
+                  ),
+                  onChanged: (_) {
+                    if (_phoneError != null) setState(() => _phoneError = null);
+                  },
+                ),
+              ),
+              if (locked)
+                const Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Icon(Icons.lock_outline,
+                      color: AppTheme.textSecondary, size: 16),
+                ),
+            ],
+          ),
+        ),
+        if (locked)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              l.phoneLockedHint,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        if (_phoneError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              _phoneError!,
+              style: const TextStyle(
+                color: AppTheme.error,
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
