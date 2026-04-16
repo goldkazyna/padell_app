@@ -1182,17 +1182,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginViaTelegram => 'Log in via Telegram';
 
   @override
-  String get loginViaEmail => 'Log in via Email';
+  String get loginViaEmail => 'Log in via Email or Phone';
 
   @override
   String get consentToProcessPersonalData =>
       'Consent to personal data processing';
 
   @override
-  String get emailLoginTitle => 'Email Login';
+  String get emailLoginTitle => 'Sign in';
 
   @override
-  String get enterEmailAndPassword => 'Enter email and password to log in';
+  String get enterEmailAndPassword => 'Enter email or phone and password';
 
   @override
   String get password => 'Password';
@@ -1217,6 +1217,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterValidEmail => 'Enter a valid email';
+
+  @override
+  String get emailOrPhone => 'Email or phone';
+
+  @override
+  String get enterEmailOrPhone => 'Enter email or phone';
+
+  @override
+  String get enterValidEmailOrPhone => 'Enter a valid email or phone';
+
+  @override
+  String get emailOrPhonePlaceholder => 'example@mail.com or +7 777 123 45 67';
 
   @override
   String get registrationTitle => 'Registration';

@@ -1185,17 +1185,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loginViaTelegram => 'Войти через Telegram';
 
   @override
-  String get loginViaEmail => 'Войти через Email';
+  String get loginViaEmail => 'Войти через Email или телефон';
 
   @override
   String get consentToProcessPersonalData =>
       'Согласие на обработку персональных данных';
 
   @override
-  String get emailLoginTitle => 'Вход по Email';
+  String get emailLoginTitle => 'Вход';
 
   @override
-  String get enterEmailAndPassword => 'Введите email и пароль для входа';
+  String get enterEmailAndPassword => 'Введите email или телефон и пароль';
 
   @override
   String get password => 'Пароль';
@@ -1220,6 +1220,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get enterValidEmail => 'Введите корректный email';
+
+  @override
+  String get emailOrPhone => 'Email или телефон';
+
+  @override
+  String get enterEmailOrPhone => 'Введите email или телефон';
+
+  @override
+  String get enterValidEmailOrPhone => 'Введите корректный email или телефон';
+
+  @override
+  String get emailOrPhonePlaceholder => 'example@mail.com или +7 777 123 45 67';
 
   @override
   String get registrationTitle => 'Регистрация';

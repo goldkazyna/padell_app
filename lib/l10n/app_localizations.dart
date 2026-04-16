@@ -2249,7 +2249,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginViaEmail.
   ///
   /// In ru, this message translates to:
-  /// **'Войти через Email'**
+  /// **'Войти через Email или телефон'**
   String get loginViaEmail;
 
   /// No description provided for @consentToProcessPersonalData.
@@ -2261,13 +2261,13 @@ abstract class AppLocalizations {
   /// No description provided for @emailLoginTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Вход по Email'**
+  /// **'Вход'**
   String get emailLoginTitle;
 
   /// No description provided for @enterEmailAndPassword.
   ///
   /// In ru, this message translates to:
-  /// **'Введите email и пароль для входа'**
+  /// **'Введите email или телефон и пароль'**
   String get enterEmailAndPassword;
 
   /// No description provided for @password.
@@ -2317,6 +2317,30 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Введите корректный email'**
   String get enterValidEmail;
+
+  /// No description provided for @emailOrPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Email или телефон'**
+  String get emailOrPhone;
+
+  /// No description provided for @enterEmailOrPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите email или телефон'**
+  String get enterEmailOrPhone;
+
+  /// No description provided for @enterValidEmailOrPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите корректный email или телефон'**
+  String get enterValidEmailOrPhone;
+
+  /// No description provided for @emailOrPhonePlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'example@mail.com или +7 777 123 45 67'**
+  String get emailOrPhonePlaceholder;
 
   /// No description provided for @registrationTitle.
   ///

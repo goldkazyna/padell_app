@@ -16,15 +16,30 @@ class EmailLoginScreen extends StatefulWidget {
 
 class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _loginController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  static final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+  String _normalizeLogin(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.contains('@')) return trimmed;
+
+    var digits = trimmed.replaceAll(RegExp(r'[^\d]'), '');
+    if (digits.length == 11 && digits.startsWith('8')) {
+      digits = '7${digits.substring(1)}';
+    } else if (digits.length == 10) {
+      digits = '7$digits';
+    }
+    return digits;
   }
 
   Future<void> _login() async {
@@ -32,7 +47,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
 
     final auth = context.read<AuthProvider>();
     final success = await auth.emailLogin(
-      _emailController.text.trim(),
+      _normalizeLogin(_loginController.text),
       _passwordController.text,
     );
 
@@ -93,26 +108,35 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // Email field
-                const Text(
-                  'Email',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                // Email or phone field
+                Text(
+                  AppLocalizations.of(context)!.emailOrPhone,
+                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _emailController,
+                  controller: _loginController,
                   keyboardType: TextInputType.emailAddress,
                   autocorrect: false,
                   style: const TextStyle(
                       color: AppTheme.textPrimary, fontSize: 16),
-                  decoration: _inputDecoration('example@mail.com'),
+                  decoration: _inputDecoration(
+                    AppLocalizations.of(context)!.emailOrPhonePlaceholder,
+                  ),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return AppLocalizations.of(context)!.enterEmail;
+                    final trimmed = value?.trim() ?? '';
+                    if (trimmed.isEmpty) {
+                      return AppLocalizations.of(context)!.enterEmailOrPhone;
                     }
-                    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-                        .hasMatch(value.trim())) {
-                      return AppLocalizations.of(context)!.enterValidEmail;
+                    if (trimmed.contains('@')) {
+                      if (!_emailPattern.hasMatch(trimmed)) {
+                        return AppLocalizations.of(context)!.enterValidEmailOrPhone;
+                      }
+                      return null;
+                    }
+                    final digits = trimmed.replaceAll(RegExp(r'[^\d]'), '');
+                    if (digits.length < 10 || digits.length > 11) {
+                      return AppLocalizations.of(context)!.enterValidEmailOrPhone;
                     }
                     return null;
                   },

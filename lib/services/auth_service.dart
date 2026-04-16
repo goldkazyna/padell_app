@@ -177,10 +177,10 @@ class AuthService {
     }
   }
 
-  Future<AuthResult> login(String email, String password) async {
+  Future<AuthResult> login(String login, String password) async {
     try {
       final response = await _api.post('/auth/login', {
-        'email': email,
+        'login': login,
         'password': password,
       });
 
@@ -200,7 +200,7 @@ class AuthService {
 
       return AuthResult(
         success: false,
-        message: response['message'] as String? ?? 'Неверный email или пароль',
+        message: response['message'] as String? ?? 'Неверный логин или пароль',
       );
     } on ApiException catch (e) {
       return AuthResult(success: false, message: e.message);
