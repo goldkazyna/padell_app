@@ -262,8 +262,8 @@ class _RatingRow extends StatelessWidget {
           Sparkline(
             points: trend,
             color: AppTheme.accent,
-            width: 110,
-            height: 38,
+            width: 120,
+            height: 56,
           ),
       ],
     );
