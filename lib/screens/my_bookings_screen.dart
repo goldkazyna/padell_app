@@ -251,6 +251,7 @@ class _BookingCard extends StatelessWidget {
     final coachPrice = (booking['coach_price'] as num?) ?? 0;
     final status = booking['status'] as String? ?? '';
     final canCancel = booking['can_cancel'] == true;
+    final cancelMinHours = (booking['cancel_min_hours'] as int?) ?? 12;
     final isProcessed = booking['is_processed'] ?? true;
 
     final bool isPending = !isProcessed;
@@ -372,6 +373,34 @@ class _BookingCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (!canCancel && isUpcoming && !isCancelled) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.amber.withAlpha(20),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppTheme.amber.withAlpha(60), width: 0.5),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline, size: 14, color: AppTheme.amber),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Отмена менее чем за $cancelMinHours часов через приложение невозможна. Свяжитесь с клубом.',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppTheme.amber,
+                              fontWeight: FontWeight.w600,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
