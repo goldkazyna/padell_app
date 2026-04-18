@@ -38,85 +38,114 @@ class ProfileHero extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.border),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0.0, 0.4, 1.0],
-                colors: [
-                  Color(0xFF1E3A2B),
-                  Color(0xFF1A241E),
-                  Color(0xFF1A1A1F),
-                ],
-              ),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                // Decorative glow — positioned, не влияет на размер
-                Positioned(
-                  top: -60,
-                  right: -60,
-                  child: IgnorePointer(
-                    child: Container(
-                      width: 180,
-                      height: 180,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [Color(0x1F22C47A), Color(0x0022C47A)],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // Контент — задаёт размер
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildTopRow(context, user),
-                          const SizedBox(height: 16),
-                          _buildRatingRow(rating, rank, trend),
-                          const SizedBox(height: 14),
-                          _buildLevelProgress(
-                            level: level,
-                            nextLevel: nextLevel,
-                            progress: progress,
-                            rating: rating,
-                            target: nextLevelRating,
-                          ),
-                        ],
-                      ),
-                    ),
-                    _buildStatsStrip(
-                      matches: matches,
-                      wins: wins,
-                      winrate: winrate,
-                      losses: losses,
-                      winrateColor: winrateColor,
-                    ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.border),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [0.0, 0.4, 1.0],
+                  colors: [
+                    Color(0xFF1E3A2B),
+                    Color(0xFF1A241E),
+                    Color(0xFF1A1A1F),
                   ],
                 ),
-              ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _TopRow(user: user),
+                        const SizedBox(height: 16),
+                        _RatingRow(rating: rating, rank: rank, trend: trend),
+                        const SizedBox(height: 14),
+                        _LevelProgress(
+                          level: level,
+                          nextLevel: nextLevel,
+                          progress: progress,
+                          rating: rating,
+                          target: nextLevelRating,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _StatsStrip(
+                    matches: matches,
+                    wins: wins,
+                    winrate: winrate,
+                    losses: losses,
+                    winrateColor: winrateColor,
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
   }
+}
 
-  Widget _buildTopRow(BuildContext context, dynamic user) {
+class _TopRow extends StatelessWidget {
+  final dynamic user;
+  const _TopRow({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final avatarUrl = user?.avatar as String?;
+    final initials = (user?.initials as String?) ?? '??';
+
+    Widget avatarFallback = Container(
+      width: 58,
+      height: 58,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2A4A36), Color(0xFF1C2B22)],
+        ),
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: const TextStyle(
+            color: AppTheme.accent,
+            fontSize: 19,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+
+    Widget avatar;
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      avatar = ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.network(
+          avatarUrl,
+          width: 58,
+          height: 58,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => avatarFallback,
+        ),
+      );
+    } else {
+      avatar = avatarFallback;
+    }
+
     return Row(
       children: [
-        _buildAvatar(user),
+        avatar,
         const SizedBox(width: 14),
         Expanded(
           child: Column(
@@ -166,50 +195,17 @@ class ProfileHero extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildAvatar(dynamic user) {
-    final avatarUrl = user?.avatar as String?;
-    final initials = (user?.initials as String?) ?? '??';
+class _RatingRow extends StatelessWidget {
+  final int rating;
+  final int? rank;
+  final List<int> trend;
 
-    Widget fallback = Container(
-      width: 58,
-      height: 58,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF2A4A36), Color(0xFF1C2B22)],
-        ),
-      ),
-      child: Center(
-        child: Text(
-          initials,
-          style: const TextStyle(
-            color: AppTheme.accent,
-            fontSize: 19,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
+  const _RatingRow({required this.rating, required this.rank, required this.trend});
 
-    if (avatarUrl != null && avatarUrl.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.network(
-          avatarUrl,
-          width: 58,
-          height: 58,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => fallback,
-        ),
-      );
-    }
-    return fallback;
-  }
-
-  Widget _buildRatingRow(int rating, int? rank, List<int> trend) {
+  @override
+  Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -240,7 +236,6 @@ class ProfileHero extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       letterSpacing: -1.3,
                       height: 1,
-                      fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
                   if (rank != null) ...[
@@ -272,14 +267,25 @@ class ProfileHero extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildLevelProgress({
-    required double level,
-    required double nextLevel,
-    required double progress,
-    required int rating,
-    required int target,
-  }) {
+class _LevelProgress extends StatelessWidget {
+  final double level;
+  final double nextLevel;
+  final double progress;
+  final int rating;
+  final int target;
+
+  const _LevelProgress({
+    required this.level,
+    required this.nextLevel,
+    required this.progress,
+    required this.rating,
+    required this.target,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -299,32 +305,50 @@ class ProfileHero extends StatelessWidget {
               style: const TextStyle(
                 color: AppTheme.textDim,
                 fontSize: 10,
-                fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
           ],
         ),
         const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(2),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 3,
-            backgroundColor: const Color(0x0DFFFFFF),
-            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accent),
+        Container(
+          height: 3,
+          decoration: BoxDecoration(
+            color: const Color(0x14FFFFFF),
+            borderRadius: BorderRadius.circular(2),
+          ),
+          child: FractionallySizedBox(
+            alignment: Alignment.centerLeft,
+            widthFactor: progress.clamp(0.0, 1.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.accent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildStatsStrip({
-    required int matches,
-    required int wins,
-    required int winrate,
-    required int losses,
-    required Color winrateColor,
-  }) {
+class _StatsStrip extends StatelessWidget {
+  final int matches;
+  final int wins;
+  final int winrate;
+  final int losses;
+  final Color winrateColor;
+
+  const _StatsStrip({
+    required this.matches,
+    required this.wins,
+    required this.winrate,
+    required this.losses,
+    required this.winrateColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -335,16 +359,16 @@ class ProfileHero extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _statItem('$matches', 'Матчей'),
-          _statItem('$wins', 'Побед'),
-          _statItem('$winrate%', 'Винрейт', color: winrateColor),
-          _statItem('$losses', 'Пораж.', color: AppTheme.textSecondary),
+          _item('$matches', 'Матчей'),
+          _item('$wins', 'Побед'),
+          _item('$winrate%', 'Винрейт', color: winrateColor),
+          _item('$losses', 'Пораж.', color: AppTheme.textSecondary),
         ],
       ),
     );
   }
 
-  Widget _statItem(String value, String label, {Color? color}) {
+  Widget _item(String value, String label, {Color? color}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -355,7 +379,6 @@ class ProfileHero extends StatelessWidget {
             fontSize: 17,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.3,
-            fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
         const SizedBox(height: 2),
