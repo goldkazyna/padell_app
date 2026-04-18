@@ -63,6 +63,7 @@ class ProfileHero extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _TopRow(user: user),
                         const SizedBox(height: 16),
@@ -288,6 +289,7 @@ class _LevelProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -310,22 +312,35 @@ class _LevelProgress extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 6),
-        Container(
-          height: 3,
-          decoration: BoxDecoration(
-            color: const Color(0x14FFFFFF),
-            borderRadius: BorderRadius.circular(2),
-          ),
-          child: FractionallySizedBox(
-            alignment: Alignment.centerLeft,
-            widthFactor: progress.clamp(0.0, 1.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppTheme.accent,
-                borderRadius: BorderRadius.circular(2),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final w = constraints.maxWidth;
+            final p = progress.clamp(0.0, 1.0);
+            return SizedBox(
+              width: w,
+              height: 3,
+              child: Stack(
+                children: [
+                  Container(
+                    width: w,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: const Color(0x14FFFFFF),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Container(
+                    width: w * p,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: AppTheme.accent,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
+            );
+          },
         ),
       ],
     );
