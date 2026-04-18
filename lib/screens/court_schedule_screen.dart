@@ -56,14 +56,18 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     final monday = from.subtract(Duration(days: from.weekday - 1));
     final dayNames = dn ?? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final monthNames = mn ?? ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     return List.generate(7, (i) {
       final d = monday.add(Duration(days: i));
+      final dayStart = DateTime(d.year, d.month, d.day);
       return _DayInfo(
         date: _fmt(d),
         dayName: dayNames[i],
         dayNum: d.day.toString(),
         month: monthNames[d.month],
-        isToday: _fmt(d) == _fmt(DateTime.now()),
+        isToday: dayStart.isAtSameMomentAs(today),
+        isPast: dayStart.isBefore(today),
       );
     });
   }
@@ -103,6 +107,10 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
   }
 
   void _selectDate(String date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final picked = DateTime.parse(date);
+    if (picked.isBefore(today)) return; // нельзя выбрать прошлое
     setState(() {
       _selectedDate = date;
       _selectedCourtIndex = 0;
@@ -262,9 +270,23 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
 
     final court = courts[_selectedCourtIndex] as Map<String, dynamic>;
     final courtId = court['id'] as int;
-    final slots = court['slots'] as List<dynamic>? ?? [];
+    final allSlots = court['slots'] as List<dynamic>? ?? [];
     final coaches =
         (context.read<CourtProvider>().scheduleData?['coaches'] as List<dynamic>?) ?? [];
+
+    // Фильтруем прошедшие слоты если выбран сегодняшний день
+    final now = DateTime.now();
+    final todayStr = _fmt(now);
+    final slots = _selectedDate == todayStr
+        ? allSlots.where((s) {
+            final t = (s as Map<String, dynamic>)['time'] as String? ?? '';
+            final parts = t.split(':');
+            if (parts.length < 2) return true;
+            final h = int.tryParse(parts[0]) ?? 0;
+            final m = int.tryParse(parts[1]) ?? 0;
+            return h > now.hour || (h == now.hour && m > now.minute);
+          }).toList()
+        : allSlots;
 
     if (slots.isEmpty) {
       return Center(
@@ -387,12 +409,14 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
 class _DayInfo {
   final String date, dayName, dayNum, month;
   final bool isToday;
+  final bool isPast;
   _DayInfo(
       {required this.date,
       required this.dayName,
       required this.dayNum,
       required this.month,
-      required this.isToday});
+      required this.isToday,
+      required this.isPast});
 }
 
 class _DayChip extends StatelessWidget {
@@ -416,9 +440,12 @@ class _DayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
+    final disabled = day.isPast;
+    return Opacity(
+      opacity: disabled ? 0.35 : 1.0,
+      child: GestureDetector(
+        onTap: disabled ? null : onTap,
+        child: Container(
         width: 56,
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.accent : AppTheme.card,
@@ -491,6 +518,7 @@ class _DayChip extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }
