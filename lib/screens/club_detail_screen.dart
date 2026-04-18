@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/club.dart';
+import '../providers/tournament_provider.dart';
 import '../services/club_service.dart';
 import '../theme/app_theme.dart';
 
@@ -22,6 +23,7 @@ class ClubDetailScreen extends StatefulWidget {
 class _ClubDetailScreenState extends State<ClubDetailScreen> {
   Club? _club;
   bool _isLoading = false;
+  bool _isToggling = false;
   String? _error;
 
   @override
@@ -49,6 +51,27 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         _error = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _toggleHide() async {
+    final club = _club;
+    if (club == null || _isToggling) return;
+    setState(() => _isToggling = true);
+    try {
+      final isHidden = await context.read<ClubService>().toggleHide(club.id);
+      if (!mounted) return;
+      setState(() {
+        _club = club.copyWith(isHidden: isHidden);
+        _isToggling = false;
+      });
+      context.read<TournamentProvider>().loadOpenTournaments();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isToggling = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка: $e'), backgroundColor: AppTheme.error),
+      );
     }
   }
 
@@ -172,7 +195,71 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
             const SizedBox(height: 12),
             _buildDescription(club.description!),
           ],
+          const SizedBox(height: 20),
+          _buildHideToggle(club),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHideToggle(Club club) {
+    return GestureDetector(
+      onTap: _toggleHide,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Не показывать турниры этого клуба',
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Скроет их во вкладке «Открытые турниры»',
+                    style: TextStyle(
+                      color: AppTheme.textPrimary.withAlpha(140),
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            _isToggling
+                ? const SizedBox(
+                    width: 40,
+                    height: 24,
+                    child: Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppTheme.accent,
+                        ),
+                      ),
+                    ),
+                  )
+                : Switch(
+                    value: club.isHidden,
+                    onChanged: (_) => _toggleHide(),
+                    activeThumbColor: AppTheme.accent,
+                  ),
+          ],
+        ),
       ),
     );
   }

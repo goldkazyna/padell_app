@@ -33,4 +33,10 @@ class ClubService {
         .map((e) => Club.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<bool> toggleHide(int clubId) async {
+    final token = await _storage.getToken();
+    final response = await _api.post('/clubs/$clubId/toggle-hide', {}, token);
+    return response['is_hidden'] as bool? ?? false;
+  }
 }

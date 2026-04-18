@@ -8,6 +8,7 @@ class Club {
   final String? phone;
   final int courtsCount;
   final double? minPrice;
+  final bool isHidden;
 
   Club({
     required this.id,
@@ -19,6 +20,7 @@ class Club {
     this.phone,
     this.courtsCount = 0,
     this.minPrice,
+    this.isHidden = false,
   });
 
   factory Club.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,20 @@ class Club {
       phone: json['phone'] as String?,
       courtsCount: json['courts_count'] as int? ?? 0,
       minPrice: (json['min_price'] as num?)?.toDouble(),
+      isHidden: json['is_hidden'] as bool? ?? false,
     );
   }
+
+  Club copyWith({bool? isHidden}) => Club(
+    id: id,
+    name: name,
+    address: address,
+    city: city,
+    logo: logo,
+    description: description,
+    phone: phone,
+    courtsCount: courtsCount,
+    minPrice: minPrice,
+    isHidden: isHidden ?? this.isHidden,
+  );
 }
