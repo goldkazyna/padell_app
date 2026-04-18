@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../providers/profile_provider.dart';
+import '../../screens/player_profile_screen.dart';
 import '../../screens/tournament_results_screen.dart';
 import '../../theme/app_theme.dart';
 
@@ -29,10 +30,19 @@ class TournamentHistory extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (tournaments.length > 3)
+                if (tournaments.length > 3 && profile.user != null)
                   GestureDetector(
                     onTap: () {
-                      // TODO: показать все турниры
+                      final user = profile.user!;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PlayerProfileScreen(
+                            playerId: user.id,
+                            playerName: user.name,
+                          ),
+                        ),
+                      );
                     },
                     child: Text(
                       AppLocalizations.of(context)!.allButton,
