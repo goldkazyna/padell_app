@@ -276,86 +276,50 @@ class HeroTournamentCard extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 4,
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0x0DFFFFFF),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      LayoutBuilder(
-                        builder: (context, c) => Container(
-                          width: c.maxWidth * fraction.clamp(0.0, 1.0),
-                          decoration: BoxDecoration(
-                            color: barColor,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                    ],
+          child: SizedBox(
+            height: 4,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0x0DFFFFFF),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              if (full)
-                Row(
-                  children: [
-                    Text(
-                      '${tournament.participantsCount}/${tournament.maxParticipants}',
-                      style: const TextStyle(
-                        color: AppTheme.error,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        fontFeatures: [FontFeature.tabularFigures()],
-                      ),
+                LayoutBuilder(
+                  builder: (context, c) => Container(
+                    width: c.maxWidth * fraction.clamp(0.0, 1.0),
+                    decoration: BoxDecoration(
+                      color: barColor,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    const SizedBox(width: 4),
-                    const Text(
-                      'мест нет',
-                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
-                    ),
-                  ],
-                )
-              else
-                Row(
-                  children: [
-                    Text(
-                      '$spotsLeft',
-                      style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        fontFeatures: [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Text(
-                      'мест',
-                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
-                    ),
-                  ],
+                  ),
                 ),
-            ],
+              ],
+            ),
           ),
         ),
-        if (!full && tournament.price > 0) ...[
-          const SizedBox(width: 10),
+        const SizedBox(width: 10),
+        if (full)
           Text(
-            tournament.priceTextCompact,
+            '${tournament.participantsCount}/${tournament.maxParticipants} · мест нет',
             style: const TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 12,
+              color: AppTheme.error,
+              fontSize: 11,
               fontWeight: FontWeight.w600,
               fontFeatures: [FontFeature.tabularFigures()],
             ),
+          )
+        else
+          Text(
+            tournament.spotsLeftText(),
+            style: TextStyle(
+              color: amberClose ? AppTheme.amber : AppTheme.textPrimary,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
           ),
-        ],
       ],
     );
   }

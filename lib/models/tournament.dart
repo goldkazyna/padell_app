@@ -461,12 +461,33 @@ class Tournament {
     return userLevel >= minLevel && userLevel <= maxLevel;
   }
 
-  /// Цена в компактном виде — «18к ₸» / «22к ₸».
+  /// Цена полностью: «18 000 ₸».
   String get priceTextCompact {
     if (price <= 0) return '';
-    if (price < 1000) return '${price.toInt()} ₸';
-    final k = (price / 1000).toStringAsFixed(0);
-    return '${k}к ₸';
+    final intPart = price.toInt().toString();
+    final withSpaces = intPart.replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+$)'),
+      (m) => '${m[1]} ',
+    );
+    return '$withSpaces ₸';
+  }
+
+  /// «осталось 2 места» / «осталось 1 место» / «осталось 5 мест».
+  String spotsLeftText() {
+    final n = spotsLeft < 0 ? 0 : spotsLeft;
+    final mod10 = n % 10;
+    final mod100 = n % 100;
+    String word;
+    if (mod100 >= 11 && mod100 <= 14) {
+      word = 'мест';
+    } else if (mod10 == 1) {
+      word = 'место';
+    } else if (mod10 >= 2 && mod10 <= 4) {
+      word = 'места';
+    } else {
+      word = 'мест';
+    }
+    return 'осталось $n $word';
   }
 }
 

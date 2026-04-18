@@ -222,14 +222,14 @@ class TournamentRowV2 extends StatelessWidget {
             fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
-        if (showPrice && tournament.price > 0) ...[
+        if (amberClose) ...[
           const SizedBox(height: 1),
           Text(
-            tournament.priceTextCompact,
+            tournament.spotsLeftText(),
             style: const TextStyle(
-              color: AppTheme.textDim,
+              color: AppTheme.amber,
               fontSize: 10,
-              fontFeatures: [FontFeature.tabularFigures()],
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
