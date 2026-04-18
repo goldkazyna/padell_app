@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,7 +8,23 @@ import '../providers/profile_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/app_theme.dart';
+
+// === V3 design tokens (scoped to this screen) ===
+class _T {
+  static const bg = Color(0xFF131317);
+  static const card = Color(0xFF1C1C21);
+  static const cardRaised = Color(0xFF23232A);
+  static const border = Color(0x0FFFFFFF); // rgba(255,255,255,0.06)
+  static const divider = Color(0x0DFFFFFF); // rgba(255,255,255,0.05)
+  static const text = Color(0xFFF3F3F5);
+  static const muted = Color(0xFFA2A2AB);
+  static const dim = Color(0xFF6A6A73);
+  static const green = Color(0xFF22C47A);
+  static const greenSoft = Color(0x2422C47A); // rgba(34,196,122,0.14)
+  static const amber = Color(0xFFEAB34E);
+  static const red = Color(0xFFF0554D);
+  static const rowIconBg = Color(0x0AFFFFFF); // rgba(255,255,255,0.04)
+}
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -20,59 +35,62 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
-  final _ageController = TextEditingController();
-  final _phoneController = TextEditingController();
 
   String? _city;
   String? _gender;
   String? _hand;
   String? _position;
-  String _initialPhone = '';
-  String? _phoneError;
-  bool _isSaving = false;
-  bool _isLoading = true;
+  DateTime? _birthDate;
+  String _phone = '';
+  String? _avatarUrl;
+  int? _rating;
+  double? _level;
+  int? _place;
 
   File? _pickedImage;
-  String? _currentAvatarUrl;
+  bool _isLoading = true;
+  bool _isSaving = false;
 
-  bool get _phoneLocked => _initialPhone.isNotEmpty;
+  // Snapshot of original for dirty check
+  Map<String, dynamic> _initial = {};
 
   @override
   void initState() {
     super.initState();
-    _loadProfile();
+    _load();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _ageController.dispose();
-    _phoneController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadProfile() async {
+  Future<void> _load() async {
     try {
       final token = await StorageService().getToken();
       final response = await ApiService().get('/profile', token);
       final user = response['user'] as Map<String, dynamic>? ?? {};
 
-      debugPrint('[EDIT_PROFILE] user data: $user');
-
-      final phone = (user['phone'] as String? ?? '').trim();
+      final name = user['name'] as String? ?? '';
+      final birthStr = user['birth_date'] as String?;
+      final birth = birthStr != null ? DateTime.tryParse(birthStr) : null;
 
       setState(() {
-        _nameController.text = user['name'] as String? ?? '';
+        _nameController.text = name;
         _city = user['city'] as String?;
         _gender = user['gender'] as String?;
-        _ageController.text =
-            (user['age'] != null) ? user['age'].toString() : '';
         _hand = user['hand'] as String?;
         _position = user['position'] as String?;
-        _currentAvatarUrl = user['avatar'] as String?;
-        _initialPhone = phone;
-        _phoneController.text = phone.isNotEmpty ? _formatPhoneDisplay(phone) : '';
+        _birthDate = birth;
+        _phone = (user['phone'] as String? ?? '').trim();
+        _avatarUrl = user['avatar'] as String?;
+        _rating = user['rating'] as int?;
+        final lvl = user['level'];
+        _level = lvl is num ? lvl.toDouble() : double.tryParse(lvl?.toString() ?? '');
+        _place = user['place'] as int?;
         _isLoading = false;
+        _initial = _snapshot();
       });
     } catch (e) {
       debugPrint('[EDIT_PROFILE] load error: $e');
@@ -80,10 +98,104 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Map<String, dynamic> _snapshot() => {
+    'name': _nameController.text.trim(),
+    'city': _city,
+    'gender': _gender,
+    'hand': _hand,
+    'position': _position,
+    'birth_date': _birthDate?.toIso8601String().substring(0, 10),
+  };
+
+  bool get _isDirty {
+    final now = _snapshot();
+    if (_pickedImage != null) return true;
+    for (final k in now.keys) {
+      if (now[k] != _initial[k]) return true;
+    }
+    return false;
+  }
+
+  int get _completionPct {
+    final filled = [
+      _nameController.text.trim().isNotEmpty,
+      _phone.isNotEmpty,
+      _city != null && _city!.isNotEmpty,
+      _gender != null,
+      _birthDate != null,
+      _hand != null,
+      _position != null,
+    ].where((e) => e).length;
+    return ((filled / 7) * 100).round();
+  }
+
+  String? get _missingFieldHint {
+    if (_birthDate == null && _position == null) {
+      return 'Заполните возраст и позицию на корте, чтобы находить пары';
+    }
+    if (_birthDate == null) return 'Укажите возраст, чтобы было проще найти партнёра';
+    if (_position == null) return 'Укажите позицию на корте';
+    if (_hand == null) return 'Добавьте ведущую руку';
+    if (_gender == null) return 'Укажите пол';
+    if (_city == null || _city!.isEmpty) return 'Выберите город';
+    return null;
+  }
+
+  Future<void> _save() async {
+    setState(() => _isSaving = true);
+    try {
+      final token = await StorageService().getToken();
+
+      if (_pickedImage != null) {
+        try {
+          await ApiService().multipartPost(
+            '/profile/avatar',
+            {},
+            _pickedImage!.path,
+            'avatar',
+            token,
+          );
+        } catch (e) {
+          debugPrint('[EDIT_PROFILE] avatar error: $e');
+        }
+      }
+
+      final body = <String, dynamic>{
+        'name': _nameController.text.trim(),
+      };
+      if (_city != null) body['city'] = _city;
+      if (_gender != null) body['gender'] = _gender;
+      if (_hand != null) body['hand'] = _hand;
+      if (_position != null) body['position'] = _position;
+      if (_birthDate != null) {
+        body['birth_date'] = _birthDate!.toIso8601String().substring(0, 10);
+      }
+
+      await ApiService().put('/profile', body, token);
+
+      if (mounted) {
+        context.read<ProfileProvider>().loadProfile();
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      debugPrint('[EDIT_PROFILE] save error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.saveError(e.toString())),
+            backgroundColor: _T.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
   Future<void> _pickImage() async {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.card,
+      backgroundColor: _T.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -102,22 +214,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: AppTheme.accent),
+              leading: const Icon(Icons.camera_alt, color: _T.green),
               title: Text(AppLocalizations.of(context)!.photoCamera,
-                  style: const TextStyle(color: AppTheme.textPrimary)),
-              onTap: () {
-                Navigator.pop(ctx);
-                _takePhoto(ImageSource.camera);
-              },
+                  style: const TextStyle(color: _T.text)),
+              onTap: () { Navigator.pop(ctx); _takePhoto(ImageSource.camera); },
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library, color: AppTheme.accent),
+              leading: const Icon(Icons.photo_library, color: _T.green),
               title: Text(AppLocalizations.of(context)!.photoGallery,
-                  style: const TextStyle(color: AppTheme.textPrimary)),
-              onTap: () {
-                Navigator.pop(ctx);
-                _takePhoto(ImageSource.gallery);
-              },
+                  style: const TextStyle(color: _T.text)),
+              onTap: () { Navigator.pop(ctx); _takePhoto(ImageSource.gallery); },
             ),
             const SizedBox(height: 16),
           ],
@@ -128,283 +234,358 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _takePhoto(ImageSource source) async {
     try {
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(
+      final picked = await ImagePicker().pickImage(
         source: source,
         maxWidth: 512,
         maxHeight: 512,
         imageQuality: 80,
       );
-      if (picked != null) {
-        // Convert to WebP for smaller file size
-        final dir = await getTemporaryDirectory();
-        final targetPath =
-            '${dir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}.webp';
-
-        final compressed = await FlutterImageCompress.compressAndGetFile(
-          picked.path,
-          targetPath,
-          format: CompressFormat.webp,
-          quality: 80,
-          minWidth: 512,
-          minHeight: 512,
-        );
-
-        if (compressed != null) {
-          final originalSize = await File(picked.path).length();
-          final compressedSize = await compressed.length();
-          debugPrint(
-              '[EDIT_PROFILE] WebP: ${originalSize ~/ 1024}KB -> ${compressedSize ~/ 1024}KB');
-          setState(() => _pickedImage = File(compressed.path));
-        } else {
-          // Fallback to original if compression fails
-          setState(() => _pickedImage = File(picked.path));
-        }
-      }
+      if (picked == null) return;
+      final dir = await getTemporaryDirectory();
+      final targetPath = '${dir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}.webp';
+      final compressed = await FlutterImageCompress.compressAndGetFile(
+        picked.path, targetPath, format: CompressFormat.webp, quality: 80,
+        minWidth: 512, minHeight: 512,
+      );
+      if (!mounted) return;
+      setState(() => _pickedImage = File(compressed?.path ?? picked.path));
     } catch (e) {
-      debugPrint('[EDIT_PROFILE] pick image error: $e');
+      debugPrint('[EDIT_PROFILE] pick error: $e');
     }
   }
 
-  String _formatPhoneDisplay(String digits) {
-    if (digits.length != 11) return digits;
-    return '+${digits[0]} ${digits.substring(1, 4)} ${digits.substring(4, 7)} ${digits.substring(7, 9)} ${digits.substring(9)}';
-  }
-
-  String _normalizePhone(String raw) {
-    var digits = raw.replaceAll(RegExp(r'[^\d]'), '');
-    if (digits.length == 11 && digits.startsWith('8')) {
-      digits = '7${digits.substring(1)}';
-    } else if (digits.length == 10) {
-      digits = '7$digits';
-    }
-    return digits;
-  }
-
-  Future<void> _save() async {
-    // Валидация телефона если редактируется
-    if (!_phoneLocked && _phoneController.text.trim().isNotEmpty) {
-      final digits = _normalizePhone(_phoneController.text);
-      if (digits.length != 11 || !digits.startsWith('7')) {
-        setState(() => _phoneError = AppLocalizations.of(context)!.phoneInvalidFormat);
-        return;
-      }
-    }
-    setState(() {
-      _phoneError = null;
-      _isSaving = true;
-    });
-
-    try {
-      final token = await StorageService().getToken();
-
-      // Upload avatar if picked
-      if (_pickedImage != null) {
-        try {
-          final fileSize = await _pickedImage!.length();
-          debugPrint(
-              '[EDIT_PROFILE] uploading avatar: ${_pickedImage!.path} (${fileSize ~/ 1024}KB)');
-          final avatarResponse = await ApiService().multipartPost(
-            '/profile/avatar',
-            {},
-            _pickedImage!.path,
-            'avatar',
-            token,
-          );
-          debugPrint('[EDIT_PROFILE] avatar response: $avatarResponse');
-        } catch (e) {
-          debugPrint('[EDIT_PROFILE] avatar upload error: $e');
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.photoUploadError(e.toString())),
-                backgroundColor: AppTheme.error,
-              ),
-            );
-          }
-        }
-      }
-
-      // Save profile data
-      final body = <String, dynamic>{
-        'name': _nameController.text.trim(),
-      };
-      if (_city != null) body['city'] = _city;
-      if (_gender != null) body['gender'] = _gender;
-      if (_ageController.text.isNotEmpty) {
-        body['age'] = int.tryParse(_ageController.text) ?? 0;
-      }
-      if (_hand != null) body['hand'] = _hand;
-      if (_position != null) body['position'] = _position;
-      if (!_phoneLocked && _phoneController.text.trim().isNotEmpty) {
-        body['phone'] = _normalizePhone(_phoneController.text);
-      }
-
-      debugPrint('[EDIT_PROFILE] saving: $body');
-
-      await ApiService().put('/profile', body, token);
-
-      if (mounted) {
-        context.read<ProfileProvider>().loadProfile();
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      debugPrint('[EDIT_PROFILE] save error: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.saveError(e.toString())),
-            backgroundColor: AppTheme.error,
+  Future<void> _pickBirthDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _birthDate ?? DateTime(now.year - 25, now.month, now.day),
+      firstDate: DateTime(now.year - 99),
+      lastDate: DateTime(now.year - 1, now.month, now.day),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.dark(
+            primary: _T.green,
+            onPrimary: Colors.white,
+            surface: _T.card,
+            onSurface: _T.text,
           ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
+          dialogTheme: const DialogThemeData(backgroundColor: _T.card),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      setState(() => _birthDate = picked);
     }
+  }
+
+  Future<void> _pickCity() async {
+    final cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе'];
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: _T.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFF3A3A3A),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              AppLocalizations.of(context)!.selectCity,
+              style: const TextStyle(color: _T.text, fontSize: 17, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            ...cities.map((city) => ListTile(
+              title: Text(
+                city,
+                style: TextStyle(
+                  color: city == _city ? _T.green : _T.text,
+                  fontWeight: city == _city ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+              trailing: city == _city ? const Icon(Icons.check, color: _T.green) : null,
+              onTap: () {
+                setState(() => _city = city);
+                Navigator.pop(ctx);
+              },
+            )),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: _T.bg,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: _T.green))
+            : Column(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppTheme.card,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFF2A2A2A),
-                        width: 0.5,
-                      ),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.chevron_left,
-                          color: AppTheme.textPrimary, size: 24),
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    AppLocalizations.of(context)!.editProfile,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  _isSaving
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: AppTheme.accent,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : GestureDetector(
-                          onTap: _save,
-                          child: Text(
-                            AppLocalizations.of(context)!.saveProfile,
-                            style: const TextStyle(
-                              color: AppTheme.accent,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                ],
-              ),
-            ),
-
-            // Content
-            Expanded(
-              child: _isLoading
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator(color: AppTheme.accent),
-                    )
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                  _buildHeader(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(bottom: 24),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Avatar
-                          const SizedBox(height: 8),
-                          Center(child: _buildAvatar()),
-                          const SizedBox(height: 24),
-
-                          // ФИО
-                          _buildSectionLabel(AppLocalizations.of(context)!.sectionName),
-                          const SizedBox(height: 8),
-                          _buildSingleTextField(AppLocalizations.of(context)!.fieldName, _nameController),
-                          const SizedBox(height: 24),
-
-                          // ТЕЛЕФОН
-                          _buildSectionLabel(AppLocalizations.of(context)!.sectionPhone),
-                          const SizedBox(height: 8),
-                          _buildPhoneField(),
-                          const SizedBox(height: 24),
-
-                          // МЕСТОПОЛОЖЕНИЕ
-                          _buildSectionLabel(AppLocalizations.of(context)!.sectionLocation),
-                          const SizedBox(height: 8),
-                          _buildCitySelector(),
-                          const SizedBox(height: 24),
-
-                          // ПОЛ
-                          _buildSectionLabel(AppLocalizations.of(context)!.sectionGender),
-                          const SizedBox(height: 8),
-                          _buildToggleRow(
-                            options: ['male', 'female'],
-                            labels: [AppLocalizations.of(context)!.genderMale, AppLocalizations.of(context)!.genderFemale],
-                            selected: _gender,
-                            onChanged: (v) => setState(() => _gender = v),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // ВОЗРАСТ
-                          _buildSectionLabel(AppLocalizations.of(context)!.sectionAge),
-                          const SizedBox(height: 8),
-                          _buildAgeField(),
-                          const SizedBox(height: 24),
-
-                          // ВЕДУЩАЯ РУКА
-                          _buildSectionLabel(AppLocalizations.of(context)!.sectionHand),
-                          const SizedBox(height: 8),
-                          _buildToggleRow(
-                            options: ['right', 'left'],
-                            labels: [AppLocalizations.of(context)!.handRight, AppLocalizations.of(context)!.handLeft],
-                            selected: _hand,
-                            onChanged: (v) => setState(() => _hand = v),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // ПОЗИЦИЯ НА КОРТЕ
-                          _buildSectionLabel(AppLocalizations.of(context)!.sectionPosition),
-                          const SizedBox(height: 8),
-                          _buildToggleRow(
-                            options: ['right', 'left', 'any'],
-                            labels: [AppLocalizations.of(context)!.positionRight, AppLocalizations.of(context)!.positionLeft, AppLocalizations.of(context)!.positionAny],
-                            selected: _position,
-                            onChanged: (v) =>
-                                setState(() => _position = v),
-                          ),
-                          const SizedBox(height: 40),
+                          _buildHero(),
+                          _buildSectionTitle('КОНТАКТЫ'),
+                          _buildCard(children: [
+                            _buildEditableRow(
+                              icon: Icons.person_outline,
+                              label: 'Имя',
+                              controller: _nameController,
+                              hint: 'Укажите имя',
+                            ),
+                            _divider(),
+                            _buildInfoRow(
+                              icon: Icons.phone_outlined,
+                              label: 'Телефон',
+                              value: _phone.isEmpty ? null : _formatPhone(_phone),
+                              placeholder: 'Не указан',
+                              trailing: const Icon(Icons.lock_outline, size: 15, color: _T.dim),
+                            ),
+                            _divider(),
+                            _buildInfoRow(
+                              icon: Icons.location_on_outlined,
+                              label: 'Город',
+                              value: _city,
+                              placeholder: 'Выберите город',
+                              trailing: const Icon(Icons.chevron_right, size: 16, color: _T.dim),
+                              onTap: _pickCity,
+                              isLast: true,
+                            ),
+                          ]),
+                          _buildSectionTitle('О ВАС', optional: true),
+                          _buildCard(children: [
+                            _buildInfoRow(
+                              icon: Icons.cake_outlined,
+                              label: 'Возраст',
+                              value: _birthDate != null
+                                  ? '${_ageFromDate(_birthDate!)} · ${_formatDate(_birthDate!)}'
+                                  : null,
+                              placeholder: 'Укажите дату рождения',
+                              trailing: const Icon(Icons.chevron_right, size: 16, color: _T.dim),
+                              onTap: _pickBirthDate,
+                              incomplete: _birthDate == null,
+                            ),
+                            _divider(),
+                            _buildChipRow(
+                              icon: Icons.wc_outlined,
+                              label: 'Пол',
+                              options: const [
+                                _ChipOption('male', 'Мужской'),
+                                _ChipOption('female', 'Женский'),
+                              ],
+                              value: _gender,
+                              onChanged: (v) => setState(() => _gender = v),
+                              incomplete: _gender == null,
+                              isLast: true,
+                            ),
+                          ]),
+                          _buildSectionTitle('ИГРОВОЙ СТИЛЬ'),
+                          _buildCard(children: [
+                            _buildChipRow(
+                              icon: Icons.back_hand_outlined,
+                              label: 'Ведущая рука',
+                              options: const [
+                                _ChipOption('right', 'Правша'),
+                                _ChipOption('left', 'Левша'),
+                              ],
+                              value: _hand,
+                              onChanged: (v) => setState(() => _hand = v),
+                              incomplete: _hand == null,
+                            ),
+                            _divider(),
+                            _buildChipRow(
+                              icon: Icons.sports_tennis_outlined,
+                              label: 'Позиция на корте',
+                              options: const [
+                                _ChipOption('right', 'Справа'),
+                                _ChipOption('left', 'Слева'),
+                                _ChipOption('any', 'Любая'),
+                              ],
+                              value: _position,
+                              onChanged: (v) => setState(() => _position = v),
+                              incomplete: _position == null,
+                              isLast: true,
+                            ),
+                          ]),
+                          const SizedBox(height: 20),
+                          _buildSaveButton(),
                         ],
                       ),
                     ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              width: 34, height: 34,
+              decoration: const BoxDecoration(
+                color: _T.card,
+                shape: BoxShape.circle,
+                border: Border.fromBorderSide(BorderSide(color: _T.border)),
+              ),
+              child: const Icon(Icons.chevron_left, size: 20, color: _T.text),
+            ),
+          ),
+          const SizedBox(width: 10),
+          const Text(
+            'Настройки профиля',
+            style: TextStyle(
+              color: _T.text, fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: -0.2,
+            ),
+          ),
+          const Spacer(),
+          _isSaving
+              ? const SizedBox(
+                  width: 24, height: 24,
+                  child: CircularProgressIndicator(color: _T.green, strokeWidth: 2),
+                )
+              : GestureDetector(
+                  onTap: _isDirty ? _save : null,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: _isDirty ? _T.greenSoft : const Color(0x08FFFFFF),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Сохранить',
+                      style: TextStyle(
+                        color: _isDirty ? _T.green : _T.dim,
+                        fontSize: 13, fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHero() {
+    final pct = _completionPct;
+    final hint = _missingFieldHint;
+    final levelText = _level != null ? _level!.toStringAsFixed(2) : '—';
+    final cityLabel = _city ?? '—';
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1F1F26), Color(0xFF1A1A20)],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          border: const Border.fromBorderSide(BorderSide(color: _T.border)),
+        ),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                _buildAvatar(),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _nameController.text.trim().isEmpty ? 'Без имени' : _nameController.text.trim(),
+                        style: const TextStyle(
+                          color: _T.text, fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: -0.3,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        '$cityLabel · Уровень $levelText',
+                        style: const TextStyle(color: _T.muted, fontSize: 12),
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(spacing: 4, runSpacing: 4, children: [
+                        if (_hand != null)
+                          _heroBadge(_handLabel(_hand!), _T.greenSoft, _T.green),
+                        if (_place != null)
+                          _heroBadge('#$_place в рейтинге', const Color(0x0AFFFFFF), _T.muted),
+                        if (_rating != null && _rating! > 0)
+                          _heroBadge('$_rating рейтинг', const Color(0x0AFFFFFF), _T.muted),
+                      ]),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+              decoration: BoxDecoration(
+                color: const Color(0x08FFFFFF),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Профиль заполнен',
+                          style: TextStyle(color: _T.muted, fontSize: 12),
+                        ),
+                      ),
+                      Text(
+                        '$pct%',
+                        style: const TextStyle(
+                          color: _T.green, fontSize: 13, fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: LinearProgressIndicator(
+                      value: pct / 100,
+                      minHeight: 4,
+                      backgroundColor: const Color(0x0DFFFFFF),
+                      valueColor: const AlwaysStoppedAnimation<Color>(_T.green),
+                    ),
+                  ),
+                  if (hint != null) ...[
+                    const SizedBox(height: 6),
+                    Text(hint, style: const TextStyle(color: _T.dim, fontSize: 11)),
+                  ],
+                ],
+              ),
             ),
           ],
         ),
@@ -413,53 +594,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildAvatar() {
-    final user = context.read<ProfileProvider>().user;
-    final initials = user?.initials ?? '??';
-
     return GestureDetector(
       onTap: _pickImage,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Container(
-            width: 90,
-            height: 90,
+            width: 64, height: 64,
             decoration: BoxDecoration(
-              color: AppTheme.accent,
-              borderRadius: BorderRadius.circular(24),
+              color: _T.green,
+              borderRadius: BorderRadius.circular(18),
             ),
+            clipBehavior: Clip.antiAlias,
             child: _pickedImage != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.file(_pickedImage!, fit: BoxFit.cover),
-                  )
-                : _currentAvatarUrl != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.network(
-                          _currentAvatarUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              _buildInitialsWidget(initials),
-                        ),
+                ? Image.file(_pickedImage!, fit: BoxFit.cover)
+                : _avatarUrl != null
+                    ? Image.network(
+                        _avatarUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _avatarInitials(),
                       )
-                    : _buildInitialsWidget(initials),
+                    : _avatarInitials(),
           ),
           Positioned(
-            right: 0,
-            bottom: 0,
+            right: -3, bottom: -3,
             child: Container(
-              width: 28,
-              height: 28,
+              width: 24, height: 24,
               decoration: BoxDecoration(
-                color: AppTheme.card,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.background, width: 2),
+                color: _T.cardRaised,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF1B1B21), width: 2),
               ),
-              child: const Icon(
-                Icons.camera_alt_outlined,
-                color: AppTheme.textSecondary,
-                size: 14,
-              ),
+              child: const Icon(Icons.camera_alt_outlined, size: 12, color: _T.text),
             ),
           ),
         ],
@@ -467,296 +633,197 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildInitialsWidget(String initials) {
+  Widget _avatarInitials() {
+    final name = _nameController.text.trim();
+    final parts = name.split(RegExp(r'\s+'));
+    String initials = '??';
+    if (parts.length >= 2 && parts[0].isNotEmpty && parts[1].isNotEmpty) {
+      initials = '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    } else if (name.isNotEmpty) {
+      initials = name[0].toUpperCase();
+    }
     return Center(
       child: Text(
         initials,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700),
       ),
     );
   }
 
-  Widget _buildSectionLabel(String label) {
-    return Text(
-      label,
-      style: const TextStyle(
-        color: AppTheme.textSecondary,
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.5,
-      ),
-    );
-  }
-
-  Widget _buildSingleTextField(String label, TextEditingController controller) {
+  Widget _heroBadge(String text, Color bg, Color fg) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
+      child: Text(
+        text,
+        style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600),
       ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, {bool optional = false}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
       child: Row(
         children: [
-          SizedBox(
-            width: 50,
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 15,
-              ),
-            ),
-          ),
           Expanded(
-            child: TextField(
-              controller: controller,
+            child: Text(
+              title,
               style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 15,
-              ),
-              textAlign: TextAlign.right,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: AppLocalizations.of(context)!.notSpecified,
-                hintStyle: TextStyle(
-                  color: AppTheme.textSecondary.withAlpha(100),
-                  fontSize: 15,
-                ),
+                color: _T.dim, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.4,
               ),
             ),
           ),
+          if (optional)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0x08FFFFFF),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: const Text(
+                'Опционально',
+                style: TextStyle(color: _T.dim, fontSize: 10, fontWeight: FontWeight.w500),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildCitySelector() {
-    final cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе'];
+  Widget _buildCard({required List<Widget> children}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: _T.card,
+          borderRadius: BorderRadius.circular(14),
+          border: const Border.fromBorderSide(BorderSide(color: _T.border)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(children: children),
+      ),
+    );
+  }
 
-    return GestureDetector(
-      onTap: () {
-        showModalBottomSheet(
-          context: context,
-          backgroundColor: AppTheme.card,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          builder: (ctx) => SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 8),
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF3A3A3A),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  AppLocalizations.of(context)!.selectCity,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...cities.map((city) => ListTile(
-                      title: Text(
-                        city,
-                        style: TextStyle(
-                          color: city == _city
-                              ? AppTheme.accent
-                              : AppTheme.textPrimary,
-                          fontWeight: city == _city
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                      ),
-                      trailing: city == _city
-                          ? const Icon(Icons.check, color: AppTheme.accent)
-                          : null,
-                      onTap: () {
-                        setState(() => _city = city);
-                        Navigator.pop(ctx);
-                      },
-                    )),
-                const SizedBox(height: 16),
-              ],
+  Widget _divider() => const SizedBox.shrink();
+
+  Widget _buildIconBox(IconData icon) {
+    return Container(
+      width: 34, height: 34,
+      decoration: BoxDecoration(
+        color: _T.rowIconBg,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, size: 17, color: _T.muted),
+    );
+  }
+
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    String? value,
+    String? placeholder,
+    Widget? trailing,
+    VoidCallback? onTap,
+    bool incomplete = false,
+    bool isLast = false,
+  }) {
+    final empty = value == null || value.isEmpty;
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isLast ? Colors.transparent : _T.divider,
+              width: 0.5,
             ),
           ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: AppTheme.card,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
         ),
         child: Row(
           children: [
-            Text(
-              AppLocalizations.of(context)!.fieldCity,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(width: 16),
+            _buildIconBox(icon),
+            const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                _city ?? AppLocalizations.of(context)!.cityNotSpecified,
-                style: TextStyle(
-                  color: _city != null
-                      ? AppTheme.textPrimary
-                      : AppTheme.textSecondary.withAlpha(100),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(label, style: const TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
+                      if (incomplete && empty) ...[
+                        const SizedBox(width: 5),
+                        const Text('• Не заполнено',
+                          style: TextStyle(color: _T.amber, fontSize: 11, height: 1.2)),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    empty ? (placeholder ?? 'Не указано') : value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: empty ? _T.dim : _T.text,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right,
-              color: AppTheme.textSecondary,
-              size: 20,
-            ),
+            if (trailing != null) ...[
+              const SizedBox(width: 6),
+              trailing,
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPhoneField() {
-    final locked = _phoneLocked;
-    final l = AppLocalizations.of(context)!;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          decoration: BoxDecoration(
-            color: AppTheme.card,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
-          ),
-          child: Row(
-            children: [
-              Text(
-                l.fieldPhone,
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 15,
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _phoneController,
-                  readOnly: locked,
-                  enabled: !locked,
-                  keyboardType: TextInputType.phone,
-                  style: TextStyle(
-                    color: locked
-                        ? AppTheme.textSecondary
-                        : AppTheme.textPrimary,
-                    fontSize: 15,
-                  ),
-                  textAlign: TextAlign.right,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: l.phoneHintEdit,
-                    hintStyle: TextStyle(
-                      color: AppTheme.textSecondary.withAlpha(100),
-                      fontSize: 15,
-                    ),
-                  ),
-                  onChanged: (_) {
-                    if (_phoneError != null) setState(() => _phoneError = null);
-                  },
-                ),
-              ),
-              if (locked)
-                const Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Icon(Icons.lock_outline,
-                      color: AppTheme.textSecondary, size: 16),
-                ),
-            ],
+  Widget _buildEditableRow({
+    required IconData icon,
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    bool isLast = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: isLast ? Colors.transparent : _T.divider,
+            width: 0.5,
           ),
         ),
-        if (locked)
-          Padding(
-            padding: const EdgeInsets.only(top: 6, left: 4),
-            child: Text(
-              l.phoneLockedHint,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        if (_phoneError != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 6, left: 4),
-            child: Text(
-              _phoneError!,
-              style: const TextStyle(
-                color: AppTheme.error,
-                fontSize: 12,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildAgeField() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
       child: Row(
         children: [
-          Text(
-            AppLocalizations.of(context)!.fieldAge,
-            style: const TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 15,
-            ),
-          ),
+          _buildIconBox(icon),
+          const SizedBox(width: 12),
           Expanded(
-            child: TextField(
-              controller: _ageController,
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 15,
-              ),
-              textAlign: TextAlign.right,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(2),
-              ],
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: AppLocalizations.of(context)!.ageNotSpecified,
-                hintStyle: TextStyle(
-                  color: AppTheme.textSecondary.withAlpha(100),
-                  fontSize: 15,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: const TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
+                const SizedBox(height: 1),
+                TextField(
+                  controller: controller,
+                  style: const TextStyle(color: _T.text, fontSize: 14, fontWeight: FontWeight.w500),
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                    border: InputBorder.none,
+                    hintText: hint,
+                    hintStyle: const TextStyle(color: _T.dim, fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -764,43 +831,136 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildToggleRow({
-    required List<String> options,
-    required List<String> labels,
-    required String? selected,
+  Widget _buildChipRow({
+    required IconData icon,
+    required String label,
+    required List<_ChipOption> options,
+    required String? value,
     required ValueChanged<String> onChanged,
+    bool incomplete = false,
+    bool isLast = false,
   }) {
-    return Row(
-      children: List.generate(options.length, (i) {
-        final isSelected = selected == options[i];
-        return Padding(
-          padding: EdgeInsets.only(right: i < options.length - 1 ? 8 : 0),
-          child: GestureDetector(
-            onTap: () => onChanged(options[i]),
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: isSelected ? AppTheme.accent : AppTheme.card,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color:
-                      isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
-                  width: 0.5,
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: isLast ? Colors.transparent : _T.divider,
+            width: 0.5,
+          ),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildIconBox(icon),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(label, style: const TextStyle(color: _T.dim, fontSize: 11)),
+                    if (incomplete && value == null) ...[
+                      const SizedBox(width: 5),
+                      const Text('• Не заполнено',
+                        style: TextStyle(color: _T.amber, fontSize: 11)),
+                    ],
+                  ],
                 ),
-              ),
-              child: Text(
-                labels[i],
-                style: TextStyle(
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 5, runSpacing: 5,
+                  children: options.map((o) {
+                    final active = o.value == value;
+                    return GestureDetector(
+                      onTap: () => onChanged(o.value),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: active ? _T.green : const Color(0x0AFFFFFF),
+                          border: Border.all(color: active ? _T.green : _T.border, width: 1),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          o.label,
+                          style: TextStyle(
+                            color: active ? Colors.white : _T.muted,
+                            fontSize: 12,
+                            fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
-              ),
+              ],
             ),
           ),
-        );
-      }),
+        ],
+      ),
     );
   }
+
+  Widget _buildSaveButton() {
+    final enabled = _isDirty && !_isSaving;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: GestureDetector(
+        onTap: enabled ? _save : null,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: enabled ? _T.green : const Color(0x14FFFFFF),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: _isSaving
+                ? const SizedBox(
+                    width: 18, height: 18,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : Text(
+                    'Сохранить изменения',
+                    style: TextStyle(
+                      color: enabled ? Colors.white : _T.dim,
+                      fontSize: 15, fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // === Helpers ===
+
+  String _formatPhone(String digits) {
+    if (digits.length != 11) return digits;
+    return '+${digits[0]} ${digits.substring(1, 4)} ${digits.substring(4, 7)} ${digits.substring(7, 9)} ${digits.substring(9)}';
+  }
+
+  String _formatDate(DateTime d) {
+    const months = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    return '${d.day} ${months[d.month - 1]} ${d.year}';
+  }
+
+  int _ageFromDate(DateTime birth) {
+    final now = DateTime.now();
+    int years = now.year - birth.year;
+    if (now.month < birth.month || (now.month == birth.month && now.day < birth.day)) {
+      years--;
+    }
+    return years;
+  }
+
+  String _handLabel(String hand) => hand == 'right' ? 'Правша' : hand == 'left' ? 'Левша' : hand;
+}
+
+class _ChipOption {
+  final String value;
+  final String label;
+  const _ChipOption(this.value, this.label);
 }

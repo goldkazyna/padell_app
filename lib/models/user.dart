@@ -9,6 +9,9 @@ class User {
   final int? place;
   final String? city;
   final String? gender;
+  final DateTime? birthDate;
+  final String? hand;
+  final String? position;
 
   const User({
     required this.id,
@@ -21,7 +24,21 @@ class User {
     this.place,
     this.city,
     this.gender,
+    this.birthDate,
+    this.hand,
+    this.position,
   });
+
+  int? get age {
+    if (birthDate == null) return null;
+    final now = DateTime.now();
+    int years = now.year - birthDate!.year;
+    if (now.month < birthDate!.month ||
+        (now.month == birthDate!.month && now.day < birthDate!.day)) {
+      years--;
+    }
+    return years;
+  }
 
   String get initials {
     final parts = name.trim().split(RegExp(r'\s+'));
@@ -71,6 +88,11 @@ class User {
       place: json['place'] as int?,
       city: json['city'] as String?,
       gender: json['gender'] as String?,
+      birthDate: json['birth_date'] != null
+          ? DateTime.tryParse(json['birth_date'] as String)
+          : null,
+      hand: json['hand'] as String?,
+      position: json['position'] as String?,
     );
   }
 
