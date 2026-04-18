@@ -166,13 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   const SizedBox(height: 28),
-                  SectionTitle(
-                    title: AppLocalizations.of(context)!.upcoming,
-                    trailing: AppLocalizations.of(context)!.all,
-                    onTrailingTap: () {
-                      widget.onNavigateToTab?.call(1); // Tournaments tab
-                    },
-                  ),
+                  SectionTitle(title: AppLocalizations.of(context)!.upcoming),
                   const SizedBox(height: 12),
                   UpcomingList(
                     tournaments: home.upcomingTournaments,
