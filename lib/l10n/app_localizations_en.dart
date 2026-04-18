@@ -18,7 +18,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navTournaments => 'Tournaments';
 
   @override
-  String get navChallenges => 'Challenges';
+  String get navChallenges => 'Game';
 
   @override
   String get navBooking => 'Booking';
@@ -509,7 +509,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get challenge => 'Challenge';
+  String get challenge => 'Game';
 
   @override
   String get challengeHint =>
@@ -522,10 +522,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeMyTab => 'My';
 
   @override
-  String get noOpenChallenges => 'No open challenges';
+  String get noOpenChallenges => 'No open games';
 
   @override
-  String get noMyChallenges => 'You have no challenges';
+  String get noMyChallenges => 'You have no games';
 
   @override
   String get challengeNotSpecified => 'Not specified';
@@ -560,11 +560,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeTeamB => 'Team B';
 
   @override
-  String get challengeCancelTitle => 'Cancel challenge?';
+  String get challengeCancelTitle => 'Cancel game?';
 
   @override
   String get challengeCancelConfirm =>
-      'Are you sure you want to cancel the challenge?';
+      'Are you sure you want to cancel the game?';
 
   @override
   String get challengeYesCancel => 'Yes, cancel';
@@ -573,7 +573,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeEnterScore => 'Enter score for at least one set';
 
   @override
-  String get challengeNotFound => 'Challenge not found';
+  String get challengeNotFound => 'Game not found';
 
   @override
   String get challengeScore => 'SCORE';
@@ -582,11 +582,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeAddSet => 'Add set';
 
   @override
-  String get challengeFinish => 'Finish challenge';
+  String get challengeFinish => 'Finish game';
 
   @override
   String get challengeScoreCreatorHint =>
-      'The score is entered by the challenge creator. After completion, you will be able to confirm the result.';
+      'The score is entered by the game creator. After completion, you will be able to confirm the result.';
 
   @override
   String get challengeResult => 'RESULT';
@@ -644,10 +644,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get challengeStart => 'Start challenge';
+  String get challengeStart => 'Start game';
 
   @override
-  String get challengeCancelButton => 'Cancel challenge';
+  String get challengeCancelButton => 'Cancel game';
 
   @override
   String get challengeLeave => 'Leave';
@@ -718,7 +718,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeMonthDec => 'December';
 
   @override
-  String get challengeNewTitle => 'New challenge';
+  String get challengeNewTitle => 'New game';
 
   @override
   String get challengeDatePlaceholder => 'Date';
@@ -727,7 +727,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeTimePlaceholder => 'Time';
 
   @override
-  String get challengeType => 'Challenge type';
+  String get challengeType => 'Game type';
 
   @override
   String get challengeMinLevel => 'Min. level';
@@ -739,7 +739,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeCourtLayout => 'COURT LAYOUT';
 
   @override
-  String get challengeCreateButton => 'Create challenge';
+  String get challengeCreateButton => 'Create game';
 
   @override
   String get challengeLoadingClubs => 'Loading...';
