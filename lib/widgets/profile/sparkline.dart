@@ -19,23 +19,24 @@ class Sparkline extends StatelessWidget {
     if (points.length < 2) {
       return SizedBox(width: width, height: height);
     }
+    final doubles = points.map((e) => e.toDouble()).toList();
     return CustomPaint(
       size: Size(width, height),
-      painter: _SparklinePainter(points: points, color: color),
+      painter: _SparklinePainter(points: doubles, color: color),
     );
   }
 }
 
 class _SparklinePainter extends CustomPainter {
-  final List<num> points;
+  final List<double> points;
   final Color color;
 
   _SparklinePainter({required this.points, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final minV = points.reduce((a, b) => a < b ? a : b).toDouble();
-    final maxV = points.reduce((a, b) => a > b ? a : b).toDouble();
+    final minV = points.reduce((a, b) => a < b ? a : b);
+    final maxV = points.reduce((a, b) => a > b ? a : b);
     final range = (maxV - minV).abs();
     final pad = range < 1 ? 1.0 : range * 0.08;
     final lo = minV - pad;
@@ -46,7 +47,7 @@ class _SparklinePainter extends CustomPainter {
 
     Offset pt(int i) {
       final x = i * stepX;
-      final norm = (points[i].toDouble() - lo) / (hi - lo);
+      final norm = (points[i] - lo) / (hi - lo);
       final y = size.height - norm * size.height;
       return Offset(x, y);
     }
