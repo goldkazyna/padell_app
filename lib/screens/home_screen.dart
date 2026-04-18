@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  // Поединки: создать + список
+                  // Игры: создать + список
                   Row(
                     children: [
                       Expanded(
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _buildActionCard(
-                          title: 'Поединки',
+                          title: 'Игры',
                           subtitle: 'Все вызовы',
                           icon: Icons.sports_tennis,
                           gradient: const [Color(0xFFF97316), Color(0xFFEA580C)],

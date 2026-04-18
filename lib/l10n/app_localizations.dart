@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// No description provided for @navChallenges.
   ///
   /// In ru, this message translates to:
-  /// **'Поединок'**
+  /// **'Игра'**
   String get navChallenges;
 
   /// No description provided for @navBooking.
@@ -1013,7 +1013,7 @@ abstract class AppLocalizations {
   /// No description provided for @challenge.
   ///
   /// In ru, this message translates to:
-  /// **'Поединок'**
+  /// **'Игра'**
   String get challenge;
 
   /// No description provided for @challengeHint.
@@ -1037,13 +1037,13 @@ abstract class AppLocalizations {
   /// No description provided for @noOpenChallenges.
   ///
   /// In ru, this message translates to:
-  /// **'Нет открытых поединков'**
+  /// **'Нет открытых игр'**
   String get noOpenChallenges;
 
   /// No description provided for @noMyChallenges.
   ///
   /// In ru, this message translates to:
-  /// **'У вас нет поединков'**
+  /// **'У вас нет игр'**
   String get noMyChallenges;
 
   /// No description provided for @challengeNotSpecified.
@@ -1109,13 +1109,13 @@ abstract class AppLocalizations {
   /// No description provided for @challengeCancelTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Отменить поединок?'**
+  /// **'Отменить игру?'**
   String get challengeCancelTitle;
 
   /// No description provided for @challengeCancelConfirm.
   ///
   /// In ru, this message translates to:
-  /// **'Вы уверены, что хотите отменить поединок?'**
+  /// **'Вы уверены, что хотите отменить игру?'**
   String get challengeCancelConfirm;
 
   /// No description provided for @challengeYesCancel.
@@ -1133,7 +1133,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengeNotFound.
   ///
   /// In ru, this message translates to:
-  /// **'Поединок не найден'**
+  /// **'Игра не найдена'**
   String get challengeNotFound;
 
   /// No description provided for @challengeScore.
@@ -1151,13 +1151,13 @@ abstract class AppLocalizations {
   /// No description provided for @challengeFinish.
   ///
   /// In ru, this message translates to:
-  /// **'Завершить поединок'**
+  /// **'Завершить игру'**
   String get challengeFinish;
 
   /// No description provided for @challengeScoreCreatorHint.
   ///
   /// In ru, this message translates to:
-  /// **'Счёт вводит создатель поединка. После завершения вы сможете подтвердить результат.'**
+  /// **'Счёт вводит создатель игры. После завершения вы сможете подтвердить результат.'**
   String get challengeScoreCreatorHint;
 
   /// No description provided for @challengeResult.
@@ -1247,13 +1247,13 @@ abstract class AppLocalizations {
   /// No description provided for @challengeStart.
   ///
   /// In ru, this message translates to:
-  /// **'Начать поединок'**
+  /// **'Начать игру'**
   String get challengeStart;
 
   /// No description provided for @challengeCancelButton.
   ///
   /// In ru, this message translates to:
-  /// **'Отменить поединок'**
+  /// **'Отменить игру'**
   String get challengeCancelButton;
 
   /// No description provided for @challengeLeave.
@@ -1391,7 +1391,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengeNewTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Новый поединок'**
+  /// **'Новая игра'**
   String get challengeNewTitle;
 
   /// No description provided for @challengeDatePlaceholder.
@@ -1409,7 +1409,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengeType.
   ///
   /// In ru, this message translates to:
-  /// **'Тип поединка'**
+  /// **'Тип игры'**
   String get challengeType;
 
   /// No description provided for @challengeMinLevel.
@@ -1433,7 +1433,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengeCreateButton.
   ///
   /// In ru, this message translates to:
-  /// **'Создать поединок'**
+  /// **'Создать игру'**
   String get challengeCreateButton;
 
   /// No description provided for @challengeLoadingClubs.

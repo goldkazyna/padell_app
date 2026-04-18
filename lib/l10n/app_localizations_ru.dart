@@ -18,7 +18,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navTournaments => 'Турниры';
 
   @override
-  String get navChallenges => 'Поединок';
+  String get navChallenges => 'Игра';
 
   @override
   String get navBooking => 'Бронирование';
@@ -510,7 +510,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get challenge => 'Поединок';
+  String get challenge => 'Игра';
 
   @override
   String get challengeHint =>
@@ -523,10 +523,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeMyTab => 'Мои';
 
   @override
-  String get noOpenChallenges => 'Нет открытых поединков';
+  String get noOpenChallenges => 'Нет открытых игр';
 
   @override
-  String get noMyChallenges => 'У вас нет поединков';
+  String get noMyChallenges => 'У вас нет игр';
 
   @override
   String get challengeNotSpecified => 'Не указано';
@@ -562,11 +562,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeTeamB => 'Команда B';
 
   @override
-  String get challengeCancelTitle => 'Отменить поединок?';
+  String get challengeCancelTitle => 'Отменить игру?';
 
   @override
-  String get challengeCancelConfirm =>
-      'Вы уверены, что хотите отменить поединок?';
+  String get challengeCancelConfirm => 'Вы уверены, что хотите отменить игру?';
 
   @override
   String get challengeYesCancel => 'Да, отменить';
@@ -575,7 +574,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeEnterScore => 'Введите счёт хотя бы в одном сете';
 
   @override
-  String get challengeNotFound => 'Поединок не найден';
+  String get challengeNotFound => 'Игра не найдена';
 
   @override
   String get challengeScore => 'СЧЁТ';
@@ -584,11 +583,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeAddSet => 'Добавить сет';
 
   @override
-  String get challengeFinish => 'Завершить поединок';
+  String get challengeFinish => 'Завершить игру';
 
   @override
   String get challengeScoreCreatorHint =>
-      'Счёт вводит создатель поединка. После завершения вы сможете подтвердить результат.';
+      'Счёт вводит создатель игры. После завершения вы сможете подтвердить результат.';
 
   @override
   String get challengeResult => 'РЕЗУЛЬТАТ';
@@ -646,10 +645,10 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get challengeStart => 'Начать поединок';
+  String get challengeStart => 'Начать игру';
 
   @override
-  String get challengeCancelButton => 'Отменить поединок';
+  String get challengeCancelButton => 'Отменить игру';
 
   @override
   String get challengeLeave => 'Покинуть';
@@ -720,7 +719,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeMonthDec => 'декабря';
 
   @override
-  String get challengeNewTitle => 'Новый поединок';
+  String get challengeNewTitle => 'Новая игра';
 
   @override
   String get challengeDatePlaceholder => 'Дата';
@@ -729,7 +728,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeTimePlaceholder => 'Время';
 
   @override
-  String get challengeType => 'Тип поединка';
+  String get challengeType => 'Тип игры';
 
   @override
   String get challengeMinLevel => 'Мин. уровень';
@@ -741,7 +740,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeCourtLayout => 'РАССТАНОВКА НА КОРТЕ';
 
   @override
-  String get challengeCreateButton => 'Создать поединок';
+  String get challengeCreateButton => 'Создать игру';
 
   @override
   String get challengeLoadingClubs => 'Загрузка...';
