@@ -62,7 +62,7 @@ class ProfileHeader extends StatelessWidget {
                           : _buildInitials(user),
                     ),
                     const SizedBox(width: 14),
-                    // Name + phone
+                    // Name + phone + edit button
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,6 +81,41 @@ class ProfileHeader extends StatelessWidget {
                             style: const TextStyle(
                               color: Color(0xFF71717A),
                               fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                              );
+                              if (context.mounted) {
+                                context.read<ProfileProvider>().loadProfile();
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accent.withAlpha(20),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: AppTheme.accent.withAlpha(60)),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.edit_outlined, size: 12, color: AppTheme.accent),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Редактировать',
+                                    style: TextStyle(
+                                      color: AppTheme.accent,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -167,47 +202,11 @@ class ProfileHeader extends StatelessWidget {
                 ),
               ),
 
-              // Warning if profile incomplete
-              if (user != null && user.isProfileIncomplete)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                  child: GestureDetector(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen())),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF59E0B).withAlpha(15),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFF59E0B).withAlpha(60)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 16),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _getMissingFieldsText(context, user),
-                              style: const TextStyle(color: Color(0xFFF59E0B), fontSize: 11, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         );
       },
     );
-  }
-
-  String _getMissingFieldsText(BuildContext context, dynamic user) {
-    final l = AppLocalizations.of(context)!;
-    final missing = <String>[];
-    if (user.city == null || user.city.isEmpty) missing.add(l.profileMissingCity);
-    if (user.gender == null || user.gender.isEmpty) missing.add(l.profileMissingGender);
-    return l.profileMissingFields(missing.join(l.profileMissingAnd));
   }
 
   Widget _buildInitials(dynamic user) {

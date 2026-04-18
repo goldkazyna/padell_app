@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/home_provider.dart';
 import 'providers/locale_provider.dart';
 import 'services/push_notification_service.dart';
 import 'services/api_service.dart';
@@ -18,6 +19,7 @@ import 'screens/rating_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/challenges_screen.dart';
 import 'screens/club_select_screen.dart';
+import 'screens/edit_profile_screen.dart';
 
 /// Global navigator key for navigation from push notifications
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -192,6 +194,89 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     setState(() => _currentIndex = index);
   }
 
+  static const Set<int> _lockedTabs = {1, 2, 3};
+
+  void _showProfileIncompleteDialog() {
+    final l = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF59E0B).withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Color(0xFFF59E0B),
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l.profileBannerTitle,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l.profileBannerDesc,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(ctx).pop();
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                    );
+                    if (mounted) {
+                      context.read<HomeProvider>().refresh();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: Text(l.profileBannerCta, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  l.later,
+                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screens = [
@@ -202,53 +287,77 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       const ProfileScreen(),
     ];
 
-    return Scaffold(
-      body: screens[_currentIndex],
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppTheme.card,
-          border: Border(
-            top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
+    return Consumer<HomeProvider>(
+      builder: (_, home, __) {
+        final incomplete = home.user?.isProfileIncomplete ?? false;
+
+        Widget icon(IconData data, int idx) {
+          final iconWidget = Icon(data);
+          if (incomplete && _lockedTabs.contains(idx)) {
+            return Opacity(opacity: 0.35, child: iconWidget);
+          }
+          return iconWidget;
+        }
+
+        return Scaffold(
+          body: screens[_currentIndex],
+          bottomNavigationBar: Container(
+            decoration: const BoxDecoration(
+              color: AppTheme.card,
+              border: Border(
+                top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
+              ),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                if (incomplete && _lockedTabs.contains(index)) {
+                  _showProfileIncompleteDialog();
+                  return;
+                }
+                setState(() => _currentIndex = index);
+                if (index == 0) {
+                  _updateDialogShown = false;
+                  _checkForUpdate();
+                }
+              },
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: AppTheme.card,
+              selectedItemColor: AppTheme.accent,
+              unselectedItemColor: AppTheme.textSecondary,
+              selectedFontSize: 12,
+              unselectedFontSize: 12,
+              items: [
+                BottomNavigationBarItem(
+                  icon: icon(Icons.home_outlined, 0),
+                  activeIcon: icon(Icons.home, 0),
+                  label: AppLocalizations.of(context)!.navHome,
+                ),
+                BottomNavigationBarItem(
+                  icon: icon(Icons.emoji_events_outlined, 1),
+                  activeIcon: icon(Icons.emoji_events, 1),
+                  label: AppLocalizations.of(context)!.navTournaments,
+                ),
+                BottomNavigationBarItem(
+                  icon: icon(Icons.calendar_month_outlined, 2),
+                  activeIcon: icon(Icons.calendar_month, 2),
+                  label: AppLocalizations.of(context)!.navBooking,
+                ),
+                BottomNavigationBarItem(
+                  icon: icon(Icons.leaderboard_outlined, 3),
+                  activeIcon: icon(Icons.leaderboard, 3),
+                  label: AppLocalizations.of(context)!.navRating,
+                ),
+                BottomNavigationBarItem(
+                  icon: icon(Icons.person_outline, 4),
+                  activeIcon: icon(Icons.person, 4),
+                  label: AppLocalizations.of(context)!.navProfile,
+                ),
+              ],
+            ),
           ),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: AppTheme.card,
-          selectedItemColor: AppTheme.accent,
-          unselectedItemColor: AppTheme.textSecondary,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              activeIcon: const Icon(Icons.home),
-              label: AppLocalizations.of(context)!.navHome,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.emoji_events_outlined),
-              activeIcon: const Icon(Icons.emoji_events),
-              label: AppLocalizations.of(context)!.navTournaments,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.calendar_month_outlined),
-              activeIcon: const Icon(Icons.calendar_month),
-              label: AppLocalizations.of(context)!.navBooking,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.leaderboard_outlined),
-              activeIcon: const Icon(Icons.leaderboard),
-              label: AppLocalizations.of(context)!.navRating,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline),
-              activeIcon: const Icon(Icons.person),
-              label: AppLocalizations.of(context)!.navProfile,
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 }

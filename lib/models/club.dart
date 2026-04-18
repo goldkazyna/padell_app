@@ -4,6 +4,8 @@ class Club {
   final String? address;
   final String? city;
   final String? logo;
+  final String? description;
+  final String? phone;
   final int courtsCount;
   final double? minPrice;
 
@@ -13,6 +15,8 @@ class Club {
     this.address,
     this.city,
     this.logo,
+    this.description,
+    this.phone,
     this.courtsCount = 0,
     this.minPrice,
   });
@@ -24,6 +28,8 @@ class Club {
       address: json['address'] as String?,
       city: json['city'] as String?,
       logo: json['logo'] as String?,
+      description: json['description'] as String?,
+      phone: json['phone'] as String?,
       courtsCount: json['courts_count'] as int? ?? 0,
       minPrice: (json['min_price'] as num?)?.toDouble(),
     );

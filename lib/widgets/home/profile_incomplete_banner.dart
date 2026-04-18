@@ -28,33 +28,33 @@ class ProfileIncompleteBanner extends StatelessWidget {
           child: GestureDetector(
             onTap: () => _openEditProfile(context),
             child: Container(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFF3B2A0F), Color(0xFF2D2108)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: _warning.withValues(alpha: 0.3)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 32,
-                    height: 32,
+                    width: 42,
+                    height: 42,
                     decoration: BoxDecoration(
                       color: _warning.withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
                       Icons.warning_amber_rounded,
                       color: _warning,
-                      size: 20,
+                      size: 26,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,43 +63,43 @@ class ProfileIncompleteBanner extends StatelessWidget {
                           l.profileBannerTitle,
                           style: const TextStyle(
                             color: _warning,
-                            fontSize: 14,
+                            fontSize: 17,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 5),
                         Text(
                           l.profileBannerDesc,
                           style: const TextStyle(
                             color: Color(0xFFD4D4D8),
-                            fontSize: 12,
+                            fontSize: 14,
                             height: 1.4,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 8),
                         Text(
                           l.profileBannerMissing(missingText),
                           style: const TextStyle(
                             color: Color(0xFFFBBF24),
-                            fontSize: 11,
+                            fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 14),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
+                            horizontal: 18,
+                            vertical: 11,
                           ),
                           decoration: BoxDecoration(
                             color: _warning,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
                             l.profileBannerCta,
                             style: const TextStyle(
                               color: Color(0xFF0F0F0F),
-                              fontSize: 12,
+                              fontSize: 14,
                               fontWeight: FontWeight.w700,
                             ),
                           ),

@@ -7,6 +7,7 @@ import '../providers/tournament_provider.dart';
 import '../widgets/tournaments/tournament_card.dart';
 import '../widgets/tournaments/tournament_archive_card.dart';
 import 'tournament_detail_screen.dart';
+import 'club_detail_screen.dart';
 
 class TournamentsScreen extends StatefulWidget {
   const TournamentsScreen({super.key});
@@ -96,7 +97,14 @@ void _openTournamentDetail(BuildContext context, int tournamentId) {
   );
 }
 
-class _OpenTab extends StatelessWidget {
+class _OpenTab extends StatefulWidget {
+  @override
+  State<_OpenTab> createState() => _OpenTabState();
+}
+
+class _OpenTabState extends State<_OpenTab> {
+  final Map<int, bool> _expanded = {};
+
   @override
   Widget build(BuildContext context) {
     return Consumer<TournamentProvider>(
@@ -136,11 +144,15 @@ class _OpenTab extends StatelessWidget {
               final clubId = clubIds[index];
               final tournaments = grouped[clubId]!;
               final clubName = clubNames[clubId]!;
+              final isExpanded = _expanded[clubId] ?? true;
               return _ClubAccordion(
+                key: ValueKey(clubId),
+                clubId: clubId,
                 clubName: clubName,
                 clubLogo: tournaments.first.club.logo,
                 tournaments: tournaments,
-                initiallyExpanded: true,
+                isExpanded: isExpanded,
+                onToggle: () => setState(() => _expanded[clubId] = !isExpanded),
               );
             },
           ),
@@ -151,16 +163,21 @@ class _OpenTab extends StatelessWidget {
 }
 
 class _ClubAccordion extends StatefulWidget {
+  final int clubId;
   final String clubName;
   final String? clubLogo;
   final List<Tournament> tournaments;
-  final bool initiallyExpanded;
+  final bool isExpanded;
+  final VoidCallback onToggle;
 
   const _ClubAccordion({
+    super.key,
+    required this.clubId,
     required this.clubName,
     this.clubLogo,
     required this.tournaments,
-    this.initiallyExpanded = true,
+    required this.isExpanded,
+    required this.onToggle,
   });
 
   @override
@@ -169,7 +186,6 @@ class _ClubAccordion extends StatefulWidget {
 
 class _ClubAccordionState extends State<_ClubAccordion>
     with SingleTickerProviderStateMixin {
-  late bool _expanded;
   late AnimationController _controller;
   late Animation<double> _expandAnimation;
   late Animation<double> _arrowAnimation;
@@ -177,11 +193,10 @@ class _ClubAccordionState extends State<_ClubAccordion>
   @override
   void initState() {
     super.initState();
-    _expanded = widget.initiallyExpanded;
     _controller = AnimationController(
       duration: const Duration(milliseconds: 250),
       vsync: this,
-      value: _expanded ? 1.0 : 0.0,
+      value: widget.isExpanded ? 1.0 : 0.0,
     );
     _expandAnimation = CurvedAnimation(
       parent: _controller,
@@ -193,20 +208,21 @@ class _ClubAccordionState extends State<_ClubAccordion>
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    setState(() {
-      _expanded = !_expanded;
-      if (_expanded) {
+  void didUpdateWidget(_ClubAccordion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isExpanded != oldWidget.isExpanded) {
+      if (widget.isExpanded) {
         _controller.forward();
       } else {
         _controller.reverse();
       }
-    });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   // Генерируем инициалы из названия клуба
@@ -274,7 +290,7 @@ class _ClubAccordionState extends State<_ClubAccordion>
         children: [
           // Header
           GestureDetector(
-            onTap: _toggle,
+            onTap: widget.onToggle,
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -320,6 +336,25 @@ class _ClubAccordionState extends State<_ClubAccordion>
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  // Info button (opens club card)
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ClubDetailScreen(clubId: widget.clubId),
+                      ),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      margin: const EdgeInsets.only(right: 4),
+                      child: const Icon(
+                        Icons.info_outline,
+                        color: AppTheme.textSecondary,
+                        size: 20,
+                      ),
                     ),
                   ),
                   // Arrow

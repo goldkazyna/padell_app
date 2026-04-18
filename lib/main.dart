@@ -19,6 +19,7 @@ import 'providers/rating_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/challenge_provider.dart';
 import 'services/court_service.dart';
+import 'services/club_service.dart';
 import 'providers/court_provider.dart';
 import 'providers/locale_provider.dart';
 
@@ -48,6 +49,7 @@ void main() async {
   final profileService = ProfileService(apiService, storageService);
   final challengeService = ChallengeService(apiService);
   final courtService = CourtService(apiService, storageService);
+  final clubService = ClubService(apiService, storageService);
   final pushService = PushNotificationService(apiService, storageService, navigatorKey);
   if (!kIsWeb) {
     try {
@@ -86,6 +88,7 @@ void main() async {
         ),
         Provider<ProfileService>.value(value: profileService),
         Provider<PushNotificationService>.value(value: pushService),
+        Provider<ClubService>.value(value: clubService),
       ],
       child: const PadelApp(),
     ),
