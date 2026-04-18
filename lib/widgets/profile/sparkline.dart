@@ -5,7 +5,6 @@ class Sparkline extends StatelessWidget {
   final Color color;
   final double width;
   final double height;
-  final bool showLabels;
 
   const Sparkline({
     super.key,
@@ -13,7 +12,6 @@ class Sparkline extends StatelessWidget {
     required this.color,
     this.width = 110,
     this.height = 38,
-    this.showLabels = true,
   });
 
   @override
@@ -24,11 +22,7 @@ class Sparkline extends StatelessWidget {
     final doubles = points.map((e) => e.toDouble()).toList();
     return CustomPaint(
       size: Size(width, height),
-      painter: _SparklinePainter(
-        points: doubles,
-        color: color,
-        showLabels: showLabels,
-      ),
+      painter: _SparklinePainter(points: doubles, color: color),
     );
   }
 }
@@ -36,13 +30,8 @@ class Sparkline extends StatelessWidget {
 class _SparklinePainter extends CustomPainter {
   final List<double> points;
   final Color color;
-  final bool showLabels;
 
-  _SparklinePainter({
-    required this.points,
-    required this.color,
-    required this.showLabels,
-  });
+  _SparklinePainter({required this.points, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -54,27 +43,22 @@ class _SparklinePainter extends CustomPainter {
     final hi = maxV + pad;
 
     final n = points.length;
-    final stepX = n > 1 ? size.width / (n - 1) : 0.0;
-
-    // Резервируем место под подписи сверху и снизу если они включены
-    final labelSpaceTop = showLabels ? 12.0 : 0.0;
-    final labelSpaceBottom = showLabels ? 12.0 : 0.0;
-    final chartHeight = size.height - labelSpaceTop - labelSpaceBottom;
+    final stepX = size.width / (n - 1);
 
     Offset pt(int i) {
       final x = i * stepX;
       final norm = (points[i] - lo) / (hi - lo);
-      final y = labelSpaceTop + chartHeight - norm * chartHeight;
+      final y = size.height - norm * size.height;
       return Offset(x, y);
     }
 
     // area path
-    final area = Path()..moveTo(0, labelSpaceTop + chartHeight);
+    final area = Path()..moveTo(0, size.height);
     for (var i = 0; i < n; i++) {
       final p = pt(i);
       area.lineTo(p.dx, p.dy);
     }
-    area.lineTo(size.width, labelSpaceTop + chartHeight);
+    area.lineTo(size.width, size.height);
     area.close();
 
     final areaPaint = Paint()
@@ -82,7 +66,7 @@ class _SparklinePainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0)],
-      ).createShader(Rect.fromLTWH(labelSpaceTop, 0, size.width, chartHeight));
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
     canvas.drawPath(area, areaPaint);
 
     // line
@@ -98,55 +82,13 @@ class _SparklinePainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(line, linePaint);
 
-    // Кружки на каждой точке
-    final dotPaint = Paint()..color = color;
-    final innerDotPaint = Paint()..color = const Color(0xFF1C1C21);
-    for (var i = 0; i < n; i++) {
-      final p = pt(i);
-      canvas.drawCircle(p, 2.8, dotPaint);
-      if (i < n - 1) {
-        canvas.drawCircle(p, 1.5, innerDotPaint);
-      }
-    }
-
-    // Подписи с числом рейтинга у каждой точки
-    if (showLabels) {
-      for (var i = 0; i < n; i++) {
-        final p = pt(i);
-        final label = points[i].toInt().toString();
-        final tp = TextPainter(
-          text: TextSpan(
-            text: label,
-            style: TextStyle(
-              color: i == n - 1 ? color : const Color(0xFFA2A2AB),
-              fontSize: 9,
-              fontWeight: i == n - 1 ? FontWeight.w700 : FontWeight.w600,
-              height: 1,
-            ),
-          ),
-          textDirection: TextDirection.ltr,
-        )..layout();
-
-        // Размещаем: если точка в верхней половине — подпись снизу,
-        // если в нижней — сверху (чтобы не перекрывала линию)
-        final midY = labelSpaceTop + chartHeight / 2;
-        final below = p.dy < midY;
-        final ty = below ? p.dy + 5 : p.dy - tp.height - 5;
-
-        // Центруем по X и удерживаем внутри ширины
-        var tx = p.dx - tp.width / 2;
-        if (tx < 0) tx = 0;
-        if (tx + tp.width > size.width) tx = size.width - tp.width;
-
-        tp.paint(canvas, Offset(tx, ty));
-      }
-    }
+    // last point dot
+    final last = pt(n - 1);
+    canvas.drawCircle(last, 2.5, Paint()..color = color);
   }
 
   @override
   bool shouldRepaint(covariant _SparklinePainter oldDelegate) {
-    return oldDelegate.points != points ||
-        oldDelegate.color != color ||
-        oldDelegate.showLabels != showLabels;
+    return oldDelegate.points != points || oldDelegate.color != color;
   }
 }
