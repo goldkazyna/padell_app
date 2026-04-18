@@ -38,6 +38,7 @@ class CourtBookingScreen extends StatefulWidget {
 class _CourtBookingScreenState extends State<CourtBookingScreen> {
   int _selectedSlots = 1;
   int? _selectedCoachId;
+  bool _needsCoach = false;
   final _commentController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -133,6 +134,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       clientPhone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
       coachId: _selectedCoachId,
       comment: _commentController.text.isNotEmpty ? _commentController.text : null,
+      needsCoach: _needsCoach,
     );
 
     setState(() => _isBooking = false);
@@ -220,6 +222,11 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
               _sectionLabel(AppLocalizations.of(context)!.coachOptional),
               const SizedBox(height: 8),
               _buildCoachChips(),
+              const SizedBox(height: 20),
+            ] else ...[
+              _sectionLabel('ТРЕНЕР'),
+              const SizedBox(height: 8),
+              _buildNeedsCoachToggle(),
               const SizedBox(height: 20),
             ],
 
@@ -390,6 +397,68 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppTheme.accent),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNeedsCoachToggle() {
+    return GestureDetector(
+      onTap: () => setState(() => _needsCoach = !_needsCoach),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        decoration: BoxDecoration(
+          color: _needsCoach
+              ? AppTheme.accent.withAlpha(20)
+              : AppTheme.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _needsCoach
+                ? AppTheme.accent.withAlpha(100)
+                : AppTheme.border,
+            width: _needsCoach ? 1 : 0.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: _needsCoach ? AppTheme.accent : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: _needsCoach ? AppTheme.accent : AppTheme.textSecondary,
+                  width: 1.5,
+                ),
+              ),
+              child: _needsCoach
+                  ? const Icon(Icons.check, size: 15, color: Colors.white)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Нужен тренер',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Клуб свяжется с вами и подберёт тренера',
+                    style: TextStyle(fontSize: 11, color: AppTheme.textDim),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

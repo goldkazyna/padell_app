@@ -42,6 +42,7 @@ class CourtService {
     String? clientPhone,
     int? coachId,
     String? comment,
+    bool needsCoach = false,
   }) async {
     final token = await _getToken();
     final body = <String, dynamic>{
@@ -54,6 +55,7 @@ class CourtService {
     if (clientPhone != null && clientPhone.isNotEmpty) body['client_phone'] = clientPhone;
     if (coachId != null) body['coach_id'] = coachId;
     if (comment != null && comment.isNotEmpty) body['comment'] = comment;
+    if (needsCoach) body['needs_coach'] = true;
     final response = await _api.post('/courts/clubs/$clubId/book', body, token);
     return response;
   }

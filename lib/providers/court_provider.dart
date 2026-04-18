@@ -114,6 +114,7 @@ class CourtProvider extends ChangeNotifier {
     String? clientPhone,
     int? coachId,
     String? comment,
+    bool needsCoach = false,
   }) async {
     try {
       final response = await _courtService.book(
@@ -126,6 +127,7 @@ class CourtProvider extends ChangeNotifier {
         clientPhone: clientPhone,
         coachId: coachId,
         comment: comment,
+        needsCoach: needsCoach,
       );
       return response;
     } on ApiException catch (e) {
