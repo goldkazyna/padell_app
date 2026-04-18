@@ -11,6 +11,7 @@ class ProfileStatistics {
   final int losses;
   final int winrate;
   final int tournamentsCount;
+  final List<int> ratingTrend;
 
   const ProfileStatistics({
     required this.matchesPlayed,
@@ -18,15 +19,18 @@ class ProfileStatistics {
     required this.losses,
     required this.winrate,
     required this.tournamentsCount,
+    this.ratingTrend = const [],
   });
 
   factory ProfileStatistics.fromJson(Map<String, dynamic> json) {
+    final trendRaw = json['rating_trend'] as List<dynamic>? ?? [];
     return ProfileStatistics(
       matchesPlayed: json['matches_played'] as int? ?? 0,
       wins: json['wins'] as int? ?? 0,
       losses: json['losses'] as int? ?? 0,
       winrate: json['winrate'] as int? ?? 0,
       tournamentsCount: json['tournaments_count'] as int? ?? 0,
+      ratingTrend: trendRaw.map((e) => (e as num).toInt()).toList(),
     );
   }
 }

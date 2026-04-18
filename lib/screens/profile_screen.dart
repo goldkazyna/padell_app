@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/push_notification_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/profile/profile_header.dart';
-import '../widgets/profile/profile_stats.dart';
+import '../widgets/profile/profile_hero.dart';
 import '../widgets/profile/tournament_history.dart';
 import '../widgets/profile/profile_menu.dart';
 
@@ -43,16 +42,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onRefresh: () => profile.refresh(),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.only(bottom: 24),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ProfileHeader(),
-                  SizedBox(height: 24),
+                  ProfileHero(),
                   TournamentHistory(),
-                  SizedBox(height: 24),
-                  ProfileMenu(),
-                  SizedBox(height: 20),
+                  SizedBox(height: 22),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: ProfileMenu(),
+                  ),
                 ],
               ),
             ),

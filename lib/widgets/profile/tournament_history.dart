@@ -6,6 +6,7 @@ import '../../providers/profile_provider.dart';
 import '../../screens/player_profile_screen.dart';
 import '../../screens/tournament_results_screen.dart';
 import '../../theme/app_theme.dart';
+import 'medal.dart';
 
 class TournamentHistory extends StatelessWidget {
   const TournamentHistory({super.key});
@@ -15,117 +16,153 @@ class TournamentHistory extends StatelessWidget {
     return Consumer<ProfileProvider>(
       builder: (_, profile, __) {
         final tournaments = profile.tournamentHistory;
+        final visible = tournaments.take(4).toList();
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.tournamentHistory,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (tournaments.length > 3 && profile.user != null)
-                  GestureDetector(
-                    onTap: () {
-                      final user = profile.user!;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => PlayerProfileScreen(
-                            playerId: user.id,
-                            playerName: user.name,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.allButton,
-                      style: const TextStyle(
-                        color: AppTheme.accent,
-                        fontSize: 14,
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'История турниров',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
                       ),
                     ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (profile.isLoadingHistory && tournaments.isEmpty)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: CircularProgressIndicator(color: AppTheme.accent),
+                    if (tournaments.length > 4 && profile.user != null)
+                      GestureDetector(
+                        onTap: () {
+                          final user = profile.user!;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PlayerProfileScreen(
+                                playerId: user.id,
+                                playerName: user.name,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.allButton,
+                              style: const TextStyle(
+                                color: AppTheme.accent,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right, size: 15, color: AppTheme.accent),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
-              )
-            else if (tournaments.isEmpty)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppTheme.card,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                      color: const Color(0xFF2A2A2A), width: 0.5),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.noFinishedTournamentsYet,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-              )
-            else
-              ...List.generate(
-                tournaments.length > 5 ? 5 : tournaments.length,
-                (i) {
-                  return _TournamentHistoryCard(tournament: tournaments[i]);
-                },
               ),
-          ],
+              const SizedBox(height: 10),
+              if (profile.isLoadingHistory && tournaments.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(child: CircularProgressIndicator(color: AppTheme.accent)),
+                )
+              else if (tournaments.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.border),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.noFinishedTournamentsYet,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                  ),
+                )
+              else
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.border),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < visible.length; i++)
+                        _HistoryRow(
+                          tournament: visible[i],
+                          isLast: i == visible.length - 1,
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         );
       },
     );
   }
 }
 
-class _TournamentHistoryCard extends StatelessWidget {
+class _HistoryRow extends StatelessWidget {
   final Tournament tournament;
+  final bool isLast;
 
-  const _TournamentHistoryCard({required this.tournament});
+  const _HistoryRow({required this.tournament, required this.isLast});
 
   @override
   Widget build(BuildContext context) {
     final place = tournament.myResult?.place;
-    final ratingChange = tournament.myResult?.ratingChange ?? 0;
-    final isPositive = ratingChange >= 0;
+    final delta = tournament.myResult?.ratingChange ?? 0;
+    final isPositive = delta >= 0;
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => TournamentResultsScreen(
-              tournament: tournament,
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => TournamentResultsScreen(tournament: tournament),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isLast ? Colors.transparent : AppTheme.divider,
+              width: 0.5,
             ),
           ),
-        );
-      },
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Color(0xFF1A1A1E), width: 0.5)),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
         child: Row(
           children: [
-            _buildPlaceIcon(place),
-            const SizedBox(width: 10),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: const Color(0x08FFFFFF),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center,
+              child: (place != null && place >= 1 && place <= 3)
+                  ? Medal(place: place, size: 22)
+                  : const Icon(
+                      Icons.emoji_events_outlined,
+                      size: 18,
+                      color: AppTheme.textSecondary,
+                    ),
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,32 +171,32 @@ class _TournamentHistoryCard extends StatelessWidget {
                     tournament.name,
                     style: const TextStyle(
                       color: AppTheme.textPrimary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     tournament.dateFormatted,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 11,
-                    ),
+                    style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, size: 16, color: Color(0xFF3F3F46)),
+            const SizedBox(width: 8),
             SizedBox(
               width: 50,
               child: Text(
-                '${isPositive ? '+' : ''}$ratingChange',
+                '${isPositive ? '+' : ''}$delta',
                 textAlign: TextAlign.right,
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: isPositive ? AppTheme.accent : const Color(0xFFEF4444),
+                  color: isPositive ? AppTheme.accent : AppTheme.error,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
             ),
@@ -167,61 +204,5 @@ class _TournamentHistoryCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildPlaceIcon(int? place) {
-    if (place == 1) {
-      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥇', style: TextStyle(fontSize: 32))));
-    } else if (place == 2) {
-      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥈', style: TextStyle(fontSize: 32))));
-    } else if (place == 3) {
-      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥉', style: TextStyle(fontSize: 32))));
-    } else if (place != null && place > 0) {
-      return SizedBox(
-        width: 48, height: 48,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$place',
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                height: 1,
-              ),
-            ),
-            const SizedBox(height: 3),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppTheme.accent,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Text(
-                'место',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 8,
-                  fontWeight: FontWeight.w800,
-                  height: 1.2,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        width: 48, height: 48,
-        decoration: BoxDecoration(
-          color: const Color(0xFF27272A),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Center(
-          child: Icon(Icons.emoji_events, size: 22, color: AppTheme.textSecondary),
-        ),
-      );
-    }
   }
 }

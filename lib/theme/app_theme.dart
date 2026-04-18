@@ -10,7 +10,11 @@ class AppTheme {
   static const Color accentSoft = Color(0x2422C47A); // rgba(34,196,122,0.14)
 
   static const Color amber = Color(0xFFEAB34E);
+  static const Color blue = Color(0xFF4A8BF5);
+  static const Color purple = Color(0xFFA89CF5);
+  static const Color orange = Color(0xFFF08446);
   static const Color error = Color(0xFFF0554D);
+  static const Color errorSoft = Color(0x1FF0554D); // rgba(240,85,77,0.12)
 
   // === Text ===
   static const Color textPrimary = Color(0xFFF3F3F5);
