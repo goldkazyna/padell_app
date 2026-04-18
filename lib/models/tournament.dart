@@ -5,10 +5,19 @@ class Club {
   final String name;
   final String? phone;
   final String? address;
+  final String? city;
   final String? paymentUrl;
   final String? logo;
 
-  Club({required this.id, required this.name, this.phone, this.address, this.paymentUrl, this.logo});
+  Club({
+    required this.id,
+    required this.name,
+    this.phone,
+    this.address,
+    this.city,
+    this.paymentUrl,
+    this.logo,
+  });
 
   factory Club.fromJson(Map<String, dynamic> json) {
     return Club(
@@ -16,6 +25,7 @@ class Club {
       name: json['name'] as String,
       phone: json['phone'] as String?,
       address: json['address'] as String?,
+      city: json['city'] as String?,
       paymentUrl: json['payment_url'] as String?,
       logo: json['logo'] as String?,
     );
@@ -417,4 +427,47 @@ class Tournament {
     ];
     return days[datetime.weekday - 1];
   }
+
+  String get dayOfWeekShort {
+    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    return days[datetime.weekday - 1];
+  }
+
+  /// '18 апр' — коротко, без года, lowercase.
+  String get dateShort {
+    const months = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн',
+                    'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    return '${datetime.day} ${months[datetime.month - 1]}';
+  }
+
+  /// Цвет-семейство chip формата для нового дизайна турниров.
+  /// blue — americano, purple — групповой/классик/team, orange — mexicano/прочее.
+  TournamentFormatColor get formatColor {
+    switch (type) {
+      case 'americano':
+        return TournamentFormatColor.blue;
+      case 'classic':
+      case 'team':
+        return TournamentFormatColor.purple;
+      case 'mexicano':
+        return TournamentFormatColor.orange;
+      default:
+        return TournamentFormatColor.orange;
+    }
+  }
+
+  bool isInLevelRange(double? userLevel) {
+    if (userLevel == null) return false;
+    return userLevel >= minLevel && userLevel <= maxLevel;
+  }
+
+  /// Цена в компактном виде — «18к ₸» / «22к ₸».
+  String get priceTextCompact {
+    if (price <= 0) return '';
+    if (price < 1000) return '${price.toInt()} ₸';
+    final k = (price / 1000).toStringAsFixed(0);
+    return '${k}к ₸';
+  }
 }
+
+enum TournamentFormatColor { blue, purple, orange }

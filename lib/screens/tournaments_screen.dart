@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../models/tournament.dart';
+import '../providers/home_provider.dart';
 import '../providers/tournament_provider.dart';
-import '../widgets/tournaments/tournament_card.dart';
-import '../widgets/tournaments/tournament_archive_card.dart';
+import '../widgets/tournaments/club_section_header.dart';
+import '../widgets/tournaments/filter_pills.dart';
+import '../widgets/tournaments/hero_tournament_card.dart';
+import '../widgets/tournaments/tournament_row_v2.dart';
 import 'tournament_detail_screen.dart';
 import 'club_detail_screen.dart';
 
@@ -17,6 +20,9 @@ class TournamentsScreen extends StatefulWidget {
 }
 
 class _TournamentsScreenState extends State<TournamentsScreen> {
+  int _tabIndex = 0;
+  TournamentsFilter _filter = const TournamentsFilter();
+
   @override
   void initState() {
     super.initState();
@@ -25,63 +31,226 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
     });
   }
 
+  double? get _userLevel {
+    final user = context.read<HomeProvider>().user;
+    if (user == null) return null;
+    return double.tryParse(user.level);
+  }
+
+  Future<void> _openFormatFilter() async {
+    final formats = <_FormatOption>[
+      const _FormatOption('americano', 'Американо'),
+      const _FormatOption('classic', 'Классический'),
+      const _FormatOption('team', 'Командный'),
+      const _FormatOption('mexicano', 'Мексикано'),
+    ];
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final current = Set<String>.from(_filter.formats);
+            return _FilterSheet(
+              title: 'Формат турнира',
+              onReset: () {
+                setState(() => _filter = _filter.copyWith(formats: {}));
+                Navigator.pop(ctx);
+              },
+              onApply: () {
+                setState(() => _filter = _filter.copyWith(formats: current));
+                Navigator.pop(ctx);
+              },
+              children: formats.map((f) {
+                final checked = current.contains(f.value);
+                return _CheckboxRow(
+                  label: f.label,
+                  checked: checked,
+                  onTap: () => setSheetState(() {
+                    if (checked) {
+                      current.remove(f.value);
+                    } else {
+                      current.add(f.value);
+                    }
+                  }),
+                );
+              }).toList(),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _openDateFilter() async {
+    final options = [
+      const _DateOption(null, 'Все даты'),
+      const _DateOption('today', 'Сегодня'),
+      const _DateOption('tomorrow', 'Завтра'),
+      const _DateOption('week', 'На этой неделе'),
+    ];
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => _FilterSheet(
+        title: 'Дата',
+        children: options.map((o) {
+          final selected = _filter.dateFilter == o.value;
+          return _RadioRow(
+            label: o.label,
+            selected: selected,
+            onTap: () {
+              setState(() => _filter = _filter.copyWith(dateFilter: o.value));
+              Navigator.pop(ctx);
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Future<void> _openClubFilter(List<Tournament> allTournaments) async {
+    final clubs = <int, String>{};
+    for (final t in allTournaments) {
+      clubs[t.club.id] = t.club.name;
+    }
+    final ids = clubs.keys.toList()
+      ..sort((a, b) => clubs[a]!.compareTo(clubs[b]!));
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final current = Set<int>.from(_filter.clubIds);
+            return _FilterSheet(
+              title: 'Клуб',
+              onReset: () {
+                setState(() => _filter = _filter.copyWith(clubIds: {}));
+                Navigator.pop(ctx);
+              },
+              onApply: () {
+                setState(() => _filter = _filter.copyWith(clubIds: current));
+                Navigator.pop(ctx);
+              },
+              children: ids.map((id) {
+                final checked = current.contains(id);
+                return _CheckboxRow(
+                  label: clubs[id]!,
+                  checked: checked,
+                  onTap: () => setSheetState(() {
+                    if (checked) {
+                      current.remove(id);
+                    } else {
+                      current.add(id);
+                    }
+                  }),
+                );
+              }).toList(),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Text(
-                AppLocalizations.of(context)!.tournaments,
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Text(
+              AppLocalizations.of(context)!.tournaments,
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
-                ),
-                child: TabBar(
-                  indicatorSize: TabBarIndicatorSize.label,
-                  indicatorColor: AppTheme.accent,
-                  indicatorWeight: 2,
-                  labelColor: AppTheme.accent,
-                  unselectedLabelColor: const Color(0xFF52525B),
-                  labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                  unselectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                  dividerColor: Colors.transparent,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-                  tabAlignment: TabAlignment.start,
-                  isScrollable: true,
-                  tabs: [
-                    Tab(text: AppLocalizations.of(context)!.openTab),
-                    Tab(text: AppLocalizations.of(context)!.myTab),
-                    Tab(text: AppLocalizations.of(context)!.archiveTab),
-                  ],
-                ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
               ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: TabBarView(
+              child: Row(
                 children: [
-                  _OpenTab(),
-                  _MyTab(),
-                  _ArchiveTab(),
+                  _buildTab(AppLocalizations.of(context)!.openTab, 0),
+                  _buildTab(AppLocalizations.of(context)!.myTab, 1),
+                  _buildTab(AppLocalizations.of(context)!.archiveTab, 2),
                 ],
               ),
             ),
+          ),
+          const SizedBox(height: 10),
+          if (_tabIndex == 0) ...[
+            Consumer<TournamentProvider>(
+              builder: (_, provider, __) => FilterPills(
+                filter: _filter,
+                onReset: () => setState(() => _filter = const TournamentsFilter()),
+                onToggleLevel: () => setState(() =>
+                    _filter = _filter.copyWith(onlyMyLevel: !_filter.onlyMyLevel)),
+                onFormatTap: _openFormatFilter,
+                onDateTap: _openDateFilter,
+                onClubTap: () => _openClubFilter(provider.openTournaments),
+              ),
+            ),
+            const SizedBox(height: 8),
           ],
+          Expanded(
+            child: IndexedStack(
+              index: _tabIndex,
+              children: [
+                _OpenTab(userLevel: _userLevel, filter: _filter),
+                _MyTab(userLevel: _userLevel),
+                _ArchiveTab(userLevel: _userLevel),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTab(String label, int index) {
+    final active = _tabIndex == index;
+    return GestureDetector(
+      onTap: () {
+        if (_tabIndex != index) setState(() => _tabIndex = index);
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: active ? AppTheme.accent : Colors.transparent,
+              width: 2,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -97,13 +266,66 @@ void _openTournamentDetail(BuildContext context, int tournamentId) {
   );
 }
 
-class _OpenTab extends StatefulWidget {
-  @override
-  State<_OpenTab> createState() => _OpenTabState();
+void _openClubDetail(BuildContext context, int clubId) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => ClubDetailScreen(clubId: clubId)),
+  );
 }
 
-class _OpenTabState extends State<_OpenTab> {
-  final Map<int, bool> _expanded = {};
+/// Применяет фильтры к списку турниров (только Open tab).
+List<Tournament> _applyFilter(
+  List<Tournament> tournaments,
+  TournamentsFilter filter,
+  double? userLevel,
+) {
+  var list = tournaments;
+
+  if (filter.onlyMyLevel && userLevel != null) {
+    list = list.where((t) => t.isInLevelRange(userLevel)).toList();
+  }
+  if (filter.formats.isNotEmpty) {
+    list = list.where((t) => filter.formats.contains(t.type)).toList();
+  }
+  if (filter.dateFilter != null) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    switch (filter.dateFilter) {
+      case 'today':
+        list = list.where((t) {
+          final d = DateTime(t.datetime.year, t.datetime.month, t.datetime.day);
+          return d == today;
+        }).toList();
+        break;
+      case 'tomorrow':
+        final tomorrow = today.add(const Duration(days: 1));
+        list = list.where((t) {
+          final d = DateTime(t.datetime.year, t.datetime.month, t.datetime.day);
+          return d == tomorrow;
+        }).toList();
+        break;
+      case 'week':
+        final endOfWeek = today.add(const Duration(days: 7));
+        list = list.where((t) {
+          final d = DateTime(t.datetime.year, t.datetime.month, t.datetime.day);
+          return !d.isBefore(today) && d.isBefore(endOfWeek);
+        }).toList();
+        break;
+    }
+  }
+  if (filter.clubIds.isNotEmpty) {
+    list = list.where((t) => filter.clubIds.contains(t.club.id)).toList();
+  }
+  return list;
+}
+
+// === Open tab: For you + Others ===
+
+class _OpenTab extends StatelessWidget {
+  final double? userLevel;
+  final TournamentsFilter filter;
+
+  const _OpenTab({required this.userLevel, required this.filter});
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +337,8 @@ class _OpenTabState extends State<_OpenTab> {
           );
         }
 
-        if (provider.openTournaments.isEmpty) {
+        final all = _applyFilter(provider.openTournaments, filter, userLevel);
+        if (all.isEmpty) {
           return Center(
             child: Text(
               AppLocalizations.of(context)!.noOpenTournaments,
@@ -124,318 +347,263 @@ class _OpenTabState extends State<_OpenTab> {
           );
         }
 
-        // Группируем турниры по клубам
-        final grouped = <int, List<Tournament>>{};
-        final clubNames = <int, String>{};
-        for (final t in provider.openTournaments) {
-          grouped.putIfAbsent(t.club.id, () => []).add(t);
-          clubNames[t.club.id] = t.club.name;
+        final forYou = userLevel == null
+            ? <Tournament>[]
+            : all.where((t) => t.isInLevelRange(userLevel)).toList()
+          ..sort(_compareOpenFirstThenDate);
+
+        final rest = all.where((t) => !forYou.contains(t)).toList()
+          ..sort(_compareOpenFirstThenDate);
+
+        // Для «Для вас» группируем по клубам (в порядке появления)
+        final forYouByClub = <int, List<Tournament>>{};
+        final forYouClubOrder = <int>[];
+        for (final t in forYou) {
+          if (!forYouByClub.containsKey(t.club.id)) {
+            forYouByClub[t.club.id] = [];
+            forYouClubOrder.add(t.club.id);
+          }
+          forYouByClub[t.club.id]!.add(t);
         }
-        final clubIds = grouped.keys.toList();
+
+        // Для «Остальные» группируем по клубам; клубы с open-турнирами наверху
+        final restByClub = <int, List<Tournament>>{};
+        for (final t in rest) {
+          restByClub.putIfAbsent(t.club.id, () => []).add(t);
+        }
+        final restClubOrder = restByClub.keys.toList()
+          ..sort((a, b) {
+            final aHasOpen = restByClub[a]!.any((t) => !t.isFull);
+            final bHasOpen = restByClub[b]!.any((t) => !t.isFull);
+            if (aHasOpen != bHasOpen) return aHasOpen ? -1 : 1;
+            final aFirst = restByClub[a]!.first;
+            final bFirst = restByClub[b]!.first;
+            return aFirst.club.name.compareTo(bFirst.club.name);
+          });
 
         return RefreshIndicator(
           onRefresh: () => provider.loadOpenTournaments(),
           color: AppTheme.accent,
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            itemCount: clubIds.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
-            itemBuilder: (_, index) {
-              final clubId = clubIds[index];
-              final tournaments = grouped[clubId]!;
-              final clubName = clubNames[clubId]!;
-              final isExpanded = _expanded[clubId] ?? true;
-              return _ClubAccordion(
-                key: ValueKey(clubId),
-                clubId: clubId,
-                clubName: clubName,
-                clubLogo: tournaments.first.club.logo,
-                tournaments: tournaments,
-                isExpanded: isExpanded,
-                onToggle: () => setState(() => _expanded[clubId] = !isExpanded),
-              );
-            },
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 24),
+            children: [
+              if (forYou.isNotEmpty) ...[
+                _buildForYouHeader(context, forYou.length),
+                for (final clubId in forYouClubOrder) ...[
+                  const SizedBox(height: 4),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ClubSubHeader(
+                      clubName: forYouByClub[clubId]!.first.club.name,
+                      city: forYouByClub[clubId]!.first.club.city,
+                      logoUrl: forYouByClub[clubId]!.first.club.logo,
+                      count: forYouByClub[clubId]!.length,
+                      onTap: () => _openClubDetail(context, clubId),
+                    ),
+                  ),
+                  for (final t in forYouByClub[clubId]!)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                      child: HeroTournamentCard(
+                        tournament: t,
+                        userLevel: userLevel,
+                        onTap: () => _openTournamentDetail(context, t.id),
+                      ),
+                    ),
+                ],
+              ],
+              if (forYou.isNotEmpty && rest.isNotEmpty)
+                _buildSectionDivider(),
+              if (rest.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.only(top: 12),
+                  color: forYou.isNotEmpty ? const Color(0x2E000000) : null,
+                  child: Column(
+                    children: [
+                      for (final clubId in restClubOrder)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: _ClubBlock(
+                            tournaments: restByClub[clubId]!,
+                            userLevel: userLevel,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         );
       },
     );
   }
-}
 
-class _ClubAccordion extends StatefulWidget {
-  final int clubId;
-  final String clubName;
-  final String? clubLogo;
-  final List<Tournament> tournaments;
-  final bool isExpanded;
-  final VoidCallback onToggle;
-
-  const _ClubAccordion({
-    super.key,
-    required this.clubId,
-    required this.clubName,
-    this.clubLogo,
-    required this.tournaments,
-    required this.isExpanded,
-    required this.onToggle,
-  });
-
-  @override
-  State<_ClubAccordion> createState() => _ClubAccordionState();
-}
-
-class _ClubAccordionState extends State<_ClubAccordion>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _expandAnimation;
-  late Animation<double> _arrowAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 250),
-      vsync: this,
-      value: widget.isExpanded ? 1.0 : 0.0,
-    );
-    _expandAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
-    _arrowAnimation = Tween<double>(begin: 0, end: 0.5).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void didUpdateWidget(_ClubAccordion oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isExpanded != oldWidget.isExpanded) {
-      if (widget.isExpanded) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  // Генерируем инициалы из названия клуба
-  String _getInitials(String name) {
-    final words = name.trim().split(RegExp(r'\s+'));
-    if (words.length >= 2) {
-      return '${words[0][0]}${words[1][0]}'.toUpperCase();
-    }
-    return name.length >= 2
-        ? name.substring(0, 2).toUpperCase()
-        : name.toUpperCase();
-  }
-
-  // Цвет логотипа на основе имени клуба
-  Color _getClubColor(String name) {
-    final hash = name.hashCode;
-    final colors = [
-      const Color(0xFFFF9F0A), // orange
-      const Color(0xFFBF5AF2), // purple
-      const Color(0xFF0A84FF), // blue
-      const Color(0xFF30D5C8), // teal
-      const Color(0xFFFF375F), // pink
-      const Color(0xFF32D74B), // green
-    ];
-    return colors[hash.abs() % colors.length];
-  }
-
-  Widget _buildInitialsLogo(Color color) {
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [color, color.withAlpha(180)],
-        ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        _getInitials(widget.clubName),
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final color = _getClubColor(widget.clubName);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF1E1E1E), width: 1),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
+  Widget _buildForYouHeader(BuildContext context, int count) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Header
-          GestureDetector(
-            onTap: widget.onToggle,
-            behavior: HitTestBehavior.opaque,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              child: Row(
-                children: [
-                  // Logo → open club card
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ClubDetailScreen(clubId: widget.clubId),
-                      ),
-                    ),
-                    child: widget.clubLogo != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              widget.clubLogo!,
-                              width: 32,
-                              height: 32,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _buildInitialsLogo(color),
-                            ),
-                          )
-                        : _buildInitialsLogo(color),
-                  ),
-                  const SizedBox(width: 10),
-                  // Club name + counter (tap toggles accordion via outer GestureDetector)
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.clubName,
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          l10n.clubTournamentsCount(widget.tournaments.length),
-                          style: const TextStyle(
-                            color: AppTheme.textSecondary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Info button (opens club card)
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ClubDetailScreen(clubId: widget.clubId),
-                      ),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      margin: const EdgeInsets.only(right: 4),
-                      child: const Icon(
-                        Icons.info_outline,
-                        color: AppTheme.textSecondary,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  // Arrow
-                  RotationTransition(
-                    turns: _arrowAnimation,
-                    child: const Icon(
-                      Icons.keyboard_arrow_down,
-                      color: AppTheme.textSecondary,
-                      size: 22,
-                    ),
-                  ),
-                ],
-              ),
+          const Text(
+            'Для вас',
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.2,
             ),
           ),
-          // Body
-          SizeTransition(
-            sizeFactor: _expandAnimation,
-            child: Column(
-              children: [
-                for (int i = 0; i < widget.tournaments.length; i++) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Container(
-                      height: 1,
-                      color: const Color(0xFF252528),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => _openTournamentDetail(
-                      context,
-                      widget.tournaments[i].id,
-                    ),
-                    child: TournamentCard(
-                      day: widget.tournaments[i].dayOfMonth,
-                      month: widget.tournaments[i].monthShort,
-                      time: widget.tournaments[i].time,
-                      name: widget.tournaments[i].name,
-                      type: widget.tournaments[i].typeName,
-                      typeColor: widget.tournaments[i].typeColor,
-                      club: widget.tournaments[i].club.name,
-                      participants: widget.tournaments[i].participantsText,
-                      price: widget.tournaments[i].priceText,
-                      level: widget.tournaments[i].levelText,
-                      isRegistered: widget.tournaments[i].isRegistered,
-                      isFull: widget.tournaments[i].isFull,
-                      flat: true,
-                    ),
-                  ),
-                  if (i < widget.tournaments.length - 1)
-                    const SizedBox(height: 8),
-                ],
-              ],
+          if (userLevel != null) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppTheme.accentSoft,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Уровень ${userLevel!.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+          const Spacer(),
+          Text(
+            '$count',
+            style: const TextStyle(
+              color: AppTheme.textDim,
+              fontSize: 11,
+              fontFeatures: [FontFeature.tabularFigures()],
             ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildSectionDivider() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 22, 16, 4),
+      child: SizedBox(
+        height: 22,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              height: 1,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    Color(0x14FFFFFF),
+                    Color(0x14FFFFFF),
+                    Colors.transparent,
+                  ],
+                  stops: [0.0, 0.2, 0.8, 1.0],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              color: AppTheme.background,
+              child: const Text(
+                'ОСТАЛЬНЫЕ ТУРНИРЫ',
+                style: TextStyle(
+                  color: AppTheme.textDim,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
+int _compareOpenFirstThenDate(Tournament a, Tournament b) {
+  if (a.isFull != b.isFull) return a.isFull ? 1 : -1;
+  return a.datetime.compareTo(b.datetime);
+}
+
+/// Блок клуба: большой хедер + карточка со строками.
+class _ClubBlock extends StatelessWidget {
+  final List<Tournament> tournaments;
+  final double? userLevel;
+
+  const _ClubBlock({required this.tournaments, required this.userLevel});
+
+  @override
+  Widget build(BuildContext context) {
+    final first = tournaments.first;
+    final openCount = tournaments.where((t) => !t.isFull).length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClubSectionHeader(
+          clubName: first.club.name,
+          city: first.club.city,
+          logoUrl: first.club.logo,
+          openCount: openCount,
+          totalCount: tournaments.length,
+          onTap: () => _openClubDetail(context, first.club.id),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppTheme.border),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              for (var i = 0; i < tournaments.length; i++)
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: i == tournaments.length - 1
+                            ? Colors.transparent
+                            : AppTheme.divider,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  child: TournamentRowV2(
+                    tournament: tournaments[i],
+                    userLevel: userLevel,
+                    onTap: () =>
+                        _openTournamentDetail(context, tournaments[i].id),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// === My tab ===
+
 class _MyTab extends StatelessWidget {
+  final double? userLevel;
+  const _MyTab({required this.userLevel});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<TournamentProvider>(
       builder: (_, provider, __) {
         if (provider.isLoadingMy) {
           return const Center(
-            child: CircularProgressIndicator(color: AppTheme.accent),
-          );
+              child: CircularProgressIndicator(color: AppTheme.accent));
         }
-
         if (provider.myTournaments.isEmpty) {
           return Center(
             child: Text(
@@ -445,20 +613,28 @@ class _MyTab extends StatelessWidget {
           );
         }
 
+        final byClub = <int, List<Tournament>>{};
+        for (final t in provider.myTournaments) {
+          byClub.putIfAbsent(t.club.id, () => []).add(t);
+        }
+        final clubIds = byClub.keys.toList()
+          ..sort((a, b) => byClub[a]!.first.club.name
+              .compareTo(byClub[b]!.first.club.name));
+
         return RefreshIndicator(
           onRefresh: () => provider.loadMyTournaments(),
           color: AppTheme.accent,
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: provider.myTournaments.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (_, index) {
-              final t = provider.myTournaments[index];
-              return GestureDetector(
-                onTap: () => _openTournamentDetail(context, t.id),
-                child: TournamentCard.fromTournament(t),
-              );
-            },
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            children: [
+              for (final clubId in clubIds) ...[
+                const SizedBox(height: 8),
+                _ClubBlock(
+                  tournaments: byClub[clubId]!..sort(_compareOpenFirstThenDate),
+                  userLevel: userLevel,
+                ),
+              ],
+            ],
           ),
         );
       },
@@ -466,17 +642,20 @@ class _MyTab extends StatelessWidget {
   }
 }
 
+// === Archive tab ===
+
 class _ArchiveTab extends StatelessWidget {
+  final double? userLevel;
+  const _ArchiveTab({required this.userLevel});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<TournamentProvider>(
       builder: (_, provider, __) {
         if (provider.isLoadingArchive) {
           return const Center(
-            child: CircularProgressIndicator(color: AppTheme.accent),
-          );
+              child: CircularProgressIndicator(color: AppTheme.accent));
         }
-
         if (provider.archiveTournaments.isEmpty) {
           return Center(
             child: Text(
@@ -486,23 +665,295 @@ class _ArchiveTab extends StatelessWidget {
           );
         }
 
+        final byClub = <int, List<Tournament>>{};
+        for (final t in provider.archiveTournaments) {
+          byClub.putIfAbsent(t.club.id, () => []).add(t);
+        }
+        final clubIds = byClub.keys.toList()
+          ..sort((a, b) => byClub[a]!.first.club.name
+              .compareTo(byClub[b]!.first.club.name));
+
         return RefreshIndicator(
           onRefresh: () => provider.loadArchiveTournaments(),
           color: AppTheme.accent,
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: provider.archiveTournaments.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (_, index) {
-              final t = provider.archiveTournaments[index];
-              return GestureDetector(
-                onTap: () => _openTournamentDetail(context, t.id),
-                child: TournamentArchiveCard.fromTournament(t),
-              );
-            },
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            children: [
+              for (final clubId in clubIds) ...[
+                const SizedBox(height: 8),
+                _ArchiveClubBlock(
+                  tournaments: byClub[clubId]!
+                    ..sort((a, b) => b.datetime.compareTo(a.datetime)),
+                  userLevel: userLevel,
+                ),
+              ],
+            ],
           ),
         );
       },
     );
   }
+}
+
+class _ArchiveClubBlock extends StatelessWidget {
+  final List<Tournament> tournaments;
+  final double? userLevel;
+
+  const _ArchiveClubBlock({required this.tournaments, required this.userLevel});
+
+  @override
+  Widget build(BuildContext context) {
+    final first = tournaments.first;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClubSectionHeader(
+          clubName: first.club.name,
+          city: first.club.city,
+          logoUrl: first.club.logo,
+          openCount: tournaments.length,
+          totalCount: tournaments.length,
+          onTap: () => _openClubDetail(context, first.club.id),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppTheme.border),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              for (var i = 0; i < tournaments.length; i++)
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: i == tournaments.length - 1
+                            ? Colors.transparent
+                            : AppTheme.divider,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  child: TournamentRowV2(
+                    tournament: tournaments[i],
+                    userLevel: userLevel,
+                    showStatusChip: false,
+                    onTap: () =>
+                        _openTournamentDetail(context, tournaments[i].id),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// === Filter sheets helpers ===
+
+class _FilterSheet extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+  final VoidCallback? onReset;
+  final VoidCallback? onApply;
+
+  const _FilterSheet({
+    required this.title,
+    required this.children,
+    this.onReset,
+    this.onApply,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF3A3A3A),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...children,
+            if (onApply != null || onReset != null) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Row(
+                  children: [
+                    if (onReset != null)
+                      Expanded(
+                        child: TextButton(
+                          onPressed: onReset,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: const Color(0x0AFFFFFF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Сбросить',
+                            style: TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    if (onReset != null && onApply != null) const SizedBox(width: 8),
+                    if (onApply != null)
+                      Expanded(
+                        child: TextButton(
+                          onPressed: onApply,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: AppTheme.accent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Применить',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CheckboxRow extends StatelessWidget {
+  final String label;
+  final bool checked;
+  final VoidCallback onTap;
+  const _CheckboxRow({
+    required this.label,
+    required this.checked,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: checked ? AppTheme.accent : Colors.transparent,
+                border: Border.all(
+                  color: checked ? AppTheme.accent : AppTheme.textSecondary,
+                  width: 1.5,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: checked
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RadioRow extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _RadioRow({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: selected ? AppTheme.accent : AppTheme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ),
+            if (selected)
+              const Icon(Icons.check_circle, size: 20, color: AppTheme.accent),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FormatOption {
+  final String value;
+  final String label;
+  const _FormatOption(this.value, this.label);
+}
+
+class _DateOption {
+  final String? value;
+  final String label;
+  const _DateOption(this.value, this.label);
 }
