@@ -86,50 +86,61 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
 
           return Column(
             children: [
-              // Табы
+              // Табы — underline-стиль как в Rating
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.card,
-                    borderRadius: BorderRadius.circular(12),
+                  decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
                   ),
-                  padding: const EdgeInsets.all(3),
                   child: TabBar(
                     controller: _tabController,
-                    indicator: BoxDecoration(
-                      color: AppTheme.accent,
-                      borderRadius: BorderRadius.circular(9),
-                    ),
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    padding: EdgeInsets.zero,
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 16),
                     indicatorSize: TabBarIndicatorSize.tab,
+                    indicator: const UnderlineTabIndicator(
+                      borderSide: BorderSide(color: AppTheme.accent, width: 2),
+                      insets: EdgeInsets.zero,
+                    ),
                     dividerHeight: 0,
-                    labelColor: Colors.black,
-                    unselectedLabelColor: const Color(0xFF71717A),
+                    labelColor: AppTheme.accent,
+                    unselectedLabelColor: const Color(0xFF52525B),
                     labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                    unselectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                     tabs: [
                       Tab(
+                        height: 40,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(AppLocalizations.of(context)!.upcomingBookings),
                             if (provider.upcomingBookings.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.error,
+                                  color: AppTheme.accent.withAlpha(40),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   '${provider.upcomingBookings.length}',
-                                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.accent,
+                                  ),
                                 ),
                               ),
                             ],
                           ],
                         ),
                       ),
-                      Tab(text: AppLocalizations.of(context)!.pastBookings),
+                      Tab(
+                        height: 40,
+                        text: AppLocalizations.of(context)!.pastBookings,
+                      ),
                     ],
                   ),
                 ),

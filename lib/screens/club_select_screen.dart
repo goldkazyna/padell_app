@@ -58,6 +58,7 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Container(
+                  height: 44,
                   decoration: BoxDecoration(
                     color: AppTheme.card,
                     borderRadius: BorderRadius.circular(12),
@@ -66,12 +67,15 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
                   child: TextField(
                     controller: _searchController,
                     style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+                    textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
+                      isCollapsed: true,
                       hintText: AppLocalizations.of(context)!.searchClub,
                       hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                       prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary, size: 20),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.only(right: 16),
                     ),
                     onChanged: (value) {
                       provider.setSearch(value);
@@ -80,25 +84,31 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
                 ),
               ),
 
-              // Города
+              // Города — underline-стиль как в Rating
               if (provider.cities.isNotEmpty)
-                SizedBox(
-                  height: 40,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: [
-                      _CityChip(
-                        label: AppLocalizations.of(context)!.allCities,
-                        isSelected: provider.selectedCity == null,
-                        onTap: () => provider.setCity(null),
-                      ),
-                      ...provider.cities.map((city) => _CityChip(
-                        label: city,
-                        isSelected: provider.selectedCity == city,
-                        onTap: () => provider.setCity(city),
-                      )),
-                    ],
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
+                  ),
+                  child: SizedBox(
+                    height: 40,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.zero,
+                      children: [
+                        _CityChip(
+                          label: AppLocalizations.of(context)!.allCities,
+                          isSelected: provider.selectedCity == null,
+                          onTap: () => provider.setCity(null),
+                        ),
+                        ...provider.cities.map((city) => _CityChip(
+                          label: city,
+                          isSelected: provider.selectedCity == city,
+                          onTap: () => provider.setCity(city),
+                        )),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -185,27 +195,26 @@ class _CityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 6),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? AppTheme.accent : AppTheme.card,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
-              width: 0.5,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected ? AppTheme.accent : Colors.transparent,
+              width: 2,
             ),
           ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.black : AppTheme.textSecondary,
-            ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
