@@ -8,6 +8,8 @@ import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
+import '../widgets/home/clubs_banner.dart';
+import 'clubs_list_screen.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
@@ -84,6 +86,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const ClubSelectScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  ClubsBanner(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ClubsListScreen()),
                       );
                     },
                   ),
