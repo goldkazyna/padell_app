@@ -19,87 +19,99 @@ class UpcomingList extends StatelessWidget {
       return _buildEmptyState(context);
     }
 
-    return Column(
-      children: tournaments.asMap().entries.map((entry) {
-        final index = entry.key;
-        final t = entry.value;
-        return Padding(
-          padding: EdgeInsets.only(bottom: index < tournaments.length - 1 ? 8 : 0),
-          child: _buildItem(t),
-        );
-      }).toList(),
+    return SizedBox(
+      height: 120,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        itemCount: tournaments.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (_, index) => _buildCard(context, tournaments[index]),
+      ),
     );
   }
 
-  Widget _buildItem(Tournament t) {
+  Widget _buildCard(BuildContext context, Tournament t) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth * 0.62;
+
     return GestureDetector(
       onTap: () => onTap?.call(t),
       child: Container(
+        width: cardWidth,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 44,
-              child: Column(
-                children: [
-                  Text(
-                    t.dayOfMonth,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    t.monthShort,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    '${t.dayOfMonth} ${t.monthShort.toUpperCase()} · ${t.time}',
                     style: const TextStyle(
                       color: AppTheme.textSecondary,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    t.name,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    '${t.club.name} · ${t.time}',
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 6),
+                _buildParticipantsBadge(t),
+              ],
             ),
+            const SizedBox(height: 10),
             Text(
-              t.participantsText,
-              style: TextStyle(
-                color: t.isFull ? AppTheme.error : AppTheme.accent,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+              t.name,
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              t.club.name,
+              style: const TextStyle(
+                color: AppTheme.accent,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildParticipantsBadge(Tournament t) {
+    final isFull = t.isFull;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: isFull
+            ? AppTheme.error.withAlpha(40)
+            : AppTheme.accent.withAlpha(40),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        t.participantsText,
+        style: TextStyle(
+          color: isFull ? AppTheme.error : AppTheme.accent,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
