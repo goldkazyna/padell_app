@@ -38,53 +38,49 @@ class ProfileHero extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppTheme.border),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.0, 0.4, 1.0],
+                colors: [
+                  Color(0xFF1E3A2B),
+                  Color(0xFF1A241E),
+                  Color(0xFF1A1A1F),
+                ],
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
             child: Stack(
               children: [
-                // Base gradient
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppTheme.border),
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      stops: [0.0, 0.4, 1.0],
-                      colors: [
-                        Color(0xFF1E3A2B),
-                        Color(0xFF1A241E),
-                        Color(0xFF1A1A1F),
-                      ],
-                    ),
-                  ),
-                ),
-                // Decorative radial glow top-right
+                // Decorative glow — positioned, не влияет на размер
                 Positioned(
                   top: -60,
                   right: -60,
-                  child: Container(
-                    width: 180,
-                    height: 180,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        radius: 0.5,
-                        colors: [
-                          Color(0x1F22C47A), // rgba(34,196,122,0.12)
-                          Color(0x0022C47A),
-                        ],
-                        stops: [0.0, 1.0],
+                  child: IgnorePointer(
+                    child: Container(
+                      width: 180,
+                      height: 180,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [Color(0x1F22C47A), Color(0x0022C47A)],
+                        ),
                       ),
                     ),
                   ),
                 ),
-                // Content
+                // Контент — задаёт размер
                 Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
+                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           _buildTopRow(context, user),
                           const SizedBox(height: 16),
@@ -97,7 +93,6 @@ class ProfileHero extends StatelessWidget {
                             rating: rating,
                             target: nextLevelRating,
                           ),
-                          const SizedBox(height: 16),
                         ],
                       ),
                     ),
@@ -125,6 +120,7 @@ class ProfileHero extends StatelessWidget {
         const SizedBox(width: 14),
         Expanded(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -146,6 +142,7 @@ class ProfileHero extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(width: 8),
         GestureDetector(
           onTap: () => Navigator.push(
             context,
@@ -172,7 +169,7 @@ class ProfileHero extends StatelessWidget {
 
   Widget _buildAvatar(dynamic user) {
     final avatarUrl = user?.avatar as String?;
-    final initials = user?.initials as String? ?? '??';
+    final initials = (user?.initials as String?) ?? '??';
 
     Widget fallback = Container(
       width: 58,
@@ -216,57 +213,62 @@ class ProfileHero extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'РЕЙТИНГ',
-              style: TextStyle(
-                color: AppTheme.textDim,
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.4,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '$rating',
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 38,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -1.3,
-                    height: 1,
-                    fontFeatures: [FontFeature.tabularFigures()],
-                  ),
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'РЕЙТИНГ',
+                style: TextStyle(
+                  color: AppTheme.textDim,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.4,
                 ),
-                if (rank != null) ...[
-                  const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      '#$rank',
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
-                      ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '$rating',
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 38,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -1.3,
+                      height: 1,
+                      fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
+                  if (rank != null) ...[
+                    const SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        '#$rank',
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
-        const Spacer(),
-        Sparkline(
-          points: trend.isNotEmpty ? trend : const [0, 0],
-          color: AppTheme.accent,
-          width: 110,
-          height: 38,
-        ),
+        const SizedBox(width: 10),
+        if (trend.length >= 2)
+          Sparkline(
+            points: trend,
+            color: AppTheme.accent,
+            width: 110,
+            height: 38,
+          ),
       ],
     );
   }
@@ -279,6 +281,7 @@ class ProfileHero extends StatelessWidget {
     required int target,
   }) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -322,13 +325,8 @@ class ProfileHero extends StatelessWidget {
     required int losses,
     required Color winrateColor,
   }) {
-    final items = [
-      _StatItem('$matches', 'Матчей'),
-      _StatItem('$wins', 'Побед'),
-      _StatItem('$winrate%', 'Винрейт', color: winrateColor),
-      _StatItem('$losses', 'Пораж.', color: AppTheme.textSecondary),
-    ];
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: const BoxDecoration(
         color: Color(0x33000000),
@@ -336,18 +334,24 @@ class ProfileHero extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: items.map((it) => _buildStatItem(it)).toList(),
+        children: [
+          _statItem('$matches', 'Матчей'),
+          _statItem('$wins', 'Побед'),
+          _statItem('$winrate%', 'Винрейт', color: winrateColor),
+          _statItem('$losses', 'Пораж.', color: AppTheme.textSecondary),
+        ],
       ),
     );
   }
 
-  Widget _buildStatItem(_StatItem it) {
+  Widget _statItem(String value, String label, {Color? color}) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          it.value,
+          value,
           style: TextStyle(
-            color: it.color ?? AppTheme.textPrimary,
+            color: color ?? AppTheme.textPrimary,
             fontSize: 17,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.3,
@@ -356,7 +360,7 @@ class ProfileHero extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          it.label,
+          label,
           style: const TextStyle(
             color: AppTheme.textDim,
             fontSize: 10,
@@ -367,11 +371,4 @@ class ProfileHero extends StatelessWidget {
       ],
     );
   }
-}
-
-class _StatItem {
-  final String value;
-  final String label;
-  final Color? color;
-  _StatItem(this.value, this.label, {this.color});
 }
