@@ -68,6 +68,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
   bool _updateDialogShown = false;
+  DateTime? _lastVersionCheck;
 
   @override
   void initState() {
@@ -78,6 +79,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _checkForUpdate() async {
+    // Throttle: не дёргаем сервер чаще раза в 30 секунд
+    final now = DateTime.now();
+    if (_lastVersionCheck != null &&
+        now.difference(_lastVersionCheck!) < const Duration(seconds: 30)) {
+      return;
+    }
+    _lastVersionCheck = now;
+
     try {
       final versionService = VersionService(ApiService());
       final info = await versionService.checkVersion();
@@ -316,10 +325,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                   return;
                 }
                 setState(() => _currentIndex = index);
-                if (index == 0) {
-                  _updateDialogShown = false;
-                  _checkForUpdate();
-                }
+                // Проверяем версию при каждом переключении вкладки
+                // (throttle 30s внутри _checkForUpdate)
+                _checkForUpdate();
               },
               type: BottomNavigationBarType.fixed,
               backgroundColor: AppTheme.card,
