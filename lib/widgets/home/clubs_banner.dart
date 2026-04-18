@@ -14,14 +14,14 @@ class ClubsBanner extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+            colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF6366F1).withAlpha(60),
+              color: const Color(0xFF3B82F6).withAlpha(60),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
