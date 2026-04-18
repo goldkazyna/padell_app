@@ -97,9 +97,24 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     final l10n = AppLocalizations.of(context)!;
     final current = DateTime.parse(_weekDays![0].date);
     final newStart = current.add(Duration(days: 7 * delta));
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final weekEnd = newStart.add(const Duration(days: 6));
+
+    // Нельзя листать в недели где все дни прошли
+    if (weekEnd.isBefore(today)) return;
+
+    // Если новая неделя содержит сегодняшний день — выделяем сегодня,
+    // иначе (будущая неделя) — понедельник
+    final newSelected =
+        (today.isAfter(newStart.subtract(const Duration(days: 1))) &&
+                today.isBefore(newStart.add(const Duration(days: 7))))
+            ? _fmt(today)
+            : _fmt(newStart);
+
     setState(() {
       _weekDays = _buildWeek(newStart, _localizedDayNames(l10n), _localizedMonthShorts(l10n));
-      _selectedDate = _weekDays![0].date;
+      _selectedDate = newSelected;
       _selectedCourtIndex = 0;
       _occupancy = {};
     });
