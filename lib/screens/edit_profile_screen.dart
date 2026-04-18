@@ -8,21 +8,22 @@ import '../providers/profile_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
 
-// === V3 design tokens (scoped to this screen) ===
+// Local utility aliases mapped to global AppTheme
 class _T {
-  static const bg = Color(0xFF131317);
-  static const card = Color(0xFF1C1C21);
-  static const cardRaised = Color(0xFF23232A);
-  static const border = Color(0x0FFFFFFF); // rgba(255,255,255,0.06)
-  static const divider = Color(0x0DFFFFFF); // rgba(255,255,255,0.05)
-  static const text = Color(0xFFF3F3F5);
-  static const muted = Color(0xFFA2A2AB);
-  static const dim = Color(0xFF6A6A73);
-  static const green = Color(0xFF22C47A);
-  static const greenSoft = Color(0x2422C47A); // rgba(34,196,122,0.14)
-  static const amber = Color(0xFFEAB34E);
-  static const red = Color(0xFFF0554D);
+  static const bg = AppTheme.background;
+  static const card = AppTheme.card;
+  static const cardRaised = AppTheme.cardRaised;
+  static const border = AppTheme.border;
+  static const divider = AppTheme.divider;
+  static const text = AppTheme.textPrimary;
+  static const muted = AppTheme.textSecondary;
+  static const dim = AppTheme.textDim;
+  static const green = AppTheme.accent;
+  static const greenSoft = AppTheme.accentSoft;
+  static const amber = AppTheme.amber;
+  static const red = AppTheme.error;
   static const rowIconBg = Color(0x0AFFFFFF); // rgba(255,255,255,0.04)
 }
 
