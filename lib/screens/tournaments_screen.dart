@@ -44,6 +44,7 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
       const _FormatOption('team', 'Командный'),
       const _FormatOption('mexicano', 'Мексикано'),
     ];
+    final current = Set<String>.from(_filter.formats);
     await showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.card,
@@ -53,7 +54,6 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            final current = Set<String>.from(_filter.formats);
             return _FilterSheet(
               title: 'Формат турнира',
               onReset: () {
@@ -61,7 +61,8 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 Navigator.pop(ctx);
               },
               onApply: () {
-                setState(() => _filter = _filter.copyWith(formats: current));
+                setState(() =>
+                    _filter = _filter.copyWith(formats: Set<String>.from(current)));
                 Navigator.pop(ctx);
               },
               children: formats.map((f) {
@@ -122,6 +123,7 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
     }
     final ids = clubs.keys.toList()
       ..sort((a, b) => clubs[a]!.compareTo(clubs[b]!));
+    final current = Set<int>.from(_filter.clubIds);
     await showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.card,
@@ -131,7 +133,6 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            final current = Set<int>.from(_filter.clubIds);
             return _FilterSheet(
               title: 'Клуб',
               onReset: () {
@@ -139,7 +140,8 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 Navigator.pop(ctx);
               },
               onApply: () {
-                setState(() => _filter = _filter.copyWith(clubIds: current));
+                setState(() =>
+                    _filter = _filter.copyWith(clubIds: Set<int>.from(current)));
                 Navigator.pop(ctx);
               },
               children: ids.map((id) {
