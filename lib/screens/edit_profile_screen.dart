@@ -36,6 +36,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   String? _city;
   String? _gender;
@@ -64,6 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -85,6 +87,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _position = user['position'] as String?;
         _birthDate = birth;
         _phone = (user['phone'] as String? ?? '').trim();
+        _phoneController.text = _phone; // пустое если не задан
         _avatarUrl = user['avatar'] as String?;
         _rating = user['rating'] as int?;
         final lvl = user['level'];
@@ -170,6 +173,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (_position != null) body['position'] = _position;
       if (_birthDate != null) {
         body['birth_date'] = _birthDate!.toIso8601String().substring(0, 10);
+      }
+      // Телефон — отправляем только если изначально был пуст и юзер ввёл.
+      // Если уже был задан — поле заблокировано, не шлём.
+      if (_phone.isEmpty) {
+        final phoneRaw = _phoneController.text.trim();
+        final phoneDigits = phoneRaw.replaceAll(RegExp(r'[^0-9]'), '');
+        if (phoneDigits.isNotEmpty) {
+          body['phone'] = phoneDigits;
+        }
       }
 
       await ApiService().put('/profile', body, token);
@@ -352,13 +364,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               hint: 'Укажите имя',
                             ),
                             _divider(),
-                            _buildInfoRow(
-                              icon: Icons.phone_outlined,
-                              label: 'Телефон',
-                              value: _phone.isEmpty ? null : _formatPhone(_phone),
-                              placeholder: 'Не указан',
-                              trailing: const Icon(Icons.lock_outline, size: 15, color: _T.dim),
-                            ),
+                            // Если телефон пуст — позволяем ввести,
+                            // иначе — readonly с замком (менять нельзя).
+                            _phone.isEmpty
+                                ? _buildEditableRow(
+                                    icon: Icons.phone_outlined,
+                                    label: 'Телефон',
+                                    controller: _phoneController,
+                                    hint: '+7 777 ...',
+                                  )
+                                : _buildInfoRow(
+                                    icon: Icons.phone_outlined,
+                                    label: 'Телефон',
+                                    value: _formatPhone(_phone),
+                                    trailing: const Icon(Icons.lock_outline, size: 15, color: _T.dim),
+                                  ),
                             _divider(),
                             _buildInfoRow(
                               icon: Icons.location_on_outlined,
@@ -790,6 +810,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required String label,
     required TextEditingController controller,
     required String hint,
+    TextInputType? keyboardType,
     bool isLast = false,
   }) {
     return Container(
@@ -814,6 +835,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 1),
                 TextField(
                   controller: controller,
+                  keyboardType: keyboardType,
                   style: const TextStyle(color: _T.text, fontSize: 14, fontWeight: FontWeight.w500),
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
