@@ -372,6 +372,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     label: 'Телефон',
                                     controller: _phoneController,
                                     hint: '+7 777 ...',
+                                    keyboardType: TextInputType.phone,
                                   )
                                 : _buildInfoRow(
                                     icon: Icons.phone_outlined,
