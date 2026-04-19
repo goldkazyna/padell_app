@@ -9,6 +9,7 @@ class RatingPlayer {
   final double level;
   final int position;
   final bool isMe;
+  final bool levelVerified;
 
   RatingPlayer({
     required this.id,
@@ -18,6 +19,7 @@ class RatingPlayer {
     required this.level,
     required this.position,
     this.isMe = false,
+    this.levelVerified = false,
   });
 
   String get initials {
@@ -45,6 +47,7 @@ class RatingPlayer {
       level: level,
       position: json['position'] as int? ?? 0,
       isMe: json['is_me'] as bool? ?? false,
+      levelVerified: json['level_verified'] as bool? ?? false,
     );
   }
 }
@@ -59,6 +62,7 @@ class MyRatingCard {
   final int place;
   final int? filteredPlace;
   final int totalPlayers;
+  final bool levelVerified;
 
   MyRatingCard({
     required this.id,
@@ -70,6 +74,7 @@ class MyRatingCard {
     required this.place,
     this.filteredPlace,
     required this.totalPlayers,
+    this.levelVerified = false,
   });
 
   String get initials {
@@ -99,6 +104,7 @@ class MyRatingCard {
       place: json['place'] as int? ?? 0,
       filteredPlace: json['filtered_place'] as int?,
       totalPlayers: json['total_players'] as int? ?? 0,
+      levelVerified: json['level_verified'] as bool? ?? false,
     );
   }
 }

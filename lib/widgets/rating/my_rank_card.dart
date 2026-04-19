@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/rating_service.dart';
 import '../../theme/app_theme.dart';
+import '../verified_badge.dart';
 
 class MyRankCard extends StatelessWidget {
   final MyRatingCard? card;
@@ -64,13 +65,25 @@ class MyRankCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  c.name,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        c.name,
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (c.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 13),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(

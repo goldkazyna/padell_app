@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/rating_service.dart';
 import '../../theme/app_theme.dart';
+import '../verified_badge.dart';
 
 class PlayerRatingItem extends StatelessWidget {
   final RatingPlayer player;
@@ -74,15 +75,25 @@ class PlayerRatingItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  player.name,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        player.name,
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (player.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 12),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
