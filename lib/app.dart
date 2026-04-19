@@ -20,6 +20,7 @@ import 'screens/profile_screen.dart';
 import 'screens/challenges_screen.dart';
 import 'screens/club_select_screen.dart';
 import 'screens/edit_profile_screen.dart';
+import 'screens/quiz_screen.dart';
 
 /// Global navigator key for navigation from push notifications
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -50,6 +51,10 @@ class PadelApp extends StatelessWidget {
             case AuthStatus.unauthenticated:
               return const LoginScreen();
             case AuthStatus.authenticated:
+              // Новый пользователь — показываем опросник для определения уровня
+              if (auth.user != null && !auth.user!.quizCompleted) {
+                return const QuizScreen();
+              }
               return const MainScreen();
           }
         },

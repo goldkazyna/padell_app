@@ -13,6 +13,7 @@ class User {
   final String? hand;
   final String? position;
   final bool levelVerified;
+  final bool quizCompleted;
 
   const User({
     required this.id,
@@ -29,6 +30,7 @@ class User {
     this.hand,
     this.position,
     this.levelVerified = false,
+    this.quizCompleted = false,
   });
 
   int? get age {
@@ -96,6 +98,7 @@ class User {
       hand: json['hand'] as String?,
       position: json['position'] as String?,
       levelVerified: json['level_verified'] as bool? ?? false,
+      quizCompleted: json['quiz_completed'] as bool? ?? false,
     );
   }
 
