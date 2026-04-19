@@ -10,6 +10,7 @@ import '../widgets/tournaments/filter_pills.dart';
 import '../widgets/tournaments/hero_tournament_card.dart';
 import '../widgets/tournaments/tournament_row_v2.dart';
 import 'tournament_detail_screen.dart';
+import 'tournament_stats_screen.dart';
 import 'club_detail_screen.dart';
 
 class TournamentsScreen extends StatefulWidget {
@@ -646,53 +647,231 @@ class _MyTab extends StatelessWidget {
 
 // === Archive tab ===
 
-class _ArchiveTab extends StatelessWidget {
+enum ArchivePeriod { week, month, quarter, all, custom }
+
+class _ArchiveTab extends StatefulWidget {
   final double? userLevel;
   const _ArchiveTab({required this.userLevel});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<TournamentProvider>(
-      builder: (_, provider, __) {
-        if (provider.isLoadingArchive) {
-          return const Center(
-              child: CircularProgressIndicator(color: AppTheme.accent));
-        }
-        if (provider.archiveTournaments.isEmpty) {
-          return Center(
-            child: Text(
-              AppLocalizations.of(context)!.noFinishedTournaments,
-              style: const TextStyle(color: AppTheme.textSecondary),
-            ),
-          );
-        }
+  State<_ArchiveTab> createState() => _ArchiveTabState();
+}
 
-        final byClub = <int, List<Tournament>>{};
-        for (final t in provider.archiveTournaments) {
-          byClub.putIfAbsent(t.club.id, () => []).add(t);
-        }
-        final clubIds = byClub.keys.toList()
-          ..sort((a, b) => byClub[a]!.first.club.name
-              .compareTo(byClub[b]!.first.club.name));
+class _ArchiveTabState extends State<_ArchiveTab> {
+  ArchivePeriod _period = ArchivePeriod.week;
+  DateTime? _customFrom;
+  DateTime? _customTo;
 
-        return RefreshIndicator(
-          onRefresh: () => provider.loadArchiveTournaments(),
-          color: AppTheme.accent,
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-            children: [
-              for (final clubId in clubIds) ...[
-                const SizedBox(height: 8),
-                _ArchiveClubBlock(
-                  tournaments: byClub[clubId]!
-                    ..sort((a, b) => b.datetime.compareTo(a.datetime)),
-                  userLevel: userLevel,
-                ),
-              ],
-            ],
-          ),
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _applyPeriod());
+  }
+
+  String _formatDate(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  void _applyPeriod() {
+    final now = DateTime.now();
+    String? from;
+    String? to;
+
+    switch (_period) {
+      case ArchivePeriod.week:
+        from = _formatDate(now.subtract(const Duration(days: 7)));
+        to = _formatDate(now);
+        break;
+      case ArchivePeriod.month:
+        from = _formatDate(now.subtract(const Duration(days: 30)));
+        to = _formatDate(now);
+        break;
+      case ArchivePeriod.quarter:
+        from = _formatDate(now.subtract(const Duration(days: 90)));
+        to = _formatDate(now);
+        break;
+      case ArchivePeriod.all:
+        from = null;
+        to = null;
+        break;
+      case ArchivePeriod.custom:
+        if (_customFrom != null) from = _formatDate(_customFrom!);
+        if (_customTo != null) to = _formatDate(_customTo!);
+        break;
+    }
+
+    context.read<TournamentProvider>().loadArchiveTournaments(
+          dateFrom: from,
+          dateTo: to,
         );
+  }
+
+  Future<void> _pickCustomRange() async {
+    final now = DateTime.now();
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: now,
+      initialDateRange: _customFrom != null && _customTo != null
+          ? DateTimeRange(start: _customFrom!, end: _customTo!)
+          : DateTimeRange(start: now.subtract(const Duration(days: 7)), end: now),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.dark(
+            primary: AppTheme.accent,
+            surface: AppTheme.card,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (range != null && mounted) {
+      setState(() {
+        _period = ArchivePeriod.custom;
+        _customFrom = range.start;
+        _customTo = range.end;
+      });
+      _applyPeriod();
+    }
+  }
+
+  String get _customLabel {
+    if (_customFrom == null || _customTo == null) return 'Период';
+    String fmt(DateTime d) => '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}';
+    return '${fmt(_customFrom!)} – ${fmt(_customTo!)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _buildPeriodBar(),
+        Expanded(
+          child: Consumer<TournamentProvider>(
+            builder: (_, provider, __) {
+              if (provider.isLoadingArchive) {
+                return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+              }
+              if (provider.archiveTournaments.isEmpty) {
+                return Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.noFinishedTournaments,
+                    style: const TextStyle(color: AppTheme.textSecondary),
+                  ),
+                );
+              }
+
+              final byClub = <int, List<Tournament>>{};
+              for (final t in provider.archiveTournaments) {
+                byClub.putIfAbsent(t.club.id, () => []).add(t);
+              }
+              final clubIds = byClub.keys.toList()
+                ..sort((a, b) => byClub[a]!.first.club.name
+                    .compareTo(byClub[b]!.first.club.name));
+
+              return RefreshIndicator(
+                onRefresh: () async => _applyPeriod(),
+                color: AppTheme.accent,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                  children: [
+                    for (final clubId in clubIds) ...[
+                      const SizedBox(height: 8),
+                      _ArchiveClubBlock(
+                        tournaments: byClub[clubId]!
+                          ..sort((a, b) => b.datetime.compareTo(a.datetime)),
+                        userLevel: widget.userLevel,
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPeriodBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _periodChip('Неделя', ArchivePeriod.week),
+            const SizedBox(width: 6),
+            _periodChip('Месяц', ArchivePeriod.month),
+            const SizedBox(width: 6),
+            _periodChip('3 месяца', ArchivePeriod.quarter),
+            const SizedBox(width: 6),
+            _periodChip('Всё', ArchivePeriod.all),
+            const SizedBox(width: 6),
+            GestureDetector(
+              onTap: _pickCustomRange,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  color: _period == ArchivePeriod.custom ? AppTheme.accent : AppTheme.card,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _period == ArchivePeriod.custom ? AppTheme.accent : const Color(0xFF2A2A2A),
+                    width: 0.5,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.date_range,
+                        size: 14,
+                        color: _period == ArchivePeriod.custom ? Colors.black : AppTheme.textSecondary),
+                    const SizedBox(width: 5),
+                    Text(
+                      _period == ArchivePeriod.custom ? _customLabel : 'Период',
+                      style: TextStyle(
+                        color: _period == ArchivePeriod.custom ? Colors.black : AppTheme.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _periodChip(String label, ArchivePeriod period) {
+    final selected = _period == period;
+    return GestureDetector(
+      onTap: () {
+        if (_period != period) {
+          setState(() => _period = period);
+          _applyPeriod();
+        }
       },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.accent : AppTheme.card,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? AppTheme.accent : const Color(0xFF2A2A2A),
+            width: 0.5,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.black : AppTheme.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -702,6 +881,18 @@ class _ArchiveClubBlock extends StatelessWidget {
   final double? userLevel;
 
   const _ArchiveClubBlock({required this.tournaments, required this.userLevel});
+
+  void _openStats(BuildContext context, Tournament t) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TournamentStatsScreen(
+          tournamentId: t.id,
+          tournamentName: t.name,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -742,8 +933,7 @@ class _ArchiveClubBlock extends StatelessWidget {
                     tournament: tournaments[i],
                     userLevel: userLevel,
                     showStatusChip: false,
-                    onTap: () =>
-                        _openTournamentDetail(context, tournaments[i].id),
+                    onTap: () => _openStats(context, tournaments[i]),
                   ),
                 ),
             ],

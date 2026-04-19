@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/push_notification_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/profile/profile_hero.dart';
 import '../widgets/profile/tournament_history.dart';
 import '../widgets/profile/profile_menu.dart';
@@ -43,13 +44,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 24),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ProfileHero(),
-                  TournamentHistory(),
-                  SizedBox(height: 22),
+                  const ProfileHero(),
                   Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ProfileIncompleteBanner(user: profile.user),
+                  ),
+                  const TournamentHistory(),
+                  const SizedBox(height: 22),
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: ProfileMenu(),
                   ),

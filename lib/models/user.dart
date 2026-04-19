@@ -61,13 +61,11 @@ class User {
 
   bool get isProfileIncomplete =>
       (city == null || city!.isEmpty) ||
-      (gender == null || gender!.isEmpty) ||
       phone.trim().isEmpty;
 
   List<String> get missingProfileFieldKeys {
     final missing = <String>[];
     if (city == null || city!.isEmpty) missing.add('city');
-    if (gender == null || gender!.isEmpty) missing.add('gender');
     if (phone.trim().isEmpty) missing.add('phone');
     return missing;
   }

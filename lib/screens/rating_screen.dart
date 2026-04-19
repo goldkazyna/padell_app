@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/rating_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 
 class RatingScreen extends StatefulWidget {
@@ -441,7 +442,17 @@ class _RatingScreenState extends State<RatingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(player.name, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(player.name, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
+                    if (player.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 10),
+                    ],
+                  ],
+                ),
                 Text('L${_getLevelCategory(player.level)} · ${player.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
               ],
             ),
@@ -502,7 +513,17 @@ class _RatingScreenState extends State<RatingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
+                    if (card.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 10),
+                    ],
+                  ],
+                ),
                 Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
               ],
             ),
@@ -690,7 +711,17 @@ class _RatingScreenState extends State<RatingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
+                    if (card.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 10),
+                    ],
+                  ],
+                ),
                 Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
               ],
             ),
@@ -834,7 +865,13 @@ class _RatingScreenState extends State<RatingScreen> {
           ),
           const SizedBox(width: 10),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+            Row(children: [
+              Flexible(child: Text(card.name, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis)),
+              if (card.levelVerified) ...[
+                const SizedBox(width: 5),
+                const VerifiedBadge(size: 10),
+              ],
+            ]),
             Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
           ])),
           Text('$_myTournaments', style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800)),

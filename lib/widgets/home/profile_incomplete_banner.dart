@@ -1,22 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/user.dart';
 import '../../providers/home_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../screens/edit_profile_screen.dart';
 
 class ProfileIncompleteBanner extends StatelessWidget {
-  const ProfileIncompleteBanner({super.key});
+  final User? user;
+
+  const ProfileIncompleteBanner({super.key, this.user});
 
   static const _warning = Color(0xFFF59E0B);
 
   @override
   Widget build(BuildContext context) {
+    if (user != null) {
+      return _buildForUser(context, user!);
+    }
     return Consumer<HomeProvider>(
       builder: (_, home, __) {
-        final user = home.user;
-        if (user == null || !user.isProfileIncomplete) {
-          return const SizedBox.shrink();
-        }
+        final u = home.user;
+        if (u == null) return const SizedBox.shrink();
+        return _buildForUser(context, u);
+      },
+    );
+  }
+
+  Widget _buildForUser(BuildContext context, User user) {
+    if (!user.isProfileIncomplete) return const SizedBox.shrink();
 
         final l = AppLocalizations.of(context)!;
         final missingText = user.missingProfileFieldKeys
@@ -24,7 +36,7 @@ class ProfileIncompleteBanner extends StatelessWidget {
             .join(l.profileBannerSeparator);
 
         return Padding(
-          padding: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.only(top: 12, bottom: 12),
           child: GestureDetector(
             onTap: () => _openEditProfile(context),
             child: Container(
@@ -112,8 +124,6 @@ class ProfileIncompleteBanner extends StatelessWidget {
             ),
           ),
         );
-      },
-    );
   }
 
   String _fieldLabel(AppLocalizations l, String key) {
@@ -136,6 +146,7 @@ class ProfileIncompleteBanner extends StatelessWidget {
     );
     if (context.mounted) {
       context.read<HomeProvider>().refresh();
+      context.read<ProfileProvider>().loadProfile();
     }
   }
 }

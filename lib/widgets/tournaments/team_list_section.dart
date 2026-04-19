@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
+import '../../screens/player_profile_screen.dart';
+import '../verified_badge.dart';
 
 class TeamListSection extends StatelessWidget {
   final Tournament tournament;
@@ -227,7 +229,20 @@ class TeamListSection extends StatelessWidget {
     required Color avatarBg,
     String? leading,
   }) {
-    return Row(
+    return Builder(builder: (context) => GestureDetector(
+      onTap: player.id > 0
+          ? () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PlayerProfileScreen(
+                    playerId: player.id,
+                    playerName: player.name,
+                  ),
+                ),
+              )
+          : null,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
       children: [
         // Index or spacing
         SizedBox(
@@ -272,15 +287,25 @@ class TeamListSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                player.name,
-                style: TextStyle(
-                  color: primaryColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      player.name,
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (player.levelVerified) ...[
+                    const SizedBox(width: 5),
+                    const VerifiedBadge(size: 11),
+                  ],
+                ],
               ),
               const SizedBox(height: 2),
               Text(
@@ -304,7 +329,8 @@ class TeamListSection extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ),
+    ));
   }
 
   bool _isMyTeam(TournamentTeam team) {

@@ -221,6 +221,8 @@ class RatingService {
       if (levelValue is num) level = levelValue.toDouble();
       else if (levelValue is String) level = double.tryParse(levelValue) ?? 0;
 
+      final trendList = p['rating_trend'] as List<dynamic>? ?? [];
+
       return PlayerProfile(
         id: p['id'] as int,
         name: p['name'] as String? ?? '',
@@ -233,6 +235,8 @@ class RatingService {
         losses: p['losses'] as int? ?? 0,
         winrate: p['winrate'] as int? ?? 0,
         tournamentsCount: p['tournaments_count'] as int? ?? 0,
+        levelVerified: p['level_verified'] as bool? ?? false,
+        ratingTrend: trendList.map((v) => (v as num).toInt()).toList(),
         history: historyList.map((h) => RatingHistoryItem.fromJson(h as Map<String, dynamic>)).toList(),
       );
     } catch (_) {
@@ -340,6 +344,8 @@ class PlayerProfile {
   final int losses;
   final int winrate;
   final int tournamentsCount;
+  final bool levelVerified;
+  final List<int> ratingTrend;
   final List<RatingHistoryItem> history;
 
   PlayerProfile({
@@ -354,6 +360,8 @@ class PlayerProfile {
     required this.losses,
     required this.winrate,
     required this.tournamentsCount,
+    this.levelVerified = false,
+    this.ratingTrend = const [],
     required this.history,
   });
 

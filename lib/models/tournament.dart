@@ -40,6 +40,7 @@ class TournamentParticipant {
   final double level;
   final int rating;
   final String status;
+  final bool levelVerified;
 
   TournamentParticipant({
     required this.id,
@@ -47,6 +48,7 @@ class TournamentParticipant {
     required this.level,
     required this.rating,
     required this.status,
+    this.levelVerified = false,
   });
 
   factory TournamentParticipant.fromJson(Map<String, dynamic> json) {
@@ -65,6 +67,7 @@ class TournamentParticipant {
       level: parsedLevel,
       rating: json['rating'] as int? ?? 0,
       status: json['status'] as String? ?? 'registered',
+      levelVerified: json['level_verified'] as bool? ?? false,
     );
   }
 
@@ -152,12 +155,14 @@ class TournamentTeamPlayer {
   final String name;
   final double level;
   final int rating;
+  final bool levelVerified;
 
   TournamentTeamPlayer({
     required this.id,
     required this.name,
     required this.level,
     required this.rating,
+    this.levelVerified = false,
   });
 
   factory TournamentTeamPlayer.fromJson(Map<String, dynamic> json) {
@@ -174,6 +179,7 @@ class TournamentTeamPlayer {
       name: json['name'] as String? ?? '',
       level: parsedLevel,
       rating: json['rating'] as int? ?? 0,
+      levelVerified: json['level_verified'] as bool? ?? false,
     );
   }
 

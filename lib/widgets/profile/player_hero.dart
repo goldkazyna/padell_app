@@ -1,114 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/profile_provider.dart';
-import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
-import 'sparkline.dart';
 import '../verified_badge.dart';
+import 'sparkline.dart';
 
-class ProfileHero extends StatelessWidget {
-  final Widget? trailing;
+class PlayerHero extends StatelessWidget {
+  final String name;
+  final String? avatar;
+  final String initials;
+  final int rating;
+  final int? rank;
+  final double level;
+  final bool levelVerified;
+  final List<int> trend;
+  final int matchesPlayed;
+  final int wins;
+  final int winrate;
+  final int tournamentsCount;
 
-  const ProfileHero({super.key, this.trailing});
+  const PlayerHero({
+    super.key,
+    required this.name,
+    this.avatar,
+    required this.initials,
+    required this.rating,
+    this.rank,
+    required this.level,
+    this.levelVerified = false,
+    this.trend = const [],
+    required this.matchesPlayed,
+    required this.wins,
+    required this.winrate,
+    required this.tournamentsCount,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProfileProvider>(
-      builder: (_, profile, __) {
-        final user = profile.user;
-        final stats = profile.statistics;
+    final nextLevel = level >= 5.0 ? 5.0 : level + 0.25;
+    final currentLevelRating = (level * 1000).round();
+    final nextLevelRating = (nextLevel * 1000).round();
+    final progress = nextLevelRating - currentLevelRating > 0
+        ? ((rating - currentLevelRating) /
+                (nextLevelRating - currentLevelRating))
+            .clamp(0.0, 1.0)
+        : 1.0;
 
-        final rating = user?.rating ?? 0;
-        final rank = user?.place;
-        final level = double.tryParse(user?.level ?? '0') ?? 0;
-        final nextLevel = level >= 5.0 ? 5.0 : level + 0.25;
-        final currentLevelRating = (level * 1000).round();
-        final nextLevelRating = (nextLevel * 1000).round();
-        final progress = nextLevelRating - currentLevelRating > 0
-            ? ((rating - currentLevelRating) /
-                    (nextLevelRating - currentLevelRating))
-                .clamp(0.0, 1.0)
-            : 1.0;
-
-        final matches = stats?.matchesPlayed ?? 0;
-        final wins = stats?.wins ?? 0;
-        final winrate = stats?.winrate ?? 0;
-        final losses = stats?.losses ?? (matches - wins);
-        final winrateColor = winrate >= 60
-            ? AppTheme.accent
-            : (winrate >= 40 ? AppTheme.amber : AppTheme.error);
-        final trend = stats?.ratingTrend ?? const <int>[];
-
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-          child: ClipRRect(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.border),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  stops: [0.0, 0.4, 1.0],
-                  colors: [
-                    Color(0xFF1E3A2B),
-                    Color(0xFF1A241E),
-                    Color(0xFF1A1A1F),
+            border: Border.all(color: AppTheme.border),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.0, 0.4, 1.0],
+              colors: [
+                Color(0xFF1E3A2B),
+                Color(0xFF1A241E),
+                Color(0xFF1A1A1F),
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _TopRow(
+                      name: name,
+                      avatar: avatar,
+                      initials: initials,
+                      levelVerified: levelVerified,
+                    ),
+                    const SizedBox(height: 16),
+                    _RatingRow(rating: rating, rank: rank, trend: trend),
+                    const SizedBox(height: 14),
+                    _LevelProgress(
+                      level: level,
+                      nextLevel: nextLevel,
+                      progress: progress,
+                      rating: rating,
+                      target: nextLevelRating,
+                    ),
                   ],
                 ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _TopRow(user: user, trailing: trailing),
-                        const SizedBox(height: 16),
-                        _RatingRow(rating: rating, rank: rank, trend: trend),
-                        const SizedBox(height: 14),
-                        _LevelProgress(
-                          level: level,
-                          nextLevel: nextLevel,
-                          progress: progress,
-                          rating: rating,
-                          target: nextLevelRating,
-                        ),
-                      ],
-                    ),
-                  ),
-                  _StatsStrip(
-                    matches: matches,
-                    wins: wins,
-                    winrate: winrate,
-                    losses: losses,
-                    winrateColor: winrateColor,
-                  ),
-                ],
+              _StatsStrip(
+                rating: rating,
+                matches: matchesPlayed,
+                wins: wins,
+                winrate: winrate,
+                tournamentsCount: tournamentsCount,
               ),
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
 
 class _TopRow extends StatelessWidget {
-  final dynamic user;
-  final Widget? trailing;
-  const _TopRow({required this.user, this.trailing});
+  final String name;
+  final String? avatar;
+  final String initials;
+  final bool levelVerified;
+
+  const _TopRow({
+    required this.name,
+    required this.avatar,
+    required this.initials,
+    required this.levelVerified,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final avatarUrl = user?.avatar as String?;
-    final initials = (user?.initials as String?) ?? '??';
-
     Widget avatarFallback = Container(
       width: 58,
       height: 58,
@@ -132,12 +145,12 @@ class _TopRow extends StatelessWidget {
       ),
     );
 
-    Widget avatar;
-    if (avatarUrl != null && avatarUrl.isNotEmpty) {
-      avatar = ClipRRect(
+    Widget avatarWidget;
+    if (avatar != null && avatar!.isNotEmpty) {
+      avatarWidget = ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: Image.network(
-          avatarUrl,
+          avatar!,
           width: 58,
           height: 58,
           fit: BoxFit.cover,
@@ -145,69 +158,36 @@ class _TopRow extends StatelessWidget {
         ),
       );
     } else {
-      avatar = avatarFallback;
+      avatarWidget = avatarFallback;
     }
 
     return Row(
       children: [
-        avatar,
+        avatarWidget,
         const SizedBox(width: 14),
         Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      user?.name ?? '—',
-                      style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.2,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              Flexible(
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
                   ),
-                  if (user?.levelVerified == true) ...[
-                    const SizedBox(width: 5),
-                    const VerifiedBadge(size: 13),
-                  ],
-                ],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                user?.formattedPhone ?? '',
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
-              ),
+              if (levelVerified) ...[
+                const SizedBox(width: 5),
+                const VerifiedBadge(size: 13),
+              ],
             ],
           ),
         ),
-        const SizedBox(width: 8),
-        trailing ??
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-              ).then((_) {
-                if (context.mounted) {
-                  context.read<ProfileProvider>().loadProfile();
-                }
-              }),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0x0FFFFFFF),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppTheme.border),
-                ),
-                child: const Icon(Icons.edit_outlined, size: 16, color: AppTheme.textPrimary),
-              ),
-            ),
       ],
     );
   }
@@ -363,18 +343,18 @@ class _LevelProgress extends StatelessWidget {
 }
 
 class _StatsStrip extends StatelessWidget {
+  final int rating;
   final int matches;
   final int wins;
   final int winrate;
-  final int losses;
-  final Color winrateColor;
+  final int tournamentsCount;
 
   const _StatsStrip({
+    required this.rating,
     required this.matches,
     required this.wins,
     required this.winrate,
-    required this.losses,
-    required this.winrateColor,
+    required this.tournamentsCount,
   });
 
   @override
@@ -389,10 +369,10 @@ class _StatsStrip extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _item('$matches', 'Матчей'),
+          _item('$rating', 'Рейтинг', color: AppTheme.accent),
+          _item('$matches', 'Игры'),
           _item('$wins', 'Побед'),
-          _item('$winrate%', 'Винрейт', color: winrateColor),
-          _item('$losses', 'Пораж.', color: AppTheme.textSecondary),
+          _item('$tournamentsCount', 'Турниры'),
         ],
       ),
     );
@@ -406,12 +386,12 @@ class _StatsStrip extends StatelessWidget {
           value,
           style: TextStyle(
             color: color ?? AppTheme.textPrimary,
-            fontSize: 22,
+            fontSize: 17,
             fontWeight: FontWeight.w700,
-            letterSpacing: -0.4,
+            letterSpacing: -0.3,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
           label,
           style: const TextStyle(

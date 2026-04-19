@@ -5,6 +5,7 @@ import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
 import 'tournament_results_screen.dart';
 import '../models/tournament.dart';
+import '../widgets/profile/player_hero.dart';
 
 class PlayerProfileScreen extends StatefulWidget {
   final int playerId;
@@ -96,53 +97,21 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Profile card
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Column(
-              children: [
-                // Avatar
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF27272A),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppTheme.accent.withAlpha(60), width: 2),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: p.avatar != null
-                      ? Image.network(p.avatar!, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _buildInitials(p))
-                      : _buildInitials(p),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  p.name,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'L${p.levelCategory} · ${p.level} · #${p.place} в рейтинге',
-                  style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
-                ),
-                const SizedBox(height: 16),
-                // Stats row
-                Row(
-                  children: [
-                    _buildStat('${p.rating}', 'Рейтинг', isAccent: true),
-                    const SizedBox(width: 8),
-                    _buildStat('${p.matchesPlayed}', 'Игры'),
-                    const SizedBox(width: 8),
-                    _buildStat('${p.winrate}%', 'Побед'),
-                    const SizedBox(width: 8),
-                    _buildStat('${p.tournamentsCount}', 'Турниры'),
-                  ],
-                ),
-              ],
-            ),
+          PlayerHero(
+            name: p.name,
+            avatar: p.avatar,
+            initials: p.initials,
+            rating: p.rating,
+            rank: p.place > 0 ? p.place : null,
+            level: p.level,
+            levelVerified: p.levelVerified,
+            trend: p.ratingTrend,
+            matchesPlayed: p.matchesPlayed,
+            wins: p.wins,
+            winrate: p.winrate,
+            tournamentsCount: p.tournamentsCount,
           ),
+          const SizedBox(height: 8),
 
           // History section
           const Padding(
@@ -168,43 +137,6 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
 
           const SizedBox(height: 24),
         ],
-      ),
-    );
-  }
-
-  Widget _buildInitials(PlayerProfile p) {
-    return Center(
-      child: Text(
-        p.initials,
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: AppTheme.textSecondary),
-      ),
-    );
-  }
-
-  Widget _buildStat(String value, String label, {bool isAccent = false}) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: AppTheme.card,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w800,
-                color: isAccent ? AppTheme.accent : AppTheme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: AppTheme.textSecondary),
-            ),
-          ],
-        ),
       ),
     );
   }

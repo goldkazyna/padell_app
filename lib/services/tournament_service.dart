@@ -23,8 +23,12 @@ class TournamentService {
         .toList();
   }
 
-  Future<List<Tournament>> getArchiveTournaments(String token) async {
-    final response = await _api.get('/tournaments/archive', token);
+  Future<List<Tournament>> getArchiveTournaments(String token, {String? dateFrom, String? dateTo}) async {
+    final params = <String>[];
+    if (dateFrom != null) params.add('date_from=$dateFrom');
+    if (dateTo != null) params.add('date_to=$dateTo');
+    final qs = params.isEmpty ? '' : '?${params.join('&')}';
+    final response = await _api.get('/tournaments/completed$qs', token);
     final list = response['tournaments'] as List<dynamic>;
     return list
         .map((json) => Tournament.fromJson(json as Map<String, dynamic>))

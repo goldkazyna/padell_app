@@ -85,7 +85,7 @@ class TournamentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadArchiveTournaments() async {
+  Future<void> loadArchiveTournaments({String? dateFrom, String? dateTo}) async {
     final token = await _storage.getToken();
     if (token == null) return;
 
@@ -94,7 +94,11 @@ class TournamentProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _archiveTournaments = await _service.getArchiveTournaments(token);
+      _archiveTournaments = await _service.getArchiveTournaments(
+        token,
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+      );
     } catch (e) {
       _error = 'Ошибка загрузки турниров: $e';
     }
@@ -107,7 +111,6 @@ class TournamentProvider extends ChangeNotifier {
     await Future.wait([
       loadOpenTournaments(),
       loadMyTournaments(),
-      loadArchiveTournaments(),
     ]);
   }
 

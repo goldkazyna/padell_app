@@ -10,6 +10,8 @@ import '../providers/home_provider.dart';
 import '../widgets/tournaments/team_list_section.dart';
 import '../widgets/tournaments/team_info_card.dart';
 import '../widgets/tournaments/team_registration_sheet.dart';
+import '../widgets/verified_badge.dart';
+import 'player_profile_screen.dart';
 
 class TournamentDetailScreen extends StatefulWidget {
   final int tournamentId;
@@ -532,12 +534,28 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
+  void _openPlayerProfile(int playerId, String playerName) {
+    if (playerId <= 0) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PlayerProfileScreen(
+          playerId: playerId,
+          playerName: playerName,
+        ),
+      ),
+    );
+  }
+
   // === Строка pending (оранжевая) ===
   Widget _buildPendingRow({
     required TournamentParticipant participant,
     required bool isMe,
   }) {
-    return Container(
+    return GestureDetector(
+      onTap: () => _openPlayerProfile(participant.id, participant.name),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: _pendingColor.withAlpha(15),
@@ -587,13 +605,25 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  participant.name,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        participant.name,
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (participant.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 11),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -633,6 +663,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -646,7 +677,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final Color secondaryColor = isMe ? AppTheme.accent.withAlpha(180) : AppTheme.textSecondary;
     final Color avatarBg = isMe ? AppTheme.accent : const Color(0xFF2A2A2A);
 
-    return Container(
+    return GestureDetector(
+      onTap: () => _openPlayerProfile(participant.id, participant.name),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: isMe ? AppTheme.accent.withAlpha(15) : AppTheme.card,
@@ -699,13 +733,25 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  participant.name,
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        participant.name,
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (participant.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 11),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -729,6 +775,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

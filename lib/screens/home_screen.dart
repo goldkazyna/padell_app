@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/home_provider.dart';
-import '../widgets/home/home_header.dart';
-import '../widgets/home/home_stats.dart';
+import '../providers/profile_provider.dart';
+import '../widgets/home/notification_bell.dart';
+import '../widgets/profile/profile_hero.dart';
 import '../widgets/home/nearest_tournament_card.dart';
 import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeProvider>().loadHomeData();
+      context.read<ProfileProvider>().loadProfile();
     });
   }
 
@@ -68,19 +70,26 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: () => home.refresh(),
+            onRefresh: () async {
+              await Future.wait([
+                home.refresh(),
+                context.read<ProfileProvider>().loadProfile(),
+              ]);
+            },
             color: AppTheme.accent,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.only(bottom: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const HomeHeader(),
+                  const ProfileHero(trailing: NotificationBell()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                   const ProfileIncompleteBanner(),
-                  const SizedBox(height: 20),
-                  const HomeStats(),
-                  const SizedBox(height: 20),
                   CourtBookingBanner(
                     onTap: () {
                       Navigator.push(
@@ -182,6 +191,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

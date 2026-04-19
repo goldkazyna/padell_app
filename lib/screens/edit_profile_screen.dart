@@ -374,6 +374,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     controller: _phoneController,
                                     hint: '+7 777 ...',
                                     keyboardType: TextInputType.phone,
+                                    incomplete: true,
                                   )
                                 : _buildInfoRow(
                                     icon: Icons.phone_outlined,
@@ -389,6 +390,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               placeholder: 'Выберите город',
                               trailing: const Icon(Icons.chevron_right, size: 16, color: _T.dim),
                               onTap: _pickCity,
+                              incomplete: _city == null || _city!.isEmpty,
                               isLast: true,
                             ),
                           ]),
@@ -814,6 +816,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required String hint,
     TextInputType? keyboardType,
     bool isLast = false,
+    bool incomplete = false,
   }) {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
@@ -833,7 +836,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
+                Row(
+                  children: [
+                    Text(label, style: const TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
+                    if (incomplete && controller.text.isEmpty) ...[
+                      const SizedBox(width: 5),
+                      const Text('• Не заполнено',
+                        style: TextStyle(color: _T.amber, fontSize: 11, height: 1.2)),
+                    ],
+                  ],
+                ),
                 const SizedBox(height: 1),
                 TextField(
                   controller: controller,

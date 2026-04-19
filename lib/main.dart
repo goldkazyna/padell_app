@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
 import 'services/api_service.dart';
@@ -25,6 +27,14 @@ import 'providers/locale_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: AppTheme.background,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+    systemNavigationBarColor: AppTheme.background,
+    systemNavigationBarIconBrightness: Brightness.light,
+  ));
 
   debugPrint('[APP] ===== APP START =====');
   debugPrint('[APP] kIsWeb: $kIsWeb');
