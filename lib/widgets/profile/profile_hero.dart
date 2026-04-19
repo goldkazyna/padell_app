@@ -175,12 +175,6 @@ class _TopRow extends StatelessWidget {
                   ],
                 ],
               ),
-              // Если уровень НЕ верифицирован — показываем amber-статус
-              // под именем (если верифицирован — уже есть бейдж выше).
-              if (user != null && !user.levelVerified) ...[
-                const SizedBox(height: 3),
-                const LevelVerificationStatus(verified: false),
-              ],
               const SizedBox(height: 2),
               Text(
                 user?.formattedPhone ?? '',

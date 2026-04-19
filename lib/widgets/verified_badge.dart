@@ -19,7 +19,7 @@ class VerifiedBadge extends StatelessWidget {
       width: size + 2,
       height: size + 2,
       decoration: const BoxDecoration(
-        color: AppTheme.accent,
+        color: AppTheme.blue,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
