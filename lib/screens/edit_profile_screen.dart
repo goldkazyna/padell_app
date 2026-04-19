@@ -36,7 +36,6 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
 
   String? _city;
   String? _gender;
@@ -65,7 +64,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _phoneController.dispose();
     super.dispose();
   }
 
@@ -87,7 +85,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _position = user['position'] as String?;
         _birthDate = birth;
         _phone = (user['phone'] as String? ?? '').trim();
-        _phoneController.text = _phone.isNotEmpty ? _formatPhone(_phone) : '';
         _avatarUrl = user['avatar'] as String?;
         _rating = user['rating'] as int?;
         final lvl = user['level'];
@@ -173,12 +170,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (_position != null) body['position'] = _position;
       if (_birthDate != null) {
         body['birth_date'] = _birthDate!.toIso8601String().substring(0, 10);
-      }
-      // Телефон — отправляем только если изменился относительно исходного
-      final phoneRaw = _phoneController.text.trim();
-      final phoneDigits = phoneRaw.replaceAll(RegExp(r'[^0-9]'), '');
-      if (phoneDigits.isNotEmpty && phoneDigits != _phone) {
-        body['phone'] = phoneDigits;
       }
 
       await ApiService().put('/profile', body, token);
@@ -361,12 +352,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               hint: 'Укажите имя',
                             ),
                             _divider(),
-                            _buildEditableRow(
+                            _buildInfoRow(
                               icon: Icons.phone_outlined,
                               label: 'Телефон',
-                              controller: _phoneController,
-                              hint: '+7 777 ...',
-                              keyboardType: TextInputType.phone,
+                              value: _phone.isEmpty ? null : _formatPhone(_phone),
+                              placeholder: 'Не указан',
+                              trailing: const Icon(Icons.lock_outline, size: 15, color: _T.dim),
                             ),
                             _divider(),
                             _buildInfoRow(
@@ -799,7 +790,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required String label,
     required TextEditingController controller,
     required String hint,
-    TextInputType? keyboardType,
     bool isLast = false,
   }) {
     return Container(
@@ -824,7 +814,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 1),
                 TextField(
                   controller: controller,
-                  keyboardType: keyboardType,
                   style: const TextStyle(color: _T.text, fontSize: 14, fontWeight: FontWeight.w500),
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
