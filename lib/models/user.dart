@@ -12,6 +12,7 @@ class User {
   final DateTime? birthDate;
   final String? hand;
   final String? position;
+  final bool levelVerified;
 
   const User({
     required this.id,
@@ -27,6 +28,7 @@ class User {
     this.birthDate,
     this.hand,
     this.position,
+    this.levelVerified = false,
   });
 
   int? get age {
@@ -93,6 +95,7 @@ class User {
           : null,
       hand: json['hand'] as String?,
       position: json['position'] as String?,
+      levelVerified: json['level_verified'] as bool? ?? false,
     );
   }
 

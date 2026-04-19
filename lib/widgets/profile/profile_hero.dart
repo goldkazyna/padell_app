@@ -4,6 +4,7 @@ import '../../providers/profile_provider.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
 import 'sparkline.dart';
+import '../verified_badge.dart';
 
 class ProfileHero extends StatelessWidget {
   const ProfileHero({super.key});
@@ -153,16 +154,26 @@ class _TopRow extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                user?.name ?? '—',
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: -0.2,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      user?.name ?? '—',
+                      style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (user?.levelVerified == true) ...[
+                    const SizedBox(width: 5),
+                    const VerifiedBadge(size: 13),
+                  ],
+                ],
               ),
               const SizedBox(height: 2),
               Text(
