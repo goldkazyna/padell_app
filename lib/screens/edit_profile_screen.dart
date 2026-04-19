@@ -109,6 +109,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'hand': _hand,
     'position': _position,
     'birth_date': _birthDate?.toIso8601String().substring(0, 10),
+    'phone': _phoneController.text.trim(),
   };
 
   bool get _isDirty {
