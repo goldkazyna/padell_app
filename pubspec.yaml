@@ -71,6 +71,12 @@ dependencies:
   intl_phone_field: ^3.2.0
   package_info_plus: ^9.0.0
 
+  # SVG rendering (brand icons in auth screen)
+  flutter_svg: ^2.0.10+1
+
+  # Google Sign-In
+  google_sign_in: ^6.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

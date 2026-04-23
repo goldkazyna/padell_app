@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../services/api_service.dart';
@@ -201,6 +202,62 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> googleLogin() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // serverClientId — Web Client ID из Firebase/Google Cloud Console.
+      // Именно для него бэкенд проверяет aud при верификации id_token.
+      final googleSignIn = GoogleSignIn(
+        scopes: const ['email', 'profile', 'openid'],
+        serverClientId: googleServerClientId,
+      );
+
+      await googleSignIn.signOut(); // чтобы всегда показывать диалог выбора аккаунта
+      final account = await googleSignIn.signIn();
+
+      if (account == null) {
+        // Пользователь закрыл диалог.
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+
+      if (idToken == null || idToken.isEmpty) {
+        _isLoading = false;
+        _error = 'Google не вернул токен. Проверьте настройку проекта.';
+        notifyListeners();
+        return false;
+      }
+
+      final result = await _authService.googleSignIn(idToken);
+
+      _isLoading = false;
+      if (result.success && result.user != null) {
+        _user = result.user;
+        _status = AuthStatus.authenticated;
+        _error = null;
+      } else {
+        _error = result.message;
+      }
+      notifyListeners();
+      return result.success;
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Ошибка входа через Google: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  static const String googleServerClientId =
+      '549656324072-pg3huio3ag1hfp7sv04cg4a60rmgmbfk.apps.googleusercontent.com';
 
   Future<Map<String, dynamic>> forgotPassword(String email) async {
     _isLoading = true;

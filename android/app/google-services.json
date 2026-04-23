@@ -12,7 +12,20 @@
           "package_name": "com.padelkz.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "549656324072-r1tih3comoup5d8iqctfqec0n923aqvm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.padelkz.app",
+            "certificate_hash": "dd7b1e81343e97e7081ad1631e7e18de06fde201"
+          }
+        },
+        {
+          "client_id": "549656324072-pg3huio3ag1hfp7sv04cg4a60rmgmbfk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCtkDLHyx0gpUUQ_o7roOJ4A-kThaUp-V8"
@@ -20,7 +33,20 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "549656324072-pg3huio3ag1hfp7sv04cg4a60rmgmbfk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "549656324072-enfpcjpe8p1f809b7vodiafqcaiq77ck.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.padelkz.app",
+                "app_store_id": "6759392401"
+              }
+            }
+          ]
         }
       }
     }

@@ -222,6 +222,35 @@ class AuthService {
     }
   }
 
+  Future<AuthResult> googleSignIn(String idToken) async {
+    try {
+      final response = await _api.post('/auth/google', {
+        'id_token': idToken,
+      });
+
+      if (response['success'] == true) {
+        final token = response['token'] as String;
+        final userData = response['user'] as Map<String, dynamic>;
+
+        if (!userData.containsKey('level_name')) {
+          userData['level_name'] = '';
+        }
+
+        final user = User.fromJson(userData);
+        await _storage.saveToken(token);
+
+        return AuthResult(success: true, token: token, user: user);
+      }
+
+      return AuthResult(
+        success: false,
+        message: response['message'] as String? ?? 'Не удалось войти через Google',
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
   Future<AuthResult> resetPassword(
       String email, String token, String password) async {
     try {
