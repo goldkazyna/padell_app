@@ -222,6 +222,41 @@ class AuthService {
     }
   }
 
+  Future<AuthResult> appleSignIn({
+    required String identityToken,
+    String? firstName,
+    String? lastName,
+  }) async {
+    try {
+      final body = <String, dynamic>{'identity_token': identityToken};
+      if (firstName != null && firstName.isNotEmpty) body['first_name'] = firstName;
+      if (lastName != null && lastName.isNotEmpty) body['last_name'] = lastName;
+
+      final response = await _api.post('/auth/apple', body);
+
+      if (response['success'] == true) {
+        final token = response['token'] as String;
+        final userData = response['user'] as Map<String, dynamic>;
+
+        if (!userData.containsKey('level_name')) {
+          userData['level_name'] = '';
+        }
+
+        final user = User.fromJson(userData);
+        await _storage.saveToken(token);
+
+        return AuthResult(success: true, token: token, user: user);
+      }
+
+      return AuthResult(
+        success: false,
+        message: response['message'] as String? ?? 'Не удалось войти через Apple',
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
   Future<AuthResult> googleSignIn(String idToken) async {
     try {
       final response = await _api.post('/auth/google', {

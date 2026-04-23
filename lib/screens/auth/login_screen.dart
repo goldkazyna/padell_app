@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -62,8 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
       case _Provider.google:
         _signInWithGoogle();
         break;
-      case _Provider.whatsapp:
       case _Provider.apple:
+        if (Platform.isIOS || Platform.isMacOS) {
+          _signInWithApple();
+        } else {
+          _showComingSoon();
+        }
+        break;
+      case _Provider.whatsapp:
         _showComingSoon();
         break;
     }
@@ -72,6 +79,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInWithGoogle() async {
     final auth = context.read<AuthProvider>();
     final success = await auth.googleLogin();
+    if (!mounted) return;
+    if (!success && auth.error != null) {
+      _showError(auth.error!);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    final auth = context.read<AuthProvider>();
+    final success = await auth.appleLogin();
     if (!mounted) return;
     if (!success && auth.error != null) {
       _showError(auth.error!);
@@ -272,11 +288,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _ProviderButton(
-                    label: 'Apple',
-                    tint: _tints[_Provider.apple]!,
-                    icon: const _BrandApple(),
-                    onTap: () => _onProvider(_Provider.apple),
+                  Consumer<AuthProvider>(
+                    builder: (_, auth, child) => _ProviderButton(
+                      label: 'Apple',
+                      tint: _tints[_Provider.apple]!,
+                      icon: const _BrandApple(),
+                      loading: auth.isLoading,
+                      onTap: auth.isLoading ? null : () => _onProvider(_Provider.apple),
+                    ),
                   ),
 
                   // Divider "или"

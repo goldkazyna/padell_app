@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../services/api_service.dart';
@@ -258,6 +260,69 @@ class AuthProvider extends ChangeNotifier {
 
   static const String googleServerClientId =
       '549656324072-pg3huio3ag1hfp7sv04cg4a60rmgmbfk.apps.googleusercontent.com';
+
+  Future<bool> appleLogin() async {
+    // Доступно только на iOS/macOS. На Android пользователь увидит «скоро»,
+    // т.к. без Service ID + callback на нашем домене это работать не будет.
+    if (!(Platform.isIOS || Platform.isMacOS)) {
+      _error = 'Apple Sign-In доступен только на iOS';
+      notifyListeners();
+      return false;
+    }
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final idToken = credential.identityToken;
+      if (idToken == null || idToken.isEmpty) {
+        _isLoading = false;
+        _error = 'Apple не вернул identity token';
+        notifyListeners();
+        return false;
+      }
+
+      final result = await _authService.appleSignIn(
+        identityToken: idToken,
+        firstName: credential.givenName,
+        lastName: credential.familyName,
+      );
+
+      _isLoading = false;
+      if (result.success && result.user != null) {
+        _user = result.user;
+        _status = AuthStatus.authenticated;
+        _error = null;
+      } else {
+        _error = result.message;
+      }
+      notifyListeners();
+      return result.success;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      _isLoading = false;
+      // Юзер закрыл диалог — это не ошибка.
+      if (e.code == AuthorizationErrorCode.canceled) {
+        notifyListeners();
+        return false;
+      }
+      _error = 'Ошибка Apple: ${e.message}';
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Ошибка входа через Apple: $e';
+      notifyListeners();
+      return false;
+    }
+  }
 
   Future<Map<String, dynamic>> forgotPassword(String email) async {
     _isLoading = true;
