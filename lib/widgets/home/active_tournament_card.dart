@@ -3,7 +3,7 @@ import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 
-class ActiveTournamentCard extends StatelessWidget {
+class ActiveTournamentCard extends StatefulWidget {
   final Tournament? tournament;
   final VoidCallback? onTap;
 
@@ -14,62 +14,64 @@ class ActiveTournamentCard extends StatelessWidget {
   });
 
   @override
+  State<ActiveTournamentCard> createState() => _ActiveTournamentCardState();
+}
+
+class _ActiveTournamentCardState extends State<ActiveTournamentCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulseController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1300),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (tournament == null) {
+    if (widget.tournament == null) {
       return _buildEmptyState(context);
     }
 
-    final t = tournament!;
+    final t = widget.tournament!;
     final isLive = t.status == 'in_progress';
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(
+            color: isLive
+                ? AppTheme.accent.withAlpha(60)
+                : const Color(0xFF2A2A2A),
+            width: isLive ? 1.0 : 0.5,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: isLive
-                        ? AppTheme.accent.withAlpha(25)
-                        : const Color(0xFF3B82F6).withAlpha(25),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isLive) ...[
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppTheme.accent,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        const Text(
-                          'Live',
-                          style: TextStyle(
-                            color: AppTheme.accent,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ] else ...[
-                        Icon(Icons.check_circle,
-                          color: const Color(0xFF3B82F6),
-                          size: 14,
-                        ),
+                if (isLive)
+                  _buildLivePill()
+                else
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withAlpha(25),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.check_circle,
+                            color: Color(0xFF3B82F6), size: 14),
                         const SizedBox(width: 6),
                         Text(
                           AppLocalizations.of(context)!.registered,
@@ -80,9 +82,8 @@ class ActiveTournamentCard extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ],
+                    ),
                   ),
-                ),
                 const Spacer(),
                 _buildInfoChip(t.typeName, t.typeColor),
               ],
@@ -106,11 +107,13 @@ class ActiveTournamentCard extends StatelessWidget {
 
             Row(
               children: [
-                Icon(Icons.calendar_today, color: AppTheme.textSecondary, size: 14),
+                const Icon(Icons.calendar_today,
+                    color: AppTheme.textSecondary, size: 14),
                 const SizedBox(width: 6),
                 Text(
                   '${t.date} · ${t.time}',
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary, fontSize: 13),
                 ),
                 const Spacer(),
                 Text(
@@ -124,6 +127,71 @@ class ActiveTournamentCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Большой яркий бейдж «Идёт сейчас» с пульсирующей точкой
+  Widget _buildLivePill() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppTheme.accent.withAlpha(38),
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(
+          color: AppTheme.accent.withAlpha(80),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedBuilder(
+            animation: _pulseController,
+            builder: (_, __) {
+              final scale = 1.0 + 0.45 * _pulseController.value;
+              final opacity = 1.0 - 0.55 * _pulseController.value;
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  // пульс — расходящийся круг
+                  Opacity(
+                    opacity: opacity * 0.5,
+                    child: Transform.scale(
+                      scale: scale,
+                      child: Container(
+                        width: 9,
+                        height: 9,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.accent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: const BoxDecoration(
+                      color: AppTheme.accent,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Идёт сейчас',
+            style: TextStyle(
+              color: AppTheme.accent,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
       ),
     );
   }
