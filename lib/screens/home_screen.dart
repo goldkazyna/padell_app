@@ -15,6 +15,7 @@ import '../widgets/home/profile_incomplete_banner.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
+import 'tournament_live_screen.dart';
 import 'club_select_screen.dart';
 import 'create_challenge_screen.dart';
 import 'challenges_screen.dart';
@@ -131,16 +132,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ActiveTournamentCard(
                     tournament: home.activeTournament,
                     onTap: () {
-                      if (home.activeTournament != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => TournamentDetailScreen(
-                              tournamentId: home.activeTournament!.id,
-                            ),
-                          ),
-                        );
-                      }
+                      final t = home.activeTournament;
+                      if (t == null) return;
+                      // Идущий Американо → live-экран с группами и матчами.
+                      // Остальное — обычные детали.
+                      final isLiveAmericano = t.status == 'in_progress' &&
+                          t.type == 'americano';
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => isLiveAmericano
+                              ? TournamentLiveScreen(tournamentId: t.id)
+                              : TournamentDetailScreen(tournamentId: t.id),
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 12),
