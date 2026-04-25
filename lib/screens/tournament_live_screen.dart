@@ -339,18 +339,18 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           ),
           // Header row
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
             child: Row(
               children: const [
-                SizedBox(width: 18, child: Text('#', style: _hdrStyle)),
-                SizedBox(width: 8),
+                SizedBox(width: 16, child: Text('#', style: _hdrStyle)),
+                SizedBox(width: 6),
                 Expanded(child: Text('Игрок', style: _hdrStyle)),
-                SizedBox(width: 22, child: Center(child: Text('В', style: _hdrStyle))),
-                SizedBox(width: 22, child: Center(child: Text('П', style: _hdrStyle))),
-                SizedBox(width: 22, child: Center(child: Text('З', style: _hdrStyle))),
-                SizedBox(width: 32, child: Center(child: Text('РП', style: _hdrStyle))),
-                SizedBox(width: 30, child: Center(child: Text('%', style: _hdrStyle))),
-                SizedBox(width: 36, child: Center(child: Text('Очки', style: _hdrStyle))),
+                SizedBox(width: 18, child: Center(child: Text('В', style: _hdrStyle))),
+                SizedBox(width: 18, child: Center(child: Text('П', style: _hdrStyle))),
+                SizedBox(width: 18, child: Center(child: Text('З', style: _hdrStyle))),
+                SizedBox(width: 26, child: Center(child: Text('РП', style: _hdrStyle))),
+                SizedBox(width: 24, child: Center(child: Text('%', style: _hdrStyle))),
+                SizedBox(width: 28, child: Center(child: Text('Очки', style: _hdrStyle))),
               ],
             ),
           ),
@@ -396,26 +396,26 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             top: BorderSide(color: AppTheme.divider, width: 0.5),
           ),
         ),
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+        padding: const EdgeInsets.fromLTRB(8, 7, 8, 7),
         child: Row(
           children: [
             SizedBox(
-              width: 18,
+              width: 16,
               child: Text(
                 '$position',
                 style: TextStyle(
                   color: rankColor,
                   fontWeight: FontWeight.w800,
-                  fontSize: 13,
+                  fontSize: 12,
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             _Avatar(
                 url: p['avatar'] as String?,
                 name: p['name'] as String? ?? '',
-                size: 24),
-            const SizedBox(width: 8),
+                size: 22),
+            const SizedBox(width: 6),
             Expanded(
               child: Text(
                 (p['name'] as String? ?? '—'),
@@ -430,7 +430,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
             // В
             SizedBox(
-              width: 22,
+              width: 18,
               child: Center(
                 child: Text('${p['wins']}',
                     style: const TextStyle(
@@ -441,7 +441,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
             // П
             SizedBox(
-              width: 22,
+              width: 18,
               child: Center(
                 child: Text('${p['losses']}',
                     style: const TextStyle(
@@ -452,7 +452,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
             // З (ничьи)
             SizedBox(
-              width: 22,
+              width: 18,
               child: Center(
                 child: Text('$draws',
                     style: const TextStyle(
@@ -463,7 +463,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
             // РП (разница)
             SizedBox(
-              width: 32,
+              width: 26,
               child: Center(
                 child: Text(
                   pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
@@ -481,7 +481,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
             // %
             SizedBox(
-              width: 30,
+              width: 24,
               child: Center(
                 child: Text('$winPercent',
                     style: const TextStyle(
@@ -492,7 +492,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
             // Очки
             SizedBox(
-              width: 36,
+              width: 28,
               child: Center(
                 child: Text(
                   '${p['total_points']}',
