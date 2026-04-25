@@ -413,12 +413,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       return InkWell(
         onTap: () => _openPlayer(playerId, playerName),
         child: Container(
-          decoration: BoxDecoration(
-            color: isMe ? AppTheme.accent.withAlpha(20) : null,
-            border: const Border(
-              top: BorderSide(color: AppTheme.divider, width: 0.5),
-            ),
-          ),
           padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 8),
           alignment: alignment,
           child: child,
@@ -427,6 +421,14 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     }
 
     return TableRow(
+      // Подсветка строки моего профиля — на всю высоту строки одновременно,
+      // чтобы при переносе имени на 2 строки остальные ячейки тоже были подсвечены.
+      decoration: BoxDecoration(
+        color: isMe ? AppTheme.accent.withAlpha(20) : null,
+        border: const Border(
+          top: BorderSide(color: AppTheme.divider, width: 0.5),
+        ),
+      ),
       children: [
         // #
         cell(
