@@ -350,7 +350,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
             child: Row(
               children: const [
-                SizedBox(width: 16, child: Text('#', style: _hdrStyle)),
+                SizedBox(width: 22, child: Text('#', style: _hdrStyle)),
                 SizedBox(width: 6),
                 Expanded(child: Text('Игрок', style: _hdrStyle)),
                 SizedBox(width: 18, child: Center(child: Text('В', style: _hdrStyle))),
@@ -408,9 +408,12 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         child: Row(
           children: [
             SizedBox(
-              width: 16,
+              width: 22,
               child: Text(
                 '$position',
+                maxLines: 1,
+                overflow: TextOverflow.visible,
+                softWrap: false,
                 style: TextStyle(
                   color: rankColor,
                   fontWeight: FontWeight.w800,
