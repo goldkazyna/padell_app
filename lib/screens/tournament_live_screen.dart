@@ -738,65 +738,37 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       {required bool isWinner, required bool isDraw, dynamic score}) {
     final p1 = team['player1'] as Map<String, dynamic>?;
     final p2 = team['player2'] as Map<String, dynamic>?;
-    final p1Id = p1 != null && p1['id'] is num ? (p1['id'] as num).toInt() : null;
-    final p2Id = p2 != null && p2['id'] is num ? (p2['id'] as num).toInt() : null;
 
-    final nameStyle = TextStyle(
-      color: isWinner
-          ? AppTheme.accent
-          : (isDraw ? AppTheme.textPrimary : AppTheme.textSecondary),
-      fontWeight: isWinner ? FontWeight.w800 : FontWeight.w600,
-      fontSize: 13,
-    );
+    final nameColor = isWinner
+        ? AppTheme.accent
+        : (isDraw ? AppTheme.textPrimary : AppTheme.textSecondary);
+    final nameWeight = isWinner ? FontWeight.w800 : FontWeight.w600;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: () => _openPlayer(p1Id, p1?['name'] as String?),
-          child: _Avatar(
-              url: p1?['avatar'] as String?,
-              name: p1?['name'] as String? ?? '',
-              size: 22),
-        ),
-        const SizedBox(width: 6),
-        GestureDetector(
-          onTap: () => _openPlayer(p2Id, p2?['name'] as String?),
-          child: _Avatar(
-              url: p2?['avatar'] as String?,
-              name: p2?['name'] as String? ?? '',
-              size: 22),
-        ),
-        const SizedBox(width: 10),
         Expanded(
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () => _openPlayer(p1Id, p1?['name'] as String?),
-                child: Text(p1?['name'] as String? ?? '—', style: nameStyle),
-              ),
-              Text(' / ', style: nameStyle),
-              GestureDetector(
-                onTap: () => _openPlayer(p2Id, p2?['name'] as String?),
-                child: Text(p2?['name'] as String? ?? '—', style: nameStyle),
-              ),
+              _buildPlayerLine(p1, nameColor, nameWeight),
+              const SizedBox(height: 4),
+              _buildPlayerLine(p2, nameColor, nameWeight),
             ],
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 12),
         Container(
-          width: 32,
-          height: 26,
+          width: 36,
+          height: 36,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: isWinner
                 ? AppTheme.accent
-                : (isDraw
-                    ? AppTheme.cardRaised
-                    : (score == null
-                        ? Colors.transparent
-                        : AppTheme.cardRaised)),
-            borderRadius: BorderRadius.circular(6),
+                : (score == null
+                    ? Colors.transparent
+                    : AppTheme.cardRaised),
+            borderRadius: BorderRadius.circular(8),
             border: score == null
                 ? Border.all(color: const Color(0xFF2A2A2A))
                 : null,
@@ -810,11 +782,46 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       ? AppTheme.textDim
                       : AppTheme.textPrimary),
               fontWeight: FontWeight.w800,
-              fontSize: 14,
+              fontSize: 16,
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPlayerLine(
+      Map<String, dynamic>? player, Color nameColor, FontWeight nameWeight) {
+    final id = player != null && player['id'] is num
+        ? (player['id'] as num).toInt()
+        : null;
+    final name = player?['name'] as String? ?? '—';
+    return GestureDetector(
+      onTap: () => _openPlayer(id, name),
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          _Avatar(
+            url: player?['avatar'] as String?,
+            name: name,
+            size: 22,
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: nameColor,
+                fontWeight: nameWeight,
+                fontSize: 13,
+                letterSpacing: -0.1,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
