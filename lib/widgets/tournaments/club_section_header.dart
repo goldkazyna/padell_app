@@ -67,45 +67,6 @@ class ClubSectionHeader extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '$openCount',
-                        style: const TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          fontFeatures: [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' / $totalCount',
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          fontFeatures: [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 1),
-                const Text(
-                  'открыто',
-                  style: TextStyle(
-                    color: AppTheme.textDim,
-                    fontSize: 10,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
