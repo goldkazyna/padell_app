@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -9,6 +10,7 @@ import '../../theme/app_theme.dart';
 import 'telegram_waiting_screen.dart';
 import 'email_login_screen.dart';
 import 'legal_document_screen.dart';
+import 'verify_code_screen.dart';
 
 enum _Provider { telegram, whatsapp, google, apple }
 
@@ -47,6 +49,92 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _agreed = true;
   bool _showAgreeError = false;
+
+  // Секретный вход (5 тапов на «Вход» → код 05070507 → форма телефона).
+  int _secretTapCount = 0;
+  bool _showPhoneLogin = false;
+  final _phoneController = TextEditingController();
+  final _phoneFormKey = GlobalKey<FormState>();
+  String get _fullPhone => '7${_phoneController.text.replaceAll(RegExp(r'[^\d]'), '')}';
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  void _onSecretTap() {
+    _secretTapCount++;
+    if (_secretTapCount >= 5) {
+      _secretTapCount = 0;
+      _showSecretDialog();
+    }
+  }
+
+  void _showSecretDialog() {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Введите код',
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+        ),
+        content: TextField(
+          controller: controller,
+          obscureText: true,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          style: const TextStyle(color: AppTheme.textPrimary),
+          decoration: InputDecoration(
+            hintText: '••••••••',
+            hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+            filled: true,
+            fillColor: AppTheme.background,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text(
+              'Отмена',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.text == '05070507') {
+                Navigator.pop(ctx);
+                setState(() => _showPhoneLogin = true);
+              } else {
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('OK', style: TextStyle(color: AppTheme.accent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sendCode() async {
+    if (!_phoneFormKey.currentState!.validate()) return;
+    final auth = context.read<AuthProvider>();
+    final success = await auth.sendCode(_fullPhone);
+    if (!mounted) return;
+    if (success) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => VerifyCodeScreen(phone: _fullPhone)),
+      );
+    }
+  }
 
   void _onProvider(_Provider p) {
     if (!_agreed) {
@@ -242,14 +330,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 36),
 
-                  // Header
-                  const Text(
-                    'Вход',
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.4,
+                  // Header — секретный тап (5 раз) → код 05070507 → телефон
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _onSecretTap,
+                    child: const Text(
+                      'Вход',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.4,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -262,6 +354,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   const SizedBox(height: 22),
+
+                  // Секретная форма телефона (видна только после ввода 05070507)
+                  if (_showPhoneLogin) ...[
+                    _SecretPhoneForm(
+                      formKey: _phoneFormKey,
+                      controller: _phoneController,
+                      onSubmit: _sendCode,
+                    ),
+                    const SizedBox(height: 22),
+                  ],
 
                   // 4 social providers
                   _ProviderButton(
@@ -635,4 +737,116 @@ class _BrandEmail extends StatelessWidget {
   const _BrandEmail();
   @override
   Widget build(BuildContext context) => SvgPicture.string(_emailSvg);
+}
+
+class _SecretPhoneForm extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController controller;
+  final Future<void> Function() onSubmit;
+
+  const _SecretPhoneForm({
+    required this.formKey,
+    required this.controller,
+    required this.onSubmit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: controller,
+            keyboardType: TextInputType.phone,
+            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(10),
+              _PhoneInputFormatter(),
+            ],
+            decoration: InputDecoration(
+              prefixText: '+7  ',
+              prefixStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+              hintText: '(000) 000-00-00',
+              hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+              filled: true,
+              fillColor: AppTheme.card,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: AppTheme.accent),
+              ),
+            ),
+            validator: (value) {
+              final digits = value?.replaceAll(RegExp(r'[^\d]'), '') ?? '';
+              if (digits.length < 10) {
+                return AppLocalizations.of(context)!.enterValidNumber;
+              }
+              return null;
+            },
+          ),
+          Consumer<AuthProvider>(
+            builder: (_, auth, child) {
+              if (auth.error == null) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(auth.error!, style: const TextStyle(color: AppTheme.error, fontSize: 13)),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: Consumer<AuthProvider>(
+              builder: (_, auth, child) => ElevatedButton(
+                onPressed: auth.isLoading ? null : onSubmit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  elevation: 0,
+                ),
+                child: auth.isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : Text(
+                        AppLocalizations.of(context)!.continueButton,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PhoneInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+    final buffer = StringBuffer();
+    for (int i = 0; i < digits.length; i++) {
+      if (i == 0) buffer.write('(');
+      if (i == 3) buffer.write(') ');
+      if (i == 6) buffer.write('-');
+      if (i == 8) buffer.write('-');
+      buffer.write(digits[i]);
+    }
+    return TextEditingValue(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
+    );
+  }
 }
