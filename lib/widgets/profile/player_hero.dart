@@ -145,20 +145,31 @@ class _TopRow extends StatelessWidget {
       ),
     );
 
+    final hasAvatar = avatar != null && avatar!.isNotEmpty;
     Widget avatarWidget;
-    if (avatar != null && avatar!.isNotEmpty) {
-      avatarWidget = ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.network(
-          avatar!,
-          width: 58,
-          height: 58,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => avatarFallback,
+    if (hasAvatar) {
+      avatarWidget = Hero(
+        tag: 'player-avatar-${avatar!}',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.network(
+            avatar!,
+            width: 58,
+            height: 58,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => avatarFallback,
+          ),
         ),
       );
     } else {
       avatarWidget = avatarFallback;
+    }
+
+    if (hasAvatar) {
+      avatarWidget = GestureDetector(
+        onTap: () => _openFullScreenAvatar(context, avatar!),
+        child: avatarWidget,
+      );
     }
 
     return Row(
@@ -402,6 +413,80 @@ class _StatsStrip extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+void _openFullScreenAvatar(BuildContext context, String url) {
+  Navigator.of(context).push(
+    PageRouteBuilder(
+      opaque: false,
+      barrierColor: Colors.black,
+      transitionDuration: const Duration(milliseconds: 220),
+      reverseTransitionDuration: const Duration(milliseconds: 180),
+      pageBuilder: (_, __, ___) => _FullScreenAvatarViewer(url: url),
+    ),
+  );
+}
+
+class _FullScreenAvatarViewer extends StatelessWidget {
+  final String url;
+  const _FullScreenAvatarViewer({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Тап по фону закрывает
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.of(context).pop(),
+              ),
+            ),
+            Center(
+              child: Hero(
+                tag: 'player-avatar-$url',
+                child: InteractiveViewer(
+                  minScale: 1.0,
+                  maxScale: 4.0,
+                  child: Image.network(
+                    url,
+                    fit: BoxFit.contain,
+                    loadingBuilder: (_, child, progress) => progress == null
+                        ? child
+                        : const Center(
+                            child: CircularProgressIndicator(
+                              color: AppTheme.accent,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                    errorBuilder: (_, __, ___) => const Center(
+                      child: Icon(Icons.broken_image,
+                          color: AppTheme.textSecondary, size: 48),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Кнопка закрытия в углу
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
