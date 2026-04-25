@@ -733,39 +733,37 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   }
 
   /// V3 team-card: аватары рядом + имена + крупный счёт справа.
-  /// Победитель залит зелёным, проигравший — приглушён.
+  /// Зелёная заливка карточки — ТОЛЬКО для команды юзера.
+  /// Зелёный счёт — у победителя (любой команды).
   Widget _buildTeamCard(Map<String, dynamic> team,
       {required bool isWinner,
       required bool isCompleted,
       dynamic score}) {
     final p1 = team['player1'] as Map<String, dynamic>?;
     final p2 = team['player2'] as Map<String, dynamic>?;
+    final hasMe = team['has_me'] == true;
     final isLoser = isCompleted && !isWinner;
     final isPending = !isCompleted;
 
-    // Стили карточки
+    // Стили карточки — зелёная только для МОЕЙ команды
     final Color bg;
     final Border? border;
-    if (isWinner) {
+    if (hasMe) {
       bg = AppTheme.accent.withAlpha(26);
       border = Border.all(color: AppTheme.accent.withAlpha(64));
     } else if (isPending) {
       bg = Colors.transparent;
-      border = Border.all(
-        color: const Color(0xFF2A2A2A),
-        style: BorderStyle.solid,
-      );
+      border = Border.all(color: const Color(0xFF2A2A2A));
     } else {
       bg = AppTheme.cardRaised.withAlpha(120);
       border = null;
     }
 
-    final nameColor = isWinner
-        ? AppTheme.accent
-        : (isLoser ? AppTheme.textSecondary : AppTheme.textPrimary);
-    final nameWeight = isWinner ? FontWeight.w800 : FontWeight.w600;
+    // Имена — приглушённые у проигравшей команды, обычные у остальных
+    final nameColor = isLoser ? AppTheme.textSecondary : AppTheme.textPrimary;
+    final nameWeight = isWinner ? FontWeight.w700 : FontWeight.w600;
 
-    // Score box
+    // Счёт — зелёный у победителя
     Color scoreBg;
     Color scoreColor;
     if (isWinner) {
