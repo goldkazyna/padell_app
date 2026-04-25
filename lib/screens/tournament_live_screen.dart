@@ -669,16 +669,14 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     final t1Win = completed && (score1 ?? 0) > (score2 ?? 0);
     final t2Win = completed && (score2 ?? 0) > (score1 ?? 0);
-    final draw = completed && (score1 ?? 0) == (score2 ?? 0);
 
     return Container(
-      decoration: BoxDecoration(
-        color: hasMe ? AppTheme.accent.withAlpha(15) : null,
+      decoration: const BoxDecoration(
         border: Border(
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -724,99 +722,164 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 ],
               ),
             ),
-          // Team 1
-          _buildTeamRow(t1, isWinner: t1Win, isDraw: draw, score: score1),
+          // Team 1 — мини-карточка
+          _buildTeamCard(t1, isWinner: t1Win, isCompleted: completed, score: score1),
           const SizedBox(height: 6),
-          // Team 2
-          _buildTeamRow(t2, isWinner: t2Win, isDraw: draw, score: score2),
+          // Team 2 — мини-карточка
+          _buildTeamCard(t2, isWinner: t2Win, isCompleted: completed, score: score2),
         ],
       ),
     );
   }
 
-  Widget _buildTeamRow(Map<String, dynamic> team,
-      {required bool isWinner, required bool isDraw, dynamic score}) {
+  /// V3 team-card: аватары рядом + имена + крупный счёт справа.
+  /// Победитель залит зелёным, проигравший — приглушён.
+  Widget _buildTeamCard(Map<String, dynamic> team,
+      {required bool isWinner,
+      required bool isCompleted,
+      dynamic score}) {
     final p1 = team['player1'] as Map<String, dynamic>?;
     final p2 = team['player2'] as Map<String, dynamic>?;
+    final isLoser = isCompleted && !isWinner;
+    final isPending = !isCompleted;
+
+    // Стили карточки
+    final Color bg;
+    final Border? border;
+    if (isWinner) {
+      bg = AppTheme.accent.withAlpha(26);
+      border = Border.all(color: AppTheme.accent.withAlpha(64));
+    } else if (isPending) {
+      bg = Colors.transparent;
+      border = Border.all(
+        color: const Color(0xFF2A2A2A),
+        style: BorderStyle.solid,
+      );
+    } else {
+      bg = AppTheme.cardRaised.withAlpha(120);
+      border = null;
+    }
 
     final nameColor = isWinner
         ? AppTheme.accent
-        : (isDraw ? AppTheme.textPrimary : AppTheme.textSecondary);
+        : (isLoser ? AppTheme.textSecondary : AppTheme.textPrimary);
     final nameWeight = isWinner ? FontWeight.w800 : FontWeight.w600;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPlayerLine(p1, nameColor, nameWeight),
-              const SizedBox(height: 4),
-              _buildPlayerLine(p2, nameColor, nameWeight),
-            ],
-          ),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          width: 36,
-          height: 36,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isWinner
-                ? AppTheme.accent
-                : (score == null
-                    ? Colors.transparent
-                    : AppTheme.cardRaised),
-            borderRadius: BorderRadius.circular(8),
-            border: score == null
-                ? Border.all(color: const Color(0xFF2A2A2A))
-                : null,
-          ),
-          child: Text(
-            score == null ? '—' : '$score',
-            style: TextStyle(
-              color: isWinner
-                  ? const Color(0xFF0A0A0D)
-                  : (score == null
-                      ? AppTheme.textDim
-                      : AppTheme.textPrimary),
-              fontWeight: FontWeight.w800,
-              fontSize: 16,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+    // Score box
+    Color scoreBg;
+    Color scoreColor;
+    if (isWinner) {
+      scoreBg = AppTheme.accent;
+      scoreColor = const Color(0xFF0A0A0D);
+    } else if (isLoser) {
+      scoreBg = Colors.transparent;
+      scoreColor = AppTheme.textSecondary;
+    } else {
+      scoreBg = Colors.transparent;
+      scoreColor = AppTheme.textDim;
+    }
 
-  Widget _buildPlayerLine(
-      Map<String, dynamic>? player, Color nameColor, FontWeight nameWeight) {
-    final id = player != null && player['id'] is num
-        ? (player['id'] as num).toInt()
-        : null;
-    final name = player?['name'] as String? ?? '—';
-    return GestureDetector(
-      onTap: () => _openPlayer(id, name),
-      behavior: HitTestBehavior.opaque,
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(10),
+        border: border,
+      ),
       child: Row(
         children: [
-          _Avatar(
-            url: player?['avatar'] as String?,
-            name: name,
-            size: 22,
+          // Аватары рядом (без наложения)
+          GestureDetector(
+            onTap: () => _openPlayer(
+              p1 != null && p1['id'] is num ? (p1['id'] as num).toInt() : null,
+              p1?['name'] as String?,
+            ),
+            child: _Avatar(
+              url: p1?['avatar'] as String?,
+              name: p1?['name'] as String? ?? '',
+              size: 26,
+            ),
           ),
-          const SizedBox(width: 8),
-          Flexible(
+          const SizedBox(width: 6),
+          GestureDetector(
+            onTap: () => _openPlayer(
+              p2 != null && p2['id'] is num ? (p2['id'] as num).toInt() : null,
+              p2?['name'] as String?,
+            ),
+            child: _Avatar(
+              url: p2?['avatar'] as String?,
+              name: p2?['name'] as String? ?? '',
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Имена — каждый игрок на своей строке
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () => _openPlayer(
+                    p1 != null && p1['id'] is num
+                        ? (p1['id'] as num).toInt()
+                        : null,
+                    p1?['name'] as String?,
+                  ),
+                  behavior: HitTestBehavior.opaque,
+                  child: Text(
+                    p1?['name'] as String? ?? '—',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: nameColor,
+                      fontWeight: nameWeight,
+                      fontSize: 13,
+                      letterSpacing: -0.1,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 1),
+                GestureDetector(
+                  onTap: () => _openPlayer(
+                    p2 != null && p2['id'] is num
+                        ? (p2['id'] as num).toInt()
+                        : null,
+                    p2?['name'] as String?,
+                  ),
+                  behavior: HitTestBehavior.opaque,
+                  child: Text(
+                    p2?['name'] as String? ?? '—',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: nameColor,
+                      fontWeight: nameWeight,
+                      fontSize: 13,
+                      letterSpacing: -0.1,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Score
+          Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: scoreBg,
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              score == null ? '—' : '$score',
               style: TextStyle(
-                color: nameColor,
-                fontWeight: nameWeight,
-                fontSize: 13,
-                letterSpacing: -0.1,
+                color: scoreColor,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
               ),
             ),
           ),
