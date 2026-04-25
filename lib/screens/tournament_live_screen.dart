@@ -36,6 +36,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      // Сбрасываем кэш раскрытия — после новой загрузки данных
+      // снова раскроется текущий in_progress раунд (а не старый).
+      _initializedGroups.clear();
+      _roundExpanded.clear();
     });
     try {
       final token = await StorageService().getToken();
