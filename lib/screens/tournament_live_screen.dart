@@ -493,28 +493,26 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final rounds = (group['rounds'] as List).cast<Map<String, dynamic>>();
     final groupId = (group['id'] as num).toInt();
 
-    // При первом показе группы — раскрываем «текущий» раунд (где идёт матч),
+    // При первом показе группы — раскрываем «текущий» раунд (round.status == in_progress)
     // или первый не завершённый. Остальные сворачиваем.
     if (!_initializedGroups.contains(groupId)) {
       _initializedGroups.add(groupId);
       int? activeIdx;
-      // 1) ищем раунд с in_progress матчем
+      // 1) ищем раунд со статусом in_progress
       for (var i = 0; i < rounds.length; i++) {
-        final ms = (rounds[i]['matches'] as List).cast<Map<String, dynamic>>();
-        if (ms.any((m) => m['status'] == 'in_progress')) {
+        if (rounds[i]['status'] == 'in_progress') {
           activeIdx = i;
           break;
         }
       }
-      // 2) иначе — первый не до конца завершённый
-      activeIdx ??= rounds.indexWhere((r) {
-        final ms = (r['matches'] as List).cast<Map<String, dynamic>>();
-        return ms.any((m) => m['status'] != 'completed');
-      });
-      // 3) иначе — последний (если все завершены, оставим раскрытым последний)
-      if (activeIdx == -1 || activeIdx == null) {
-        activeIdx = rounds.isNotEmpty ? rounds.length - 1 : -1;
+      // 2) иначе — первый не completed
+      if (activeIdx == null) {
+        final idx =
+            rounds.indexWhere((r) => r['status'] != 'completed');
+        if (idx >= 0) activeIdx = idx;
       }
+      // 3) иначе — последний (все завершены)
+      activeIdx ??= rounds.isNotEmpty ? rounds.length - 1 : -1;
       for (var i = 0; i < rounds.length; i++) {
         final rid = (rounds[i]['id'] as num).toInt();
         _roundExpanded[rid] = (i == activeIdx);
@@ -533,8 +531,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final matches = (round['matches'] as List).cast<Map<String, dynamic>>();
     final roundId = (round['id'] as num).toInt();
     final completedCount = matches.where((m) => m['status'] == 'completed').length;
-    final allCompleted = matches.isNotEmpty && completedCount == matches.length;
-    final inProgress = matches.any((m) => m['status'] == 'in_progress');
+    final roundStatus = round['status'] as String? ?? 'pending';
+    final inProgress = roundStatus == 'in_progress';
+    final allCompleted = roundStatus == 'completed';
     final expanded = _roundExpanded[roundId] ?? false;
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
