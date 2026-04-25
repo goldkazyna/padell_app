@@ -76,9 +76,17 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: SafeArea(child: _buildBody()),
+    final mq = MediaQuery.of(context);
+    // Ограничиваем системный масштаб шрифта на этом экране — таблица
+    // плотная и при scale > 1.15 верстка ломается.
+    return MediaQuery(
+      data: mq.copyWith(
+        textScaler: mq.textScaler.clamp(maxScaleFactor: 1.15),
+      ),
+      child: Scaffold(
+        backgroundColor: AppTheme.background,
+        body: SafeArea(child: _buildBody()),
+      ),
     );
   }
 
@@ -972,8 +980,13 @@ class _Avatar extends StatelessWidget {
   const _Avatar({required this.url, required this.name, this.size = 28});
 
   String get _initials {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts[0].isEmpty) return '?';
+    // Берём только буквенные символы, игнорируем цифры и знаки (#, -, etc).
+    final cleaned = name.replaceAll(RegExp(r'[^\p{L}\s]', unicode: true), '');
+    final parts = cleaned
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts[0][0].toUpperCase();
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
