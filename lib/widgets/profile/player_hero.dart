@@ -167,7 +167,7 @@ class _TopRow extends StatelessWidget {
 
     if (hasAvatar) {
       avatarWidget = GestureDetector(
-        onTap: () => _openFullScreenAvatar(context, avatar!),
+        onTap: () => openFullScreenAvatar(context, avatar!),
         child: avatarWidget,
       );
     }
@@ -417,21 +417,23 @@ class _StatsStrip extends StatelessWidget {
   }
 }
 
-void _openFullScreenAvatar(BuildContext context, String url) {
+/// Открыть аватар фуллскрином с pinch-zoom и Hero-анимацией.
+/// Используется в PlayerHero и ProfileHero.
+void openFullScreenAvatar(BuildContext context, String url) {
   Navigator.of(context).push(
     PageRouteBuilder(
       opaque: false,
       barrierColor: Colors.black,
       transitionDuration: const Duration(milliseconds: 220),
       reverseTransitionDuration: const Duration(milliseconds: 180),
-      pageBuilder: (_, __, ___) => _FullScreenAvatarViewer(url: url),
+      pageBuilder: (_, __, ___) => FullScreenAvatarViewer(url: url),
     ),
   );
 }
 
-class _FullScreenAvatarViewer extends StatelessWidget {
+class FullScreenAvatarViewer extends StatelessWidget {
   final String url;
-  const _FullScreenAvatarViewer({required this.url});
+  const FullScreenAvatarViewer({super.key, required this.url});
 
   @override
   Widget build(BuildContext context) {

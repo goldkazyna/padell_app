@@ -4,6 +4,7 @@ import '../../providers/profile_provider.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
 import 'sparkline.dart';
+import 'player_hero.dart' show openFullScreenAvatar;
 import '../verified_badge.dart';
 
 class ProfileHero extends StatelessWidget {
@@ -133,19 +134,30 @@ class _TopRow extends StatelessWidget {
     );
 
     Widget avatar;
-    if (avatarUrl != null && avatarUrl.isNotEmpty) {
-      avatar = ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.network(
-          avatarUrl,
-          width: 58,
-          height: 58,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => avatarFallback,
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
+    if (hasAvatar) {
+      avatar = Hero(
+        tag: 'player-avatar-$avatarUrl',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.network(
+            avatarUrl,
+            width: 58,
+            height: 58,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => avatarFallback,
+          ),
         ),
       );
     } else {
       avatar = avatarFallback;
+    }
+
+    if (hasAvatar) {
+      avatar = GestureDetector(
+        onTap: () => openFullScreenAvatar(context, avatarUrl),
+        child: avatar,
+      );
     }
 
     return Row(
