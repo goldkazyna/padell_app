@@ -13,11 +13,14 @@ class TournamentLiveScreen extends StatefulWidget {
   State<TournamentLiveScreen> createState() => _TournamentLiveScreenState();
 }
 
+enum _LiveTab { rounds, table }
+
 class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   bool _loading = true;
   String? _error;
   Map<String, dynamic>? _data;
   int _selectedGroupIdx = 0;
+  _LiveTab _activeTab = _LiveTab.rounds;
 
   @override
   void initState() {
@@ -96,6 +99,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     final tournament = _data!['tournament'] as Map<String, dynamic>;
     final groups = (_data!['groups'] as List).cast<Map<String, dynamic>>();
+    if (_selectedGroupIdx >= groups.length) _selectedGroupIdx = 0;
     final group = groups.isNotEmpty ? groups[_selectedGroupIdx] : null;
 
     return RefreshIndicator(
@@ -106,12 +110,72 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
         children: [
           _buildHeader(tournament),
+          _buildMainTabs(),
           if (groups.length > 1) _buildGroupTabs(groups),
           if (group != null) ...[
-            _buildLeaderboard(group),
-            const SizedBox(height: 16),
-            _buildRounds(group),
+            if (_activeTab == _LiveTab.rounds)
+              _buildRounds(group)
+            else
+              _buildLeaderboard(group),
           ],
+        ],
+      ),
+    );
+  }
+
+  // ===== Main tabs (Раунды / Таблица) =====
+  Widget _buildMainTabs() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2A2A2A)),
+      ),
+      child: Row(
+        children: [
+          for (final tab in _LiveTab.values)
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _activeTab = tab),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: _activeTab == tab
+                        ? AppTheme.accent
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        tab == _LiveTab.rounds
+                            ? Icons.sports_tennis
+                            : Icons.emoji_events_outlined,
+                        size: 16,
+                        color: _activeTab == tab
+                            ? const Color(0xFF0A0A0D)
+                            : AppTheme.textSecondary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        tab == _LiveTab.rounds ? 'Раунды' : 'Таблица',
+                        style: TextStyle(
+                          color: _activeTab == tab
+                              ? const Color(0xFF0A0A0D)
+                              : AppTheme.textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
