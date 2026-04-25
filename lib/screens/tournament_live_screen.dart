@@ -123,6 +123,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     final tournament = _data!['tournament'] as Map<String, dynamic>;
     final groups = (_data!['groups'] as List).cast<Map<String, dynamic>>();
+    final playoff = (_data!['playoff'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
     if (_selectedGroupIdx >= groups.length) _selectedGroupIdx = 0;
     final group = groups.isNotEmpty ? groups[_selectedGroupIdx] : null;
 
@@ -142,6 +143,70 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             else
               _buildLeaderboard(group),
           ],
+          if (playoff.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildPlayoffSection(playoff),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ===== Playoff =====
+  Widget _buildPlayoffSection(List<Map<String, dynamic>> playoff) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+          child: Row(
+            children: const [
+              Icon(Icons.emoji_events_rounded,
+                  color: AppTheme.amber, size: 18),
+              SizedBox(width: 8),
+              Text(
+                'Плей-офф',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+        for (final stage in playoff) _buildPlayoffStage(stage),
+      ],
+    );
+  }
+
+  Widget _buildPlayoffStage(Map<String, dynamic> stage) {
+    final matches =
+        (stage['matches'] as List).cast<Map<String, dynamic>>();
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF2A2A2A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+            child: Text(
+              stage['stage'] as String? ?? '—',
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          for (var i = 0; i < matches.length; i++)
+            _buildMatch(matches[i], isLast: i == matches.length - 1),
         ],
       ),
     );
