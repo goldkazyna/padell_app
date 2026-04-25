@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
-import 'level_bar.dart';
 
+/// Карточка «героя» турнира в секции «Для вас» — V2 дизайн.
+///
+/// Layout:
+///   [дата · день · время]                    [кнопка]
+///   Название турнира
+///   Формат · Цена
+///   ┌── Уровень турнира          ✓ Подходит ──┐
+///   │ ━━━━━━━━━━[━━━━●━━━━]━━━━━━━━━           │
+///   │ 1.25     вы 2.50    3.50                 │
+///   └──────────────────────────────────────────┘
+///   ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░  ⚠ 2 из 16
 class HeroTournamentCard extends StatelessWidget {
   final Tournament tournament;
   final double? userLevel;
@@ -18,228 +28,285 @@ class HeroTournamentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final full = tournament.isFull;
-    final fmt = _formatChipColors(tournament.formatColor);
-    final progressFraction = tournament.maxParticipants > 0
-        ? tournament.participantsCount / tournament.maxParticipants
-        : 0.0;
-    final spotsLeft = tournament.spotsLeft;
+    final inRange = userLevel != null && tournament.isInLevelRange(userLevel);
 
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              stops: const [0.0, 0.4, 1.0],
-              colors: full
-                  ? const [
-                      Color(0xFF25201D),
-                      Color(0xFF221C1C),
-                      Color(0xFF1C1C21),
-                    ]
-                  : const [
-                      Color(0xFF1D3025),
-                      Color(0xFF1C2820),
-                      Color(0xFF1C1C21),
-                    ],
-            ),
-            border: Border.all(
-              color: full
-                  ? AppTheme.error.withValues(alpha: 0.18)
-                  : AppTheme.border,
-            ),
-            borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: full
+                ? AppTheme.error.withValues(alpha: 0.18)
+                : AppTheme.border,
           ),
-          child: Stack(
-            children: [
-              if (full)
-                const Positioned.fill(
-                  child: IgnorePointer(
-                    child: _DiagonalStripes(),
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildTopRow(full, fmt),
-                    const SizedBox(height: 10),
-                    _buildDateTimeRow(full),
-                    const SizedBox(height: 10),
-                    _buildLevelRow(full),
-                    const SizedBox(height: 10),
-                    _buildBottomRow(full, progressFraction, spotsLeft),
-                  ],
-                ),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 1) Date+day+time row + action button
+            _buildTopRow(full),
+            const SizedBox(height: 10),
+
+            // 2) Title
+            Text(
+              tournament.name,
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
+                height: 1.25,
               ),
-            ],
-          ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+
+            // 3) Format · price
+            _buildMetaRow(),
+
+            const SizedBox(height: 10),
+
+            // 4) Level fit indicator (с шкалой 1.0–5.0)
+            _buildLevelFit(inRange),
+
+            const SizedBox(height: 8),
+
+            // 5) Spots bar + text
+            _buildSpotsRow(full),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTopRow(bool full, _FmtChipColors fmt) {
+  // ===== Top row: date+day+time + button =====
+  Widget _buildTopRow(bool full) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
             children: [
-              Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: [
-                  _chip(tournament.typeName, fmt.fg, fmt.bg),
-                  if (userLevel != null && tournament.isInLevelRange(userLevel))
-                    _chip('Ваш уровень', AppTheme.accent, AppTheme.accentSoft),
-                  if (full)
-                    _chip(
-                      'ЗАПОЛНЕН',
-                      AppTheme.error,
-                      AppTheme.errorSoft,
-                      uppercase: true,
-                      bold: true,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 6),
               Text(
-                tournament.name,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
-                  color: full ? AppTheme.textSecondary : AppTheme.textPrimary,
+                tournament.dateShort,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 3),
-              DefaultTextStyle.merge(
-                style: const TextStyle(fontSize: 11),
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${tournament.club.name} · ${tournament.club.city ?? ''}'
-                            .trimRight(),
-                        style: const TextStyle(color: AppTheme.textSecondary),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (tournament.price > 0) ...[
-                      const Text(
-                        ' · ',
-                        style: TextStyle(color: AppTheme.textDim),
-                      ),
-                      Text(
-                        tournament.priceTextCompact,
-                        style: TextStyle(
-                          color: full
-                              ? AppTheme.textSecondary
-                              : AppTheme.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ],
+              Text(
+                tournament.dayOfWeekShort.toUpperCase(),
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              Text(
+                tournament.time,
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
             ],
           ),
         ),
         const SizedBox(width: 10),
-        if (!full)
-          GestureDetector(
-            onTap: onTap,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppTheme.accent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                'Записаться',
+        _buildActionButton(full),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(bool full) {
+    if (tournament.isRegistered) {
+      return _pillButton(
+        text: 'Вы участвуете',
+        bg: AppTheme.accentSoft,
+        fg: AppTheme.accent,
+      );
+    }
+
+    if (full) {
+      return _pillButton(
+        text: tournament.isSubscribed ? 'Подписан' : 'Уведомить',
+        bg: AppTheme.blue.withValues(alpha: 0.16),
+        fg: AppTheme.blue,
+        icon: Icons.notifications_outlined,
+      );
+    }
+
+    return _pillButton(
+      text: 'Записаться',
+      bg: AppTheme.accent,
+      fg: const Color(0xFF0A0A0D),
+    );
+  }
+
+  Widget _pillButton({
+    required String text,
+    required Color bg,
+    required Color fg,
+    IconData? icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: fg, size: 14),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              color: fg,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===== Meta row: format · price =====
+  Widget _buildMetaRow() {
+    final fmt = _formatChipColors(tournament.formatColor);
+    return Row(
+      children: [
+        Text(
+          tournament.typeName,
+          style: TextStyle(
+            color: fmt.fg,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        if (tournament.price > 0) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6),
+            child: Text(
+              '·',
+              style: TextStyle(color: AppTheme.textDim, fontSize: 12),
+            ),
+          ),
+          Text(
+            tournament.priceTextCompact,
+            style: const TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  // ===== Level fit indicator with absolute scale 1.0–5.0 =====
+  Widget _buildLevelFit(bool inRange) {
+    final ok = inRange;
+    final boxColor = ok
+        ? AppTheme.accent.withValues(alpha: 0.08)
+        : AppTheme.error.withValues(alpha: 0.07);
+    final borderColor = ok
+        ? AppTheme.accent.withValues(alpha: 0.18)
+        : AppTheme.error.withValues(alpha: 0.18);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      decoration: BoxDecoration(
+        color: boxColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Head: "Уровень турнира" + статус
+          Row(
+            children: [
+              const Text(
+                'Уровень турнира',
                 style: TextStyle(
-                  color: Color(0xFF0A0A0D),
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                ok ? Icons.check_circle : Icons.error_outline,
+                size: 14,
+                color: ok ? AppTheme.accent : const Color(0xFFFCA7A2),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                userLevel == null
+                    ? '${tournament.minLevel.toStringAsFixed(2)}–${tournament.maxLevel.toStringAsFixed(2)}'
+                    : (ok ? 'Подходит' : 'Не подходит'),
+                style: TextStyle(
+                  color: ok ? AppTheme.accent : const Color(0xFFFCA7A2),
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-            ),
+            ],
           ),
-      ],
-    );
-  }
+          const SizedBox(height: 8),
 
-  Widget _buildDateTimeRow(bool full) {
-    final dim = full ? AppTheme.textSecondary : AppTheme.textPrimary;
-    return Row(
-      children: [
-        Text(
-          tournament.dateShort,
-          style: TextStyle(
-            fontSize: 12,
-            color: dim,
-            fontWeight: FontWeight.w600,
+          // Scale 1.0–5.0
+          _LevelScale(
+            minLevel: tournament.minLevel,
+            maxLevel: tournament.maxLevel,
+            userLevel: userLevel,
+            inRange: ok,
           ),
-        ),
-        const Text(' · ', style: TextStyle(color: AppTheme.textDim, fontSize: 12)),
-        Text(
-          tournament.time,
-          style: TextStyle(
-            fontSize: 12,
-            color: dim,
-            fontWeight: FontWeight.w600,
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-        ),
-        const Text(' · ', style: TextStyle(color: AppTheme.textDim, fontSize: 12)),
-        Text(
-          tournament.dayOfWeekShort,
-          style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-        ),
-      ],
-    );
-  }
+          const SizedBox(height: 4),
 
-  Widget _buildLevelRow(bool full) {
-    return Opacity(
-      opacity: full ? 0.6 : 1.0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+          // Numbers под шкалой
           Row(
             children: [
               Text(
-                'Уровень ${tournament.minLevel.toStringAsFixed(2)}',
+                tournament.minLevel.toStringAsFixed(2),
                 style: const TextStyle(
                   color: AppTheme.textDim,
-                  fontSize: 10,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
                   fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
               const Spacer(),
               if (userLevel != null)
                 Text(
-                  'Вы: ${userLevel!.toStringAsFixed(2)}',
+                  'вы ${userLevel!.toStringAsFixed(2)}',
                   style: TextStyle(
-                    color: tournament.isInLevelRange(userLevel)
-                        ? AppTheme.accent
-                        : AppTheme.textSecondary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
+                    color: ok
+                        ? AppTheme.textPrimary
+                        : const Color(0xFFFCA7A2),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
@@ -248,25 +315,26 @@ class HeroTournamentCard extends StatelessWidget {
                 tournament.maxLevel.toStringAsFixed(2),
                 style: const TextStyle(
                   color: AppTheme.textDim,
-                  fontSize: 10,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
                   fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 5),
-          LevelBar(
-            min: tournament.minLevel,
-            max: tournament.maxLevel,
-            playerLevel: userLevel,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBottomRow(bool full, double fraction, int spotsLeft) {
+  // ===== Spots row =====
+  Widget _buildSpotsRow(bool full) {
+    final fraction = tournament.maxParticipants > 0
+        ? tournament.participantsCount / tournament.maxParticipants
+        : 0.0;
+    final spotsLeft = tournament.spotsLeft;
     final amberClose = !full && spotsLeft > 0 && spotsLeft <= 2;
+
     final barColor = full
         ? AppTheme.error
         : amberClose
@@ -301,45 +369,128 @@ class HeroTournamentCard extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         if (full)
-          Text(
-            '${tournament.participantsCount}/${tournament.maxParticipants} · мест нет',
-            style: const TextStyle(
+          const Text(
+            'мест нет',
+            style: TextStyle(
               color: AppTheme.error,
               fontSize: 11,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        else if (amberClose)
+          Text(
+            '⚠ ${tournament.participantsCount} из ${tournament.maxParticipants}',
+            style: const TextStyle(
+              color: AppTheme.amber,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
               fontFeatures: [FontFeature.tabularFigures()],
             ),
           )
         else
           Text(
-            tournament.spotsLeftText(),
-            style: TextStyle(
-              color: amberClose ? AppTheme.amber : AppTheme.textPrimary,
+            '${tournament.participantsCount} из ${tournament.maxParticipants}',
+            style: const TextStyle(
+              color: AppTheme.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              fontFeatures: const [FontFeature.tabularFigures()],
+              fontFeatures: [FontFeature.tabularFigures()],
             ),
           ),
       ],
     );
   }
+}
 
-  Widget _chip(String text, Color fg, Color bg,
-      {bool uppercase = false, bool bold = false}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        uppercase ? text.toUpperCase() : text,
-        style: TextStyle(
-          color: fg,
-          fontSize: 10,
-          fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
-          letterSpacing: uppercase ? 0.5 : 0,
-        ),
+/// Шкала уровня 1.0–5.0 с подсветкой диапазона турнира и маркером юзера.
+class _LevelScale extends StatelessWidget {
+  final double minLevel;
+  final double maxLevel;
+  final double? userLevel;
+  final bool inRange;
+
+  const _LevelScale({
+    required this.minLevel,
+    required this.maxLevel,
+    required this.userLevel,
+    required this.inRange,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 14,
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final width = c.maxWidth;
+          // Шкала 1.0–5.0 = 4 единицы
+          double pct(double level) =>
+              ((level.clamp(1.0, 5.0) - 1.0) / 4.0) * width;
+
+          final rangeLeft = pct(minLevel);
+          final rangeWidth = pct(maxLevel) - rangeLeft;
+          final markerLeft =
+              userLevel == null ? null : pct(userLevel!.clamp(1.0, 5.0));
+
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // Track (фон шкалы)
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 5,
+                child: Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0x0FFFFFFF),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              // Range (диапазон уровня турнира)
+              Positioned(
+                left: rangeLeft,
+                width: rangeWidth.clamp(0.0, width),
+                top: 4,
+                child: Container(
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: inRange
+                        ? AppTheme.accent
+                        : const Color(0x33FFFFFF),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              ),
+              // User marker
+              if (markerLeft != null)
+                Positioned(
+                  left: markerLeft - 7,
+                  top: 0,
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: inRange ? Colors.white : AppTheme.error,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppTheme.card,
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 3,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -369,31 +520,4 @@ _FmtChipColors _formatChipColors(TournamentFormatColor color) {
         const Color(0xFFF5A37A),
       );
   }
-}
-
-/// Диагональная декоративная штриховка на фон full-карточки.
-class _DiagonalStripes extends StatelessWidget {
-  const _DiagonalStripes();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(painter: _DiagonalStripesPainter());
-  }
-}
-
-class _DiagonalStripesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0x04FFFFFF)
-      ..strokeWidth = 1;
-    const step = 11.0;
-    final diag = size.width + size.height;
-    for (var x = -size.height; x < diag; x += step) {
-      canvas.drawLine(Offset(x, 0), Offset(x + size.height, size.height), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DiagonalStripesPainter oldDelegate) => false;
 }
