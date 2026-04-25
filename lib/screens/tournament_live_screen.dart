@@ -405,7 +405,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     if (position == 3) rankColor = const Color(0xFFCD7F32);
     final pointDiff = (p['point_diff'] as num).toInt();
     final draws = (p['draws'] as num?)?.toInt() ?? 0;
-    final winPercent = (p['win_percent'] as num?)?.toInt() ?? 0;
+    // % забитых мячей от всех мячей (как в админке)
+    final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
 
@@ -499,8 +500,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             fontWeight: FontWeight.w700,
           ),
         )),
-        // %
-        cell(Text('$winPercent',
+        // % (забитых мячей от всех мячей)
+        cell(Text('$ballPercent',
             style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 12,
