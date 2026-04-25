@@ -16,6 +16,13 @@ class TournamentLiveScreen extends StatefulWidget {
 
 enum _LiveTab { rounds, table }
 
+const _hdrStyle = TextStyle(
+  color: AppTheme.textDim,
+  fontSize: 10,
+  fontWeight: FontWeight.w700,
+  letterSpacing: 0.3,
+);
+
 class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   bool _loading = true;
   String? _error;
@@ -332,55 +339,18 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           ),
           // Header row
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
             child: Row(
               children: const [
-                SizedBox(
-                    width: 22,
-                    child: Text('#',
-                        style: TextStyle(
-                            color: AppTheme.textDim,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700))),
-                SizedBox(width: 10),
-                Expanded(
-                    child: Text('Игрок',
-                        style: TextStyle(
-                            color: AppTheme.textDim,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700))),
-                SizedBox(
-                    width: 28,
-                    child: Center(
-                        child: Text('В',
-                            style: TextStyle(
-                                color: AppTheme.textDim,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700)))),
-                SizedBox(
-                    width: 28,
-                    child: Center(
-                        child: Text('П',
-                            style: TextStyle(
-                                color: AppTheme.textDim,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700)))),
-                SizedBox(
-                    width: 44,
-                    child: Center(
-                        child: Text('+/-',
-                            style: TextStyle(
-                                color: AppTheme.textDim,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700)))),
-                SizedBox(
-                    width: 38,
-                    child: Center(
-                        child: Text('Очки',
-                            style: TextStyle(
-                                color: AppTheme.textDim,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700)))),
+                SizedBox(width: 18, child: Text('#', style: _hdrStyle)),
+                SizedBox(width: 8),
+                Expanded(child: Text('Игрок', style: _hdrStyle)),
+                SizedBox(width: 22, child: Center(child: Text('В', style: _hdrStyle))),
+                SizedBox(width: 22, child: Center(child: Text('П', style: _hdrStyle))),
+                SizedBox(width: 22, child: Center(child: Text('З', style: _hdrStyle))),
+                SizedBox(width: 32, child: Center(child: Text('РП', style: _hdrStyle))),
+                SizedBox(width: 30, child: Center(child: Text('%', style: _hdrStyle))),
+                SizedBox(width: 36, child: Center(child: Text('Очки', style: _hdrStyle))),
               ],
             ),
           ),
@@ -415,97 +385,127 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
+    final draws = (p['draws'] as num?)?.toInt() ?? 0;
+    final winPercent = (p['win_percent'] as num?)?.toInt() ?? 0;
     return InkWell(
       onTap: () => _openPlayer(playerId, playerName),
       child: Container(
-      decoration: BoxDecoration(
-        color: isMe ? AppTheme.accent.withAlpha(20) : null,
-        border: Border(
-          top: BorderSide(color: AppTheme.divider, width: 0.5),
+        decoration: BoxDecoration(
+          color: isMe ? AppTheme.accent.withAlpha(20) : null,
+          border: const Border(
+            top: BorderSide(color: AppTheme.divider, width: 0.5),
+          ),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 22,
-            child: Text(
-              '$position',
-              style: TextStyle(
-                color: rankColor,
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          // Avatar
-          _Avatar(url: p['avatar'] as String?, name: p['name'] as String? ?? '', size: 28),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              (p['name'] as String? ?? '—'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-                fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 28,
-            child: Center(
-              child: Text('${p['wins']}',
-                  style: const TextStyle(
-                      color: AppTheme.accent,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700)),
-            ),
-          ),
-          SizedBox(
-            width: 28,
-            child: Center(
-              child: Text('${p['losses']}',
-                  style: const TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600)),
-            ),
-          ),
-          SizedBox(
-            width: 44,
-            child: Center(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 18,
               child: Text(
-                pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
+                '$position',
                 style: TextStyle(
-                  color: pointDiff > 0
-                      ? AppTheme.accent
-                      : (pointDiff < 0
-                          ? AppTheme.error
-                          : AppTheme.textSecondary),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 38,
-            child: Center(
-              child: Text(
-                '${p['total_points']}',
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 14,
+                  color: rankColor,
                   fontWeight: FontWeight.w800,
+                  fontSize: 13,
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+            const SizedBox(width: 8),
+            _Avatar(
+                url: p['avatar'] as String?,
+                name: p['name'] as String? ?? '',
+                size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                (p['name'] as String? ?? '—'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                  fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            // В
+            SizedBox(
+              width: 22,
+              child: Center(
+                child: Text('${p['wins']}',
+                    style: const TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ),
+            // П
+            SizedBox(
+              width: 22,
+              child: Center(
+                child: Text('${p['losses']}',
+                    style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ),
+            // З (ничьи)
+            SizedBox(
+              width: 22,
+              child: Center(
+                child: Text('$draws',
+                    style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ),
+            // РП (разница)
+            SizedBox(
+              width: 32,
+              child: Center(
+                child: Text(
+                  pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
+                  style: TextStyle(
+                    color: pointDiff > 0
+                        ? AppTheme.accent
+                        : (pointDiff < 0
+                            ? AppTheme.error
+                            : AppTheme.textSecondary),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            // %
+            SizedBox(
+              width: 30,
+              child: Center(
+                child: Text('$winPercent',
+                    style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ),
+            // Очки
+            SizedBox(
+              width: 36,
+              child: Center(
+                child: Text(
+                  '${p['total_points']}',
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
