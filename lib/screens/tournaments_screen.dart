@@ -557,37 +557,16 @@ class _ClubBlock extends StatelessWidget {
           totalCount: tournaments.length,
           onTap: () => _openClubDetail(context, first.club.id),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: AppTheme.card,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppTheme.border),
+        const SizedBox(height: 6),
+        for (final t in tournaments)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: HeroTournamentCard(
+              tournament: t,
+              userLevel: userLevel,
+              onTap: () => _openTournamentDetail(context, t.id),
+            ),
           ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              for (var i = 0; i < tournaments.length; i++)
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: i == tournaments.length - 1
-                            ? Colors.transparent
-                            : AppTheme.divider,
-                        width: 0.5,
-                      ),
-                    ),
-                  ),
-                  child: TournamentRowV2(
-                    tournament: tournaments[i],
-                    userLevel: userLevel,
-                    onTap: () =>
-                        _openTournamentDetail(context, tournaments[i].id),
-                  ),
-                ),
-            ],
-          ),
-        ),
       ],
     );
   }
