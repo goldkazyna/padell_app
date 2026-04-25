@@ -330,11 +330,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
             child: Row(
-              children: [
-                const Icon(Icons.emoji_events_outlined,
+              children: const [
+                Icon(Icons.emoji_events_outlined,
                     color: AppTheme.amber, size: 16),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Таблица лидеров',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -345,27 +345,174 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               ],
             ),
           ),
-          // Header row
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
-            child: Row(
-              children: const [
-                SizedBox(width: 22, child: Text('#', style: _hdrStyle)),
-                SizedBox(width: 6),
-                Expanded(child: Text('Игрок', style: _hdrStyle)),
-                SizedBox(width: 18, child: Center(child: Text('В', style: _hdrStyle))),
-                SizedBox(width: 18, child: Center(child: Text('П', style: _hdrStyle))),
-                SizedBox(width: 18, child: Center(child: Text('З', style: _hdrStyle))),
-                SizedBox(width: 26, child: Center(child: Text('РП', style: _hdrStyle))),
-                SizedBox(width: 24, child: Center(child: Text('%', style: _hdrStyle))),
-                SizedBox(width: 28, child: Center(child: Text('Очки', style: _hdrStyle))),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
+            child: Table(
+              columnWidths: const {
+                0: IntrinsicColumnWidth(), // #
+                1: IntrinsicColumnWidth(), // avatar
+                2: FlexColumnWidth(),       // name (растягивается, wrap при нужде)
+                3: IntrinsicColumnWidth(), // В
+                4: IntrinsicColumnWidth(), // П
+                5: IntrinsicColumnWidth(), // З
+                6: IntrinsicColumnWidth(), // РП
+                7: IntrinsicColumnWidth(), // %
+                8: IntrinsicColumnWidth(), // Очки
+              },
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                _buildHeaderRow(),
+                for (final p in lb) _buildLeaderboardTableRow(p),
               ],
             ),
           ),
-          for (final p in lb) _buildLeaderboardRow(p),
           const SizedBox(height: 6),
         ],
       ),
+    );
+  }
+
+  TableRow _buildHeaderRow() {
+    Widget hdr(String text, {bool center = true}) => Padding(
+          padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
+          child: Text(
+            text,
+            textAlign: center ? TextAlign.center : TextAlign.left,
+            style: _hdrStyle,
+          ),
+        );
+    return TableRow(
+      children: [
+        hdr('#', center: false),
+        const SizedBox(),
+        hdr('Игрок', center: false),
+        hdr('В'),
+        hdr('П'),
+        hdr('З'),
+        hdr('РП'),
+        hdr('%'),
+        hdr('Очки'),
+      ],
+    );
+  }
+
+  TableRow _buildLeaderboardTableRow(Map<String, dynamic> p) {
+    final position = (p['position'] as num).toInt();
+    final isMe = p['is_me'] == true;
+    Color rankColor = AppTheme.textDim;
+    if (position == 1) rankColor = const Color(0xFFFFD700);
+    if (position == 2) rankColor = const Color(0xFFC0C0C0);
+    if (position == 3) rankColor = const Color(0xFFCD7F32);
+    final pointDiff = (p['point_diff'] as num).toInt();
+    final draws = (p['draws'] as num?)?.toInt() ?? 0;
+    final winPercent = (p['win_percent'] as num?)?.toInt() ?? 0;
+    final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
+    final playerName = p['name'] as String?;
+
+    Widget cell(Widget child, {EdgeInsets? padding, AlignmentGeometry alignment = Alignment.center}) {
+      return InkWell(
+        onTap: () => _openPlayer(playerId, playerName),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isMe ? AppTheme.accent.withAlpha(20) : null,
+            border: const Border(
+              top: BorderSide(color: AppTheme.divider, width: 0.5),
+            ),
+          ),
+          padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 8),
+          alignment: alignment,
+          child: child,
+        ),
+      );
+    }
+
+    return TableRow(
+      children: [
+        // #
+        cell(
+          Text(
+            '$position',
+            style: TextStyle(
+              color: rankColor,
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(2, 8, 6, 8),
+          alignment: Alignment.centerLeft,
+        ),
+        // Avatar
+        cell(
+          _Avatar(
+            url: p['avatar'] as String?,
+            name: p['name'] as String? ?? '',
+            size: 24,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+        ),
+        // Name (растягивается, может перенестись)
+        cell(
+          Text(
+            playerName ?? '—',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+              fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
+              fontSize: 13,
+              height: 1.2,
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
+          alignment: Alignment.centerLeft,
+        ),
+        // В
+        cell(Text('${p['wins']}',
+            style: const TextStyle(
+                color: AppTheme.accent,
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
+        // П
+        cell(Text('${p['losses']}',
+            style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600))),
+        // З
+        cell(Text('$draws',
+            style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600))),
+        // РП
+        cell(Text(
+          pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
+          style: TextStyle(
+            color: pointDiff > 0
+                ? AppTheme.accent
+                : (pointDiff < 0
+                    ? AppTheme.error
+                    : AppTheme.textSecondary),
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        )),
+        // %
+        cell(Text('$winPercent',
+            style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600))),
+        // Очки
+        cell(Text(
+          '${p['total_points']}',
+          style: const TextStyle(
+            color: AppTheme.textPrimary,
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+          ),
+        )),
+      ],
     );
   }
 
@@ -376,146 +523,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         builder: (_) => PlayerProfileScreen(
           playerId: id,
           playerName: name ?? '',
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLeaderboardRow(Map<String, dynamic> p) {
-    final position = (p['position'] as num).toInt();
-    final isMe = p['is_me'] == true;
-    Color rankColor = AppTheme.textDim;
-    if (position == 1) rankColor = const Color(0xFFFFD700); // gold
-    if (position == 2) rankColor = const Color(0xFFC0C0C0); // silver
-    if (position == 3) rankColor = const Color(0xFFCD7F32); // bronze
-
-    final pointDiff = (p['point_diff'] as num).toInt();
-
-    final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
-    final playerName = p['name'] as String?;
-    final draws = (p['draws'] as num?)?.toInt() ?? 0;
-    final winPercent = (p['win_percent'] as num?)?.toInt() ?? 0;
-    return InkWell(
-      onTap: () => _openPlayer(playerId, playerName),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isMe ? AppTheme.accent.withAlpha(20) : null,
-          border: const Border(
-            top: BorderSide(color: AppTheme.divider, width: 0.5),
-          ),
-        ),
-        padding: const EdgeInsets.fromLTRB(8, 7, 8, 7),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 22,
-              child: Text(
-                '$position',
-                maxLines: 1,
-                overflow: TextOverflow.visible,
-                softWrap: false,
-                style: TextStyle(
-                  color: rankColor,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-            const SizedBox(width: 6),
-            _Avatar(
-                url: p['avatar'] as String?,
-                name: p['name'] as String? ?? '',
-                size: 22),
-            const SizedBox(width: 6),
-            Expanded(
-              child: Text(
-                (p['name'] as String? ?? '—'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-                  fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-            // В
-            SizedBox(
-              width: 18,
-              child: Center(
-                child: Text('${p['wins']}',
-                    style: const TextStyle(
-                        color: AppTheme.accent,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700)),
-              ),
-            ),
-            // П
-            SizedBox(
-              width: 18,
-              child: Center(
-                child: Text('${p['losses']}',
-                    style: const TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600)),
-              ),
-            ),
-            // З (ничьи)
-            SizedBox(
-              width: 18,
-              child: Center(
-                child: Text('$draws',
-                    style: const TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600)),
-              ),
-            ),
-            // РП (разница)
-            SizedBox(
-              width: 26,
-              child: Center(
-                child: Text(
-                  pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
-                  style: TextStyle(
-                    color: pointDiff > 0
-                        ? AppTheme.accent
-                        : (pointDiff < 0
-                            ? AppTheme.error
-                            : AppTheme.textSecondary),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-            // %
-            SizedBox(
-              width: 24,
-              child: Center(
-                child: Text('$winPercent',
-                    style: const TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600)),
-              ),
-            ),
-            // Очки
-            SizedBox(
-              width: 28,
-              child: Center(
-                child: Text(
-                  '${p['total_points']}',
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
