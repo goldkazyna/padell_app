@@ -671,8 +671,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final t2Win = completed && (score2 ?? 0) > (score1 ?? 0);
 
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(
+      decoration: BoxDecoration(
+        color: hasMe ? AppTheme.accent.withAlpha(20) : null,
+        border: const Border(
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
       ),
@@ -745,16 +746,19 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final isLoser = isCompleted && !isWinner;
     final isPending = !isCompleted;
 
-    // Стили карточки — зелёная только для МОЕЙ команды
+    // Стили команды — match-контейнер уже подсвечен зелёным если в нём играет
+    // юзер. Здесь различаем только проигравшую команду (приглушённая) от
+    // ожидания (рамка-пунктир) и обычной (нейтральный фон).
     final Color bg;
     final Border? border;
-    if (hasMe) {
-      bg = AppTheme.accent.withAlpha(26);
-      border = Border.all(color: AppTheme.accent.withAlpha(64));
-    } else if (isPending) {
+    if (isPending) {
       bg = Colors.transparent;
       border = Border.all(color: const Color(0xFF2A2A2A));
+    } else if (isLoser) {
+      bg = AppTheme.cardRaised.withAlpha(120);
+      border = null;
     } else {
+      // Победитель или ничья (без подсветки команды — победителя видно по счёту)
       bg = AppTheme.cardRaised.withAlpha(120);
       border = null;
     }
