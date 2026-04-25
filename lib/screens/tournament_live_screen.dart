@@ -21,6 +21,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   Map<String, dynamic>? _data;
   int _selectedGroupIdx = 0;
   _LiveTab _activeTab = _LiveTab.rounds;
+  // round_id => isExpanded
+  final Map<int, bool> _roundExpanded = {};
+  // (group_id) => уже инициализировано (раскрыли «текущий» раунд)
+  final Set<int> _initializedGroups = {};
 
   @override
   void initState() {
@@ -487,6 +491,36 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   // ===== Rounds =====
   Widget _buildRounds(Map<String, dynamic> group) {
     final rounds = (group['rounds'] as List).cast<Map<String, dynamic>>();
+    final groupId = (group['id'] as num).toInt();
+
+    // При первом показе группы — раскрываем «текущий» раунд (где идёт матч),
+    // или первый не завершённый. Остальные сворачиваем.
+    if (!_initializedGroups.contains(groupId)) {
+      _initializedGroups.add(groupId);
+      int? activeIdx;
+      // 1) ищем раунд с in_progress матчем
+      for (var i = 0; i < rounds.length; i++) {
+        final ms = (rounds[i]['matches'] as List).cast<Map<String, dynamic>>();
+        if (ms.any((m) => m['status'] == 'in_progress')) {
+          activeIdx = i;
+          break;
+        }
+      }
+      // 2) иначе — первый не до конца завершённый
+      activeIdx ??= rounds.indexWhere((r) {
+        final ms = (r['matches'] as List).cast<Map<String, dynamic>>();
+        return ms.any((m) => m['status'] != 'completed');
+      });
+      // 3) иначе — последний (если все завершены, оставим раскрытым последний)
+      if (activeIdx == -1 || activeIdx == null) {
+        activeIdx = rounds.isNotEmpty ? rounds.length - 1 : -1;
+      }
+      for (var i = 0; i < rounds.length; i++) {
+        final rid = (rounds[i]['id'] as num).toInt();
+        _roundExpanded[rid] = (i == activeIdx);
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -497,65 +531,87 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
   Widget _buildRound(Map<String, dynamic> round) {
     final matches = (round['matches'] as List).cast<Map<String, dynamic>>();
-    final allCompleted = matches.every((m) => m['status'] == 'completed');
+    final roundId = (round['id'] as num).toInt();
+    final completedCount = matches.where((m) => m['status'] == 'completed').length;
+    final allCompleted = matches.isNotEmpty && completedCount == matches.length;
     final inProgress = matches.any((m) => m['status'] == 'in_progress');
+    final expanded = _roundExpanded[roundId] ?? false;
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
+        border: Border.all(
+          color: inProgress
+              ? AppTheme.accent.withAlpha(60)
+              : const Color(0xFF2A2A2A),
+          width: inProgress ? 1.0 : 0.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
-            child: Row(
-              children: [
-                Text(
-                  'Раунд ${round['round_number']}',
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
+          // Header — тапабельный, переключает expanded
+          InkWell(
+            onTap: () => setState(() {
+              _roundExpanded[roundId] = !expanded;
+            }),
+            borderRadius: BorderRadius.circular(14),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+              child: Row(
+                children: [
+                  Text(
+                    'Раунд ${round['round_number']}',
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                if (inProgress)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppTheme.accent.withAlpha(38),
-                      borderRadius: BorderRadius.circular(100),
+                  const SizedBox(width: 10),
+                  Text(
+                    '$completedCount / ${matches.length} матчей',
+                    style: const TextStyle(
+                      color: AppTheme.textDim,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
-                    child: const Text(
-                      'идёт',
-                      style: TextStyle(
-                        color: AppTheme.accent,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
+                  ),
+                  const Spacer(),
+                  if (inProgress)
+                    _RoundStatusPill(
+                      text: 'идёт',
+                      color: AppTheme.accent,
+                      pulse: true,
+                    )
+                  else if (allCompleted)
+                    const _RoundStatusPill(
+                      text: 'завершён',
+                      color: AppTheme.textDim,
+                    )
+                  else
+                    const _RoundStatusPill(
+                      text: 'ожидание',
+                      color: AppTheme.amber,
                     ),
-                  )
-                else if (allCompleted)
-                  const Text('завершён',
-                      style: TextStyle(
-                          color: AppTheme.textDim,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600))
-                else
-                  const Text('ожидание',
-                      style: TextStyle(
-                          color: AppTheme.amber,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700))
-              ],
+                  const SizedBox(width: 6),
+                  AnimatedRotation(
+                    turns: expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 180),
+                    child: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: AppTheme.textSecondary,
+                      size: 22,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          for (var i = 0; i < matches.length; i++)
-            _buildMatch(matches[i], isLast: i == matches.length - 1),
+          if (expanded)
+            for (var i = 0; i < matches.length; i++)
+              _buildMatch(matches[i], isLast: i == matches.length - 1),
         ],
       ),
     );
@@ -707,6 +763,100 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 }
 
 // ===== Helpers =====
+
+/// Маленький бейдж статуса раунда (опционально с пульсирующим кружком).
+class _RoundStatusPill extends StatefulWidget {
+  final String text;
+  final Color color;
+  final bool pulse;
+  const _RoundStatusPill({
+    required this.text,
+    required this.color,
+    this.pulse = false,
+  });
+
+  @override
+  State<_RoundStatusPill> createState() => _RoundStatusPillState();
+}
+
+class _RoundStatusPillState extends State<_RoundStatusPill>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.pulse) {
+      _ctrl = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 1300),
+      )..repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(
+        color: widget.color.withAlpha(38),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.pulse && _ctrl != null) ...[
+            AnimatedBuilder(
+              animation: _ctrl!,
+              builder: (_, _2) => Stack(
+                alignment: Alignment.center,
+                children: [
+                  Opacity(
+                    opacity: (1.0 - 0.55 * _ctrl!.value) * 0.5,
+                    child: Transform.scale(
+                      scale: 1.0 + 0.5 * _ctrl!.value,
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: widget.color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: widget.color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            widget.text,
+            style: TextStyle(
+              color: widget.color,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _LivePill extends StatefulWidget {
   const _LivePill();
