@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import 'player_profile_screen.dart';
 
 /// Экран «Идёт сейчас» — детализация активного турнира (только Американо).
 /// Группы → таблица лидеров + раунды + матчи. Только чтение.
@@ -390,6 +391,18 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     );
   }
 
+  void _openPlayer(int? id, String? name) {
+    if (id == null || id <= 0) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PlayerProfileScreen(
+          playerId: id,
+          playerName: name ?? '',
+        ),
+      ),
+    );
+  }
+
   Widget _buildLeaderboardRow(Map<String, dynamic> p) {
     final position = (p['position'] as num).toInt();
     final isMe = p['is_me'] == true;
@@ -400,7 +413,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     final pointDiff = (p['point_diff'] as num).toInt();
 
-    return Container(
+    final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
+    final playerName = p['name'] as String?;
+    return InkWell(
+      onTap: () => _openPlayer(playerId, playerName),
+      child: Container(
       decoration: BoxDecoration(
         color: isMe ? AppTheme.accent.withAlpha(20) : null,
         border: Border(
@@ -488,6 +505,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -700,33 +718,49 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       {required bool isWinner, required bool isDraw, dynamic score}) {
     final p1 = team['player1'] as Map<String, dynamic>?;
     final p2 = team['player2'] as Map<String, dynamic>?;
+    final p1Id = p1 != null && p1['id'] is num ? (p1['id'] as num).toInt() : null;
+    final p2Id = p2 != null && p2['id'] is num ? (p2['id'] as num).toInt() : null;
+
+    final nameStyle = TextStyle(
+      color: isWinner
+          ? AppTheme.accent
+          : (isDraw ? AppTheme.textPrimary : AppTheme.textSecondary),
+      fontWeight: isWinner ? FontWeight.w800 : FontWeight.w600,
+      fontSize: 13,
+    );
 
     return Row(
       children: [
-        _Avatar(
-            url: p1?['avatar'] as String?,
-            name: p1?['name'] as String? ?? '',
-            size: 22),
+        GestureDetector(
+          onTap: () => _openPlayer(p1Id, p1?['name'] as String?),
+          child: _Avatar(
+              url: p1?['avatar'] as String?,
+              name: p1?['name'] as String? ?? '',
+              size: 22),
+        ),
         const SizedBox(width: 6),
-        _Avatar(
-            url: p2?['avatar'] as String?,
-            name: p2?['name'] as String? ?? '',
-            size: 22),
+        GestureDetector(
+          onTap: () => _openPlayer(p2Id, p2?['name'] as String?),
+          child: _Avatar(
+              url: p2?['avatar'] as String?,
+              name: p2?['name'] as String? ?? '',
+              size: 22),
+        ),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(
-            '${p1?['name'] ?? '—'} / ${p2?['name'] ?? '—'}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: isWinner
-                  ? AppTheme.accent
-                  : (isDraw
-                      ? AppTheme.textPrimary
-                      : AppTheme.textSecondary),
-              fontWeight: isWinner ? FontWeight.w800 : FontWeight.w600,
-              fontSize: 13,
-            ),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () => _openPlayer(p1Id, p1?['name'] as String?),
+                child: Text(p1?['name'] as String? ?? '—', style: nameStyle),
+              ),
+              Text(' / ', style: nameStyle),
+              GestureDetector(
+                onTap: () => _openPlayer(p2Id, p2?['name'] as String?),
+                child: Text(p2?['name'] as String? ?? '—', style: nameStyle),
+              ),
+            ],
           ),
         ),
         const SizedBox(width: 8),
