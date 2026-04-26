@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/court_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_alert.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -54,11 +55,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     if (confirmed == true && mounted) {
       final success = await context.read<CourtProvider>().cancelBooking(id);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success ? l10n.bookingCancelled : l10n.cancelError),
-            backgroundColor: success ? AppTheme.accent : AppTheme.error,
-          ),
+        showAppAlert(
+          context,
+          success ? l10n.bookingCancelled : l10n.cancelError,
+          isError: !success,
         );
       }
     }

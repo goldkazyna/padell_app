@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/app_alert.dart';
 import '../../models/tournament.dart';
 import '../../providers/tournament_provider.dart';
 
@@ -43,12 +44,7 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
       if (result.success) {
         Navigator.of(context).pop();
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result.message),
-          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
-        ),
-      );
+      showAppAlert(context, result.message, isError: !result.success);
     }
   }
 

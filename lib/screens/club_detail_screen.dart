@@ -5,6 +5,7 @@ import '../models/club.dart';
 import '../providers/tournament_provider.dart';
 import '../services/club_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_alert.dart';
 
 class ClubDetailScreen extends StatefulWidget {
   final int clubId;
@@ -69,9 +70,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isToggling = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка: $e'), backgroundColor: AppTheme.error),
-      );
+      showAppAlert(context, '$e', title: 'Ошибка', isError: true);
     }
   }
 

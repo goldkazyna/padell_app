@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_alert.dart';
 import '../models/tournament.dart';
 import '../providers/tournament_provider.dart';
 import '../providers/home_provider.dart';
@@ -184,8 +185,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Не удалось открыть «Поделиться»: $e')),
+      showAppAlert(
+        context,
+        '$e',
+        title: 'Не удалось открыть «Поделиться»',
+        isError: true,
       );
     }
   }
@@ -1261,12 +1265,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final provider = context.read<TournamentProvider>();
     final result = await provider.subscribeToTournament(id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result.message),
-          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
-        ),
-      );
+      showAppAlert(context, result.message, isError: !result.success);
     }
   }
 
@@ -1274,12 +1273,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final provider = context.read<TournamentProvider>();
     final result = await provider.unsubscribeFromTournament(id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result.message),
-          backgroundColor: result.success ? AppTheme.accent : AppTheme.error,
-        ),
-      );
+      showAppAlert(context, result.message, isError: !result.success);
     }
   }
 

@@ -5,6 +5,7 @@ import '../models/club.dart';
 import '../providers/court_provider.dart';
 import '../providers/home_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_alert.dart';
 import 'booking_confirmation_screen.dart';
 
 class CourtBookingScreen extends StatefulWidget {
@@ -152,11 +153,11 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message'] as String? ?? AppLocalizations.of(context)!.bookingError),
-          backgroundColor: AppTheme.error,
-        ),
+      showAppAlert(
+        context,
+        result['message'] as String? ?? AppLocalizations.of(context)!.bookingError,
+        title: 'Ошибка',
+        isError: true,
       );
     }
   }

@@ -8,6 +8,7 @@ import '../providers/profile_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/app_alert.dart';
 import '../theme/app_theme.dart';
 
 // Local utility aliases mapped to global AppTheme
@@ -194,11 +195,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       debugPrint('[EDIT_PROFILE] save error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.saveError(e.toString())),
-            backgroundColor: _T.red,
-          ),
+        showAppAlert(
+          context,
+          AppLocalizations.of(context)!.saveError(e.toString()),
+          title: 'Ошибка',
+          isError: true,
         );
       }
     } finally {

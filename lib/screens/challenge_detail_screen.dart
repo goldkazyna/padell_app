@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_alert.dart';
 import '../providers/challenge_provider.dart';
 import '../models/challenge.dart';
 import '../widgets/challenges/court_widget.dart';
@@ -29,21 +30,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     });
   }
 
-  void _showSnackBar(String message) {
+  void _showAlert(String message) {
     if (!mounted) return;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.card,
-        content: Text(message, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+    showAppAlert(context, message);
   }
 
   Future<void> _joinChallenge(Challenge challenge) async {
@@ -54,7 +43,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       final result = await context
           .read<ChallengeProvider>()
           .joinChallenge(challenge.id, positions.first);
-      _showSnackBar(result.message);
+      _showAlert(result.message);
       return;
     }
 
@@ -162,19 +151,19 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     final result = await context
         .read<ChallengeProvider>()
         .joinChallenge(challenge.id, selected);
-    _showSnackBar(result.message);
+    _showAlert(result.message);
   }
 
   Future<void> _startChallenge(int id) async {
     final result =
         await context.read<ChallengeProvider>().startChallenge(id);
-    _showSnackBar(result.message);
+    _showAlert(result.message);
   }
 
   Future<void> _confirmScore(int id) async {
     final result =
         await context.read<ChallengeProvider>().confirmScore(id);
-    if (mounted) _showSnackBar(result.message);
+    if (mounted) _showAlert(result.message);
   }
 
   Future<void> _cancelChallenge(int id) async {
@@ -204,7 +193,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       Navigator.pop(context);
       return;
     }
-    if (mounted) _showSnackBar(result.message);
+    if (mounted) _showAlert(result.message);
   }
 
   Future<void> _leaveChallenge(int id) async {
@@ -213,13 +202,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     if (result.success && mounted) {
       Navigator.pop(context);
     }
-    _showSnackBar(result.message);
+    _showAlert(result.message);
   }
 
   Future<void> _acceptChallenge(int id) async {
     final result =
         await context.read<ChallengeProvider>().acceptChallenge(id);
-    _showSnackBar(result.message);
+    _showAlert(result.message);
   }
 
   Future<void> _declineChallenge(int id) async {
@@ -229,21 +218,21 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       Navigator.pop(context);
       return;
     }
-    if (mounted) _showSnackBar(result.message);
+    if (mounted) _showAlert(result.message);
   }
 
   Future<void> _submitScore(int id) async {
     // Проверяем что хотя бы в одном сете счёт не 0:0
     final allZero = _sets.every((s) => (s['team_a'] ?? 0) == 0 && (s['team_b'] ?? 0) == 0);
     if (allZero) {
-      if (mounted) _showSnackBar(AppLocalizations.of(context)!.challengeEnterScore);
+      if (mounted) _showAlert(AppLocalizations.of(context)!.challengeEnterScore);
       return;
     }
 
     final result = await context
         .read<ChallengeProvider>()
         .submitScore(id, _sets);
-    if (mounted) _showSnackBar(result.message);
+    if (mounted) _showAlert(result.message);
   }
 
   void _addSet() {

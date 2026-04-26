@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_alert.dart';
 
 /// Опросник для определения начального уровня игрока.
 /// Показывается новым пользователям сразу после регистрации/логина.
@@ -43,9 +44,7 @@ class _QuizScreenState extends State<QuizScreen> {
     } catch (e) {
       setState(() => _loading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка загрузки опросника: $e')),
-        );
+        showAppAlert(context, '$e', title: 'Ошибка загрузки опросника', isError: true);
       }
     }
   }
@@ -75,9 +74,7 @@ class _QuizScreenState extends State<QuizScreen> {
     } catch (e) {
       setState(() => _submitting = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: $e'), backgroundColor: AppTheme.error),
-        );
+        showAppAlert(context, '$e', title: 'Ошибка', isError: true);
       }
     }
   }
