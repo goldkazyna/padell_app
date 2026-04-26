@@ -61,8 +61,11 @@ class _TournamentLiveKingOfCourtScreenState
     });
     try {
       final token = await StorageService().getToken();
+      final qs = widget.highlightPlayerId != null
+          ? '?player_id=${widget.highlightPlayerId}'
+          : '';
       final response = await ApiService()
-          .get('/tournaments/${widget.tournamentId}/live', token);
+          .get('/tournaments/${widget.tournamentId}/live$qs', token);
       if (!mounted) return;
       if (response['success'] == true) {
         if (widget.highlightPlayerId != null) {
@@ -545,6 +548,7 @@ class _TournamentLiveKingOfCourtScreenState
     final inProgress = roundStatus == 'in_progress';
     final allCompleted = roundStatus == 'completed';
     final expanded = _roundExpanded[roundId] ?? false;
+    final ratingChange = (round['my_rating_change'] as num?)?.toInt();
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
@@ -588,6 +592,10 @@ class _TournamentLiveKingOfCourtScreenState
                     ),
                   ),
                   const Spacer(),
+                  if (ratingChange != null && ratingChange != 0) ...[
+                    _RatingDeltaPill(delta: ratingChange),
+                    const SizedBox(width: 6),
+                  ],
                   if (inProgress)
                     const _RoundStatusPill(
                       text: 'идёт',
@@ -919,6 +927,44 @@ class _RoundStatusPillState extends State<_RoundStatusPill>
               color: widget.color,
               fontSize: 11,
               fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RatingDeltaPill extends StatelessWidget {
+  final int delta;
+  const _RatingDeltaPill({required this.delta});
+
+  @override
+  Widget build(BuildContext context) {
+    final positive = delta >= 0;
+    final color = positive ? AppTheme.accent : AppTheme.error;
+    final text = positive ? '+$delta' : '$delta';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withAlpha(38),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            positive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+            color: color,
+            size: 12,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
