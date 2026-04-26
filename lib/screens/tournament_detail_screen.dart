@@ -171,15 +171,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         : l10n.noSpotsLeft;
 
     final shareUrl = 'https://padel-p.kz/t/${tournament.id}';
-    final text = '${tournament.name}\n\n'
-        '${tournament.typeName} · ${tournament.levelCategoryText}\n'
-        '${tournament.dateFormatted}, ${tournament.dayOfWeek}\n'
-        '${tournament.time}\n'
-        '${tournament.club.name}\n'
-        '${l10n.shareLevel(levelText)}\n'
-        '${l10n.shareCost(tournament.priceText)}\n'
-        '$spotsText\n\n'
-        '$shareUrl';
+    // Короткий текст — основная инфа уйдёт в OG-превью карточку,
+    // которую WhatsApp / Telegram отрендерят сами.
+    final text = '🎾 «${tournament.name}»\n$shareUrl';
 
     Share.share(text);
   }
