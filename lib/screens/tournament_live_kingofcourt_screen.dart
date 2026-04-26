@@ -11,7 +11,17 @@ import 'player_profile_screen.dart';
 /// Пары перемешиваются каждый раунд.
 class TournamentLiveKingOfCourtScreen extends StatefulWidget {
   final int tournamentId;
-  const TournamentLiveKingOfCourtScreen({super.key, required this.tournamentId});
+
+  /// ID игрока, которого нужно подсвечивать вместо текущего пользователя.
+  /// Используется когда открываем экран из чужого профиля — показываем
+  /// «его» матчи / строку лидерборда вместо своих.
+  final int? highlightPlayerId;
+
+  const TournamentLiveKingOfCourtScreen({
+    super.key,
+    required this.tournamentId,
+    this.highlightPlayerId,
+  });
 
   @override
   State<TournamentLiveKingOfCourtScreen> createState() =>
@@ -55,6 +65,9 @@ class _TournamentLiveKingOfCourtScreenState
           .get('/tournaments/${widget.tournamentId}/live', token);
       if (!mounted) return;
       if (response['success'] == true) {
+        if (widget.highlightPlayerId != null) {
+          _overrideHighlight(response, widget.highlightPlayerId!);
+        }
         setState(() {
           _data = response;
           _loading = false;
@@ -71,6 +84,51 @@ class _TournamentLiveKingOfCourtScreenState
         _error = 'Ошибка сети: $e';
         _loading = false;
       });
+    }
+  }
+
+  /// Меняем флаги is_me/has_me так, чтобы они указывали на заданного игрока,
+  /// а не на залогиненного пользователя. Нужно для чужого профиля.
+  void _overrideHighlight(Map<String, dynamic> response, int playerId) {
+    final leaderboard =
+        (response['leaderboard'] as List?)?.cast<Map<String, dynamic>>() ??
+            const [];
+    for (final p in leaderboard) {
+      final id = p['id'];
+      p['is_me'] =
+          id is num && id.toInt() == playerId;
+    }
+
+    bool playerInList(List<dynamic>? ids, int target) {
+      if (ids == null) return false;
+      for (final v in ids) {
+        if (v is num && v.toInt() == target) return true;
+      }
+      return false;
+    }
+
+    final rounds = (response['rounds'] as List?)?.cast<Map<String, dynamic>>() ??
+        const [];
+    for (final round in rounds) {
+      final matches =
+          (round['matches'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+      for (final m in matches) {
+        final t1 = m['team1'] as Map<String, dynamic>?;
+        final t2 = m['team2'] as Map<String, dynamic>?;
+        final t1Ids = [
+          (t1?['player1'] as Map<String, dynamic>?)?['id'],
+          (t1?['player2'] as Map<String, dynamic>?)?['id'],
+        ];
+        final t2Ids = [
+          (t2?['player1'] as Map<String, dynamic>?)?['id'],
+          (t2?['player2'] as Map<String, dynamic>?)?['id'],
+        ];
+        final t1HasMe = playerInList(t1Ids, playerId);
+        final t2HasMe = playerInList(t2Ids, playerId);
+        if (t1 != null) t1['has_me'] = t1HasMe;
+        if (t2 != null) t2['has_me'] = t2HasMe;
+        m['has_me'] = t1HasMe || t2HasMe;
+      }
     }
   }
 

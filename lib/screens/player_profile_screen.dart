@@ -239,7 +239,10 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => tournament.type == 'king_of_court'
-                      ? TournamentLiveKingOfCourtScreen(tournamentId: tournament.id)
+                      ? TournamentLiveKingOfCourtScreen(
+                          tournamentId: tournament.id,
+                          highlightPlayerId: widget.playerId,
+                        )
                       : TournamentResultsScreen(tournament: tournament, playerId: widget.playerId),
                 ),
               );
