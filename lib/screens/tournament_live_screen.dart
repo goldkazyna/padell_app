@@ -325,45 +325,49 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     );
   }
 
-  // ===== Group tabs =====
+  // ===== Group tabs (стиль рейтинга, full width) =====
   Widget _buildGroupTabs(List<Map<String, dynamic>> groups) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Color(0xFF27272A), width: 1),
+          ),
+        ),
+        child: Row(
+          children: [
+            for (var i = 0; i < groups.length; i++)
+              Expanded(child: _groupTabBtn(groups[i]['name'] as String?, i)),
+          ],
+        ),
       ),
-      child: Row(
-        children: [
-          for (var i = 0; i < groups.length; i++)
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedGroupIdx = i),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: _selectedGroupIdx == i
-                        ? AppTheme.accent
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    groups[i]['name'] as String? ?? 'Группа ${i + 1}',
-                    style: TextStyle(
-                      color: _selectedGroupIdx == i
-                          ? const Color(0xFF0A0A0D)
-                          : AppTheme.textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
+    );
+  }
+
+  Widget _groupTabBtn(String? label, int idx) {
+    final isActive = _selectedGroupIdx == idx;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedGroupIdx = idx),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppTheme.accent : Colors.transparent,
+              width: 2,
             ),
-        ],
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label ?? 'Группа ${idx + 1}',
+          style: TextStyle(
+            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
