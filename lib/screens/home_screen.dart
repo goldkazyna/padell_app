@@ -17,6 +17,7 @@ import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
 import 'tournament_live_screen.dart';
 import 'tournament_live_mexicano_screen.dart';
+import 'tournament_live_team_screen.dart';
 import 'club_select_screen.dart';
 import 'create_challenge_screen.dart';
 import 'challenges_screen.dart';
@@ -141,6 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         target = TournamentLiveScreen(tournamentId: t.id);
                       } else if (isLive && t.type == 'mexicano') {
                         target = TournamentLiveMexicanoScreen(tournamentId: t.id);
+                      } else if (isLive && t.type == 'team') {
+                        target = TournamentLiveTeamScreen(tournamentId: t.id);
                       } else {
                         target = TournamentDetailScreen(tournamentId: t.id);
                       }
