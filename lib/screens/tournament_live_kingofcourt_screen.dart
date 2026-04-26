@@ -595,6 +595,11 @@ class _TournamentLiveKingOfCourtScreenState
         tierBg = const Color(0xFF38BDF8).withAlpha(30);
     }
 
+    final p1 = t1['player1'] as Map<String, dynamic>?;
+    final p2 = t1['player2'] as Map<String, dynamic>?;
+    final p3 = t2['player1'] as Map<String, dynamic>?;
+    final p4 = t2['player2'] as Map<String, dynamic>?;
+
     return Container(
       decoration: BoxDecoration(
         color: hasMe ? AppTheme.accent.withAlpha(20) : null,
@@ -602,195 +607,162 @@ class _TournamentLiveKingOfCourtScreenState
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+      padding: const EdgeInsets.fromLTRB(12, 14, 12, 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              children: [
+          // Header: court badge + (опционально) "Вы играете"
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: tierBg,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: tierFg,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (hasMe) ...[
+                const SizedBox(width: 6),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: tierBg,
+                    color: AppTheme.accent.withAlpha(38),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text(
-                    label,
+                  child: const Text(
+                    'Вы играете',
                     style: TextStyle(
-                      color: tierFg,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                        color: AppTheme.accent,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 14),
+          // 4 аватара в ряд: P1 P2 VS P3 P4
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _PlayerTile(player: p1, onTap: _openPlayer)),
+              const SizedBox(width: 4),
+              Expanded(child: _PlayerTile(player: p2, onTap: _openPlayer)),
+              const SizedBox(width: 4),
+              SizedBox(
+                width: 28,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 18),
+                  child: Text(
+                    'VS',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppTheme.textDim,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
-                if (hasMe) ...[
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 7, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppTheme.accent.withAlpha(38),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Text(
-                      'Вы играете',
-                      style: TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(child: _PlayerTile(player: p3, onTap: _openPlayer)),
+              const SizedBox(width: 4),
+              Expanded(child: _PlayerTile(player: p4, onTap: _openPlayer)),
+            ],
           ),
-          _buildTeamCard(t1,
-              isWinner: t1Win, isCompleted: completed, score: score1),
-          const SizedBox(height: 6),
-          _buildTeamCard(t2,
-              isWinner: t2Win, isCompleted: completed, score: score2),
+          const SizedBox(height: 14),
+          // Счёт
+          _buildScore(
+            score1: score1,
+            score2: score2,
+            t1Win: t1Win,
+            t2Win: t2Win,
+            completed: completed,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTeamCard(Map<String, dynamic> team,
-      {required bool isWinner,
-      required bool isCompleted,
-      dynamic score}) {
-    final p1 = team['player1'] as Map<String, dynamic>?;
-    final p2 = team['player2'] as Map<String, dynamic>?;
-    final isLoser = isCompleted && !isWinner;
-    final isPending = !isCompleted;
-
-    final Color bg;
-    final Border? border;
-    if (isPending) {
-      bg = Colors.transparent;
-      border = Border.all(color: const Color(0xFF2A2A2A));
-    } else {
-      bg = AppTheme.cardRaised.withAlpha(120);
-      border = null;
+  Widget _buildScore({
+    required dynamic score1,
+    required dynamic score2,
+    required bool t1Win,
+    required bool t2Win,
+    required bool completed,
+  }) {
+    if (!completed) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppTheme.cardRaised.withAlpha(120),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          'Матч ещё не сыгран',
+          style: TextStyle(
+            color: AppTheme.textDim,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
     }
 
-    final nameColor = isLoser ? AppTheme.textSecondary : AppTheme.textPrimary;
-    final nameWeight = isWinner ? FontWeight.w700 : FontWeight.w600;
-
-    Color scoreBg;
-    Color scoreColor;
-    if (isWinner) {
-      scoreBg = AppTheme.accent;
-      scoreColor = const Color(0xFF0A0A0D);
-    } else if (isLoser) {
-      scoreBg = Colors.transparent;
-      scoreColor = AppTheme.textSecondary;
-    } else {
-      scoreBg = Colors.transparent;
-      scoreColor = AppTheme.textDim;
-    }
+    Color color1 = t1Win ? AppTheme.accent : AppTheme.textSecondary;
+    Color color2 = t2Win ? AppTheme.accent : AppTheme.textSecondary;
+    FontWeight w1 = t1Win ? FontWeight.w900 : FontWeight.w700;
+    FontWeight w2 = t2Win ? FontWeight.w900 : FontWeight.w700;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(10),
-        border: border,
+        color: AppTheme.cardRaised.withAlpha(140),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          GestureDetector(
-            onTap: () => _openPlayer(
-              p1 != null && p1['id'] is num ? (p1['id'] as num).toInt() : null,
-              p1?['name'] as String?,
-            ),
-            child: _Avatar(
-              url: p1?['avatar'] as String?,
-              name: p1?['name'] as String? ?? '',
-              size: 26,
+          Text(
+            '${score1 ?? 0}',
+            style: TextStyle(
+              color: color1,
+              fontSize: 28,
+              fontWeight: w1,
+              height: 1.0,
             ),
           ),
-          const SizedBox(width: 6),
-          GestureDetector(
-            onTap: () => _openPlayer(
-              p2 != null && p2['id'] is num ? (p2['id'] as num).toInt() : null,
-              p2?['name'] as String?,
-            ),
-            child: _Avatar(
-              url: p2?['avatar'] as String?,
-              name: p2?['name'] as String? ?? '',
-              size: 26,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: () => _openPlayer(
-                    p1 != null && p1['id'] is num
-                        ? (p1['id'] as num).toInt()
-                        : null,
-                    p1?['name'] as String?,
-                  ),
-                  behavior: HitTestBehavior.opaque,
-                  child: Text(
-                    p1?['name'] as String? ?? '—',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: nameColor,
-                      fontWeight: nameWeight,
-                      fontSize: 13,
-                      letterSpacing: -0.1,
-                      height: 1.25,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 1),
-                GestureDetector(
-                  onTap: () => _openPlayer(
-                    p2 != null && p2['id'] is num
-                        ? (p2['id'] as num).toInt()
-                        : null,
-                    p2?['name'] as String?,
-                  ),
-                  behavior: HitTestBehavior.opaque,
-                  child: Text(
-                    p2?['name'] as String? ?? '—',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: nameColor,
-                      fontWeight: nameWeight,
-                      fontSize: 13,
-                      letterSpacing: -0.1,
-                      height: 1.25,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          Container(
-            width: 40,
-            height: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: scoreBg,
-              borderRadius: BorderRadius.circular(8),
-            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
-              score == null ? '—' : '$score',
+              ':',
               style: TextStyle(
-                color: scoreColor,
-                fontWeight: FontWeight.w800,
-                fontSize: 18,
+                color: AppTheme.textDim,
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                height: 1.0,
               ),
+            ),
+          ),
+          Text(
+            '${score2 ?? 0}',
+            style: TextStyle(
+              color: color2,
+              fontSize: 28,
+              fontWeight: w2,
+              height: 1.0,
             ),
           ),
         ],
@@ -1010,6 +982,87 @@ class _Avatar extends StatelessWidget {
         height: size,
         fit: BoxFit.cover,
         errorBuilder: (c, e, s) => fallback,
+      ),
+    );
+  }
+}
+
+class _PlayerTile extends StatelessWidget {
+  final Map<String, dynamic>? player;
+  final void Function(int? id, String? name) onTap;
+  const _PlayerTile({required this.player, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final name = player?['name'] as String? ?? '—';
+    final avatar = player?['avatar'] as String?;
+    final id = player?['id'] is num ? (player!['id'] as num).toInt() : null;
+    final levelRaw = player?['level'];
+    String? levelText;
+    if (levelRaw != null) {
+      final lvlNum = levelRaw is num
+          ? levelRaw.toDouble()
+          : double.tryParse(levelRaw.toString());
+      if (lvlNum != null) levelText = lvlNum.toStringAsFixed(1);
+    }
+
+    return GestureDetector(
+      onTap: () => onTap(id, name),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 56,
+            height: 56,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                _Avatar(url: avatar, name: name, size: 56),
+                if (levelText != null)
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accent,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppTheme.background,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        levelText,
+                        style: const TextStyle(
+                          color: Color(0xFF0A0A0D),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.1,
+              height: 1.2,
+            ),
+          ),
+        ],
       ),
     );
   }
