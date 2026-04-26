@@ -581,22 +581,18 @@ class _TournamentLiveKingOfCourtScreenState
 
     Color tierFg;
     Color tierBg;
-    IconData tierIcon;
     switch (tier) {
       case 'top':
         tierFg = AppTheme.amber;
         tierBg = AppTheme.amber.withAlpha(30);
-        tierIcon = Icons.emoji_events_rounded;
         break;
       case 'bottom':
         tierFg = AppTheme.error;
         tierBg = AppTheme.error.withAlpha(30);
-        tierIcon = Icons.south_rounded;
         break;
       default:
         tierFg = const Color(0xFF38BDF8);
         tierBg = const Color(0xFF38BDF8).withAlpha(30);
-        tierIcon = Icons.swap_vert_rounded;
     }
 
     return Container(
@@ -621,20 +617,13 @@ class _TournamentLiveKingOfCourtScreenState
                     color: tierBg,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(tierIcon, color: tierFg, size: 12),
-                      const SizedBox(width: 5),
-                      Text(
-                        label,
-                        style: TextStyle(
-                          color: tierFg,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: tierFg,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (hasMe) ...[
