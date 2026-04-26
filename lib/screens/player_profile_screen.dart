@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import 'tournament_results_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
 import '../models/tournament.dart';
+import '../widgets/main_tab_bar.dart';
 import '../widgets/profile/player_hero.dart';
 
 class PlayerProfileScreen extends StatefulWidget {
@@ -87,6 +88,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                   color: AppTheme.accent,
                   child: _buildContent(),
                 ),
+      bottomNavigationBar: const MainTabBar(),
     );
   }
 
