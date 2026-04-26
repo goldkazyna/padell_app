@@ -8,6 +8,7 @@ import 'api_service.dart';
 import 'storage_service.dart';
 import '../screens/tournament_detail_screen.dart';
 import '../screens/challenge_detail_screen.dart';
+import '../screens/tournament_live_kingofcourt_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -293,7 +294,8 @@ class PushNotificationService {
     final type = message.data['type'] ?? '';
     final tournamentId = message.data['tournament_id'] ?? '';
     final challengeId = message.data['challenge_id'] ?? '';
-    final payload = '$type|$tournamentId|$challengeId';
+    final subtype = message.data['subtype'] ?? '';
+    final payload = '$type|$tournamentId|$challengeId|$subtype';
 
     // iOS: Firebase сам показывает notification через setForegroundNotificationPresentationOptions
     // Android: показываем через local notifications (у Firebase нет foreground display на Android)
@@ -334,8 +336,9 @@ class PushNotificationService {
     final type = parts[0];
     final tournamentId = parts.length > 1 ? parts[1] : '';
     final challengeId = parts.length > 2 ? parts[2] : '';
+    final subtype = parts.length > 3 ? parts[3] : '';
 
-    _navigateByType(type, tournamentId, challengeId);
+    _navigateByType(type, tournamentId, challengeId, subtype);
   }
 
   void _handleNotificationTap(RemoteMessage message) {
@@ -343,11 +346,14 @@ class PushNotificationService {
     final type = message.data['type'] ?? '';
     final tournamentId = message.data['tournament_id'] ?? '';
     final challengeId = message.data['challenge_id'] ?? '';
-    _navigateByType(type, tournamentId, challengeId);
+    final subtype = message.data['subtype'] ?? '';
+    _navigateByType(type, tournamentId, challengeId, subtype);
   }
 
-  void _navigateByType(String type, String tournamentId, String challengeId) {
-    _log('Navigate: type=$type, tournamentId=$tournamentId, challengeId=$challengeId');
+  void _navigateByType(
+      String type, String tournamentId, String challengeId, String subtype) {
+    _log(
+        'Navigate: type=$type, subtype=$subtype, tournamentId=$tournamentId, challengeId=$challengeId');
 
     // Challenge types
     const challengeTypes = {
@@ -378,13 +384,23 @@ class PushNotificationService {
     };
     if (tournamentTypes.contains(type) && tournamentId.isNotEmpty) {
       final id = int.tryParse(tournamentId);
-      if (id != null) {
+      if (id == null) return;
+
+      // Король корта — генерация раунда → live-экран
+      if (subtype == 'koc_round_generated') {
         _navigatorKey.currentState?.push(
           MaterialPageRoute(
-            builder: (_) => TournamentDetailScreen(tournamentId: id),
+            builder: (_) => TournamentLiveKingOfCourtScreen(tournamentId: id),
           ),
         );
+        return;
       }
+
+      _navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => TournamentDetailScreen(tournamentId: id),
+        ),
+      );
     }
   }
 
