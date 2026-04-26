@@ -378,6 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     tint: _tints[_Provider.whatsapp]!,
                     icon: const _BrandWhatsApp(),
                     onTap: () => _onProvider(_Provider.whatsapp),
+                    disabled: true,
                   ),
                   const SizedBox(height: 8),
                   Consumer<AuthProvider>(
@@ -505,6 +506,7 @@ class _ProviderButton extends StatelessWidget {
   final Widget icon;
   final VoidCallback? onTap;
   final bool loading;
+  final bool disabled;
 
   const _ProviderButton({
     required this.label,
@@ -512,10 +514,15 @@ class _ProviderButton extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.loading = false,
+    this.disabled = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final greyBg = const Color(0xFF1A1A1E);
+    final greyBorder = const Color(0xFF27272A);
+    final greyText = const Color(0xFF71717A);
+
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(14),
@@ -525,22 +532,48 @@ class _ProviderButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           decoration: BoxDecoration(
-            color: tint.bg,
+            color: disabled ? greyBg : tint.bg,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: tint.border),
+            border: Border.all(color: disabled ? greyBorder : tint.border),
           ),
           child: Row(
             children: [
-              SizedBox(width: 28, height: 28, child: icon),
+              Opacity(
+                opacity: disabled ? 0.45 : 1,
+                child: SizedBox(width: 28, height: 28, child: icon),
+              ),
               const SizedBox(width: 14),
               Expanded(
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: disabled ? greyText : AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (disabled) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF27272A),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'скоро',
+                          style: TextStyle(
+                            color: greyText,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
               if (loading)
@@ -553,10 +586,10 @@ class _ProviderButton extends StatelessWidget {
                   ),
                 )
               else
-                const Icon(
+                Icon(
                   Icons.chevron_right,
                   size: 18,
-                  color: Color(0x40FFFFFF),
+                  color: disabled ? greyText.withAlpha(60) : const Color(0x40FFFFFF),
                 ),
             ],
           ),
