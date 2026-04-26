@@ -1049,21 +1049,45 @@ class _PlayerTile extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -0.1,
-              height: 1.2,
-            ),
-          ),
+          ..._buildNameLines(name),
         ],
       ),
     );
+  }
+
+  List<Widget> _buildNameLines(String name) {
+    const style = TextStyle(
+      color: AppTheme.textPrimary,
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+      height: 1.2,
+    );
+    final parts =
+        name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) {
+      return [
+        const Text('—', textAlign: TextAlign.center, style: style),
+      ];
+    }
+    final first = parts.first;
+    final rest = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+    return [
+      Text(
+        first,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: style,
+      ),
+      if (rest.isNotEmpty)
+        Text(
+          rest,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: style,
+        ),
+    ];
   }
 }
