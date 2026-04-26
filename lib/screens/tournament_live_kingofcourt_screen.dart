@@ -31,13 +31,6 @@ class TournamentLiveKingOfCourtScreen extends StatefulWidget {
 
 enum _KocTab { rounds, table }
 
-const _hdrStyle = TextStyle(
-  color: AppTheme.textDim,
-  fontSize: 10,
-  fontWeight: FontWeight.w700,
-  letterSpacing: 0.3,
-);
-
 class _TournamentLiveKingOfCourtScreenState
     extends State<TournamentLiveKingOfCourtScreen> {
   bool _loading = true;
@@ -333,181 +326,212 @@ class _TournamentLiveKingOfCourtScreenState
 
   // ===== Leaderboard =====
   Widget _buildLeaderboard(List<Map<String, dynamic>> leaderboard) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
-            child: Row(
-              children: const [
-                Icon(Icons.emoji_events_outlined,
-                    color: AppTheme.amber, size: 16),
-                SizedBox(width: 8),
-                Text(
-                  'Таблица лидеров',
-                  style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
-            child: Table(
-              columnWidths: const {
-                0: IntrinsicColumnWidth(),
-                1: IntrinsicColumnWidth(),
-                2: FlexColumnWidth(),
-                3: IntrinsicColumnWidth(),
-                4: IntrinsicColumnWidth(),
-                5: IntrinsicColumnWidth(),
-                6: IntrinsicColumnWidth(),
-                7: IntrinsicColumnWidth(),
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                _hdrRow(),
-                for (final p in leaderboard) _lbRow(p),
-              ],
-            ),
-          ),
-          const SizedBox(height: 6),
-        ],
-      ),
-    );
-  }
-
-  TableRow _hdrRow() {
-    Widget h(String t, {bool center = true}) => Padding(
-          padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
-          child: Text(t,
-              textAlign: center ? TextAlign.center : TextAlign.left,
-              style: _hdrStyle),
-        );
-    return TableRow(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        h('#', center: false),
-        const SizedBox(),
-        h('Игрок', center: false),
-        h('В'),
-        h('П'),
-        h('РП'),
-        h('%'),
-        h('Очки'),
+        // Шапка
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: const [
+              SizedBox(
+                width: 28,
+                child: Text('#',
+                    style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text('ИГРОК',
+                    style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(
+                width: 28,
+                child: Text('В',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(
+                width: 28,
+                child: Text('П',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(
+                width: 36,
+                child: Text('РП',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(
+                width: 36,
+                child: Text('%',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(
+                width: 40,
+                child: Text('ОЧКИ',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+        ),
+        // Строки
+        for (final p in leaderboard) _buildLeaderboardRow(p),
       ],
     );
   }
 
-  TableRow _lbRow(Map<String, dynamic> p) {
+  Widget _buildLeaderboardRow(Map<String, dynamic> p) {
     final position = (p['position'] as num).toInt();
     final isMe = p['is_me'] == true;
-    Color rankColor = AppTheme.textDim;
-    if (position == 1) rankColor = const Color(0xFFFFD700);
-    if (position == 2) rankColor = const Color(0xFFC0C0C0);
-    if (position == 3) rankColor = const Color(0xFFCD7F32);
-    final pointDiff = (p['point_diff'] as num).toInt();
+    final wins = (p['wins'] as num?)?.toInt() ?? 0;
+    final losses = (p['losses'] as num?)?.toInt() ?? 0;
+    final pointDiff = (p['point_diff'] as num?)?.toInt() ?? 0;
     final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
+    final totalPoints = (p['total_points'] as num?)?.toInt() ?? 0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
+    final avatarUrl = p['avatar'] as String?;
 
-    Widget cell(Widget child,
-        {EdgeInsets? padding,
-        AlignmentGeometry alignment = Alignment.center}) {
-      return InkWell(
-        onTap: () => _openPlayer(playerId, playerName),
-        child: Container(
-          padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 8),
-          alignment: alignment,
-          child: child,
+    Color posColor = const Color(0xFF52525B);
+    if (position == 1) posColor = const Color(0xFFFACC15);
+    if (position == 2) posColor = const Color(0xFF94A3B8);
+    if (position == 3) posColor = const Color(0xFFF97316);
+
+    final diffStr = pointDiff > 0 ? '+$pointDiff' : '$pointDiff';
+    final diffColor = pointDiff > 0
+        ? const Color(0xFF22C55E)
+        : (pointDiff < 0
+            ? const Color(0xFFEF4444)
+            : AppTheme.textSecondary);
+
+    return InkWell(
+      onTap: () => _openPlayer(playerId, playerName),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isMe ? AppTheme.accent.withAlpha(15) : Colors.transparent,
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1A1A1E), width: 0.5),
+          ),
         ),
-      );
-    }
-
-    return TableRow(
-      decoration: BoxDecoration(
-        color: isMe ? AppTheme.accent.withAlpha(20) : null,
-        border: const Border(
-          top: BorderSide(color: AppTheme.divider, width: 0.5),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 28,
+              child: Text(
+                '$position',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : posColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _Avatar(
+              url: avatarUrl,
+              name: playerName ?? '',
+              size: 24,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                playerName ?? '—',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 28,
+              child: Text(
+                '$wins',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 28,
+              child: Text(
+                '$losses',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : const Color(0xFFEF4444),
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 36,
+              child: Text(
+                diffStr,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : diffColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 36,
+              child: Text(
+                '$ballPercent%',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : AppTheme.textSecondary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 40,
+              child: Text(
+                '$totalPoints',
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      children: [
-        cell(
-          Text('$position',
-              style: TextStyle(
-                color: rankColor,
-                fontWeight: FontWeight.w800,
-                fontSize: 13,
-              )),
-          padding: const EdgeInsets.fromLTRB(2, 8, 6, 8),
-          alignment: Alignment.centerLeft,
-        ),
-        cell(
-          _Avatar(
-            url: p['avatar'] as String?,
-            name: p['name'] as String? ?? '',
-            size: 24,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-        ),
-        cell(
-          Text(
-            playerName ?? '—',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-              fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
-              fontSize: 13,
-              height: 1.2,
-            ),
-          ),
-          padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
-          alignment: Alignment.centerLeft,
-        ),
-        cell(Text('${p['wins']}',
-            style: const TextStyle(
-                color: AppTheme.accent,
-                fontSize: 13,
-                fontWeight: FontWeight.w700))),
-        cell(Text('${p['losses']}',
-            style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600))),
-        cell(Text(
-          pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
-          style: TextStyle(
-            color: pointDiff > 0
-                ? AppTheme.accent
-                : (pointDiff < 0
-                    ? AppTheme.error
-                    : AppTheme.textSecondary),
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-          ),
-        )),
-        cell(Text('$ballPercent',
-            style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600))),
-        cell(Text('${p['total_points']}',
-            style: const TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-            ))),
-      ],
     );
   }
 
