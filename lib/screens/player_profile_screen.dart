@@ -7,6 +7,7 @@ import 'tournament_results_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
 import '../models/tournament.dart';
 import '../widgets/main_tab_bar.dart';
+import '../widgets/profile/medal.dart';
 import '../widgets/profile/player_hero.dart';
 
 class PlayerProfileScreen extends StatefulWidget {
@@ -145,59 +146,31 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
   }
 
   Widget _buildPlaceIcon(int? place) {
-    if (place == 1) {
-      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥇', style: TextStyle(fontSize: 32))));
-    } else if (place == 2) {
-      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥈', style: TextStyle(fontSize: 32))));
-    } else if (place == 3) {
-      return const SizedBox(width: 48, height: 48, child: Center(child: Text('🥉', style: TextStyle(fontSize: 32))));
-    } else if (place != null) {
-      return SizedBox(
-        width: 48, height: 48,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$place',
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                height: 1,
-              ),
-            ),
-            const SizedBox(height: 3),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppTheme.accent,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Text(
-                'место',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w800,
-                  height: 1.2,
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: const Color(0x08FFFFFF),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      alignment: Alignment.center,
+      child: (place != null && place >= 1 && place <= 3)
+          ? Medal(place: place, size: 32)
+          : (place != null && place > 3)
+              ? Text(
+                  '$place',
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                )
+              : const Icon(
+                  Icons.emoji_events_outlined,
+                  size: 22,
+                  color: AppTheme.textSecondary,
                 ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        width: 48, height: 48,
-        decoration: BoxDecoration(
-          color: const Color(0xFF27272A),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Center(
-          child: Icon(Icons.emoji_events, size: 22, color: AppTheme.textSecondary),
-        ),
-      );
-    }
+    );
   }
 
   Widget _buildHistoryRow(RatingHistoryItem h) {
