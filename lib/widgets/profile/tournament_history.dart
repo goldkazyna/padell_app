@@ -5,6 +5,7 @@ import '../../models/tournament.dart';
 import '../../providers/profile_provider.dart';
 import '../../screens/player_profile_screen.dart';
 import '../../screens/tournament_results_screen.dart';
+import '../../screens/tournament_live_kingofcourt_screen.dart';
 import '../../theme/app_theme.dart';
 import 'medal.dart';
 
@@ -131,7 +132,9 @@ class _HistoryRow extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => TournamentResultsScreen(tournament: tournament),
+          builder: (_) => tournament.type == 'king_of_court'
+              ? TournamentLiveKingOfCourtScreen(tournamentId: tournament.id)
+              : TournamentResultsScreen(tournament: tournament),
         ),
       ),
       child: Container(

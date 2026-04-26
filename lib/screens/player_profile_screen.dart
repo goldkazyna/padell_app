@@ -4,6 +4,7 @@ import '../providers/rating_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
 import 'tournament_results_screen.dart';
+import 'tournament_live_kingofcourt_screen.dart';
 import '../models/tournament.dart';
 import '../widgets/profile/player_hero.dart';
 
@@ -237,7 +238,9 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => TournamentResultsScreen(tournament: tournament, playerId: widget.playerId),
+                  builder: (_) => tournament.type == 'king_of_court'
+                      ? TournamentLiveKingOfCourtScreen(tournamentId: tournament.id)
+                      : TournamentResultsScreen(tournament: tournament, playerId: widget.playerId),
                 ),
               );
             }
