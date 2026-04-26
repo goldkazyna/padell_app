@@ -160,22 +160,34 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
-  void _shareTournament() {
+  Future<void> _shareTournament() async {
     final tournament = context.read<TournamentProvider>().selectedTournament;
     if (tournament == null) return;
-
-    final l10n = AppLocalizations.of(context)!;
-    final levelText = '${tournament.minLevel} – ${tournament.maxLevel}';
-    final spotsText = tournament.spotsLeft > 0
-        ? l10n.shareFreeSpots(tournament.spotsLeft)
-        : l10n.noSpotsLeft;
 
     final shareUrl = 'https://padel-p.kz/t/${tournament.id}';
     // Короткий текст — основная инфа уйдёт в OG-превью карточку,
     // которую WhatsApp / Telegram отрендерят сами.
     final text = '🎾 «${tournament.name}»\n$shareUrl';
 
-    Share.share(text);
+    // На iOS / iPad share-sheet требует положение для якоря —
+    // без него на iPad он не открывается, на iOS-iPhone иногда тоже
+    // ведёт себя неконсистентно. Берём позицию текущего контекста.
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box != null
+        ? box.localToGlobal(Offset.zero) & box.size
+        : null;
+
+    try {
+      await Share.share(
+        text,
+        sharePositionOrigin: origin,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось открыть «Поделиться»: $e')),
+      );
+    }
   }
 
   // === Теги ===
