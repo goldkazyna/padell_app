@@ -16,6 +16,7 @@ import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
 import 'tournament_live_screen.dart';
+import 'tournament_live_mexicano_screen.dart';
 import 'club_select_screen.dart';
 import 'create_challenge_screen.dart';
 import 'challenges_screen.dart';
@@ -134,17 +135,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {
                       final t = home.activeTournament;
                       if (t == null) return;
-                      // Идущий Американо → live-экран с группами и матчами.
-                      // Остальное — обычные детали.
-                      final isLiveAmericano = t.status == 'in_progress' &&
-                          t.type == 'americano';
+                      final isLive = t.status == 'in_progress';
+                      Widget target;
+                      if (isLive && t.type == 'americano') {
+                        target = TournamentLiveScreen(tournamentId: t.id);
+                      } else if (isLive && t.type == 'mexicano') {
+                        target = TournamentLiveMexicanoScreen(tournamentId: t.id);
+                      } else {
+                        target = TournamentDetailScreen(tournamentId: t.id);
+                      }
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => isLiveAmericano
-                              ? TournamentLiveScreen(tournamentId: t.id)
-                              : TournamentDetailScreen(tournamentId: t.id),
-                        ),
+                        MaterialPageRoute(builder: (_) => target),
                       );
                     },
                   ),
