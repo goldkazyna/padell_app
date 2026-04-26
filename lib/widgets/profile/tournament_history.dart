@@ -159,11 +159,20 @@ class _HistoryRow extends StatelessWidget {
               alignment: Alignment.center,
               child: (place != null && place >= 1 && place <= 3)
                   ? Medal(place: place, size: 22)
-                  : const Icon(
-                      Icons.emoji_events_outlined,
-                      size: 18,
-                      color: AppTheme.textSecondary,
-                    ),
+                  : (place != null && place > 3)
+                      ? Text(
+                          '$place',
+                          style: const TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.emoji_events_outlined,
+                          size: 18,
+                          color: AppTheme.textSecondary,
+                        ),
             ),
             const SizedBox(width: 12),
             Expanded(
