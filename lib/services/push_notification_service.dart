@@ -366,10 +366,8 @@ class PushNotificationService {
     if (challengeTypes.contains(type) && challengeId.isNotEmpty) {
       final id = int.tryParse(challengeId);
       if (id != null) {
-        _navigatorKey.currentState?.push(
-          MaterialPageRoute(
-            builder: (_) => ChallengeDetailScreen(challengeId: id),
-          ),
+        _navigateWhenReady(
+          () => ChallengeDetailScreen(challengeId: id),
         );
       }
       return;
@@ -388,20 +386,31 @@ class PushNotificationService {
 
       // Король корта — генерация раунда → live-экран
       if (subtype == 'koc_round_generated') {
-        _navigatorKey.currentState?.push(
-          MaterialPageRoute(
-            builder: (_) => TournamentLiveKingOfCourtScreen(tournamentId: id),
-          ),
+        _navigateWhenReady(
+          () => TournamentLiveKingOfCourtScreen(tournamentId: id),
         );
         return;
       }
 
-      _navigatorKey.currentState?.push(
-        MaterialPageRoute(
-          builder: (_) => TournamentDetailScreen(tournamentId: id),
-        ),
+      _navigateWhenReady(
+        () => TournamentDetailScreen(tournamentId: id),
       );
     }
+  }
+
+  /// Push экран как только Navigator готов. При холодном старте из пуша
+  /// (terminated state) Navigator появляется не сразу — ждём до 10 сек.
+  Future<void> _navigateWhenReady(Widget Function() builder) async {
+    for (int i = 0; i < 100; i++) {
+      final state = _navigatorKey.currentState;
+      if (state != null && state.mounted) {
+        _log('Navigator ready after ${i * 100}ms — pushing');
+        state.push(MaterialPageRoute(builder: (_) => builder()));
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+    _log('Navigator was not ready in 10s — giving up');
   }
 
   Future<void> _sendTokenToServer(String fcmToken) async {
