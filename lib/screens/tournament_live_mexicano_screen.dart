@@ -225,60 +225,48 @@ class _TournamentLiveMexicanoScreenState
     );
   }
 
-  // ===== Main tabs =====
+  // ===== Main tabs (стиль рейтинга, на всю ширину) =====
   Widget _buildMainTabs() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Color(0xFF27272A), width: 1),
+          ),
+        ),
+        child: Row(
+          children: [
+            for (final tab in _MxTab.values) Expanded(child: _mxTabBtn(tab)),
+          ],
+        ),
       ),
-      child: Row(
-        children: [
-          for (final tab in _MxTab.values)
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _activeTab = tab),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: _activeTab == tab
-                        ? AppTheme.accent
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        tab == _MxTab.rounds
-                            ? Icons.sports_tennis
-                            : Icons.emoji_events_outlined,
-                        size: 16,
-                        color: _activeTab == tab
-                            ? const Color(0xFF0A0A0D)
-                            : AppTheme.textSecondary,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        tab == _MxTab.rounds ? 'Раунды' : 'Таблица',
-                        style: TextStyle(
-                          color: _activeTab == tab
-                              ? const Color(0xFF0A0A0D)
-                              : AppTheme.textSecondary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+    );
+  }
+
+  Widget _mxTabBtn(_MxTab tab) {
+    final isActive = _activeTab == tab;
+    return GestureDetector(
+      onTap: () => setState(() => _activeTab = tab),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppTheme.accent : Colors.transparent,
+              width: 2,
             ),
-        ],
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          tab == _MxTab.rounds ? 'Раунды' : 'Таблица',
+          style: TextStyle(
+            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
@@ -475,21 +463,29 @@ class _TournamentLiveMexicanoScreenState
   Widget _buildRounds(List<Map<String, dynamic>> rounds) {
     if (!_expandedInitialized) {
       _expandedInitialized = true;
+      final hasPlayoff =
+          ((_data?['playoff'] as List?)?.isNotEmpty ?? false);
+      final allCompleted =
+          rounds.isNotEmpty && rounds.every((r) => r['status'] == 'completed');
+
       int? activeIdx;
-      for (var i = 0; i < rounds.length; i++) {
-        if (rounds[i]['status'] == 'in_progress') {
-          activeIdx = i;
-          break;
+      if (!(allCompleted && hasPlayoff)) {
+        for (var i = 0; i < rounds.length; i++) {
+          if (rounds[i]['status'] == 'in_progress') {
+            activeIdx = i;
+            break;
+          }
         }
+        if (activeIdx == null) {
+          final idx = rounds.indexWhere((r) => r['status'] != 'completed');
+          if (idx >= 0) activeIdx = idx;
+        }
+        activeIdx ??= rounds.isNotEmpty ? rounds.length - 1 : -1;
       }
-      if (activeIdx == null) {
-        final idx = rounds.indexWhere((r) => r['status'] != 'completed');
-        if (idx >= 0) activeIdx = idx;
-      }
-      activeIdx ??= rounds.isNotEmpty ? rounds.length - 1 : -1;
+
       for (var i = 0; i < rounds.length; i++) {
         final rid = (rounds[i]['id'] as num).toInt();
-        _roundExpanded[rid] = (i == activeIdx);
+        _roundExpanded[rid] = (activeIdx != null && i == activeIdx);
       }
     }
     return Column(

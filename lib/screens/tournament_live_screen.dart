@@ -212,60 +212,49 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     );
   }
 
-  // ===== Main tabs (Раунды / Таблица) =====
+  // ===== Main tabs (Раунды / Таблица) — стиль рейтинга, на всю ширину =====
   Widget _buildMainTabs() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Color(0xFF27272A), width: 1),
+          ),
+        ),
+        child: Row(
+          children: [
+            for (final tab in _LiveTab.values)
+              Expanded(child: _liveTabBtn(tab)),
+          ],
+        ),
       ),
-      child: Row(
-        children: [
-          for (final tab in _LiveTab.values)
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _activeTab = tab),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: _activeTab == tab
-                        ? AppTheme.accent
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        tab == _LiveTab.rounds
-                            ? Icons.sports_tennis
-                            : Icons.emoji_events_outlined,
-                        size: 16,
-                        color: _activeTab == tab
-                            ? const Color(0xFF0A0A0D)
-                            : AppTheme.textSecondary,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        tab == _LiveTab.rounds ? 'Раунды' : 'Таблица',
-                        style: TextStyle(
-                          color: _activeTab == tab
-                              ? const Color(0xFF0A0A0D)
-                              : AppTheme.textSecondary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+    );
+  }
+
+  Widget _liveTabBtn(_LiveTab tab) {
+    final isActive = _activeTab == tab;
+    return GestureDetector(
+      onTap: () => setState(() => _activeTab = tab),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppTheme.accent : Colors.transparent,
+              width: 2,
             ),
-        ],
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          tab == _LiveTab.rounds ? 'Раунды' : 'Таблица',
+          style: TextStyle(
+            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
@@ -601,29 +590,38 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final rounds = (group['rounds'] as List).cast<Map<String, dynamic>>();
     final groupId = (group['id'] as num).toInt();
 
-    // При первом показе группы — раскрываем «текущий» раунд (round.status == in_progress)
-    // или первый не завершённый. Остальные сворачиваем.
+    // При первом показе группы — раскрываем «текущий» раунд.
+    // Если групповой этап завершён И есть плей-офф → все раунды свёрнуты
+    // (внимание уходит на плей-офф снизу).
     if (!_initializedGroups.contains(groupId)) {
       _initializedGroups.add(groupId);
+      final hasPlayoff =
+          ((_data?['playoff'] as List?)?.isNotEmpty ?? false);
+      final allCompleted =
+          rounds.isNotEmpty && rounds.every((r) => r['status'] == 'completed');
+
       int? activeIdx;
-      // 1) ищем раунд со статусом in_progress
-      for (var i = 0; i < rounds.length; i++) {
-        if (rounds[i]['status'] == 'in_progress') {
-          activeIdx = i;
-          break;
+      if (!(allCompleted && hasPlayoff)) {
+        // 1) ищем раунд со статусом in_progress
+        for (var i = 0; i < rounds.length; i++) {
+          if (rounds[i]['status'] == 'in_progress') {
+            activeIdx = i;
+            break;
+          }
         }
+        // 2) иначе — первый не completed
+        if (activeIdx == null) {
+          final idx = rounds.indexWhere((r) => r['status'] != 'completed');
+          if (idx >= 0) activeIdx = idx;
+        }
+        // 3) иначе — последний (все завершены и плей-оффа нет)
+        activeIdx ??= rounds.isNotEmpty ? rounds.length - 1 : -1;
       }
-      // 2) иначе — первый не completed
-      if (activeIdx == null) {
-        final idx =
-            rounds.indexWhere((r) => r['status'] != 'completed');
-        if (idx >= 0) activeIdx = idx;
-      }
-      // 3) иначе — последний (все завершены)
-      activeIdx ??= rounds.isNotEmpty ? rounds.length - 1 : -1;
+      // если allCompleted && hasPlayoff — activeIdx останется null → все свёрнуты
+
       for (var i = 0; i < rounds.length; i++) {
         final rid = (rounds[i]['id'] as num).toInt();
-        _roundExpanded[rid] = (i == activeIdx);
+        _roundExpanded[rid] = (activeIdx != null && i == activeIdx);
       }
     }
 
