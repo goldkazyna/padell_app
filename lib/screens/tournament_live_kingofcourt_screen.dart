@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
+import '../providers/main_tab_notifier.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -157,6 +159,12 @@ class _TournamentLiveKingOfCourtScreenState
       child: Scaffold(
         backgroundColor: AppTheme.background,
         body: SafeArea(child: _buildBody()),
+        bottomNavigationBar: _MainTabBar(
+          onTap: (index) {
+            mainTabNotifier.value = index;
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
       ),
     );
   }
@@ -1227,5 +1235,65 @@ class _PlayerTile extends StatelessWidget {
           style: style,
         ),
     ];
+  }
+}
+
+/// Нижнее меню как у [MainScreen] — повторяет 5 вкладок.
+/// При тапе сообщает родителю; родитель пушит в mainTabNotifier
+/// и popUntil((r) => r.isFirst), чтобы вернуться на главный экран
+/// с выбранной вкладкой.
+class _MainTabBar extends StatelessWidget {
+  final void Function(int index) onTap;
+  const _MainTabBar({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final current = mainTabNotifier.value;
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppTheme.card,
+        border: Border(
+          top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
+        ),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: current,
+        onTap: onTap,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: AppTheme.card,
+        selectedItemColor: AppTheme.accent,
+        unselectedItemColor: AppTheme.textSecondary,
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l.navHome,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.emoji_events_outlined),
+            activeIcon: const Icon(Icons.emoji_events),
+            label: l.navTournaments,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.calendar_month_outlined),
+            activeIcon: const Icon(Icons.calendar_month),
+            label: l.navBooking,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.leaderboard_outlined),
+            activeIcon: const Icon(Icons.leaderboard),
+            label: l.navRating,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: l.navProfile,
+          ),
+        ],
+      ),
+    );
   }
 }

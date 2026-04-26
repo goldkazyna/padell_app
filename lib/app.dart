@@ -7,6 +7,7 @@ import 'theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/home_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/main_tab_notifier.dart';
 import 'services/push_notification_service.dart';
 import 'services/api_service.dart';
 import 'services/version_service.dart';
@@ -81,6 +82,15 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _updateBadge();
     _checkForUpdate();
+    _currentIndex = mainTabNotifier.value;
+    mainTabNotifier.addListener(_handleTabFromNotifier);
+  }
+
+  void _handleTabFromNotifier() {
+    if (!mounted) return;
+    if (mainTabNotifier.value != _currentIndex) {
+      setState(() => _currentIndex = mainTabNotifier.value);
+    }
   }
 
   Future<void> _checkForUpdate() async {
@@ -186,6 +196,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    mainTabNotifier.removeListener(_handleTabFromNotifier);
     super.dispose();
   }
 
@@ -330,6 +341,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                   return;
                 }
                 setState(() => _currentIndex = index);
+                mainTabNotifier.value = index;
                 // Проверяем версию при каждом переключении вкладки
                 // (throttle 30s внутри _checkForUpdate)
                 _checkForUpdate();
