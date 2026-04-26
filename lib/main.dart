@@ -6,6 +6,7 @@ import 'theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
 import 'services/api_service.dart';
+import 'services/deep_link_service.dart';
 import 'services/storage_service.dart';
 import 'services/auth_service.dart';
 import 'services/tournament_service.dart';
@@ -66,6 +67,13 @@ void main() async {
       pushService.initialize();
     } catch (e) {
       debugPrint('Push init error: $e');
+    }
+
+    try {
+      DeepLinkService.instance.attachNavigator(navigatorKey);
+      DeepLinkService.instance.init();
+    } catch (e) {
+      debugPrint('DeepLink init error: $e');
     }
   }
 

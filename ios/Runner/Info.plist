@@ -63,6 +63,16 @@
 				<string>com.googleusercontent.apps.549656324072-enfpcjpe8p1f809b7vodiafqcaiq77ck</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>kz.padelp.share</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>padelp</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

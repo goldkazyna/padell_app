@@ -54,6 +54,9 @@ dependencies:
   # Share content
   share_plus: ^10.0.0
 
+  # Deep links (incoming app schemes / universal links)
+  app_links: ^6.3.2
+
   # Image picker (avatar)
   image_picker: ^1.0.0
 

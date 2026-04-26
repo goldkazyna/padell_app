@@ -170,6 +170,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         ? l10n.shareFreeSpots(tournament.spotsLeft)
         : l10n.noSpotsLeft;
 
+    final shareUrl = 'https://padel-p.kz/t/${tournament.id}';
     final text = '${tournament.name}\n\n'
         '${tournament.typeName} · ${tournament.levelCategoryText}\n'
         '${tournament.dateFormatted}, ${tournament.dayOfWeek}\n'
@@ -178,7 +179,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         '${l10n.shareLevel(levelText)}\n'
         '${l10n.shareCost(tournament.priceText)}\n'
         '$spotsText\n\n'
-        '${l10n.shareAppPromo}';
+        '$shareUrl';
 
     Share.share(text);
   }
