@@ -397,12 +397,12 @@ class _StatsStrip extends StatelessWidget {
           value,
           style: TextStyle(
             color: color ?? AppTheme.textPrimary,
-            fontSize: 17,
+            fontSize: 22,
             fontWeight: FontWeight.w700,
-            letterSpacing: -0.3,
+            letterSpacing: -0.4,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 4),
         Text(
           label,
           style: const TextStyle(
