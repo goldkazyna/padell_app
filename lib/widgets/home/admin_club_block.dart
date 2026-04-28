@@ -18,10 +18,19 @@ class AdminClubBlock extends StatelessWidget {
     // берём первый, дальше в Этапе 2 добавим выбор.
     final club = adminClubs.first;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF7C3AED).withAlpha(15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF7C3AED).withAlpha(60),
+          width: 1,
+        ),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -29,12 +38,12 @@ class AdminClubBlock extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF7C3AED).withAlpha(30),
+                  color: const Color(0xFF7C3AED).withAlpha(38),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
                   Icons.shield_outlined,
-                  color: Color(0xFF7C3AED),
+                  color: Color(0xFFA78BFA),
                   size: 16,
                 ),
               ),
@@ -42,7 +51,7 @@ class AdminClubBlock extends StatelessWidget {
               const Text(
                 'УПРАВЛЕНИЕ КЛУБОМ',
                 style: TextStyle(
-                  color: AppTheme.textDim,
+                  color: Color(0xFFA78BFA),
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.2,
