@@ -11,6 +11,7 @@ import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
 import '../widgets/home/clubs_banner.dart';
+import '../widgets/home/admin_club_block.dart';
 import 'clubs_list_screen.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../theme/app_theme.dart';
@@ -113,8 +114,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  _CreateTournamentBanner(
-                    onTap: () => _showAccreditationDialog(context),
+                  // Для admin клуба — блок управления, для остальных —
+                  // приглашение получить аккредитацию.
+                  Consumer<ProfileProvider>(
+                    builder: (_, profile, __) {
+                      final user = profile.user;
+                      if (user != null && user.isClubAdmin) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
+                          child: AdminClubBlock(adminClubs: user.adminClubs),
+                        );
+                      }
+                      return _CreateTournamentBanner(
+                        onTap: () => _showAccreditationDialog(context),
+                      );
+                    },
                   ),
                   const SizedBox(height: 28),
                   SectionTitle(title: AppLocalizations.of(context)!.nearestTournament),

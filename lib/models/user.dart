@@ -1,3 +1,15 @@
+class AdminClubRef {
+  final int id;
+  final String name;
+  const AdminClubRef({required this.id, required this.name});
+
+  factory AdminClubRef.fromJson(Map<String, dynamic> json) =>
+      AdminClubRef(
+        id: json['id'] as int,
+        name: json['name'] as String? ?? '',
+      );
+}
+
 class User {
   final int id;
   final String name;
@@ -14,6 +26,9 @@ class User {
   final String? position;
   final bool levelVerified;
   final bool quizCompleted;
+  final String? role;
+  final bool isClubAdmin;
+  final List<AdminClubRef> adminClubs;
 
   const User({
     required this.id,
@@ -31,6 +46,9 @@ class User {
     this.position,
     this.levelVerified = false,
     this.quizCompleted = false,
+    this.role,
+    this.isClubAdmin = false,
+    this.adminClubs = const [],
   });
 
   int? get age {
@@ -79,6 +97,12 @@ class User {
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
+    final adminClubsList = (json['admin_clubs'] as List?) ?? const [];
+    final adminClubs = adminClubsList
+        .whereType<Map<String, dynamic>>()
+        .map(AdminClubRef.fromJson)
+        .toList();
+
     return User(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
@@ -97,6 +121,9 @@ class User {
       position: json['position'] as String?,
       levelVerified: json['level_verified'] as bool? ?? false,
       quizCompleted: json['quiz_completed'] as bool? ?? false,
+      role: json['role'] as String?,
+      isClubAdmin: json['is_club_admin'] as bool? ?? false,
+      adminClubs: adminClubs,
     );
   }
 
