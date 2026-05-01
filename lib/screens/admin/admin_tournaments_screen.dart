@@ -285,8 +285,8 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
     );
   }
 
-  void _openDetail(AdminTournamentSummary t) {
-    Navigator.push(
+  Future<void> _openDetail(AdminTournamentSummary t) async {
+    final changed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => AdminTournamentDetailScreen(
@@ -295,6 +295,9 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
         ),
       ),
     );
+    if (changed == true && mounted) {
+      _load();
+    }
   }
 }
 
