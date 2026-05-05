@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/court_provider.dart';
 import '../models/club.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import 'court_schedule_screen.dart';
 
 class ClubSelectScreen extends StatefulWidget {
@@ -39,9 +40,9 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
         backgroundColor: AppTheme.background,
         elevation: 0,
         leading: widget.showBack
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios, size: 20),
-                onPressed: () => Navigator.pop(context),
+            ? const Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: Center(child: AppBackButton()),
               )
             : null,
         automaticallyImplyLeading: false,

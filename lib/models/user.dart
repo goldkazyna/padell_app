@@ -1,13 +1,41 @@
 class AdminClubRef {
   final int id;
   final String name;
-  const AdminClubRef({required this.id, required this.name});
+  final Map<String, bool> features;
 
-  factory AdminClubRef.fromJson(Map<String, dynamic> json) =>
-      AdminClubRef(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-      );
+  /// Только для модераторов — есть ли полные права на турниры.
+  /// У club_admin всегда true (их клубы хранятся отдельно).
+  final bool tournamentsFullAccess;
+
+  const AdminClubRef({
+    required this.id,
+    required this.name,
+    this.features = const {},
+    this.tournamentsFullAccess = true,
+  });
+
+  /// hasFeature(key) — true если включена. Если ключа нет в карте,
+  /// считаем включённой (на бэке тот же дефолт).
+  bool hasFeature(String key) => features[key] ?? true;
+
+  factory AdminClubRef.fromJson(Map<String, dynamic> json) {
+    final raw = json['features'];
+    final features = <String, bool>{};
+    if (raw is Map) {
+      raw.forEach((k, v) {
+        if (k is String) features[k] = v == true;
+      });
+    }
+    return AdminClubRef(
+      id: json['id'] as int,
+      name: json['name'] as String? ?? '',
+      features: features,
+      // Дефолт true — для admin_clubs полей tournaments_full_access нет,
+      // они и так с полным доступом.
+      tournamentsFullAccess:
+          json['tournaments_full_access'] as bool? ?? true,
+    );
+  }
 }
 
 class User {
@@ -29,6 +57,8 @@ class User {
   final String? role;
   final bool isClubAdmin;
   final List<AdminClubRef> adminClubs;
+  final bool isClubModerator;
+  final List<AdminClubRef> moderatorClubs;
 
   const User({
     required this.id,
@@ -49,7 +79,23 @@ class User {
     this.role,
     this.isClubAdmin = false,
     this.adminClubs = const [],
+    this.isClubModerator = false,
+    this.moderatorClubs = const [],
   });
+
+  /// Все клубы где у user есть админский интерфейс — admin или moderator.
+  /// Для UI «Управление клубом» на главной.
+  List<AdminClubRef> get manageableClubs =>
+      [...adminClubs, ...moderatorClubs];
+
+  /// Полные права на турниры в данном клубе:
+  /// admin клуба или модератор с tournaments_full_access.
+  bool hasTournamentsFullAccess(int clubId) {
+    if (adminClubs.any((c) => c.id == clubId)) return true;
+    final m = moderatorClubs.where((c) => c.id == clubId).cast<AdminClubRef?>();
+    final mod = m.isEmpty ? null : m.first;
+    return mod?.tournamentsFullAccess ?? false;
+  }
 
   int? get age {
     if (birthDate == null) return null;
@@ -102,6 +148,11 @@ class User {
         .whereType<Map<String, dynamic>>()
         .map(AdminClubRef.fromJson)
         .toList();
+    final modClubsList = (json['moderator_clubs'] as List?) ?? const [];
+    final moderatorClubs = modClubsList
+        .whereType<Map<String, dynamic>>()
+        .map(AdminClubRef.fromJson)
+        .toList();
 
     return User(
       id: json['id'] as int,
@@ -124,6 +175,8 @@ class User {
       role: json['role'] as String?,
       isClubAdmin: json['is_club_admin'] as bool? ?? false,
       adminClubs: adminClubs,
+      isClubModerator: json['is_club_moderator'] as bool? ?? false,
+      moderatorClubs: moderatorClubs,
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import 'player_profile_screen.dart';
 
 class TournamentStatsScreen extends StatefulWidget {
@@ -130,7 +131,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildCircleButton(icon: Icons.chevron_left, onTap: () => Navigator.pop(context)),
+              const AppBackButton(),
               _buildCircleButton(icon: Icons.ios_share, onTap: () {}),
             ],
           ),

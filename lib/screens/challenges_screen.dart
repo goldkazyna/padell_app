@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/challenge_provider.dart';
+import '../widgets/app_back_button.dart';
 import '../widgets/challenges/challenge_card.dart';
 import '../l10n/app_localizations.dart';
 import 'create_challenge_screen.dart';
@@ -55,23 +56,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppTheme.card,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.chevron_left,
-                          color: AppTheme.textPrimary,
-                          size: 24,
-                        ),
-                      ),
-                    ),
+                    const AppBackButton(),
                     const SizedBox(width: 12),
                     Text(
                       AppLocalizations.of(context)!.challenge,

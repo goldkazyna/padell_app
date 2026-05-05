@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../services/push_notification_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import 'tournament_detail_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -140,24 +141,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppTheme.card,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFF2A2A2A),
-                        width: 0.5,
-                      ),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.chevron_left,
-                          color: AppTheme.textPrimary, size: 24),
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
+                  const AppBackButton(),
                   const SizedBox(width: 12),
                   Text(
                     AppLocalizations.of(context)!.notifications,

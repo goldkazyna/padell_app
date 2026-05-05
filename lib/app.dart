@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
+import 'utils/profile_incomplete_guard.dart';
 import 'providers/auth_provider.dart';
 import 'providers/home_provider.dart';
 import 'providers/locale_provider.dart';
@@ -222,84 +223,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   static const Set<int> _lockedTabs = {1, 2, 3};
 
   void _showProfileIncompleteDialog() {
-    final l = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: AppTheme.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF59E0B).withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(
-                  Icons.warning_amber_rounded,
-                  color: Color(0xFFF59E0B),
-                  size: 32,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                l.profileBannerTitle,
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l.profileBannerDesc,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    Navigator.of(ctx).pop();
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-                    );
-                    if (mounted) {
-                      context.read<HomeProvider>().refresh();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accent,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                  ),
-                  child: Text(l.profileBannerCta, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(
-                  l.later,
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    showProfileIncompleteDialog(context);
   }
 
   @override

@@ -1,16 +1,36 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'level_verification_sheet.dart';
+
+Future<void> _openVerificationSheet(
+  BuildContext context,
+  int userId,
+  String playerName,
+) {
+  return LevelVerificationSheet.show(
+    context,
+    userId: userId,
+    playerName: playerName,
+  );
+}
 
 /// Бейдж «Верифицирован» — компактная галочка. Показывать только
 /// когда verified == true.
+///
+/// Если переданы [userId] и [playerName] — бейдж становится кликабельным:
+/// тап открывает модалку с деталями верификации (кто/когда/уровень).
 class VerifiedBadge extends StatelessWidget {
   final double size;
   final bool withTooltip;
+  final int? userId;
+  final String? playerName;
 
   const VerifiedBadge({
     super.key,
     this.size = 14,
     this.withTooltip = true,
+    this.userId,
+    this.playerName,
   });
 
   @override
@@ -26,12 +46,28 @@ class VerifiedBadge extends StatelessWidget {
       child: Icon(Icons.check, color: Colors.white, size: size * 0.7),
     );
 
-    if (!withTooltip) return badge;
+    Widget result = badge;
+    if (withTooltip) {
+      result = Tooltip(
+        message: 'Тапни, чтобы посмотреть кто верифицировал',
+        child: badge,
+      );
+    }
 
-    return Tooltip(
-      message: 'Уровень подтверждён клубом',
-      child: badge,
-    );
+    if (userId != null && (playerName ?? '').isNotEmpty) {
+      result = GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => _openSheet(context),
+        child: result,
+      );
+    }
+
+    return result;
+  }
+
+  Future<void> _openSheet(BuildContext context) async {
+    // Лениво импортируем, чтобы избежать циклической зависимости.
+    await _openVerificationSheet(context, userId!, playerName!);
   }
 }
 

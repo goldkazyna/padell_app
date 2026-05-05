@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
+import '../level_verification_sheet.dart';
 import 'sparkline.dart';
 import 'player_hero.dart' show openFullScreenAvatar;
 import '../verified_badge.dart';
@@ -71,7 +72,13 @@ class ProfileHero extends StatelessWidget {
                       children: [
                         _TopRow(user: user, trailing: trailing),
                         const SizedBox(height: 16),
-                        _RatingRow(rating: rating, rank: rank, trend: trend),
+                        _RatingRow(
+                          rating: rating,
+                          rank: rank,
+                          trend: trend,
+                          userId: user?.id,
+                          playerName: user?.name,
+                        ),
                         const SizedBox(height: 14),
                         _LevelProgress(
                           level: level,
@@ -186,7 +193,11 @@ class _TopRow extends StatelessWidget {
                   ),
                   if (user?.levelVerified == true) ...[
                     const SizedBox(width: 5),
-                    const VerifiedBadge(size: 13),
+                    VerifiedBadge(
+                      size: 13,
+                      userId: user?.id,
+                      playerName: user?.name,
+                    ),
                   ],
                 ],
               ),
@@ -229,60 +240,82 @@ class _RatingRow extends StatelessWidget {
   final int rating;
   final int? rank;
   final List<int> trend;
+  final int? userId;
+  final String? playerName;
 
-  const _RatingRow({required this.rating, required this.rank, required this.trend});
+  const _RatingRow({
+    required this.rating,
+    required this.rank,
+    required this.trend,
+    this.userId,
+    this.playerName,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final canTap = userId != null && (playerName ?? '').isNotEmpty;
+
+    final ratingBlock = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'РЕЙТИНГ',
+          style: TextStyle(
+            color: AppTheme.textDim,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.4,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              '$rating',
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 38,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -1.3,
+                height: 1,
+              ),
+            ),
+            if (rank != null) ...[
+              const SizedBox(width: 8),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  '#$rank',
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ],
+    );
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'РЕЙТИНГ',
-                style: TextStyle(
-                  color: AppTheme.textDim,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.4,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '$rating',
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 38,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -1.3,
-                      height: 1,
-                    ),
+          child: canTap
+              ? GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => LevelVerificationSheet.show(
+                    context,
+                    userId: userId!,
+                    playerName: playerName!,
                   ),
-                  if (rank != null) ...[
-                    const SizedBox(width: 8),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(
-                        '#$rank',
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
+                  child: ratingBlock,
+                )
+              : ratingBlock,
         ),
         const SizedBox(width: 10),
         if (trend.length >= 2)

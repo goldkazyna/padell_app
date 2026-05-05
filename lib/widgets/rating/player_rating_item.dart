@@ -91,7 +91,11 @@ class PlayerRatingItem extends StatelessWidget {
                     ),
                     if (player.levelVerified) ...[
                       const SizedBox(width: 5),
-                      const VerifiedBadge(size: 12),
+                      VerifiedBadge(
+                        size: 12,
+                        userId: player.id,
+                        playerName: player.name,
+                      ),
                     ],
                   ],
                 ),

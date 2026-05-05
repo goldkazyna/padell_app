@@ -107,6 +107,7 @@ void main() async {
           create: (_) => LocaleProvider(storageService),
         ),
         Provider<ProfileService>.value(value: profileService),
+        Provider<RatingService>.value(value: ratingService),
         Provider<PushNotificationService>.value(value: pushService),
         Provider<ClubService>.value(value: clubService),
         Provider<AdminService>.value(value: adminService),

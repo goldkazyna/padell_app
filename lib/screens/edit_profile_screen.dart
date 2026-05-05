@@ -10,6 +10,7 @@ import '../services/storage_service.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_alert.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 
 // Local utility aliases mapped to global AppTheme
 class _T {
@@ -467,18 +468,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              width: 34, height: 34,
-              decoration: const BoxDecoration(
-                color: _T.card,
-                shape: BoxShape.circle,
-                border: Border.fromBorderSide(BorderSide(color: _T.border)),
-              ),
-              child: const Icon(Icons.chevron_left, size: 20, color: _T.text),
-            ),
-          ),
+          const AppBackButton(),
           const SizedBox(width: 10),
           const Text(
             'Настройки профиля',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import 'player_profile_screen.dart';
 
 /// Live-экран идущего «Группового + Плей-офф» (type=team).
@@ -170,20 +171,7 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
         children: [
           Row(
             children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).maybePop(),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppTheme.card,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF2A2A2A)),
-                  ),
-                  child: const Icon(Icons.chevron_left,
-                      color: AppTheme.textPrimary, size: 22),
-                ),
-              ),
+              const AppBackButton(),
               const SizedBox(width: 12),
               const _LivePill(),
             ],

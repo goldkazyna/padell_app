@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/admin_tournament_summary.dart';
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
 import 'admin_tournament_detail_screen.dart';
 
@@ -82,20 +83,7 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).maybePop(),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppTheme.card,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF2A2A2A)),
-              ),
-              child: const Icon(Icons.chevron_left,
-                  color: AppTheme.textPrimary, size: 22),
-            ),
-          ),
+          const AppBackButton(),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

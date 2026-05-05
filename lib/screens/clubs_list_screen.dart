@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/club.dart';
 import '../services/club_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import 'club_detail_screen.dart';
 
 class ClubsListScreen extends StatefulWidget {
@@ -73,19 +74,7 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppTheme.card,
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
-              ),
-              child: const Icon(Icons.chevron_left, color: AppTheme.textPrimary, size: 22),
-            ),
-          ),
+          const AppBackButton(),
           const SizedBox(width: 14),
           const Text(
             'Клубы',

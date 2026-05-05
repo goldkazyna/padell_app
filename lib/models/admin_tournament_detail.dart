@@ -23,6 +23,7 @@ class AdminTournamentDetail {
   final bool canEdit;
   final bool canStart;
   final bool canDelete;
+  final bool tournamentsFullAccess;
 
   const AdminTournamentDetail({
     required this.id,
@@ -47,6 +48,7 @@ class AdminTournamentDetail {
     required this.canEdit,
     required this.canStart,
     required this.canDelete,
+    this.tournamentsFullAccess = true,
   });
 
   factory AdminTournamentDetail.fromJson(Map<String, dynamic> json) {
@@ -79,6 +81,8 @@ class AdminTournamentDetail {
       canEdit: json['can_edit'] as bool? ?? false,
       canStart: json['can_start'] as bool? ?? false,
       canDelete: json['can_delete'] as bool? ?? false,
+      tournamentsFullAccess:
+          json['tournaments_full_access'] as bool? ?? true,
     );
   }
 }

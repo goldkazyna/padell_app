@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/court_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../widgets/app_back_button.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -71,9 +72,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       appBar: AppBar(
         backgroundColor: AppTheme.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Center(child: AppBackButton()),
         ),
         title: Text(AppLocalizations.of(context)!.myBookings,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),

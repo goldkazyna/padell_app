@@ -1,15 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/admin_matches.dart';
+import '../../models/admin_participant.dart';
+import '../../models/admin_participants_response.dart';
+import '../../models/admin_team.dart';
 import '../../models/admin_tournament_detail.dart';
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
+import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
 
-/// Этап 3a — экран управления существующим турниром.
-/// Активен только таб «Инфо». «Участники» и «Матчи» — заглушки до 3b/3c.
+/// Этап 3a/3b — экран управления существующим турниром.
+/// Таб «Матчи» — заглушка до 3c.
 class AdminTournamentDetailScreen extends StatefulWidget {
   final int tournamentId;
   final String tournamentName;
@@ -45,6 +52,21 @@ class _AdminTournamentDetailScreenState
   bool _saving = false;
   bool _starting = false;
   bool _deleting = false;
+
+  // Этап 3b — участники
+  AdminParticipantsResponse? _participants;
+  bool _loadingParticipants = false;
+  String? _participantsError;
+
+  // Глобальный busy-оверлей для длинных экшенов (approve/reject/remove/etc).
+  bool _actionBusy = false;
+  String? _actionLabel;
+
+  // Этап 3c-1 — матчи
+  AdminMatchesResponse? _matches;
+  bool _loadingMatches = false;
+  String? _matchesError;
+  int _selectedGroupIdx = 0;
 
   @override
   void initState() {
@@ -184,7 +206,16 @@ class _AdminTournamentDetailScreenState
       setState(() {
         _t = updated;
         _starting = false;
+        // После запуска сгенерились раунды — кэшированный matches/participants
+        // (если открывали раньше) сбрасываем, чтобы при переключении табов
+        // подгрузилось свежее состояние.
+        _matches = null;
+        _participants = null;
       });
+      // И сразу подгружаем матчи и участников в фоне — чтобы при переходе на
+      // таб не было пустого экрана.
+      unawaited(_loadMatches());
+      unawaited(_loadParticipants());
       await showAppAlert(context, 'Турнир запущен');
     } catch (e) {
       if (!mounted) return;
@@ -314,33 +345,73 @@ class _AdminTournamentDetailScreenState
     return Scaffold(
       backgroundColor: AppTheme.background,
       bottomNavigationBar: const MainTabBar(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildTabBar(),
-            Expanded(
-              child: _loading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: AppTheme.accent))
-                  : _error != null
-                      ? _buildError()
-                      : IndexedStack(
-                          index: _currentTab,
-                          children: [
-                            _buildInfoTab(),
-                            _buildPlaceholder(
-                              'Участники',
-                              'Этап 3b — модерация заявок, добавление и удаление участников.',
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(),
+                _buildTabBar(),
+                Expanded(
+                  child: _loading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                              color: AppTheme.accent))
+                      : _error != null
+                          ? _buildError()
+                          : IndexedStack(
+                              index: _currentTab,
+                              children: [
+                                _buildInfoTab(),
+                                _buildParticipantsTab(),
+                                _buildMatchesTab(),
+                              ],
                             ),
-                            _buildPlaceholder(
-                              'Матчи',
-                              'Этап 3c — ввод счёта, генерация раундов и плей-офф.',
-                            ),
-                          ],
-                        ),
+                ),
+              ],
             ),
-          ],
+          ),
+          if (_actionBusy) _buildBusyOverlay(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBusyOverlay() {
+    return Positioned.fill(
+      child: AbsorbPointer(
+        absorbing: true,
+        child: Container(
+          color: Colors.black.withOpacity(0.55),
+          child: Center(
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: BoxDecoration(
+                color: AppTheme.card,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(
+                      color: AppTheme.accent,
+                      strokeWidth: 2.4,
+                    ),
+                  ),
+                  if ((_actionLabel ?? '').isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(_actionLabel!,
+                        style: const TextStyle(
+                            color: AppTheme.textPrimary, fontSize: 13)),
+                  ],
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -352,20 +423,7 @@ class _AdminTournamentDetailScreenState
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).maybePop(),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppTheme.card,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF2A2A2A)),
-              ),
-              child: const Icon(Icons.chevron_left,
-                  color: AppTheme.textPrimary, size: 22),
-            ),
-          ),
+          const AppBackButton(),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -419,6 +477,12 @@ class _AdminTournamentDetailScreenState
       onTap: () {
         if (_currentTab != index) {
           setState(() => _currentTab = index);
+          if (index == 1 && _participants == null && !_loadingParticipants) {
+            _loadParticipants();
+          }
+          if (index == 2 && _matches == null && !_loadingMatches) {
+            _loadMatches();
+          }
         }
       },
       child: Container(
@@ -516,7 +580,9 @@ class _AdminTournamentDetailScreenState
           _buildStatusCard(t),
           if (disabled) ...[
             const SizedBox(height: 12),
-            _buildLockedNotice(),
+            _buildLockedNotice(
+              noFullAccess: !t.tournamentsFullAccess,
+            ),
           ],
           const SizedBox(height: 16),
           _buildSection(
@@ -649,7 +715,10 @@ class _AdminTournamentDetailScreenState
     );
   }
 
-  Widget _buildLockedNotice() {
+  Widget _buildLockedNotice({bool noFullAccess = false}) {
+    final text = noFullAccess
+        ? 'У вас нет прав на редактирование турниров. Обратитесь к админу клуба.'
+        : 'Турнир уже идёт или завершён — редактирование недоступно';
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -657,14 +726,14 @@ class _AdminTournamentDetailScreenState
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.amber.withOpacity(0.4)),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.lock_outline, color: AppTheme.amber, size: 18),
-          SizedBox(width: 8),
+          const Icon(Icons.lock_outline, color: AppTheme.amber, size: 18),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Турнир уже идёт или завершён — редактирование недоступно',
-              style: TextStyle(
+              text,
+              style: const TextStyle(
                   color: AppTheme.textPrimary, fontSize: 12, height: 1.4),
             ),
           ),
@@ -956,7 +1025,7 @@ class _AdminTournamentDetailScreenState
       case 'in_progress':
         return AppTheme.blue;
       case 'completed':
-        return AppTheme.purple;
+        return AppTheme.textSecondary;
       case 'cancelled':
         return AppTheme.error;
       default:
@@ -970,5 +1039,2174 @@ class _AdminTournamentDetailScreenState
     final hh = d.hour.toString().padLeft(2, '0');
     final mi = d.minute.toString().padLeft(2, '0');
     return '$dd.$mm.${d.year} $hh:$mi';
+  }
+
+  // ===========================================================================
+  // 3b — таб «Участники»
+  // ===========================================================================
+
+  Future<void> _loadParticipants() async {
+    setState(() {
+      _loadingParticipants = true;
+      _participantsError = null;
+    });
+    try {
+      final r = await context
+          .read<AdminService>()
+          .getParticipants(widget.tournamentId);
+      if (!mounted) return;
+      setState(() {
+        _participants = r;
+        _loadingParticipants = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _participantsError = '$e';
+        _loadingParticipants = false;
+      });
+    }
+  }
+
+  /// Перезагрузить и список участников, и инфо (для синхронизации счётчиков).
+  Future<void> _refreshAfterAction() async {
+    await Future.wait([
+      _loadParticipants(),
+      context
+          .read<AdminService>()
+          .getTournamentDetail(widget.tournamentId)
+          .then((t) {
+        if (!mounted) return;
+        setState(() => _t = t);
+      }).catchError((_) {}),
+    ]);
+  }
+
+  Widget _buildParticipantsTab() {
+    if (_loadingParticipants && _participants == null) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+    if (_participantsError != null && _participants == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline,
+                  color: AppTheme.error, size: 48),
+              const SizedBox(height: 12),
+              Text(_participantsError!,
+                  textAlign: TextAlign.center,
+                  style:
+                      const TextStyle(color: AppTheme.textSecondary)),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: _loadParticipants,
+                child: const Text('Повторить',
+                    style: TextStyle(color: AppTheme.accent)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    final r = _participants;
+    if (r == null) return const SizedBox.shrink();
+
+    return RefreshIndicator(
+      onRefresh: _refreshAfterAction,
+      color: AppTheme.accent,
+      backgroundColor: AppTheme.card,
+      child: r.isTeam
+          ? _buildTeamsList(r)
+          : _buildSinglesList(r),
+    );
+  }
+
+  // -------------------- Одиночные --------------------
+
+  Widget _buildSinglesList(AdminParticipantsResponse r) {
+    final pending = r.participants.where((p) => p.status == 'pending').toList();
+    final approved =
+        r.participants.where((p) => p.status == 'registered').toList();
+    final taken = approved.length + pending.length;
+    final isFull = taken >= r.max;
+
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      children: [
+        _buildParticipantsHeader(
+          approved: approved.length,
+          max: r.max,
+          pending: pending.length,
+          canModify: r.canModify,
+          isFull: isFull,
+          onAdd: r.canModify ? _openAddPlayer : null,
+        ),
+        if (pending.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _buildPendingBlock(pending),
+        ],
+        const SizedBox(height: 12),
+        if (approved.isEmpty)
+          _buildEmptyHint('Подтверждённых участников ещё нет')
+        else
+          ...approved.map((p) =>
+              _buildParticipantTile(p, canModify: r.canModify)),
+      ],
+    );
+  }
+
+  Widget _buildPendingBlock(List<AdminParticipant> pending) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.amber.withOpacity(0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.schedule,
+                  color: AppTheme.amber, size: 18),
+              const SizedBox(width: 8),
+              Text('На модерации: ${pending.length}',
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+              const Spacer(),
+              TextButton(
+                onPressed: () => _approveAll(pending),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('Одобрить все',
+                    style: TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...pending.map(_buildPendingTile),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingTile(AdminParticipant p) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            _avatar(p),
+            const SizedBox(width: 10),
+            Expanded(child: _nameAndMeta(p)),
+            IconButton(
+              icon: const Icon(Icons.check_circle_outline,
+                  color: AppTheme.accent),
+              tooltip: 'Одобрить',
+              onPressed: () => _approveOne(p),
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel_outlined,
+                  color: AppTheme.error),
+              tooltip: 'Отклонить',
+              onPressed: () => _rejectOne(p),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildParticipantTile(AdminParticipant p,
+      {required bool canModify}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          _avatar(p),
+          const SizedBox(width: 10),
+          Expanded(child: _nameAndMeta(p)),
+          if (canModify)
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert,
+                  color: AppTheme.textSecondary),
+              color: AppTheme.cardRaised,
+              onSelected: (v) {
+                if (v == 'replace') _openReplacePlayer(p);
+                if (v == 'remove') _removeOne(p);
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                    value: 'replace',
+                    child: Text('Заменить',
+                        style: TextStyle(color: AppTheme.textPrimary))),
+                PopupMenuItem(
+                    value: 'remove',
+                    child: Text('Удалить',
+                        style: TextStyle(color: AppTheme.error))),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  // -------------------- Команды --------------------
+
+  Widget _buildTeamsList(AdminParticipantsResponse r) {
+    final pending = r.teams.where((t) => t.status == 'pending').toList();
+    final approved = r.teams.where((t) => t.status == 'approved').toList();
+    final taken = approved.length + pending.length;
+    final isFull = taken >= r.max;
+
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      children: [
+        _buildParticipantsHeader(
+          approved: approved.length,
+          max: r.max,
+          pending: pending.length,
+          canModify: r.canModify,
+          isFull: isFull,
+          onAdd: null, // парные турниры — добавление через Web
+          subtitle: 'пар',
+        ),
+        if (pending.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _buildPendingTeamsBlock(pending),
+        ],
+        const SizedBox(height: 12),
+        if (approved.isEmpty)
+          _buildEmptyHint('Одобренных пар ещё нет')
+        else
+          ...approved.map((t) =>
+              _buildTeamTile(t, canModify: r.canModify, pending: false)),
+      ],
+    );
+  }
+
+  Widget _buildPendingTeamsBlock(List<AdminTeam> teams) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.amber.withOpacity(0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.schedule,
+                  color: AppTheme.amber, size: 18),
+              const SizedBox(width: 8),
+              Text('Пар на модерации: ${teams.length}',
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...teams.map((t) =>
+              _buildTeamTile(t, canModify: true, pending: true)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTeamTile(AdminTeam t,
+      {required bool canModify, required bool pending}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: pending ? AppTheme.card : AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          if (t.player1 != null)
+            _buildTeamPlayerRow(t.player1!, isFirst: true),
+          if (t.player1 != null && t.player2 != null)
+            const Divider(color: AppTheme.divider, height: 14),
+          if (t.player2 != null)
+            _buildTeamPlayerRow(t.player2!, isFirst: false),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Spacer(),
+              if (pending) ...[
+                TextButton(
+                  onPressed: () => _approveTeam(t),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                  child: const Text('Одобрить',
+                      style: TextStyle(
+                          color: AppTheme.accent,
+                          fontWeight: FontWeight.w700)),
+                ),
+                TextButton(
+                  onPressed: () => _rejectTeam(t),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                  child: const Text('Отклонить',
+                      style: TextStyle(
+                          color: AppTheme.error,
+                          fontWeight: FontWeight.w700)),
+                ),
+              ] else if (canModify)
+                TextButton(
+                  onPressed: () => _removeTeam(t),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                  child: const Text('Удалить пару',
+                      style: TextStyle(
+                          color: AppTheme.error,
+                          fontWeight: FontWeight.w700)),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTeamPlayerRow(AdminParticipant p, {required bool isFirst}) {
+    return Row(
+      children: [
+        _avatar(p),
+        const SizedBox(width: 10),
+        Expanded(child: _nameAndMeta(p)),
+      ],
+    );
+  }
+
+  // -------------------- Общие виджеты --------------------
+
+  Widget _buildParticipantsHeader({
+    required int approved,
+    required int max,
+    required int pending,
+    required bool canModify,
+    required bool isFull,
+    required VoidCallback? onAdd,
+    String subtitle = 'участников',
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$approved / $max $subtitle',
+                    style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700)),
+                if (pending > 0) ...[
+                  const SizedBox(height: 2),
+                  Text('На модерации: $pending',
+                      style: const TextStyle(
+                          color: AppTheme.amber, fontSize: 12)),
+                ],
+                if (isFull) ...[
+                  const SizedBox(height: 2),
+                  const Text('Лимит участников достигнут',
+                      style: TextStyle(
+                          color: AppTheme.error, fontSize: 12)),
+                ],
+              ],
+            ),
+          ),
+          if (onAdd != null)
+            ElevatedButton.icon(
+              onPressed: isFull ? null : onAdd,
+              icon: const Icon(Icons.person_add, size: 16),
+              label: const Text('Добавить'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.accent,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: AppTheme.cardRaised,
+                disabledForegroundColor: AppTheme.textDim,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _avatar(AdminParticipant p) {
+    final initials = _initials(p.name);
+    final hasAvatar = (p.avatarUrl ?? '').isNotEmpty;
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        shape: BoxShape.circle,
+        image: hasAvatar
+            ? DecorationImage(
+                image: NetworkImage(p.avatarUrl!), fit: BoxFit.cover)
+            : null,
+      ),
+      child: hasAvatar
+          ? null
+          : Center(
+              child: Text(initials,
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+            ),
+    );
+  }
+
+  Widget _nameAndMeta(AdminParticipant p) {
+    final pieces = <String>[];
+    if (p.level != null) pieces.add('L${p.level!.toStringAsFixed(2)}');
+    if (p.rating != null) pieces.add('${p.rating}');
+    if ((p.phone ?? '').isNotEmpty) pieces.add(p.phone!);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(p.name,
+            style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis),
+        if (pieces.isNotEmpty)
+          Text(pieces.join(' · '),
+              style: const TextStyle(
+                  color: AppTheme.textSecondary, fontSize: 12),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+      ],
+    );
+  }
+
+  Widget _buildEmptyHint(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Center(
+        child: Text(text,
+            style: const TextStyle(
+                color: AppTheme.textSecondary, fontSize: 13)),
+      ),
+    );
+  }
+
+  String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts[0].substring(0, 1) + parts[1].substring(0, 1))
+        .toUpperCase();
+  }
+
+  // -------------------- Действия --------------------
+
+  Future<void> _approveOne(AdminParticipant p) async {
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .approveParticipant(widget.tournamentId, p.id),
+      label: 'Одобряем заявку...',
+    );
+  }
+
+  Future<void> _rejectOne(AdminParticipant p) async {
+    final ok = await _confirm(
+      title: 'Отклонить заявку?',
+      message: 'Игрок ${p.name} получит уведомление.',
+      okText: 'Отклонить',
+      destructive: true,
+    );
+    if (!ok) return;
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .rejectParticipant(widget.tournamentId, p.id),
+      label: 'Отклоняем заявку...',
+    );
+  }
+
+  Future<void> _removeOne(AdminParticipant p) async {
+    final ok = await _confirm(
+      title: 'Удалить участника?',
+      message: '${p.name} будет удалён из турнира.',
+      okText: 'Удалить',
+      destructive: true,
+    );
+    if (!ok) return;
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .removeParticipant(widget.tournamentId, p.id),
+      label: 'Удаляем участника...',
+    );
+  }
+
+  Future<void> _approveAll(List<AdminParticipant> pending) async {
+    final ok = await _confirm(
+      title: 'Одобрить все заявки?',
+      message: 'Будет одобрено ${pending.length} заявок (в пределах лимита).',
+      okText: 'Одобрить все',
+    );
+    if (!ok) return;
+    if (_actionBusy) return;
+
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = 'Одобряем 0 / ${pending.length}...';
+    });
+
+    final svc = context.read<AdminService>();
+    int done = 0;
+    String? lastErr;
+    for (final p in pending) {
+      try {
+        await svc.approveParticipant(widget.tournamentId, p.id);
+        done++;
+        if (mounted) {
+          setState(() => _actionLabel =
+              'Одобряем $done / ${pending.length}...');
+        }
+      } catch (e) {
+        lastErr = '$e';
+        break;
+      }
+    }
+    await _refreshAfterAction();
+    if (mounted) {
+      setState(() {
+        _actionBusy = false;
+        _actionLabel = null;
+      });
+    }
+    if (!mounted) return;
+    if (lastErr != null && done == 0) {
+      await showAppAlert(context, lastErr,
+          title: 'Ошибка', isError: true);
+    } else if (lastErr != null) {
+      await showAppAlert(context,
+          'Одобрено: $done. Дальше: $lastErr',
+          title: 'Частично', isError: true);
+    } else {
+      await showAppAlert(context, 'Одобрено заявок: $done');
+    }
+  }
+
+  Future<void> _approveTeam(AdminTeam t) async {
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .approveTeam(widget.tournamentId, t.id),
+      label: 'Одобряем пару...',
+    );
+  }
+
+  Future<void> _rejectTeam(AdminTeam t) async {
+    final ok = await _confirm(
+      title: 'Отклонить пару?',
+      message: 'Заявка будет удалена.',
+      okText: 'Отклонить',
+      destructive: true,
+    );
+    if (!ok) return;
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .rejectTeam(widget.tournamentId, t.id),
+      label: 'Отклоняем пару...',
+    );
+  }
+
+  Future<void> _removeTeam(AdminTeam t) async {
+    final ok = await _confirm(
+      title: 'Удалить пару?',
+      message: 'Пара будет удалена из турнира.',
+      okText: 'Удалить',
+      destructive: true,
+    );
+    if (!ok) return;
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .removeTeam(widget.tournamentId, t.id),
+      label: 'Удаляем пару...',
+    );
+  }
+
+  Future<void> _runAction(Future<void> Function() action,
+      {String label = 'Применяем...'}) async {
+    if (_actionBusy) return;
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = label;
+    });
+    try {
+      await action();
+      await _refreshAfterAction();
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionBusy = false;
+          _actionLabel = null;
+        });
+      }
+    }
+  }
+
+  // -------------------- Поиск / добавление / замена --------------------
+
+  Future<void> _openAddPlayer() async {
+    if (_actionBusy) return;
+
+    // Перед открытием поиска ВСЕГДА перепроверяем лимит со свежими данными
+    // с сервера — на случай если кто-то добавил игроков из веба и наш UI
+    // ещё не обновился.
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = 'Проверяем места...';
+    });
+    AdminParticipantsResponse fresh;
+    try {
+      fresh =
+          await context.read<AdminService>().getParticipants(widget.tournamentId);
+      if (!mounted) return;
+      setState(() => _participants = fresh);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _actionBusy = false;
+        _actionLabel = null;
+      });
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+      return;
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionBusy = false;
+          _actionLabel = null;
+        });
+      }
+    }
+
+    if (!fresh.isTeam) {
+      final taken = fresh.participants
+          .where((p) => p.status == 'registered' || p.status == 'pending')
+          .length;
+      if (taken >= fresh.max) {
+        if (!mounted) return;
+        await showAppAlert(
+          context,
+          'Достигнут лимит участников: $taken / ${fresh.max}. '
+          'Удалите кого-то или отклоните заявку, чтобы освободить место.',
+          title: 'Нельзя добавить',
+          isError: true,
+        );
+        return;
+      }
+    }
+
+    if (!mounted) return;
+    final selected = await _showPlayerSearchSheet(
+      title: 'Добавить игрока',
+    );
+    if (selected == null) return;
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .addParticipant(widget.tournamentId, selected.id),
+      label: 'Добавляем игрока...',
+    );
+  }
+
+  Future<void> _openReplacePlayer(AdminParticipant old) async {
+    final selected = await _showPlayerSearchSheet(
+      title: 'Заменить ${old.name}',
+    );
+    if (selected == null) return;
+    await _runAction(
+      () => context.read<AdminService>().replaceParticipant(
+            widget.tournamentId,
+            old.id,
+            selected.id,
+          ),
+      label: 'Заменяем игрока...',
+    );
+  }
+
+  Future<AdminParticipant?> _showPlayerSearchSheet({
+    required String title,
+  }) async {
+    return showModalBottomSheet<AdminParticipant>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => _PlayerSearchSheet(
+        title: title,
+        tournamentId: widget.tournamentId,
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // 3c-1 — таб «Матчи» (Американо)
+  // ===========================================================================
+
+  Future<void> _loadMatches() async {
+    setState(() {
+      _loadingMatches = true;
+      _matchesError = null;
+    });
+    try {
+      final r = await context
+          .read<AdminService>()
+          .getMatches(widget.tournamentId);
+      if (!mounted) return;
+      setState(() {
+        _matches = r;
+        _loadingMatches = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _matchesError = '$e';
+        _loadingMatches = false;
+      });
+    }
+  }
+
+  Widget _buildMatchesTab() {
+    if (_loadingMatches && _matches == null) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+    if (_matchesError != null && _matches == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline,
+                  color: AppTheme.error, size: 48),
+              const SizedBox(height: 12),
+              Text(_matchesError!,
+                  textAlign: TextAlign.center,
+                  style:
+                      const TextStyle(color: AppTheme.textSecondary)),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: _loadMatches,
+                child: const Text('Повторить',
+                    style: TextStyle(color: AppTheme.accent)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    final r = _matches;
+    if (r == null) return const SizedBox.shrink();
+
+    if (r.unsupported) {
+      return _buildPlaceholder(
+        'Скоро',
+        r.unsupportedMessage ??
+            'Этот тип турнира пока не поддерживается в мобильной админке.',
+      );
+    }
+
+    if (r.groups.isEmpty &&
+        (r.playoff?.matches.isEmpty ?? true)) {
+      return RefreshIndicator(
+        onRefresh: _loadMatches,
+        color: AppTheme.accent,
+        backgroundColor: AppTheme.card,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            const SizedBox(height: 80),
+            Center(
+              child: Column(
+                children: const [
+                  Icon(Icons.sports_tennis,
+                      color: AppTheme.textDim, size: 48),
+                  SizedBox(height: 12),
+                  Text('Раунды ещё не сгенерированы.\nЗапусти турнир.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: AppTheme.textSecondary, fontSize: 13)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_selectedGroupIdx >= r.groups.length) {
+      _selectedGroupIdx = 0;
+    }
+    final selectedGroup =
+        r.groups.isNotEmpty ? r.groups[_selectedGroupIdx] : null;
+
+    return RefreshIndicator(
+      onRefresh: _loadMatches,
+      color: AppTheme.accent,
+      backgroundColor: AppTheme.card,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        children: [
+          if (r.summary != null) _buildMatchesSummary(r.summary!),
+          if (r.groups.length > 1) ...[
+            const SizedBox(height: 12),
+            _buildGroupTabs(r.groups),
+          ],
+          if (selectedGroup != null) ...[
+            const SizedBox(height: 12),
+            _buildGroupCard(selectedGroup),
+          ],
+          if (r.playoff != null && r.playoff!.matches.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildPlayoffSection(r.playoff!),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupTabs(List<AdminMatchGroup> groups) {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF27272A), width: 1),
+        ),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < groups.length; i++)
+            Expanded(child: _groupTabBtn(groups[i].name, i)),
+        ],
+      ),
+    );
+  }
+
+  Widget _groupTabBtn(String label, int idx) {
+    final isActive = _selectedGroupIdx == idx;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedGroupIdx = idx),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppTheme.accent : Colors.transparent,
+              width: 2,
+            ),
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label.isEmpty ? 'Группа ${idx + 1}' : label,
+          style: TextStyle(
+            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMatchesSummary(AdminMatchesSummary s) {
+    final pct = s.matchesTotal == 0 ? 0.0 : s.matchesPlayed / s.matchesTotal;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Text('Сыграно ${s.matchesPlayed} / ${s.matchesTotal}',
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700)),
+              const Spacer(),
+              if (s.allGroupMatchesPlayed)
+                const Icon(Icons.check_circle,
+                    color: AppTheme.accent, size: 18),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: pct,
+              minHeight: 6,
+              backgroundColor: AppTheme.cardRaised,
+              valueColor:
+                  const AlwaysStoppedAnimation(AppTheme.accent),
+            ),
+          ),
+          if (s.canGeneratePlayoff) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: ElevatedButton.icon(
+                onPressed: _actionBusy ? null : _generatePlayoff,
+                icon: const Icon(Icons.emoji_events_outlined, size: 18),
+                label: const Text('Сгенерировать плей-офф'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accent,
+                  disabledBackgroundColor:
+                      AppTheme.accent.withOpacity(0.4),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  textStyle: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ],
+          if (s.canGenerateNextRound) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: ElevatedButton.icon(
+                onPressed: _actionBusy ? null : _generateNextRound,
+                icon: const Icon(Icons.skip_next_rounded, size: 18),
+                label: const Text('Сгенерировать следующий раунд'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accent,
+                  disabledBackgroundColor:
+                      AppTheme.accent.withOpacity(0.4),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  textStyle: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ],
+          if (s.canFinish) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: ElevatedButton.icon(
+                onPressed: _actionBusy ? null : _finish,
+                icon: const Icon(Icons.flag_outlined, size: 18),
+                label: const Text('Завершить турнир'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accent,
+                  disabledBackgroundColor:
+                      AppTheme.accent.withOpacity(0.4),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  textStyle: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _generateNextRound() async {
+    if (_actionBusy) return;
+    final ok = await _confirm(
+      title: 'Сгенерировать следующий раунд?',
+      message:
+          'Игроки будут переставлены по кортам по результатам текущего раунда.',
+      okText: 'Сгенерировать',
+    );
+    if (!ok) return;
+
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = 'Генерируем раунд...';
+    });
+    try {
+      final fresh = await context
+          .read<AdminService>()
+          .generateNextRound(widget.tournamentId);
+      if (!mounted) return;
+      setState(() => _matches = fresh);
+      try {
+        final t = await context
+            .read<AdminService>()
+            .getTournamentDetail(widget.tournamentId);
+        if (mounted) setState(() => _t = t);
+      } catch (_) {}
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionBusy = false;
+          _actionLabel = null;
+        });
+      }
+    }
+  }
+
+  Future<void> _generatePlayoff() async {
+    if (_actionBusy) return;
+    final ok = await _confirm(
+      title: 'Сгенерировать плей-офф?',
+      message:
+          'Создадутся полуфиналы и финал из топ-4 каждой группы. Действие необратимо.',
+      okText: 'Сгенерировать',
+    );
+    if (!ok) return;
+
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = 'Генерируем плей-офф...';
+    });
+    try {
+      final fresh = await context
+          .read<AdminService>()
+          .generatePlayoff(widget.tournamentId);
+      if (!mounted) return;
+      setState(() {
+        _matches = fresh;
+      });
+      // Сводка/can_* в инфо-табе тоже могла поменяться
+      try {
+        final t = await context
+            .read<AdminService>()
+            .getTournamentDetail(widget.tournamentId);
+        if (mounted) setState(() => _t = t);
+      } catch (_) {}
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionBusy = false;
+          _actionLabel = null;
+        });
+      }
+    }
+  }
+
+  Future<void> _finish() async {
+    if (_actionBusy) return;
+    final ok = await _confirm(
+      title: 'Завершить турнир?',
+      message:
+          'После завершения изменится рейтинг всех участников. Действие необратимо.',
+      okText: 'Завершить',
+    );
+    if (!ok) return;
+
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = 'Завершаем турнир...';
+    });
+    try {
+      final t = await context
+          .read<AdminService>()
+          .finishTournament(widget.tournamentId);
+      if (!mounted) return;
+      _applyToForm(t);
+      setState(() {
+        _t = t;
+        // Сбрасываем кэш матчей — старый summary с can_finish=true устарел.
+        _matches = null;
+      });
+      // Грузим свежий список матчей в фоне.
+      unawaited(_loadMatches());
+      if (!mounted) return;
+      await showAppAlert(context,
+          'Турнир завершён, рейтинг применён');
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionBusy = false;
+          _actionLabel = null;
+        });
+      }
+    }
+  }
+
+  Widget _buildGroupCard(AdminMatchGroup g) {
+    final hasName = g.name.trim().isNotEmpty;
+    final played = g.rounds.fold<int>(
+        0, (a, r) => a + r.matches.where((m) => m.isCompleted).length);
+    final total = g.rounds.fold<int>(0, (a, r) => a + r.matches.length);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (hasName) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(g.name,
+                      style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700)),
+                ),
+                Text(
+                  '$played / $total',
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary, fontSize: 12),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
+          if (g.leaderboard.isNotEmpty) ...[
+            _buildLeaderboard(g.leaderboard),
+            const SizedBox(height: 12),
+          ],
+          ...g.rounds.map(_buildRoundBlock),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLeaderboard(List<AdminLeaderboardRow> rows) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Table(
+        columnWidths: const {
+          0: IntrinsicColumnWidth(), // #
+          1: IntrinsicColumnWidth(), // avatar
+          2: FlexColumnWidth(),      // name (растягивается, переносится)
+          3: IntrinsicColumnWidth(), // В
+          4: IntrinsicColumnWidth(), // П
+          5: IntrinsicColumnWidth(), // Р (forA:against)
+          6: IntrinsicColumnWidth(), // %
+          7: IntrinsicColumnWidth(), // Очки
+        },
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: [
+          _leaderboardHeaderRow(),
+          for (final p in rows) _leaderboardRow(p),
+        ],
+      ),
+    );
+  }
+
+  TableRow _leaderboardHeaderRow() {
+    const hdrStyle = TextStyle(
+      color: AppTheme.textSecondary,
+      fontSize: 10,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0.3,
+    );
+    Widget hdr(String text,
+        {AlignmentGeometry alignment = Alignment.center,
+        EdgeInsets? padding}) {
+      return Container(
+        padding: padding ??
+            const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        alignment: alignment,
+        child: Text(
+          text,
+          style: hdrStyle,
+          textAlign: alignment == Alignment.centerLeft
+              ? TextAlign.left
+              : (alignment == Alignment.centerRight
+                  ? TextAlign.right
+                  : TextAlign.center),
+        ),
+      );
+    }
+
+    return TableRow(
+      children: [
+        hdr('#',
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(2, 8, 6, 8)),
+        const SizedBox(),
+        hdr('ИГРОК',
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
+        hdr('В'),
+        hdr('П'),
+        hdr('Р'),
+        hdr('%'),
+        hdr('ОЧКИ',
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
+      ],
+    );
+  }
+
+  TableRow _leaderboardRow(AdminLeaderboardRow p) {
+    final posColor = switch (p.position) {
+      1 => const Color(0xFFFACC15),
+      2 => const Color(0xFF94A3B8),
+      3 => const Color(0xFFF97316),
+      _ => const Color(0xFF52525B),
+    };
+
+    Widget cell(Widget child,
+        {EdgeInsets? padding,
+        AlignmentGeometry alignment = Alignment.center}) {
+      return Container(
+        padding: padding ??
+            const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        alignment: alignment,
+        child: child,
+      );
+    }
+
+    return TableRow(
+      children: [
+        cell(
+          Text('${p.position}',
+              style: TextStyle(
+                  color: posColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          padding: const EdgeInsets.fromLTRB(2, 10, 6, 10),
+          alignment: Alignment.centerLeft,
+        ),
+        cell(
+          _AdminLeaderAvatar(url: p.avatarUrl, name: p.name, size: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        ),
+        cell(
+          Text(p.name,
+              softWrap: true,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2)),
+          padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
+          alignment: Alignment.centerLeft,
+        ),
+        cell(Text('${p.wins}',
+            style: const TextStyle(
+                color: Color(0xFF22C55E),
+                fontSize: 12,
+                fontWeight: FontWeight.w700))),
+        cell(Text('${p.losses}',
+            style: const TextStyle(
+                color: Color(0xFFEF4444),
+                fontSize: 12,
+                fontWeight: FontWeight.w700))),
+        cell(Text('${p.pointsFor}:${p.pointsAgainst}',
+            style: const TextStyle(
+                color: AppTheme.textSecondary, fontSize: 11))),
+        cell(Text('${p.winPercent}%',
+            style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w600))),
+        cell(
+          Text('${p.totalPoints}',
+              style: const TextStyle(
+                  color: Color(0xFF22C55E),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800)),
+          padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
+          alignment: Alignment.centerRight,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRoundBlock(AdminMatchRound round) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Text('Раунд ${round.roundNumber}',
+                    style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700)),
+                const SizedBox(width: 8),
+                _roundStatusBadge(round.status),
+              ],
+            ),
+          ),
+          ...round.matches.map((m) => _buildMatchTile(m)),
+        ],
+      ),
+    );
+  }
+
+  Widget _roundStatusBadge(String status) {
+    final (label, color) = switch (status) {
+      'completed' => ('завершён', AppTheme.accent),
+      'in_progress' => ('идёт', AppTheme.blue),
+      _ => ('ожидание', AppTheme.textDim),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(label,
+          style: TextStyle(
+              color: color, fontSize: 11, fontWeight: FontWeight.w600)),
+    );
+  }
+
+  Widget _buildMatchTile(AdminMatch m) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: GestureDetector(
+        onTap: () => _openScoreSheet(match: m),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppTheme.cardRaised,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (m.courtNumber != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text('Корт ${m.courtNumber}',
+                      style: const TextStyle(
+                          color: AppTheme.textDim, fontSize: 11)),
+                ),
+              _matchTeamRow(m.team1, isWinner: m.winner == 1, isCompleted: m.isCompleted),
+              const SizedBox(height: 4),
+              _matchTeamRow(m.team2, isWinner: m.winner == 2, isCompleted: m.isCompleted),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _matchTeamRow(AdminMatchTeam team,
+      {required bool isWinner, required bool isCompleted}) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(team.title,
+              style: TextStyle(
+                  color: isWinner
+                      ? AppTheme.accent
+                      : AppTheme.textPrimary,
+                  fontSize: 13,
+                  fontWeight:
+                      isWinner ? FontWeight.w700 : FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          width: 36,
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isWinner
+                ? AppTheme.accent.withOpacity(0.15)
+                : AppTheme.card,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            isCompleted && team.score != null ? '${team.score}' : '—',
+            style: TextStyle(
+                color: isWinner
+                    ? AppTheme.accent
+                    : AppTheme.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w700),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlayoffSection(AdminPlayoff p) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.amber.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.emoji_events_outlined,
+                  color: AppTheme.amber, size: 18),
+              SizedBox(width: 8),
+              Text('Плей-офф',
+                  style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ...p.matches.map((m) => _buildPlayoffMatchTile(m)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlayoffMatchTile(AdminPlayoffMatch m) {
+    final hasPlayers =
+        m.team1.players.isNotEmpty && m.team2.players.isNotEmpty;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: GestureDetector(
+        onTap: hasPlayers ? () => _openScoreSheet(playoffMatch: m) : null,
+        child: Opacity(
+          opacity: hasPlayers ? 1.0 : 0.5,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppTheme.cardRaised,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Text(m.stage,
+                        style: const TextStyle(
+                            color: AppTheme.amber,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700)),
+                    const Spacer(),
+                    if (m.courtNumber != null)
+                      Text('Корт ${m.courtNumber}',
+                          style: const TextStyle(
+                              color: AppTheme.textDim, fontSize: 11)),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                if (hasPlayers) ...[
+                  _matchTeamRow(m.team1,
+                      isWinner: m.winner == 1, isCompleted: m.isCompleted),
+                  const SizedBox(height: 4),
+                  _matchTeamRow(m.team2,
+                      isWinner: m.winner == 2, isCompleted: m.isCompleted),
+                ] else
+                  const Text('Ожидаем результаты полуфиналов',
+                      style: TextStyle(
+                          color: AppTheme.textSecondary, fontSize: 12)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // -------------------- Bottom sheet ввода счёта --------------------
+
+  Future<void> _openScoreSheet({
+    AdminMatch? match,
+    AdminPlayoffMatch? playoffMatch,
+  }) async {
+    if (_actionBusy) return;
+
+    final isPlayoff = playoffMatch != null;
+    final m = match;
+    final pm = playoffMatch;
+
+    final isKoc = _matches?.type == 'king_of_court';
+
+    final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
+    final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
+    final initial1 = isPlayoff ? pm!.team1.score : m!.team1.score;
+    final initial2 = isPlayoff ? pm!.team2.score : m!.team2.score;
+    final isUpdate = isPlayoff ? pm!.isCompleted : m!.isCompleted;
+    final headline = isPlayoff
+        ? pm!.stage
+        : 'Раунд ${_findRoundNumberForMatch(m!.id)}, ${m.courtNumber != null ? "Корт ${m.courtNumber}" : "матч #${m.id}"}';
+
+    final result = await showModalBottomSheet<_ScoreInput>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => _ScoreSheet(
+        headline: headline,
+        team1Title: team1Title,
+        team2Title: team2Title,
+        initialScore1: initial1,
+        initialScore2: initial2,
+        // У плей-офф и KOC ничья запрещена
+        requireDifferent: isPlayoff || isKoc,
+      ),
+    );
+
+    if (result == null) return;
+
+    final tournamentId = widget.tournamentId;
+    final matchId = isPlayoff ? pm!.id : m!.id;
+
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = 'Сохраняем счёт...';
+    });
+    try {
+      if (isPlayoff) {
+        await context.read<AdminService>().saveAmericanoPlayoffScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+              isUpdate: isUpdate,
+            );
+      } else if (isKoc) {
+        await context.read<AdminService>().saveKocScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+            );
+      } else {
+        await context.read<AdminService>().saveAmericanoScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+              isUpdate: isUpdate,
+            );
+      }
+      await _loadMatches();
+      // обновим инфо-таб тоже (counts могут поменяться)
+      try {
+        final t = await context
+            .read<AdminService>()
+            .getTournamentDetail(tournamentId);
+        if (mounted) setState(() => _t = t);
+      } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionBusy = false;
+          _actionLabel = null;
+        });
+      }
+    }
+  }
+
+  int _findRoundNumberForMatch(int matchId) {
+    final r = _matches;
+    if (r == null) return 0;
+    for (final g in r.groups) {
+      for (final round in g.rounds) {
+        if (round.matches.any((m) => m.id == matchId)) {
+          return round.roundNumber;
+        }
+      }
+    }
+    return 0;
+  }
+}
+
+// =============================================================================
+// Bottom-sheet ввода счёта
+// =============================================================================
+
+class _ScoreInput {
+  final int score1;
+  final int score2;
+  const _ScoreInput(this.score1, this.score2);
+}
+
+class _ScoreSheet extends StatefulWidget {
+  final String headline;
+  final String team1Title;
+  final String team2Title;
+  final int? initialScore1;
+  final int? initialScore2;
+  final bool requireDifferent;
+
+  const _ScoreSheet({
+    required this.headline,
+    required this.team1Title,
+    required this.team2Title,
+    required this.initialScore1,
+    required this.initialScore2,
+    required this.requireDifferent,
+  });
+
+  @override
+  State<_ScoreSheet> createState() => _ScoreSheetState();
+}
+
+class _ScoreSheetState extends State<_ScoreSheet> {
+  late final TextEditingController _c1;
+  late final TextEditingController _c2;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _c1 = TextEditingController(
+        text: widget.initialScore1?.toString() ?? '');
+    _c2 = TextEditingController(
+        text: widget.initialScore2?.toString() ?? '');
+  }
+
+  @override
+  void dispose() {
+    _c1.dispose();
+    _c2.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final s1 = int.tryParse(_c1.text.trim());
+    final s2 = int.tryParse(_c2.text.trim());
+    if (s1 == null || s2 == null) {
+      setState(() => _error = 'Введите оба счёта целыми числами');
+      return;
+    }
+    if (s1 < 0 || s1 > 99 || s2 < 0 || s2 > 99) {
+      setState(() => _error = 'Счёт должен быть от 0 до 99');
+      return;
+    }
+    if (widget.requireDifferent && s1 == s2) {
+      setState(() => _error = 'В плей-офф не может быть ничьей');
+      return;
+    }
+    Navigator.of(context).pop(_ScoreInput(s1, s2));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final inset = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.only(bottom: inset),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardRaised,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Center(
+                child: Text(widget.headline,
+                    style: const TextStyle(
+                        color: AppTheme.textSecondary, fontSize: 12)),
+              ),
+              const SizedBox(height: 4),
+              const Center(
+                child: Text('Введите счёт',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(height: 16),
+              _scoreRow(widget.team1Title, _c1),
+              const SizedBox(height: 10),
+              _scoreRow(widget.team2Title, _c2),
+              if (_error != null) ...[
+                const SizedBox(height: 10),
+                Text(_error!,
+                    style: const TextStyle(
+                        color: AppTheme.error, fontSize: 12)),
+              ],
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                            color: AppTheme.cardRaised),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Отмена',
+                          style: TextStyle(color: AppTheme.textSecondary)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Сохранить',
+                          style:
+                              TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _scoreRow(String title, TextEditingController c) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(title,
+                style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600)),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 70,
+            child: TextField(
+              controller: c,
+              autofocus: c.text.isEmpty,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: false),
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: AppTheme.cardRaised,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Bottom-sheet с поиском игроков
+// =============================================================================
+
+class _PlayerSearchSheet extends StatefulWidget {
+  final String title;
+  final int tournamentId;
+
+  const _PlayerSearchSheet({
+    required this.title,
+    required this.tournamentId,
+  });
+
+  @override
+  State<_PlayerSearchSheet> createState() => _PlayerSearchSheetState();
+}
+
+class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
+  final _ctrl = TextEditingController();
+  Timer? _debounce;
+  bool _loading = false;
+  String? _error;
+  List<AdminParticipant> _results = [];
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _onChanged(String value) {
+    _debounce?.cancel();
+    final q = value.trim();
+    if (q.length < 2) {
+      setState(() {
+        _results = [];
+        _error = null;
+      });
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 300), () => _search(q));
+  }
+
+  Future<void> _search(String q) async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final list = await context
+          .read<AdminService>()
+          .searchPlayers(widget.tournamentId, q);
+      if (!mounted) return;
+      setState(() {
+        _results = list;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = '$e';
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final inset = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.only(bottom: inset),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.cardRaised,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(widget.title,
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _ctrl,
+                autofocus: true,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                onChanged: _onChanged,
+                decoration: InputDecoration(
+                  hintText: 'Телефон или имя (от 2 символов)',
+                  hintStyle: const TextStyle(color: AppTheme.textDim),
+                  prefixIcon:
+                      const Icon(Icons.search, color: AppTheme.textSecondary),
+                  filled: true,
+                  fillColor: AppTheme.card,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Flexible(child: _buildResults()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResults() {
+    if (_loading) {
+      return const Padding(
+        padding: EdgeInsets.all(24),
+        child: Center(
+            child: CircularProgressIndicator(color: AppTheme.accent)),
+      );
+    }
+    if (_error != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(_error!,
+            style: const TextStyle(color: AppTheme.error)),
+      );
+    }
+    if (_ctrl.text.trim().length < 2) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(
+          child: Text('Введите имя или телефон для поиска',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+        ),
+      );
+    }
+    if (_results.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(
+          child: Text('Никого не нашли',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+        ),
+      );
+    }
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: _results.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 6),
+      itemBuilder: (_, i) {
+        final p = _results[i];
+        return GestureDetector(
+          onTap: () => Navigator.of(context).pop(p),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardRaised,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      _initialsOf(p.name),
+                      style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(p.name,
+                          style: const TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600)),
+                      Text(
+                        [
+                          if (p.level != null) 'L${p.level!.toStringAsFixed(2)}',
+                          if (p.rating != null) '${p.rating}',
+                          if ((p.phone ?? '').isNotEmpty) p.phone!,
+                        ].join(' · '),
+                        style: const TextStyle(
+                            color: AppTheme.textSecondary, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.add_circle_outline,
+                    color: AppTheme.accent, size: 22),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _initialsOf(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts[0].substring(0, 1) + parts[1].substring(0, 1))
+        .toUpperCase();
+  }
+}
+
+// =============================================================================
+// Маленький аватар с инициалами для строки таблицы лидеров
+// =============================================================================
+
+class _AdminLeaderAvatar extends StatelessWidget {
+  final String? url;
+  final String name;
+  final double size;
+  const _AdminLeaderAvatar({
+    required this.url,
+    required this.name,
+    this.size = 24,
+  });
+
+  String get _initials {
+    final cleaned =
+        name.replaceAll(RegExp(r'[^\p{L}\s]', unicode: true), '');
+    final parts = cleaned
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fallback = Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(size / 2),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        _initials,
+        style: TextStyle(
+          color: AppTheme.textSecondary,
+          fontSize: size * 0.35,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+    if (url == null || url!.isEmpty) return fallback;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(size / 2),
+      child: Image.network(
+        url!,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => fallback,
+      ),
+    );
   }
 }

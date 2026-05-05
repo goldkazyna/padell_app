@@ -6,6 +6,7 @@ import '../providers/tournament_provider.dart';
 import '../services/club_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../widgets/app_back_button.dart';
 
 class ClubDetailScreen extends StatefulWidget {
   final int clubId;
@@ -107,21 +108,9 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   Widget _buildAppBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Align(
+      child: const Align(
         alignment: Alignment.centerLeft,
-        child: GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppTheme.card,
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
-            ),
-            child: const Icon(Icons.chevron_left, color: AppTheme.textPrimary, size: 22),
-          ),
-        ),
+        child: AppBackButton(),
       ),
     );
   }

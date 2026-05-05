@@ -205,6 +205,36 @@ class RatingService {
     }
   }
 
+  /// Лёгкий запрос для модалки «Кто верифицировал».
+  /// Возвращает [VerificationInfo] с флагом verified и историей записей.
+  Future<VerificationInfo?> getVerification(int userId) async {
+    try {
+      final token = await _storage.getToken();
+      if (token == null) return null;
+
+      final response =
+          await _api.get('/rating/player/$userId/verification', token);
+      if (response['success'] != true) return null;
+
+      final List<dynamic> rawHistory =
+          (response['level_verifications'] as List?) ??
+              [
+                if (response['level_verification'] is Map<String, dynamic>)
+                  response['level_verification']
+              ];
+
+      return VerificationInfo(
+        verified: response['level_verified'] as bool? ?? false,
+        history: rawHistory
+            .whereType<Map<String, dynamic>>()
+            .map(LevelVerification.fromJson)
+            .toList(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<PlayerProfile?> getPlayer(int userId) async {
     try {
       final token = await _storage.getToken();
@@ -223,6 +253,11 @@ class RatingService {
 
       final trendList = p['rating_trend'] as List<dynamic>? ?? [];
 
+      final lvJson = p['level_verification'];
+      final levelVerification = lvJson is Map<String, dynamic>
+          ? LevelVerification.fromJson(lvJson)
+          : null;
+
       return PlayerProfile(
         id: p['id'] as int,
         name: p['name'] as String? ?? '',
@@ -236,6 +271,7 @@ class RatingService {
         winrate: p['winrate'] as int? ?? 0,
         tournamentsCount: p['tournaments_count'] as int? ?? 0,
         levelVerified: p['level_verified'] as bool? ?? false,
+        levelVerification: levelVerification,
         ratingTrend: trendList.map((v) => (v as num).toInt()).toList(),
         history: historyList.map((h) => RatingHistoryItem.fromJson(h as Map<String, dynamic>)).toList(),
       );
@@ -345,6 +381,7 @@ class PlayerProfile {
   final int winrate;
   final int tournamentsCount;
   final bool levelVerified;
+  final LevelVerification? levelVerification;
   final List<int> ratingTrend;
   final List<RatingHistoryItem> history;
 
@@ -361,6 +398,7 @@ class PlayerProfile {
     required this.winrate,
     required this.tournamentsCount,
     this.levelVerified = false,
+    this.levelVerification,
     this.ratingTrend = const [],
     required this.history,
   });
@@ -376,6 +414,51 @@ class PlayerProfile {
     if (level >= 3.0) return '3';
     if (level >= 2.0) return '2';
     return '1';
+  }
+}
+
+/// Обёртка для модалки верификации: знает и про флаг verified,
+/// и про всю историю записей (если они есть).
+class VerificationInfo {
+  final bool verified;
+  final List<LevelVerification> history;
+
+  const VerificationInfo({required this.verified, required this.history});
+
+  LevelVerification? get latest => history.isEmpty ? null : history.first;
+}
+
+class LevelVerification {
+  final int? verifiedById;
+  final String verifiedByName;
+  final String? verifiedByAvatar;
+  final int? clubId;
+  final String? clubName;
+  final DateTime? verifiedAt;
+  final double? levelSetTo;
+
+  LevelVerification({
+    required this.verifiedById,
+    required this.verifiedByName,
+    required this.verifiedByAvatar,
+    required this.clubId,
+    required this.clubName,
+    required this.verifiedAt,
+    required this.levelSetTo,
+  });
+
+  factory LevelVerification.fromJson(Map<String, dynamic> json) {
+    final by = json['verified_by'] as Map<String, dynamic>?;
+    final club = json['club'] as Map<String, dynamic>?;
+    return LevelVerification(
+      verifiedById: by != null ? (by['id'] as num?)?.toInt() : null,
+      verifiedByName: by != null ? (by['name'] as String? ?? '') : '',
+      verifiedByAvatar: by != null ? by['avatar_url'] as String? : null,
+      clubId: club != null ? (club['id'] as num?)?.toInt() : null,
+      clubName: club != null ? club['name'] as String? : null,
+      verifiedAt: DateTime.tryParse(json['verified_at'] as String? ?? ''),
+      levelSetTo: (json['level_set_to'] as num?)?.toDouble(),
+    );
   }
 }
 

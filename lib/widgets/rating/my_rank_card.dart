@@ -81,7 +81,11 @@ class MyRankCard extends StatelessWidget {
                     ),
                     if (c.levelVerified) ...[
                       const SizedBox(width: 5),
-                      const VerifiedBadge(size: 13),
+                      VerifiedBadge(
+                        size: 13,
+                        userId: c.id,
+                        playerName: c.name,
+                      ),
                     ],
                   ],
                 ),

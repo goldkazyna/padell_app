@@ -15,6 +15,7 @@ import '../widgets/home/admin_club_block.dart';
 import 'clubs_list_screen.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../theme/app_theme.dart';
+import '../utils/profile_incomplete_guard.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
 import 'tournament_live_screen.dart';
@@ -122,7 +123,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (user != null && user.isClubAdmin) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 0),
-                          child: AdminClubBlock(adminClubs: user.adminClubs),
+                          child: AdminClubBlock(
+                            clubs: user.adminClubs,
+                            tournamentsFullAccess: true,
+                            isModerator: false,
+                          ),
+                        );
+                      }
+                      if (user != null && user.isClubModerator) {
+                        final club = user.moderatorClubs.isNotEmpty
+                            ? user.moderatorClubs.first
+                            : null;
+                        if (club == null) {
+                          return _CreateTournamentBanner(
+                            onTap: () => _showAccreditationDialog(context),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
+                          child: AdminClubBlock(
+                            clubs: user.moderatorClubs,
+                            tournamentsFullAccess: club.tournamentsFullAccess,
+                            isModerator: true,
+                          ),
                         );
                       }
                       return _CreateTournamentBanner(
@@ -136,16 +159,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   NearestTournamentCard(
                     tournament: home.nearestTournament,
                     onRegister: () {
-                      if (home.nearestTournament != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => TournamentDetailScreen(
-                              tournamentId: home.nearestTournament!.id,
-                            ),
+                      if (home.nearestTournament == null) return;
+                      if (!ensureProfileComplete(context)) return;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TournamentDetailScreen(
+                            tournamentId: home.nearestTournament!.id,
                           ),
-                        );
-                      }
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 28),
@@ -156,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {
                       final t = home.activeTournament;
                       if (t == null) return;
+                      if (!ensureProfileComplete(context)) return;
                       final isLive = t.status == 'in_progress';
                       Widget target;
                       if (isLive && t.type == 'americano') {
@@ -188,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           gradient: const [Color(0xFF3B82F6), Color(0xFF2563EB)],
                           shadowColor: const Color(0xFF3B82F6),
                           onTap: () {
+                            if (!ensureProfileComplete(context)) return;
                             Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateChallengeScreen()));
                           },
                         ),
@@ -201,6 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           gradient: const [Color(0xFFF97316), Color(0xFFEA580C)],
                           shadowColor: const Color(0xFFF97316),
                           onTap: () {
+                            if (!ensureProfileComplete(context)) return;
                             Navigator.push(context, MaterialPageRoute(builder: (_) => const ChallengesScreen()));
                           },
                         ),
@@ -213,6 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   UpcomingList(
                     tournaments: home.upcomingTournaments,
                     onTap: (tournament) {
+                      if (!ensureProfileComplete(context)) return;
                       Navigator.push(
                         context,
                         MaterialPageRoute(

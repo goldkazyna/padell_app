@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../widgets/app_back_button.dart';
 
 /// Опросник для определения начального уровня игрока.
 /// Показывается новым пользователям сразу после регистрации/логина.
@@ -209,28 +210,16 @@ class _QuizScreenState extends State<QuizScreen> {
           child: Row(
             children: [
               if (_index > 0)
-                GestureDetector(
-                  onTap: () => setState(() => _index--),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppTheme.card,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppTheme.border),
-                    ),
-                    child: const Icon(Icons.chevron_left, color: AppTheme.textPrimary),
-                  ),
-                )
+                AppBackButton(onTap: () => setState(() => _index--))
               else
-                const SizedBox(width: 40),
+                const SizedBox(width: 34),
               const Spacer(),
               Text(
                 '${_index + 1} / ${_questions.length}',
                 style: const TextStyle(color: AppTheme.textDim, fontSize: 13, fontWeight: FontWeight.w600),
               ),
               const Spacer(),
-              const SizedBox(width: 40),
+              const SizedBox(width: 34),
             ],
           ),
         ),

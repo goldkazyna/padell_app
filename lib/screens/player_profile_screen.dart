@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import 'tournament_results_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
 import '../models/tournament.dart';
+import '../widgets/app_back_button.dart';
 import '../widgets/main_tab_bar.dart';
 import '../widgets/profile/medal.dart';
 import '../widgets/profile/player_hero.dart';
@@ -59,9 +60,9 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Center(child: AppBackButton()),
         ),
         title: Text(
           widget.playerName,
@@ -102,6 +103,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PlayerHero(
+            userId: p.id,
             name: p.name,
             avatar: p.avatar,
             initials: p.initials,
@@ -115,6 +117,8 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             winrate: p.winrate,
             tournamentsCount: p.tournamentsCount,
           ),
+          if (p.levelVerification != null)
+            _buildVerificationCard(p.levelVerification!),
           const SizedBox(height: 8),
 
           // History section
@@ -265,5 +269,67 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildVerificationCard(LevelVerification v) {
+    final pieces = <String>[];
+    if (v.verifiedByName.isNotEmpty) pieces.add(v.verifiedByName);
+    if ((v.clubName ?? '').isNotEmpty) pieces.add(v.clubName!);
+    if (v.verifiedAt != null) pieces.add(_fmtDate(v.verifiedAt!));
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0x144A8BF5), // accent blue с прозрачностью
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.blue.withOpacity(0.4)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.verified_outlined,
+                color: AppTheme.blue, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Уровень подтверждён',
+                    style: TextStyle(
+                      color: AppTheme.blue,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (pieces.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      pieces.join(' · '),
+                      style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 12,
+                          height: 1.4),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _fmtDate(DateTime d) {
+    final local = d.toLocal();
+    const months = [
+      'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
+    ];
+    final hh = local.hour.toString().padLeft(2, '0');
+    final mi = local.minute.toString().padLeft(2, '0');
+    return '${local.day} ${months[local.month - 1]} ${local.year}, $hh:$mi';
   }
 }

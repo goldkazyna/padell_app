@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../models/club.dart';
 import '../providers/court_provider.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import 'court_booking_screen.dart';
 
 class CourtScheduleScreen extends StatefulWidget {
@@ -142,9 +143,9 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Center(child: AppBackButton()),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

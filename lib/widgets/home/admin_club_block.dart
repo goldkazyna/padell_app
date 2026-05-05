@@ -2,21 +2,29 @@ import 'package:flutter/material.dart';
 import '../../models/user.dart';
 import '../../screens/admin/admin_create_tournament_screen.dart';
 import '../../screens/admin/admin_tournaments_screen.dart';
+import '../../screens/admin/admin_users_screen.dart';
 import '../../theme/app_theme.dart';
 
-/// Блок «Управление клубом» на главной — показывается только если у user
-/// `isClubAdmin == true` (есть админский доступ хотя бы к одному клубу).
+/// Блок «Управление клубом» на главной — показывается админам клуба
+/// и модераторам клуба. Кнопка «Создать турнир» прячется если у юзера
+/// нет полного доступа к турнирам (обычный модератор).
 class AdminClubBlock extends StatelessWidget {
-  final List<AdminClubRef> adminClubs;
+  final List<AdminClubRef> clubs;
+  final bool tournamentsFullAccess;
+  final bool isModerator;
 
-  const AdminClubBlock({super.key, required this.adminClubs});
+  const AdminClubBlock({
+    super.key,
+    required this.clubs,
+    this.tournamentsFullAccess = true,
+    this.isModerator = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (adminClubs.isEmpty) return const SizedBox.shrink();
-    // На MVP считаем что админ одного клуба. Если их несколько —
-    // берём первый, дальше в Этапе 2 добавим выбор.
-    final club = adminClubs.first;
+    if (clubs.isEmpty) return const SizedBox.shrink();
+    // На MVP — берём первый клуб. Если несколько — добавим выбор позже.
+    final club = clubs.first;
 
     return Container(
       width: double.infinity,
@@ -48,9 +56,11 @@ class AdminClubBlock extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'УПРАВЛЕНИЕ КЛУБОМ',
-                style: TextStyle(
+              Text(
+                isModerator && !tournamentsFullAccess
+                    ? 'МОДЕРАЦИЯ КЛУБА'
+                    : 'УПРАВЛЕНИЕ КЛУБОМ',
+                style: const TextStyle(
                   color: Color(0xFFA78BFA),
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
@@ -84,22 +94,42 @@ class AdminClubBlock extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          _AdminCta(
-            icon: Icons.add_circle_outline,
-            title: 'Создать турнир',
-            subtitle: 'Новый турнир в клубе',
-            gradientColors: const [Color(0xFF22C55E), Color(0xFF16A34A)],
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AdminCreateTournamentScreen(
-                  clubId: club.id,
-                  clubName: club.name,
+          if (tournamentsFullAccess) ...[
+            const SizedBox(height: 8),
+            _AdminCta(
+              icon: Icons.add_circle_outline,
+              title: 'Создать турнир',
+              subtitle: 'Новый турнир в клубе',
+              gradientColors: const [Color(0xFF22C55E), Color(0xFF16A34A)],
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminCreateTournamentScreen(
+                    clubId: club.id,
+                    clubName: club.name,
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
+          if (!isModerator && club.hasFeature('users')) ...[
+            const SizedBox(height: 8),
+            _AdminCta(
+              icon: Icons.people_outline,
+              title: 'Пользователи',
+              subtitle: 'Игроки, уровни, верификация',
+              gradientColors: const [Color(0xFFF97316), Color(0xFFEA580C)],
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminUsersScreen(
+                    clubId: club.id,
+                    clubName: club.name,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -8,6 +8,7 @@ import '../utils/app_alert.dart';
 import '../models/tournament.dart';
 import '../providers/tournament_provider.dart';
 import '../providers/home_provider.dart';
+import '../widgets/app_back_button.dart';
 import '../widgets/tournaments/team_list_section.dart';
 import '../widgets/tournaments/team_info_card.dart';
 import '../widgets/tournaments/team_registration_sheet.dart';
@@ -132,10 +133,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildCircleButton(
-            icon: Icons.chevron_left,
-            onTap: () => Navigator.of(context).pop(),
-          ),
+          const AppBackButton(),
           _buildCircleButton(
             icon: Icons.ios_share,
             onTap: () => _shareTournament(),

@@ -5,6 +5,7 @@ import '../models/tournament.dart';
 import '../services/profile_service.dart';
 import '../providers/home_provider.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 
 class TournamentResultsScreen extends StatefulWidget {
   final Tournament tournament;
@@ -110,10 +111,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildCircleButton(
-                icon: Icons.chevron_left,
-                onTap: () => Navigator.pop(context),
-              ),
+              const AppBackButton(),
               _buildCircleButton(
                 icon: Icons.ios_share,
                 onTap: () {},

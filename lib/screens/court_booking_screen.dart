@@ -6,6 +6,7 @@ import '../providers/court_provider.dart';
 import '../providers/home_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../widgets/app_back_button.dart';
 import 'booking_confirmation_screen.dart';
 
 class CourtBookingScreen extends StatefulWidget {
@@ -192,9 +193,9 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Center(child: AppBackButton()),
         ),
         title: Text(AppLocalizations.of(context)!.booking,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
