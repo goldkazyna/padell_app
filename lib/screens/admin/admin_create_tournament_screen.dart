@@ -31,6 +31,7 @@ class _AdminCreateTournamentScreenState
     extends State<AdminCreateTournamentScreen> {
   final _name = TextEditingController();
   final _description = TextEditingController();
+  final _telegramUrl = TextEditingController();
   final _maxParticipants = TextEditingController(text: '16');
   final _price = TextEditingController();
   final _reserveCount = TextEditingController(text: '0');
@@ -89,6 +90,7 @@ class _AdminCreateTournamentScreenState
     _maxParticipants.removeListener(_onMaxOrGroupsChanged);
     _name.dispose();
     _description.dispose();
+    _telegramUrl.dispose();
     _maxParticipants.dispose();
     _price.dispose();
     _reserveCount.dispose();
@@ -154,11 +156,23 @@ class _AdminCreateTournamentScreenState
       return t.isEmpty ? null : t;
     });
 
+    final tgUrl = _telegramUrl.text.trim();
+    if (tgUrl.isNotEmpty) {
+      final ok = Uri.tryParse(tgUrl)?.hasScheme ?? false;
+      if (!ok || !(tgUrl.startsWith('http://') || tgUrl.startsWith('https://'))) {
+        await showAppAlert(context,
+            'Ссылка на Telegram-чат должна начинаться с http:// или https://',
+            title: 'Ошибка', isError: true);
+        return;
+      }
+    }
+
     final body = <String, dynamic>{
       'type': _type,
       'name': name,
       'description':
           _description.text.trim().isEmpty ? null : _description.text.trim(),
+      'telegram_registration_url': tgUrl.isEmpty ? null : tgUrl,
       'start_date': _startDate!.toIso8601String(),
       'min_level': _minLevel,
       'max_level': _maxLevel,
@@ -296,6 +310,18 @@ class _AdminCreateTournamentScreenState
             _label('Описание'),
             _textField(_description,
                 hint: 'Можно оставить пустым', maxLines: 3),
+            const SizedBox(height: 12),
+            _label('Ссылка на чат в Telegram (для записи)'),
+            _textField(_telegramUrl,
+                hint: 'https://t.me/...',
+                keyboardType: TextInputType.url),
+            const Padding(
+              padding: EdgeInsets.only(top: 4),
+              child: Text(
+                'Если указана — кнопка «Записаться» в карточке турнира будет вести в этот чат вместо записи через приложение.',
+                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+              ),
+            ),
             const SizedBox(height: 12),
             _label('Дата и время старта'),
             _dateField(),

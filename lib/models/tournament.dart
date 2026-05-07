@@ -259,6 +259,7 @@ class Tournament {
   final int id;
   final String name;
   final String? description;
+  final String? telegramRegistrationUrl;
   final Club club;
   final String date;
   final String time;
@@ -286,6 +287,7 @@ class Tournament {
     required this.id,
     required this.name,
     this.description,
+    this.telegramRegistrationUrl,
     required this.club,
     required this.date,
     required this.time,
@@ -341,6 +343,7 @@ class Tournament {
       id: json['id'] as int,
       name: json['name'] as String,
       description: json['description'] as String?,
+      telegramRegistrationUrl: json['telegram_registration_url'] as String?,
       club: Club.fromJson(json['club'] as Map<String, dynamic>),
       date: json['date'] as String,
       time: json['time'] as String,

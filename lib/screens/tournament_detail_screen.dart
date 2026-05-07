@@ -95,6 +95,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                           _buildDateTimeRow(tournament),
                           const SizedBox(height: 8),
                           _buildLevelPriceRow(tournament),
+                          if ((tournament.description ?? '').trim().isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _DescriptionBlock(text: tournament.description!),
+                          ],
                           if (tournament.registrationStatus == 'pending' && tournament.club.paymentUrl != null)
                             _buildPaymentButton(tournament),
                           const SizedBox(height: 28),
@@ -971,6 +975,40 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     // block_reason != null → показать причину
 
     if (t.canRegister && !t.isRegistered) {
+      // Если у турнира задана ссылка на Telegram-чат — записываемся через него,
+      // а не через нашу систему.
+      final tgUrl = t.telegramRegistrationUrl;
+      if (tgUrl != null && tgUrl.isNotEmpty) {
+        return SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: () async {
+              final url = Uri.parse(tgUrl);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF229ED9), // Telegram blue
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
+              elevation: 0,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.send_rounded, size: 20),
+                SizedBox(width: 8),
+                Text('Записаться через чат',
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        );
+      }
       return SizedBox(
         width: double.infinity,
         height: 52,
@@ -1507,5 +1545,117 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     if (mounted) {
       _showResultDialog(result.success, result.message);
     }
+  }
+}
+
+/// Блок «Описание турнира» — свёрнут до 3 строк, по тапу разворачивается.
+class _DescriptionBlock extends StatefulWidget {
+  final String text;
+  const _DescriptionBlock({required this.text});
+
+  @override
+  State<_DescriptionBlock> createState() => _DescriptionBlockState();
+}
+
+class _DescriptionBlockState extends State<_DescriptionBlock> {
+  bool _expanded = false;
+  bool _isOverflowing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    const collapsedLines = 3;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Описание',
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.4,
+            ),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _isOverflowing
+                ? () => setState(() => _expanded = !_expanded)
+                : null,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final tp = TextPainter(
+                  text: TextSpan(
+                    text: widget.text,
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                  ),
+                  maxLines: collapsedLines,
+                  textDirection: TextDirection.ltr,
+                )..layout(maxWidth: constraints.maxWidth);
+
+                final overflowing = tp.didExceedMaxLines;
+                if (overflowing != _isOverflowing) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) setState(() => _isOverflowing = overflowing);
+                  });
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.text,
+                      maxLines: _expanded ? null : collapsedLines,
+                      overflow: _expanded
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                    ),
+                    if (overflowing) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Text(
+                            _expanded ? 'Свернуть' : 'Показать ещё',
+                            style: const TextStyle(
+                              color: AppTheme.accent,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            _expanded
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: AppTheme.accent,
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
