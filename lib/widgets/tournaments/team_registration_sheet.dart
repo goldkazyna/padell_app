@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
+import '../../utils/rating_formatter.dart';
 import '../../models/tournament.dart';
+import '../../providers/settings_provider.dart';
 import '../../providers/tournament_provider.dart';
 
 class TeamRegistrationSheet extends StatefulWidget {
@@ -258,26 +260,36 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    player.levelText,
-                    style: TextStyle(
-                      color: isSelected ? AppTheme.accent.withAlpha(180) : AppTheme.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
+                  Builder(builder: (ctx) {
+                    final precise = ctx.watch<SettingsProvider>().preciseRating;
+                    return Text(
+                      RatingFormatter.formatLevelLabel(
+                        bucketedLevel: player.level,
+                        rating: player.rating,
+                        precise: precise,
+                      ),
+                      style: TextStyle(
+                        color: isSelected ? AppTheme.accent.withAlpha(180) : AppTheme.textSecondary,
+                        fontSize: 12,
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),
 
             // Rating
-            Text(
-              '${player.rating}',
-              style: TextStyle(
-                color: isSelected ? AppTheme.accent : AppTheme.textPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            Builder(builder: (ctx) {
+              final precise = ctx.watch<SettingsProvider>().preciseRating;
+              return Text(
+                RatingFormatter.formatRating(player.rating, precise),
+                style: TextStyle(
+                  color: isSelected ? AppTheme.accent : AppTheme.textPrimary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            }),
 
             // Checkmark
             if (isSelected) ...[

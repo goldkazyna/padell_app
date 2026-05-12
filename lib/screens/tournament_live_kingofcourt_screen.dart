@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/settings_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/main_tab_bar.dart';
 import 'player_profile_screen.dart';
@@ -957,7 +960,8 @@ class _RatingDeltaPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final positive = delta >= 0;
     final color = positive ? AppTheme.accent : AppTheme.error;
-    final text = positive ? '+$delta' : '$delta';
+    final precise = context.watch<SettingsProvider>().preciseRating;
+    final text = RatingFormatter.formatRatingChange(delta, precise);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(

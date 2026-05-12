@@ -11,7 +11,7 @@ class ClubsBanner extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],

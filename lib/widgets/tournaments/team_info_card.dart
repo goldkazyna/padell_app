@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../providers/settings_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
+import '../../utils/rating_formatter.dart';
 
 class TeamInfoCard extends StatelessWidget {
   final TournamentTeam team;
@@ -115,24 +118,34 @@ class TeamInfoCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                player.levelText,
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 12,
-                ),
-              ),
+              Builder(builder: (ctx) {
+                final precise = ctx.watch<SettingsProvider>().preciseRating;
+                return Text(
+                  RatingFormatter.formatLevelLabel(
+                    bucketedLevel: player.level,
+                    rating: player.rating,
+                    precise: precise,
+                  ),
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                  ),
+                );
+              }),
             ],
           ),
         ),
-        Text(
-          '${player.rating}',
-          style: const TextStyle(
-            color: AppTheme.textPrimary,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Builder(builder: (ctx) {
+          final precise = ctx.watch<SettingsProvider>().preciseRating;
+          return Text(
+            RatingFormatter.formatRating(player.rating, precise),
+            style: const TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          );
+        }),
       ],
     );
   }

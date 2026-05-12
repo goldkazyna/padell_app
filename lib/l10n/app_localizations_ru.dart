@@ -302,6 +302,59 @@ class AppLocalizationsRu extends AppLocalizations {
   String get english => 'English';
 
   @override
+  String get settingsTitle => 'Настройки';
+
+  @override
+  String get settingsMenuItem => 'Настройки';
+
+  @override
+  String get settingsMenuItemSubtitle => 'Отображение рейтинга и уровня';
+
+  @override
+  String get preciseRatingTitle => 'Точные значения рейтинга';
+
+  @override
+  String get preciseRatingSubtitle =>
+      'Показывать рейтинг и уровень с двумя знаками (2.69 вместо 2690)';
+
+  @override
+  String get newsChannelTitle => 'Последние новости приложения';
+
+  @override
+  String get newsChannelSubtitle => 'Telegram-канал @padelkz_app';
+
+  @override
+  String get newsChannelButton => 'Последние новости приложения';
+
+  @override
+  String get calendarLink => 'Календарь →';
+
+  @override
+  String get calendarTitle => 'Календарь турниров';
+
+  @override
+  String get calendarNoTournamentsForDay => 'На этот день турниров нет';
+
+  @override
+  String get calendarAllTournaments => 'Все турниры →';
+
+  @override
+  String calendarSeats(int filled, int max) {
+    return '$filled/$max мест';
+  }
+
+  @override
+  String calendarSeatsLeft(int n) {
+    return 'Осталось $n';
+  }
+
+  @override
+  String get calendarTodayDow => 'Сегодня';
+
+  @override
+  String get calendarEmptyAll => 'В ближайшие 14 дней турниров нет';
+
+  @override
   String get register => 'Записаться';
 
   @override
@@ -332,6 +385,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get archiveTab => 'Архив';
+
+  @override
+  String get cancelledTab => 'Отменённые';
+
+  @override
+  String get noCancelledTournaments => 'Нет отменённых турниров';
 
   @override
   String get noOpenTournaments => 'Нет открытых турниров';
@@ -787,7 +846,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ratingMyPosition => 'Моя позиция';
 
   @override
-  String ratingLevelPoints(String level, int rating) {
+  String ratingLevelPoints(String level, String rating) {
     return 'Уровень $level · $rating очков';
   }
 
@@ -1387,4 +1446,128 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get later => 'Позже';
+
+  @override
+  String get profileMissingPhoneTitle => 'Укажите номер телефона';
+
+  @override
+  String get profileMissingPhoneDesc =>
+      'Без него нельзя записаться на турниры и игры.';
+
+  @override
+  String get profileMissingCityTitle => 'Укажите город';
+
+  @override
+  String get profileMissingCityDesc =>
+      'Чтобы видеть актуальные турниры в вашем городе.';
+
+  @override
+  String get profileMissingGenderTitle => 'Укажите пол';
+
+  @override
+  String get profileMissingGenderDesc =>
+      'Нужно для парных турниров и подбора партнёров.';
+
+  @override
+  String get verificationNotConfirmedTitle => 'Рейтинг ещё не подтверждён';
+
+  @override
+  String get verificationNoAvatarTitle => 'Поставьте аватарку';
+
+  @override
+  String get verificationNoAvatarDesc =>
+      'Зайдите в «Настройки профиля» и добавьте фото.';
+
+  @override
+  String get verificationNoTournamentsTitle => 'Сыграйте хотя бы один турнир';
+
+  @override
+  String get verificationNoTournamentsDesc =>
+      'После завершения первого турнира рейтинг подтвердится автоматически.';
+
+  @override
+  String get verificationSheetTitle => 'Верификация уровня';
+
+  @override
+  String get verificationLatestEntry => 'ПОСЛЕДНЕЕ ПОДТВЕРЖДЕНИЕ';
+
+  @override
+  String get verificationFieldLevel => 'Установленный уровень';
+
+  @override
+  String get verificationFieldVerifiedBy => 'Кто подтвердил';
+
+  @override
+  String get verificationFieldClub => 'Клуб';
+
+  @override
+  String get verificationFieldWhen => 'Когда';
+
+  @override
+  String get verificationConfirmedByClub => 'Уровень подтверждён клубом.';
+
+  @override
+  String get verificationToConfirm => 'Чтобы рейтинг подтвердился:';
+
+  @override
+  String verificationHistoryRecords(int count) {
+    return 'Записей в истории: $count';
+  }
+
+  @override
+  String verificationLoadFailed(String error) {
+    return 'Не удалось загрузить: $error';
+  }
+
+  @override
+  String get verificationNotConfirmedYet => 'Уровень пока не подтверждён.';
+
+  @override
+  String get verificationNotChecked =>
+      'Уровень этого игрока ещё не подтверждался клубом.';
+
+  @override
+  String get tournamentDescription => 'Описание';
+
+  @override
+  String get showMore => 'Показать ещё';
+
+  @override
+  String get showLess => 'Свернуть';
+
+  @override
+  String get registerViaChat => 'Записаться через чат';
+
+  @override
+  String get searchClubHint => 'Поиск клуба';
+
+  @override
+  String get searchCommunityHint => 'Поиск комьюнити';
+
+  @override
+  String get cityAll => 'Все';
+
+  @override
+  String get bannerClubsTitle => 'Клубы';
+
+  @override
+  String get bannerClubsSubtitle => 'Адреса и контакты';
+
+  @override
+  String get bannerCommunityTitle => 'Комьюнити';
+
+  @override
+  String get bannerCommunitySubtitle => 'Сообщества игроков';
+
+  @override
+  String get bannerCreateTournamentTitle => 'Создать турнир';
+
+  @override
+  String get bannerCreateTournamentSubtitle => 'Организуй своё событие';
+
+  @override
+  String get bannerBookCourtTitle => 'Забронировать корт';
+
+  @override
+  String get bannerBookCourtSubtitle => 'Выберите клуб и удобное время';
 }

@@ -10,10 +10,11 @@ import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
-import '../widgets/home/clubs_banner.dart';
+import '../widgets/pressable_card.dart';
 import '../widgets/home/admin_club_block.dart';
 import 'clubs_list_screen.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
+import '../widgets/verification_blockers_banner.dart';
 import '../theme/app_theme.dart';
 import '../utils/profile_incomplete_guard.dart';
 import '../l10n/app_localizations.dart';
@@ -25,6 +26,7 @@ import 'tournament_live_kingofcourt_screen.dart';
 import 'club_select_screen.dart';
 import 'create_challenge_screen.dart';
 import 'challenges_screen.dart';
+import 'calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int)? onNavigateToTab;
@@ -96,7 +98,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                  const ProfileIncompleteBanner(),
+                  if (home.user?.isProfileIncomplete == true) ...[
+                    const SizedBox(height: 12),
+                    const ProfileIncompleteBanner(),
+                  ],
+                  if ((home.user?.verificationBlockers ?? const []).isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    VerificationBlockersBanner(
+                      blockers: home.user!.verificationBlockers,
+                      onTournamentsTap: () => widget.onNavigateToTab?.call(1),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
                   CourtBookingBanner(
                     onTap: () {
                       Navigator.push(
@@ -106,13 +119,49 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  ClubsBanner(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const ClubsListScreen()),
-                      );
-                    },
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _HalfBanner(
+                          title: AppLocalizations.of(context)!.bannerClubsTitle,
+                          subtitle: AppLocalizations.of(context)!.bannerClubsSubtitle,
+                          icon: Icons.apartment_rounded,
+                          gradient: const [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ClubsListScreen(
+                                  title: AppLocalizations.of(context)!
+                                      .bannerClubsTitle,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _HalfBanner(
+                          title: AppLocalizations.of(context)!.bannerCommunityTitle,
+                          subtitle: AppLocalizations.of(context)!.bannerCommunitySubtitle,
+                          icon: Icons.groups_rounded,
+                          gradient: const [Color(0xFFA855F7), Color(0xFF581C87)],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ClubsListScreen(
+                                  type: 'community',
+                                  title: AppLocalizations.of(context)!
+                                      .bannerCommunityTitle,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   // Для admin клуба — блок управления, для остальных —
@@ -153,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 12),
                   SectionTitle(title: AppLocalizations.of(context)!.nearestTournament),
                   const SizedBox(height: 12),
                   NearestTournamentCard(
@@ -171,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 12),
                   SectionTitle(title: AppLocalizations.of(context)!.activeTournament),
                   const SizedBox(height: 12),
                   ActiveTournamentCard(
@@ -209,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: AppLocalizations.of(context)!.challengeCreateButton,
                           subtitle: 'Вызвать на игру',
                           icon: Icons.add_circle_outline,
-                          gradient: const [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                          gradient: const [Color(0xFF3B82F6), Color(0xFF1E40AF)],
                           shadowColor: const Color(0xFF3B82F6),
                           onTap: () {
                             if (!ensureProfileComplete(context)) return;
@@ -223,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: 'Игры',
                           subtitle: 'Все вызовы',
                           icon: Icons.sports_tennis,
-                          gradient: const [Color(0xFFF97316), Color(0xFFEA580C)],
+                          gradient: const [Color(0xFFF97316), Color(0xFF9A3412)],
                           shadowColor: const Color(0xFFF97316),
                           onTap: () {
                             if (!ensureProfileComplete(context)) return;
@@ -233,8 +282,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 28),
-                  SectionTitle(title: AppLocalizations.of(context)!.upcoming),
+                  const SizedBox(height: 12),
+                  SectionTitle(
+                    title: AppLocalizations.of(context)!.upcoming,
+                    trailing: AppLocalizations.of(context)!.calendarLink,
+                    onTrailingTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CalendarScreen()),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 12),
                   UpcomingList(
                     tournaments: home.upcomingTournaments,
@@ -250,7 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
+                  const _TelegramNewsButton(),
+                  const SizedBox(height: 12),
                       ],
                     ),
                   ),
@@ -446,77 +506,212 @@ class _CreateTournamentBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFF97316), Color(0xFFEA580C)],
+    return PressableCard(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFF97316), Color(0xFF9A3412)],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFF97316).withAlpha(80),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFF97316).withAlpha(80),
-                blurRadius: 20,
-                offset: const Offset(0, 6),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(50),
+                borderRadius: BorderRadius.circular(10),
               ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(50),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.add_circle_outline,
-                  color: Colors.white,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Создать турнир',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Организуй своё событие',
-                      style: TextStyle(
-                        color: Color(0xCCFFFFFF),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.chevron_right_rounded,
+              child: const Icon(
+                Icons.add_circle_outline,
                 color: Colors.white,
-                size: 24,
+                size: 22,
               ),
-            ],
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.bannerCreateTournamentTitle,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    AppLocalizations.of(context)!.bannerCreateTournamentSubtitle,
+                    style: const TextStyle(
+                      color: Color(0xCCFFFFFF),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Половинчатая кнопка для размещения в Row 2×1 (Клубы / Комьюнити).
+class _HalfBanner extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final List<Color> gradient;
+  final VoidCallback onTap;
+
+  const _HalfBanner({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = gradient.first;
+    return PressableCard(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: accent.withAlpha(60),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(40),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: Colors.white, size: 20),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withAlpha(200),
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TelegramNewsButton extends StatelessWidget {
+  const _TelegramNewsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    const tg = Color(0xFF229ED9);
+    return PressableCard(
+      onTap: () async {
+        final url = Uri.parse('https://t.me/padelkz_app');
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF229ED9), Color(0xFF1B7FAE)],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: tg.withValues(alpha: 0.32),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(50),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.send, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context)!.newsChannelButton,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ),
+            const Icon(Icons.open_in_new, color: Colors.white, size: 18),
+          ],
         ),
       ),
     );

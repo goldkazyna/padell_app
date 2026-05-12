@@ -13,6 +13,7 @@ class LocaleProvider extends ChangeNotifier {
 
   bool get isRussian => _locale.languageCode == 'ru';
   bool get isEnglish => _locale.languageCode == 'en';
+  bool get isKazakh => _locale.languageCode == 'kk';
 
   Future<void> _loadSavedLocale() async {
     final saved = await _storage.getLocale();

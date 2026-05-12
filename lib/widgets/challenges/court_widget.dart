@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../theme/app_theme.dart';
 import '../../models/challenge.dart';
+import '../../providers/settings_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/rating_formatter.dart';
 
 class CourtWidget extends StatelessWidget {
   final List<ChallengePlayer> players;
@@ -261,7 +264,7 @@ class CourtWidget extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           // Rating or rating change
-          if (isFilled) _buildRatingLabel(player),
+          if (isFilled) _buildRatingLabel(context, player),
         ],
       ),
     );
@@ -279,12 +282,13 @@ class CourtWidget extends StatelessWidget {
     return Colors.transparent;
   }
 
-  Widget _buildRatingLabel(ChallengePlayer player) {
+  Widget _buildRatingLabel(BuildContext context, ChallengePlayer player) {
     if (_isCompleted && player.ratingChange != null) {
       final change = player.ratingChange!;
       final isPositive = change >= 0;
+      final precise = context.watch<SettingsProvider>().preciseRating;
       return Text(
-        '${isPositive ? '+' : ''}$change',
+        RatingFormatter.formatRatingChange(change, precise),
         style: TextStyle(
           color: isPositive ? AppTheme.accent : AppTheme.error,
           fontSize: 11,
@@ -293,8 +297,9 @@ class CourtWidget extends StatelessWidget {
       );
     }
 
+    final precise = context.watch<SettingsProvider>().preciseRating;
     return Text(
-      '${player.rating}',
+      RatingFormatter.formatRating(player.rating, precise),
       style: const TextStyle(
         color: AppTheme.textSecondary,
         fontSize: 11,

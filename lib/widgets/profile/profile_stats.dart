@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/rating_formatter.dart';
 
 class ProfileStats extends StatelessWidget {
   const ProfileStats({super.key});
@@ -13,6 +15,7 @@ class ProfileStats extends StatelessWidget {
       builder: (_, profile, __) {
         final user = profile.user;
         final stats = profile.statistics;
+        final precise = context.watch<SettingsProvider>().preciseRating;
 
         final l = AppLocalizations.of(context)!;
         return Column(
@@ -21,14 +24,22 @@ class ProfileStats extends StatelessWidget {
               children: [
                 _buildStatCard(
                   Icons.trending_up,
-                  '${user?.rating ?? 0}',
+                  user != null
+                      ? RatingFormatter.formatRating(user.rating, precise)
+                      : '0',
                   l.rating,
                   const Color(0xFF22C55E),
                 ),
                 const SizedBox(width: 10),
                 _buildStatCard(
                   Icons.bar_chart,
-                  user?.level ?? '-',
+                  user != null
+                      ? RatingFormatter.formatLevel(
+                          bucketedLevel: user.level,
+                          rating: user.rating,
+                          precise: precise,
+                        )
+                      : '-',
                   l.level,
                   const Color(0xFF22C55E),
                 ),

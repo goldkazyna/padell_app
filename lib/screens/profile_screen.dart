@@ -7,6 +7,7 @@ import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/profile/profile_hero.dart';
 import '../widgets/profile/tournament_history.dart';
 import '../widgets/profile/profile_menu.dart';
+import '../widgets/verification_blockers_banner.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -48,10 +49,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const ProfileHero(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ProfileIncompleteBanner(user: profile.user),
-                  ),
+                  if (profile.user?.isProfileIncomplete == true) ...[
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ProfileIncompleteBanner(user: profile.user),
+                    ),
+                  ],
+                  if ((profile.user?.verificationBlockers ?? const []).isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: VerificationBlockersBanner(
+                        blockers: profile.user!.verificationBlockers,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
                   const TournamentHistory(),
                   const SizedBox(height: 22),
                   const Padding(

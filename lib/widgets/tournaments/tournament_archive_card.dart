@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../providers/settings_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
+import '../../utils/rating_formatter.dart';
 
 class TournamentArchiveCard extends StatelessWidget {
   final String day;
@@ -11,7 +14,7 @@ class TournamentArchiveCard extends StatelessWidget {
   final Color typeColor;
   final String club;
   final int? placeNumber;
-  final String ratingChange;
+  final int ratingChangeRaw;
   final bool isPositive;
 
   const TournamentArchiveCard({
@@ -23,7 +26,7 @@ class TournamentArchiveCard extends StatelessWidget {
     required this.typeColor,
     required this.club,
     required this.placeNumber,
-    required this.ratingChange,
+    required this.ratingChangeRaw,
     required this.isPositive,
   });
 
@@ -38,7 +41,7 @@ class TournamentArchiveCard extends StatelessWidget {
       typeColor: t.typeColor,
       club: t.club.name,
       placeNumber: result?.place,
-      ratingChange: change >= 0 ? '+$change' : '$change',
+      ratingChangeRaw: change,
       isPositive: change >= 0,
     );
   }
@@ -142,14 +145,17 @@ class TournamentArchiveCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      ratingChange,
-                      style: TextStyle(
-                        color: isPositive ? AppTheme.accent : AppTheme.error,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Builder(builder: (ctx) {
+                      final precise = ctx.watch<SettingsProvider>().preciseRating;
+                      return Text(
+                        RatingFormatter.formatRatingChange(ratingChangeRaw, precise),
+                        style: TextStyle(
+                          color: isPositive ? AppTheme.accent : AppTheme.error,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ],

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../services/rating_service.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/rating_formatter.dart';
 import '../verified_badge.dart';
 
 class PlayerRatingItem extends StatelessWidget {
@@ -14,6 +17,7 @@ class PlayerRatingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMe = player.isMe;
+    final precise = context.watch<SettingsProvider>().preciseRating;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -101,7 +105,11 @@ class PlayerRatingItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'L${_getLevelCategory(player.level)} · ${player.level}',
+                  RatingFormatter.formatLevelLabel(
+                    bucketedLevel: player.level,
+                    rating: player.rating,
+                    precise: precise,
+                  ),
                   style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 12,
@@ -112,7 +120,7 @@ class PlayerRatingItem extends StatelessWidget {
           ),
 
           Text(
-            '${player.rating}',
+            RatingFormatter.formatRating(player.rating, precise),
             style: TextStyle(
               color: isMe ? AppTheme.accent : AppTheme.textPrimary,
               fontSize: 16,
@@ -122,13 +130,6 @@ class PlayerRatingItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getLevelCategory(double level) {
-    if (level >= 4.0) return '4';
-    if (level >= 3.0) return '3';
-    if (level >= 2.0) return '2';
-    return '1';
   }
 
   Widget _buildRank(int rank) {

@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_kk.dart';
 import 'app_localizations_ru.dart';
 
 // ignore_for_file: type=lint
@@ -95,6 +96,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('kk'),
     Locale('ru'),
   ];
 
@@ -650,6 +652,102 @@ abstract class AppLocalizations {
   /// **'English'**
   String get english;
 
+  /// No description provided for @settingsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsMenuItem.
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки'**
+  String get settingsMenuItem;
+
+  /// No description provided for @settingsMenuItemSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отображение рейтинга и уровня'**
+  String get settingsMenuItemSubtitle;
+
+  /// No description provided for @preciseRatingTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Точные значения рейтинга'**
+  String get preciseRatingTitle;
+
+  /// No description provided for @preciseRatingSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать рейтинг и уровень с двумя знаками (2.69 вместо 2690)'**
+  String get preciseRatingSubtitle;
+
+  /// No description provided for @newsChannelTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Последние новости приложения'**
+  String get newsChannelTitle;
+
+  /// No description provided for @newsChannelSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Telegram-канал @padelkz_app'**
+  String get newsChannelSubtitle;
+
+  /// No description provided for @newsChannelButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Последние новости приложения'**
+  String get newsChannelButton;
+
+  /// No description provided for @calendarLink.
+  ///
+  /// In ru, this message translates to:
+  /// **'Календарь →'**
+  String get calendarLink;
+
+  /// No description provided for @calendarTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Календарь турниров'**
+  String get calendarTitle;
+
+  /// No description provided for @calendarNoTournamentsForDay.
+  ///
+  /// In ru, this message translates to:
+  /// **'На этот день турниров нет'**
+  String get calendarNoTournamentsForDay;
+
+  /// No description provided for @calendarAllTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все турниры →'**
+  String get calendarAllTournaments;
+
+  /// No description provided for @calendarSeats.
+  ///
+  /// In ru, this message translates to:
+  /// **'{filled}/{max} мест'**
+  String calendarSeats(int filled, int max);
+
+  /// No description provided for @calendarSeatsLeft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Осталось {n}'**
+  String calendarSeatsLeft(int n);
+
+  /// No description provided for @calendarTodayDow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сегодня'**
+  String get calendarTodayDow;
+
+  /// No description provided for @calendarEmptyAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'В ближайшие 14 дней турниров нет'**
+  String get calendarEmptyAll;
+
   /// No description provided for @register.
   ///
   /// In ru, this message translates to:
@@ -709,6 +807,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Архив'**
   String get archiveTab;
+
+  /// No description provided for @cancelledTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменённые'**
+  String get cancelledTab;
+
+  /// No description provided for @noCancelledTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет отменённых турниров'**
+  String get noCancelledTournaments;
 
   /// No description provided for @noOpenTournaments.
   ///
@@ -1524,7 +1634,7 @@ abstract class AppLocalizations {
   ///
   /// In ru, this message translates to:
   /// **'Уровень {level} · {rating} очков'**
-  String ratingLevelPoints(String level, int rating);
+  String ratingLevelPoints(String level, String rating);
 
   /// No description provided for @ratingOutOfPlayers.
   ///
@@ -2635,6 +2745,234 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Позже'**
   String get later;
+
+  /// No description provided for @profileMissingPhoneTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите номер телефона'**
+  String get profileMissingPhoneTitle;
+
+  /// No description provided for @profileMissingPhoneDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без него нельзя записаться на турниры и игры.'**
+  String get profileMissingPhoneDesc;
+
+  /// No description provided for @profileMissingCityTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите город'**
+  String get profileMissingCityTitle;
+
+  /// No description provided for @profileMissingCityDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чтобы видеть актуальные турниры в вашем городе.'**
+  String get profileMissingCityDesc;
+
+  /// No description provided for @profileMissingGenderTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите пол'**
+  String get profileMissingGenderTitle;
+
+  /// No description provided for @profileMissingGenderDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нужно для парных турниров и подбора партнёров.'**
+  String get profileMissingGenderDesc;
+
+  /// No description provided for @verificationNotConfirmedTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинг ещё не подтверждён'**
+  String get verificationNotConfirmedTitle;
+
+  /// No description provided for @verificationNoAvatarTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поставьте аватарку'**
+  String get verificationNoAvatarTitle;
+
+  /// No description provided for @verificationNoAvatarDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Зайдите в «Настройки профиля» и добавьте фото.'**
+  String get verificationNoAvatarDesc;
+
+  /// No description provided for @verificationNoTournamentsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сыграйте хотя бы один турнир'**
+  String get verificationNoTournamentsTitle;
+
+  /// No description provided for @verificationNoTournamentsDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'После завершения первого турнира рейтинг подтвердится автоматически.'**
+  String get verificationNoTournamentsDesc;
+
+  /// No description provided for @verificationSheetTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Верификация уровня'**
+  String get verificationSheetTitle;
+
+  /// No description provided for @verificationLatestEntry.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОСЛЕДНЕЕ ПОДТВЕРЖДЕНИЕ'**
+  String get verificationLatestEntry;
+
+  /// No description provided for @verificationFieldLevel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Установленный уровень'**
+  String get verificationFieldLevel;
+
+  /// No description provided for @verificationFieldVerifiedBy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Кто подтвердил'**
+  String get verificationFieldVerifiedBy;
+
+  /// No description provided for @verificationFieldClub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клуб'**
+  String get verificationFieldClub;
+
+  /// No description provided for @verificationFieldWhen.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда'**
+  String get verificationFieldWhen;
+
+  /// No description provided for @verificationConfirmedByClub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень подтверждён клубом.'**
+  String get verificationConfirmedByClub;
+
+  /// No description provided for @verificationToConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чтобы рейтинг подтвердился:'**
+  String get verificationToConfirm;
+
+  /// No description provided for @verificationHistoryRecords.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записей в истории: {count}'**
+  String verificationHistoryRecords(int count);
+
+  /// No description provided for @verificationLoadFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось загрузить: {error}'**
+  String verificationLoadFailed(String error);
+
+  /// No description provided for @verificationNotConfirmedYet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень пока не подтверждён.'**
+  String get verificationNotConfirmedYet;
+
+  /// No description provided for @verificationNotChecked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень этого игрока ещё не подтверждался клубом.'**
+  String get verificationNotChecked;
+
+  /// No description provided for @tournamentDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Описание'**
+  String get tournamentDescription;
+
+  /// No description provided for @showMore.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать ещё'**
+  String get showMore;
+
+  /// No description provided for @showLess.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свернуть'**
+  String get showLess;
+
+  /// No description provided for @registerViaChat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записаться через чат'**
+  String get registerViaChat;
+
+  /// No description provided for @searchClubHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поиск клуба'**
+  String get searchClubHint;
+
+  /// No description provided for @searchCommunityHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поиск комьюнити'**
+  String get searchCommunityHint;
+
+  /// No description provided for @cityAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все'**
+  String get cityAll;
+
+  /// No description provided for @bannerClubsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клубы'**
+  String get bannerClubsTitle;
+
+  /// No description provided for @bannerClubsSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Адреса и контакты'**
+  String get bannerClubsSubtitle;
+
+  /// No description provided for @bannerCommunityTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Комьюнити'**
+  String get bannerCommunityTitle;
+
+  /// No description provided for @bannerCommunitySubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщества игроков'**
+  String get bannerCommunitySubtitle;
+
+  /// No description provided for @bannerCreateTournamentTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создать турнир'**
+  String get bannerCreateTournamentTitle;
+
+  /// No description provided for @bannerCreateTournamentSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организуй своё событие'**
+  String get bannerCreateTournamentSubtitle;
+
+  /// No description provided for @bannerBookCourtTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Забронировать корт'**
+  String get bannerBookCourtTitle;
+
+  /// No description provided for @bannerBookCourtSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите клуб и удобное время'**
+  String get bannerBookCourtSubtitle;
 }
 
 class _AppLocalizationsDelegate
@@ -2648,7 +2986,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'ru'].contains(locale.languageCode);
+      <String>['en', 'kk', 'ru'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -2659,6 +2997,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
+    case 'kk':
+      return AppLocalizationsKk();
     case 'ru':
       return AppLocalizationsRu();
   }

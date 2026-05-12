@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/rating_formatter.dart';
 import '../level_verification_sheet.dart';
 import '../verified_badge.dart';
 import 'sparkline.dart';
@@ -238,6 +241,7 @@ class _RatingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final canTap = userId != null && (playerName ?? '').isNotEmpty;
+    final precise = context.watch<SettingsProvider>().preciseRating;
 
     final ratingBlock = Column(
       mainAxisSize: MainAxisSize.min,
@@ -258,10 +262,10 @@ class _RatingRow extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '$rating',
-              style: const TextStyle(
+              RatingFormatter.formatRating(rating, precise),
+              style: TextStyle(
                 color: AppTheme.textPrimary,
-                fontSize: 38,
+                fontSize: precise ? 32 : 38,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -1.3,
                 height: 1,
@@ -331,6 +335,14 @@ class _LevelProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final precise = context.watch<SettingsProvider>().preciseRating;
+    final levelStr = RatingFormatter.formatLevel(
+      bucketedLevel: level,
+      rating: rating,
+      precise: precise,
+    );
+    final ratingStr = RatingFormatter.formatRating(rating, precise);
+    final targetStr = RatingFormatter.formatRating(target, precise);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -339,7 +351,7 @@ class _LevelProgress extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Уровень ${level.toStringAsFixed(2)} → ${nextLevel.toStringAsFixed(2)}',
+              'Уровень $levelStr → ${nextLevel.toStringAsFixed(2)}',
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 10,
@@ -347,7 +359,7 @@ class _LevelProgress extends StatelessWidget {
               ),
             ),
             Text(
-              '$rating / $target',
+              '$ratingStr / $targetStr',
               style: const TextStyle(
                 color: AppTheme.textDim,
                 fontSize: 10,

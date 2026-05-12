@@ -53,6 +53,7 @@ class User {
   final String? hand;
   final String? position;
   final bool levelVerified;
+  final List<String> verificationBlockers;
   final bool quizCompleted;
   final String? role;
   final bool isClubAdmin;
@@ -75,6 +76,7 @@ class User {
     this.hand,
     this.position,
     this.levelVerified = false,
+    this.verificationBlockers = const [],
     this.quizCompleted = false,
     this.role,
     this.isClubAdmin = false,
@@ -171,6 +173,9 @@ class User {
       hand: json['hand'] as String?,
       position: json['position'] as String?,
       levelVerified: json['level_verified'] as bool? ?? false,
+      verificationBlockers: ((json['verification_blockers'] as List?) ?? const [])
+          .whereType<String>()
+          .toList(),
       quizCompleted: json['quiz_completed'] as bool? ?? false,
       role: json['role'] as String?,
       isClubAdmin: json['is_club_admin'] as bool? ?? false,

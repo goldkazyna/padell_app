@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/home_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/rating_formatter.dart';
 
 class HomeStats extends StatelessWidget {
   const HomeStats({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final precise = context.watch<SettingsProvider>().preciseRating;
     return Consumer<HomeProvider>(
       builder: (_, home, __) {
         final user = home.user;
-        final rating = user?.rating.toString() ?? '-';
-        final level = user?.level ?? '-';
+        final rating = user != null
+            ? RatingFormatter.formatRating(user.rating, precise)
+            : '-';
+        final level = user != null
+            ? RatingFormatter.formatLevel(
+                bucketedLevel: user.level,
+                rating: user.rating,
+                precise: precise,
+              )
+            : '-';
         final place = user?.place != null ? '#${user!.place}' : '-';
 
         return Row(

@@ -301,6 +301,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get english => 'English';
 
   @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsMenuItem => 'Settings';
+
+  @override
+  String get settingsMenuItemSubtitle => 'Rating and level display';
+
+  @override
+  String get preciseRatingTitle => 'Precise rating values';
+
+  @override
+  String get preciseRatingSubtitle =>
+      'Show rating and level with two decimals (2.69 instead of 2690)';
+
+  @override
+  String get newsChannelTitle => 'Latest app news';
+
+  @override
+  String get newsChannelSubtitle => 'Telegram channel @padelkz_app';
+
+  @override
+  String get newsChannelButton => 'Latest app news';
+
+  @override
+  String get calendarLink => 'Calendar →';
+
+  @override
+  String get calendarTitle => 'Tournament calendar';
+
+  @override
+  String get calendarNoTournamentsForDay => 'No tournaments on this day';
+
+  @override
+  String get calendarAllTournaments => 'All tournaments →';
+
+  @override
+  String calendarSeats(int filled, int max) {
+    return '$filled/$max spots';
+  }
+
+  @override
+  String calendarSeatsLeft(int n) {
+    return '$n left';
+  }
+
+  @override
+  String get calendarTodayDow => 'Today';
+
+  @override
+  String get calendarEmptyAll => 'No tournaments in the next 14 days';
+
+  @override
   String get register => 'Register';
 
   @override
@@ -331,6 +384,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get archiveTab => 'Archive';
+
+  @override
+  String get cancelledTab => 'Cancelled';
+
+  @override
+  String get noCancelledTournaments => 'No cancelled tournaments';
 
   @override
   String get noOpenTournaments => 'No open tournaments';
@@ -786,7 +845,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ratingMyPosition => 'My position';
 
   @override
-  String ratingLevelPoints(String level, int rating) {
+  String ratingLevelPoints(String level, String rating) {
     return 'Level $level · $rating points';
   }
 
@@ -1385,4 +1444,128 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get later => 'Later';
+
+  @override
+  String get profileMissingPhoneTitle => 'Add a phone number';
+
+  @override
+  String get profileMissingPhoneDesc =>
+      'Without it you can\'t register for tournaments and games.';
+
+  @override
+  String get profileMissingCityTitle => 'Set your city';
+
+  @override
+  String get profileMissingCityDesc =>
+      'So you see relevant tournaments in your city.';
+
+  @override
+  String get profileMissingGenderTitle => 'Set your gender';
+
+  @override
+  String get profileMissingGenderDesc =>
+      'Required for doubles tournaments and partner matching.';
+
+  @override
+  String get verificationNotConfirmedTitle => 'Rating not yet confirmed';
+
+  @override
+  String get verificationNoAvatarTitle => 'Add a profile photo';
+
+  @override
+  String get verificationNoAvatarDesc =>
+      'Go to Profile Settings and add a photo.';
+
+  @override
+  String get verificationNoTournamentsTitle => 'Play at least one tournament';
+
+  @override
+  String get verificationNoTournamentsDesc =>
+      'Your rating confirms automatically after the first tournament finishes.';
+
+  @override
+  String get verificationSheetTitle => 'Level verification';
+
+  @override
+  String get verificationLatestEntry => 'LATEST CONFIRMATION';
+
+  @override
+  String get verificationFieldLevel => 'Set level';
+
+  @override
+  String get verificationFieldVerifiedBy => 'Confirmed by';
+
+  @override
+  String get verificationFieldClub => 'Club';
+
+  @override
+  String get verificationFieldWhen => 'When';
+
+  @override
+  String get verificationConfirmedByClub => 'Level confirmed by club.';
+
+  @override
+  String get verificationToConfirm => 'To confirm your rating:';
+
+  @override
+  String verificationHistoryRecords(int count) {
+    return 'History records: $count';
+  }
+
+  @override
+  String verificationLoadFailed(String error) {
+    return 'Failed to load: $error';
+  }
+
+  @override
+  String get verificationNotConfirmedYet => 'Level not confirmed yet.';
+
+  @override
+  String get verificationNotChecked =>
+      'This player\'s level hasn\'t been verified by a club yet.';
+
+  @override
+  String get tournamentDescription => 'Description';
+
+  @override
+  String get showMore => 'Show more';
+
+  @override
+  String get showLess => 'Show less';
+
+  @override
+  String get registerViaChat => 'Register via chat';
+
+  @override
+  String get searchClubHint => 'Search club';
+
+  @override
+  String get searchCommunityHint => 'Search community';
+
+  @override
+  String get cityAll => 'All';
+
+  @override
+  String get bannerClubsTitle => 'Clubs';
+
+  @override
+  String get bannerClubsSubtitle => 'Addresses and contacts';
+
+  @override
+  String get bannerCommunityTitle => 'Community';
+
+  @override
+  String get bannerCommunitySubtitle => 'Player communities';
+
+  @override
+  String get bannerCreateTournamentTitle => 'Create tournament';
+
+  @override
+  String get bannerCreateTournamentSubtitle => 'Organize your event';
+
+  @override
+  String get bannerBookCourtTitle => 'Book a court';
+
+  @override
+  String get bannerBookCourtSubtitle => 'Pick a club and time';
 }

@@ -5,6 +5,7 @@ class StorageService {
   static const _tokenKey = 'auth_token';
   static const _onboardingKey = 'onboarding_seen';
   static const _localeKey = 'app_locale';
+  static const _preciseRatingKey = 'precise_rating';
 
   final FlutterSecureStorage? _storage;
   final Map<String, String> _webStorage = {};
@@ -71,5 +72,14 @@ class StorageService {
 
   Future<String?> getLocale() async {
     return _read(_localeKey);
+  }
+
+  Future<void> savePreciseRating(bool value) async {
+    await _write(_preciseRatingKey, value ? 'true' : 'false');
+  }
+
+  Future<bool> getPreciseRating() async {
+    final v = await _read(_preciseRatingKey);
+    return v == 'true';
   }
 }

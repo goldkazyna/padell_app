@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../tournaments/club_logo.dart';
 
 class NearestTournamentCard extends StatelessWidget {
   final Tournament? tournament;
@@ -30,57 +31,85 @@ class NearestTournamentCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppTheme.accent.withAlpha(25),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.calendar_today, color: AppTheme.accent, size: 14),
-                const SizedBox(width: 6),
-                Text(
-                  '${t.date} · ${t.time}',
-                  style: TextStyle(
-                    color: AppTheme.accent,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          Text(
-            t.name,
-            style: const TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            t.club.name,
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
-          ),
-          const SizedBox(height: 10),
-
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _buildInfoChip(t.typeName, t.typeColor),
-              const SizedBox(width: 8),
-              _buildInfoChip(t.priceText, AppTheme.textSecondary),
-              const SizedBox(width: 8),
-              _buildInfoChip(AppLocalizations.of(context)!.levelShort(t.levelText), AppTheme.textSecondary),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.accent.withAlpha(25),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.calendar_today, color: AppTheme.accent, size: 14),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${t.date} · ${t.time}',
+                      style: TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ClubLogoTile(
+                    url: t.club.logo,
+                    name: t.club.name,
+                    size: 44,
+                    radius: 11,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          t.name,
+                          style: const TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          t.club.name,
+                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _buildInfoChip(t.typeName, t.typeColor),
+                  const SizedBox(width: 8),
+                  _buildInfoChip(t.priceText, AppTheme.textSecondary),
+                  const SizedBox(width: 8),
+                  _buildInfoChip(AppLocalizations.of(context)!.levelShort(t.levelText), AppTheme.textSecondary),
+                ],
+              ),
             ],
           ),
-          const SizedBox(height: 16),
-
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

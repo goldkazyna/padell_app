@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
 
@@ -94,13 +95,13 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
               ),
               const SizedBox(height: 14),
               Row(
-                children: const [
-                  Icon(Icons.verified_outlined,
+                children: [
+                  const Icon(Icons.verified_outlined,
                       color: AppTheme.blue, size: 20),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    'Верификация уровня',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.verificationSheetTitle,
+                    style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -139,11 +140,12 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
         ),
       );
     }
+    final l = AppLocalizations.of(context)!;
     if (_error != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Text(
-          'Не удалось загрузить: $_error',
+          l.verificationLoadFailed(_error ?? ''),
           style: const TextStyle(color: AppTheme.error, fontSize: 13),
           textAlign: TextAlign.center,
         ),
@@ -151,26 +153,51 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
     }
     final info = _info;
 
-    // Случай 1: уровень не верифицирован вообще.
+    // Случай 1: уровень не верифицирован — показываем причины-blockers.
     if (info == null || !info.verified) {
-      return Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppTheme.card,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.info_outline, color: AppTheme.amber, size: 20),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'Уровень этого игрока ещё не подтверждался клубом.',
-                style: TextStyle(color: AppTheme.textPrimary, fontSize: 13),
+      final blockers = info?.blockers ?? const <String>[];
+      // Если бэк не прислал blockers (старая версия) — показываем общее.
+      if (blockers.isEmpty) {
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.info_outline, color: AppTheme.amber, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l.verificationNotConfirmedYet,
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8, left: 2),
+            child: Text(
+              l.verificationToConfirm,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
             ),
+          ),
+          for (final code in blockers) ...[
+            _blockerCard(code),
+            const SizedBox(height: 8),
           ],
-        ),
+        ],
       );
     }
 
@@ -184,15 +211,15 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppTheme.blue.withOpacity(0.3)),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.verified_outlined,
+            const Icon(Icons.verified_outlined,
                 color: AppTheme.blue, size: 20),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Уровень подтверждён клубом.',
-                style: TextStyle(
+                l.verificationConfirmedByClub,
+                style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600),
@@ -211,7 +238,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
-              'Записей в истории: ${info.history.length}',
+              l.verificationHistoryRecords(info.history.length),
               style: const TextStyle(
                   color: AppTheme.textSecondary, fontSize: 12),
             ),
@@ -228,6 +255,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
   }
 
   Widget _buildHistoryCard(LevelVerification v, {required bool isLatest}) {
+    final l = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -243,11 +271,11 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isLatest)
-            const Padding(
-              padding: EdgeInsets.only(bottom: 8),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                'ПОСЛЕДНЕЕ ПОДТВЕРЖДЕНИЕ',
-                style: TextStyle(
+                l.verificationLatestEntry,
+                style: const TextStyle(
                   color: AppTheme.blue,
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
@@ -256,11 +284,70 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
               ),
             ),
           if (v.levelSetTo != null)
-            _row('Установленный уровень', _fmtLevel(v.levelSetTo!)),
+            _row(l.verificationFieldLevel, _fmtLevel(v.levelSetTo!)),
           if (v.verifiedByName.isNotEmpty)
-            _row('Кто подтвердил', v.verifiedByName),
-          if ((v.clubName ?? '').isNotEmpty) _row('Клуб', v.clubName!),
-          if (v.verifiedAt != null) _row('Когда', _fmtDate(v.verifiedAt!)),
+            _row(l.verificationFieldVerifiedBy, v.verifiedByName),
+          if ((v.clubName ?? '').isNotEmpty)
+            _row(l.verificationFieldClub, v.clubName!),
+          if (v.verifiedAt != null)
+            _row(l.verificationFieldWhen, _fmtDate(v.verifiedAt!)),
+        ],
+      ),
+    );
+  }
+
+  Widget _blockerCard(String code) {
+    final l = AppLocalizations.of(context)!;
+    final (IconData icon, String title, String desc) = switch (code) {
+      'no_avatar' => (
+          Icons.account_circle_outlined,
+          l.verificationNoAvatarTitle,
+          l.verificationNoAvatarDesc,
+        ),
+      'no_tournaments' => (
+          Icons.emoji_events_outlined,
+          l.verificationNoTournamentsTitle,
+          l.verificationNoTournamentsDesc,
+        ),
+      _ => (Icons.info_outline, l.verificationNotConfirmedTitle, code),
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.amber.withOpacity(0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppTheme.amber, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  desc,
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

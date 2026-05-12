@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../providers/settings_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../models/tournament.dart';
 import '../../screens/player_profile_screen.dart';
+import '../../utils/rating_formatter.dart';
 import '../verified_badge.dart';
 
 class TeamListSection extends StatelessWidget {
@@ -308,26 +311,36 @@ class TeamListSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 2),
-              Text(
-                player.levelText,
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontSize: 12,
-                ),
-              ),
+              Builder(builder: (ctx) {
+                final precise = ctx.watch<SettingsProvider>().preciseRating;
+                return Text(
+                  RatingFormatter.formatLevelLabel(
+                    bucketedLevel: player.level,
+                    rating: player.rating,
+                    precise: precise,
+                  ),
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 12,
+                  ),
+                );
+              }),
             ],
           ),
         ),
 
         // Rating
-        Text(
-          '${player.rating}',
-          style: TextStyle(
-            color: primaryColor,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Builder(builder: (ctx) {
+          final precise = ctx.watch<SettingsProvider>().preciseRating;
+          return Text(
+            RatingFormatter.formatRating(player.rating, precise),
+            style: TextStyle(
+              color: primaryColor,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          );
+        }),
       ],
     ),
     ));

@@ -7,25 +7,29 @@ class TournamentsFilter {
   final Set<String> formats;
   final String? dateFilter; // 'today' | 'tomorrow' | 'week' | null
   final Set<int> clubIds;
+  final bool onlyCommunity;
 
   const TournamentsFilter({
     this.onlyMyLevel = false,
     this.formats = const {},
     this.dateFilter,
     this.clubIds = const {},
+    this.onlyCommunity = false,
   });
 
   bool get isEmpty =>
       !onlyMyLevel &&
       formats.isEmpty &&
       dateFilter == null &&
-      clubIds.isEmpty;
+      clubIds.isEmpty &&
+      !onlyCommunity;
 
   TournamentsFilter copyWith({
     bool? onlyMyLevel,
     Set<String>? formats,
     Object? dateFilter = _unset,
     Set<int>? clubIds,
+    bool? onlyCommunity,
   }) {
     return TournamentsFilter(
       onlyMyLevel: onlyMyLevel ?? this.onlyMyLevel,
@@ -33,6 +37,7 @@ class TournamentsFilter {
       dateFilter:
           dateFilter == _unset ? this.dateFilter : dateFilter as String?,
       clubIds: clubIds ?? this.clubIds,
+      onlyCommunity: onlyCommunity ?? this.onlyCommunity,
     );
   }
 }
@@ -47,6 +52,7 @@ class FilterPills extends StatelessWidget {
   final VoidCallback onFormatTap;
   final VoidCallback onDateTap;
   final VoidCallback onClubTap;
+  final VoidCallback onToggleCommunity;
 
   const FilterPills({
     super.key,
@@ -56,6 +62,7 @@ class FilterPills extends StatelessWidget {
     required this.onFormatTap,
     required this.onDateTap,
     required this.onClubTap,
+    required this.onToggleCommunity,
   });
 
   @override
@@ -94,6 +101,12 @@ class FilterPills extends StatelessWidget {
             filter.clubIds.isEmpty ? 'Клуб' : 'Клуб · ${filter.clubIds.length}',
             active: filter.clubIds.isNotEmpty,
             onTap: onClubTap,
+          ),
+          const SizedBox(width: 6),
+          _pill(
+            'Комьюнити',
+            active: filter.onlyCommunity,
+            onTap: onToggleCommunity,
           ),
         ],
       ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/rating_provider.dart';
+import '../providers/settings_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/rating_formatter.dart';
 import 'tournament_results_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
 import '../models/tournament.dart';
@@ -254,17 +256,20 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             ),
             if (h.tournamentId != null)
               const Icon(Icons.chevron_right, size: 16, color: Color(0xFF3F3F46)),
-            SizedBox(
-              width: 50,
-              child: Text(
-                '${isPositive ? '+' : ''}${h.change}',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w800,
-                  color: isPositive ? AppTheme.accent : const Color(0xFFEF4444),
+            Builder(builder: (ctx) {
+              final precise = ctx.watch<SettingsProvider>().preciseRating;
+              return SizedBox(
+                width: precise ? 80 : 50,
+                child: Text(
+                  RatingFormatter.formatRatingChange(h.change, precise, decimals: 4),
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w800,
+                    color: isPositive ? AppTheme.accent : const Color(0xFFEF4444),
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/rating_provider.dart';
+import '../providers/settings_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/rating_formatter.dart';
 import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 
@@ -453,7 +455,17 @@ class _RatingScreenState extends State<RatingScreen> {
                     ],
                   ],
                 ),
-                Text('L${_getLevelCategory(player.level)} · ${player.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+                Builder(builder: (ctx) {
+                  final precise = ctx.watch<SettingsProvider>().preciseRating;
+                  return Text(
+                    RatingFormatter.formatLevelLabel(
+                      bucketedLevel: player.level,
+                      rating: player.rating,
+                      precise: precise,
+                    ),
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                  );
+                }),
               ],
             ),
           ),
@@ -466,18 +478,24 @@ class _RatingScreenState extends State<RatingScreen> {
               ),
             )
           else if (growthValue != null)
-            Text(
-              '+$growthValue',
-              style: TextStyle(
-                color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
-                fontSize: 15, fontWeight: FontWeight.w800,
-              ),
-            )
+            Builder(builder: (ctx) {
+              final precise = ctx.watch<SettingsProvider>().preciseRating;
+              return Text(
+                RatingFormatter.formatRatingChange(growthValue, precise),
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
+                  fontSize: 15, fontWeight: FontWeight.w800,
+                ),
+              );
+            })
           else
-            Text(
-              '${player.rating}',
-              style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w800),
-            ),
+            Builder(builder: (ctx) {
+              final precise = ctx.watch<SettingsProvider>().preciseRating;
+              return Text(
+                RatingFormatter.formatRating(player.rating, precise),
+                style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w800),
+              );
+            }),
         ],
       ),
     );
@@ -524,11 +542,27 @@ class _RatingScreenState extends State<RatingScreen> {
                     ],
                   ],
                 ),
-                Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+                Builder(builder: (ctx) {
+                  final precise = ctx.watch<SettingsProvider>().preciseRating;
+                  return Text(
+                    RatingFormatter.formatLevelLabel(
+                      bucketedLevel: card.level,
+                      rating: card.rating,
+                      precise: precise,
+                    ),
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                  );
+                }),
               ],
             ),
           ),
-          Text('${card.rating}', style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800)),
+          Builder(builder: (ctx) {
+            final precise = ctx.watch<SettingsProvider>().preciseRating;
+            return Text(
+              RatingFormatter.formatRating(card.rating, precise),
+              style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800),
+            );
+          }),
         ],
       ),
     );
@@ -722,11 +756,27 @@ class _RatingScreenState extends State<RatingScreen> {
                     ],
                   ],
                 ),
-                Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+                Builder(builder: (ctx) {
+                  final precise = ctx.watch<SettingsProvider>().preciseRating;
+                  return Text(
+                    RatingFormatter.formatLevelLabel(
+                      bucketedLevel: card.level,
+                      rating: card.rating,
+                      precise: precise,
+                    ),
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                  );
+                }),
               ],
             ),
           ),
-          Text('+$_myGrowth', style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800)),
+          Builder(builder: (ctx) {
+            final precise = ctx.watch<SettingsProvider>().preciseRating;
+            return Text(
+              RatingFormatter.formatRatingChange(_myGrowth, precise),
+              style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800),
+            );
+          }),
         ],
       ),
     );
@@ -872,7 +922,17 @@ class _RatingScreenState extends State<RatingScreen> {
                 const VerifiedBadge(size: 10),
               ],
             ]),
-            Text('L${_getLevelCategory(card.level)} · ${card.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+            Builder(builder: (ctx) {
+              final precise = ctx.watch<SettingsProvider>().preciseRating;
+              return Text(
+                RatingFormatter.formatLevelLabel(
+                  bucketedLevel: card.level,
+                  rating: card.rating,
+                  precise: precise,
+                ),
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+              );
+            }),
           ])),
           Text('$_myTournaments', style: const TextStyle(color: AppTheme.accent, fontSize: 15, fontWeight: FontWeight.w800)),
         ],
@@ -880,10 +940,4 @@ class _RatingScreenState extends State<RatingScreen> {
     );
   }
 
-  String _getLevelCategory(double level) {
-    if (level >= 4.0) return '4';
-    if (level >= 3.0) return '3';
-    if (level >= 2.0) return '2';
-    return '1';
-  }
 }

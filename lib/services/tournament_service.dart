@@ -35,6 +35,14 @@ class TournamentService {
         .toList();
   }
 
+  Future<List<Tournament>> getCancelledTournaments(String token) async {
+    final response = await _api.get('/tournaments/cancelled', token);
+    final list = response['tournaments'] as List<dynamic>;
+    return list
+        .map((json) => Tournament.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<Tournament> getTournamentDetails(int id, String token) async {
     final response = await _api.get('/tournaments/$id', token);
     final tournamentJson = response['tournament'] as Map<String, dynamic>;

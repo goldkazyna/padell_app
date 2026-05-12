@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../providers/settings_provider.dart';
 import '../../services/rating_service.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/rating_formatter.dart';
 import '../verified_badge.dart';
 
 class MyRankCard extends StatelessWidget {
@@ -16,6 +19,7 @@ class MyRankCard extends StatelessWidget {
     }
 
     final c = card!;
+    final precise = context.watch<SettingsProvider>().preciseRating;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -91,7 +95,14 @@ class MyRankCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  AppLocalizations.of(context)!.ratingLevelPoints(c.level.toString(), c.rating),
+                  AppLocalizations.of(context)!.ratingLevelPoints(
+                    RatingFormatter.formatLevel(
+                      bucketedLevel: c.level,
+                      rating: c.rating,
+                      precise: precise,
+                    ),
+                    RatingFormatter.formatRating(c.rating, precise),
+                  ),
                   style: const TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,

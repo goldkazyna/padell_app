@@ -223,12 +223,18 @@ class RatingService {
                   response['level_verification']
               ];
 
+      final blockers = (response['verification_blockers'] as List?)
+              ?.whereType<String>()
+              .toList() ??
+          const <String>[];
+
       return VerificationInfo(
         verified: response['level_verified'] as bool? ?? false,
         history: rawHistory
             .whereType<Map<String, dynamic>>()
             .map(LevelVerification.fromJson)
             .toList(),
+        blockers: blockers,
       );
     } catch (_) {
       return null;
@@ -418,12 +424,18 @@ class PlayerProfile {
 }
 
 /// Обёртка для модалки верификации: знает и про флаг verified,
-/// и про всю историю записей (если они есть).
+/// и про всю историю записей (если они есть), и про причины почему
+/// не верифицирован (если не верифицирован).
 class VerificationInfo {
   final bool verified;
   final List<LevelVerification> history;
+  final List<String> blockers; // 'no_avatar', 'no_tournaments'
 
-  const VerificationInfo({required this.verified, required this.history});
+  const VerificationInfo({
+    required this.verified,
+    required this.history,
+    this.blockers = const [],
+  });
 
   LevelVerification? get latest => history.isEmpty ? null : history.first;
 }

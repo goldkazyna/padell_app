@@ -15,7 +15,11 @@ class ClubService {
     return Club.fromJson(data as Map<String, dynamic>);
   }
 
-  Future<List<Club>> getClubs({String? search, String? city}) async {
+  Future<List<Club>> getClubs({
+    String? search,
+    String? city,
+    String type = 'club', // 'club' | 'community' | 'all'
+  }) async {
     final token = await _storage.getToken();
     var endpoint = '/clubs';
     final params = <String>[];
@@ -24,6 +28,9 @@ class ClubService {
     }
     if (city != null && city.isNotEmpty) {
       params.add('city=${Uri.encodeQueryComponent(city)}');
+    }
+    if (type.isNotEmpty) {
+      params.add('type=${Uri.encodeQueryComponent(type)}');
     }
     if (params.isNotEmpty) endpoint += '?${params.join('&')}';
 

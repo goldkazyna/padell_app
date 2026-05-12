@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../screens/player_profile_screen.dart';
 import '../../screens/tournament_results_screen.dart';
 import '../../screens/tournament_live_kingofcourt_screen.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/rating_formatter.dart';
 import 'medal.dart';
 
 class TournamentHistory extends StatelessWidget {
@@ -198,20 +200,23 @@ class _HistoryRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            SizedBox(
-              width: 50,
-              child: Text(
-                '${isPositive ? '+' : ''}$delta',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: isPositive ? AppTheme.accent : AppTheme.error,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.3,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+            Builder(builder: (ctx) {
+              final precise = ctx.watch<SettingsProvider>().preciseRating;
+              return SizedBox(
+                width: precise ? 80 : 50,
+                child: Text(
+                  RatingFormatter.formatRatingChange(delta, precise, decimals: 4),
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: isPositive ? AppTheme.accent : AppTheme.error,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

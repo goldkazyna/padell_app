@@ -1,35 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../l10n/app_localizations.dart';
-import '../../models/user.dart';
-import '../../providers/home_provider.dart';
-import '../../providers/profile_provider.dart';
-import '../../screens/edit_profile_screen.dart';
-import '../../theme/app_theme.dart';
 
-/// Баннер «заполните профиль» — стиль аналогичен VerificationBlockersBanner.
-/// Показывается если у юзера не заполнены телефон / город / пол.
-class ProfileIncompleteBanner extends StatelessWidget {
-  final User? user;
+import '../l10n/app_localizations.dart';
+import '../providers/home_provider.dart';
+import '../screens/edit_profile_screen.dart';
+import '../theme/app_theme.dart';
 
-  const ProfileIncompleteBanner({super.key, this.user});
+/// Баннер «почему рейтинг не верифицирован» — показывается на экранах
+/// СВОЕГО юзера если у него есть `verificationBlockers`.
+///
+/// Если массив пустой → возвращает SizedBox.shrink().
+/// Если есть блокеры — янтарная плашка с конкретными причинами и
+/// кнопками-действиями.
+class VerificationBlockersBanner extends StatelessWidget {
+  final List<String> blockers;
+  final VoidCallback? onTournamentsTap;
+
+  const VerificationBlockersBanner({
+    super.key,
+    required this.blockers,
+    this.onTournamentsTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (user != null) {
-      return _buildForUser(context, user!);
-    }
-    return Consumer<HomeProvider>(
-      builder: (_, home, __) {
-        final u = home.user;
-        if (u == null) return const SizedBox.shrink();
-        return _buildForUser(context, u);
-      },
-    );
-  }
-
-  Widget _buildForUser(BuildContext context, User u) {
-    if (!u.isProfileIncomplete) return const SizedBox.shrink();
+    if (blockers.isEmpty) return const SizedBox.shrink();
     final l = AppLocalizations.of(context)!;
 
     return Container(
@@ -44,12 +39,11 @@ class ProfileIncompleteBanner extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline,
-                  color: AppTheme.amber, size: 18),
+              const Icon(Icons.info_outline, color: AppTheme.amber, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  l.profileBannerTitle,
+                  l.verificationNotConfirmedTitle,
                   style: const TextStyle(
                     color: AppTheme.amber,
                     fontSize: 13,
@@ -60,10 +54,10 @@ class ProfileIncompleteBanner extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          for (final key in u.missingProfileFieldKeys) ...[
-            _MissingRow(
-              fieldKey: key,
-              onTap: () => _openEditProfile(context),
+          for (final code in blockers) ...[
+            _BlockerRow(
+              code: code,
+              onTournamentsTap: onTournamentsTap,
             ),
             const SizedBox(height: 6),
           ],
@@ -71,48 +65,47 @@ class ProfileIncompleteBanner extends StatelessWidget {
       ),
     );
   }
-
-  Future<void> _openEditProfile(BuildContext context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-    );
-    if (context.mounted) {
-      context.read<HomeProvider>().refresh();
-      context.read<ProfileProvider>().loadProfile();
-    }
-  }
 }
 
-class _MissingRow extends StatelessWidget {
-  final String fieldKey;
-  final VoidCallback onTap;
+class _BlockerRow extends StatelessWidget {
+  final String code;
+  final VoidCallback? onTournamentsTap;
 
-  const _MissingRow({required this.fieldKey, required this.onTap});
+  const _BlockerRow({required this.code, this.onTournamentsTap});
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final (IconData icon, String title, String desc) = switch (fieldKey) {
-      'phone' => (
-          Icons.phone_outlined,
-          l.profileMissingPhoneTitle,
-          l.profileMissingPhoneDesc,
+    final (IconData icon, String title, String desc, VoidCallback action) =
+        switch (code) {
+      'no_avatar' => (
+          Icons.account_circle_outlined,
+          l.verificationNoAvatarTitle,
+          l.verificationNoAvatarDesc,
+          () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const EditProfileScreen(),
+              ),
+            );
+            if (context.mounted) {
+              context.read<HomeProvider>().refresh();
+            }
+          },
         ),
-      'city' => (
-          Icons.location_city_outlined,
-          l.profileMissingCityTitle,
-          l.profileMissingCityDesc,
-        ),
-      'gender' => (
-          Icons.wc_outlined,
-          l.profileMissingGenderTitle,
-          l.profileMissingGenderDesc,
+      'no_tournaments' => (
+          Icons.emoji_events_outlined,
+          l.verificationNoTournamentsTitle,
+          l.verificationNoTournamentsDesc,
+          () {
+            if (onTournamentsTap != null) onTournamentsTap!();
+          },
         ),
       _ => (
-          Icons.edit_outlined,
-          l.profileBannerTitle,
-          fieldKey,
+          Icons.info_outline,
+          l.verificationNotConfirmedTitle,
+          code,
+          () {},
         ),
     };
 
@@ -120,7 +113,7 @@ class _MissingRow extends StatelessWidget {
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap: onTap,
+        onTap: action,
         borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),

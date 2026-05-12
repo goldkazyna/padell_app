@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/rating_formatter.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final precise = context.watch<SettingsProvider>().preciseRating;
     return Consumer<ProfileProvider>(
       builder: (_, profile, __) {
         final user = profile.user;
@@ -25,6 +28,14 @@ class ProfileHeader extends StatelessWidget {
         final progress = step > 0
             ? ((rating - currentLevelRating) / step).clamp(0.0, 1.0)
             : 1.0;
+        final ratingStr = RatingFormatter.formatRating(rating, precise);
+        final nextLevelRatingStr =
+            RatingFormatter.formatRating(nextLevelRating, precise);
+        final levelStr = RatingFormatter.formatLevel(
+          bucketedLevel: user?.level ?? '0',
+          rating: rating,
+          precise: precise,
+        );
 
         return Container(
           decoration: BoxDecoration(
@@ -126,10 +137,10 @@ class ProfileHeader extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '$rating',
-                          style: const TextStyle(
+                          ratingStr,
+                          style: TextStyle(
                             color: AppTheme.accent,
-                            fontSize: 32,
+                            fontSize: precise ? 26 : 32,
                             fontWeight: FontWeight.w900,
                             height: 1,
                           ),
@@ -157,14 +168,14 @@ class ProfileHeader extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          l.profileLevelLabel(user?.level ?? '-'),
+                          l.profileLevelLabel(levelStr),
                           style: TextStyle(
                             color: Colors.white.withAlpha(80),
                             fontSize: 10,
                           ),
                         ),
                         Text(
-                          '$rating / $nextLevelRating',
+                          '$ratingStr / $nextLevelRatingStr',
                           style: const TextStyle(
                             color: AppTheme.accent,
                             fontSize: 10,
@@ -194,7 +205,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    _buildStat('$rating', l.rating, isAccent: true),
+                    _buildStat(ratingStr, l.rating, isAccent: true),
                     _buildStat(stats != null ? '${stats.matchesPlayed}' : '-', l.matches),
                     _buildStat(stats != null ? '${stats.wins}' : '-', l.wins),
                     _buildStat(stats != null ? '${stats.winrate}%' : '-', l.winrate, isLast: true),

@@ -5,7 +5,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../utils/rating_formatter.dart';
 import '../models/tournament.dart';
+import '../providers/settings_provider.dart';
 import '../providers/tournament_provider.dart';
 import '../providers/home_provider.dart';
 import '../widgets/app_back_button.dart';
@@ -639,13 +641,20 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  participant.levelText,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 12,
-                  ),
-                ),
+                Builder(builder: (ctx) {
+                  final precise = ctx.watch<SettingsProvider>().preciseRating;
+                  return Text(
+                    RatingFormatter.formatLevelLabel(
+                      bucketedLevel: participant.level,
+                      rating: participant.rating,
+                      precise: precise,
+                    ),
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -767,26 +776,36 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  participant.levelText,
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontSize: 12,
-                  ),
-                ),
+                Builder(builder: (ctx) {
+                  final precise = ctx.watch<SettingsProvider>().preciseRating;
+                  return Text(
+                    RatingFormatter.formatLevelLabel(
+                      bucketedLevel: participant.level,
+                      rating: participant.rating,
+                      precise: precise,
+                    ),
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontSize: 12,
+                    ),
+                  );
+                }),
               ],
             ),
           ),
 
           // Рейтинг
-          Text(
-            '${participant.rating}',
-            style: TextStyle(
-              color: primaryColor,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Builder(builder: (ctx) {
+            final precise = ctx.watch<SettingsProvider>().preciseRating;
+            return Text(
+              RatingFormatter.formatRating(participant.rating, precise),
+              style: TextStyle(
+                color: primaryColor,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            );
+          }),
         ],
       ),
       ),
@@ -998,11 +1017,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.send_rounded, size: 20),
-                SizedBox(width: 8),
-                Text('Записаться через чат',
-                    style: TextStyle(
+              children: [
+                const Icon(Icons.send_rounded, size: 20),
+                const SizedBox(width: 8),
+                Text(AppLocalizations.of(context)!.registerViaChat,
+                    style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600)),
               ],
             ),
@@ -1574,9 +1593,9 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Описание',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.tournamentDescription,
+            style: const TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -1631,7 +1650,9 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
                       Row(
                         children: [
                           Text(
-                            _expanded ? 'Свернуть' : 'Показать ещё',
+                            _expanded
+                                ? AppLocalizations.of(context)!.showLess
+                                : AppLocalizations.of(context)!.showMore,
                             style: const TextStyle(
                               color: AppTheme.accent,
                               fontSize: 13,

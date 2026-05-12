@@ -4,7 +4,9 @@ import '../l10n/app_localizations.dart';
 import '../models/tournament.dart';
 import '../services/profile_service.dart';
 import '../providers/home_provider.dart';
+import '../providers/settings_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
 
 class TournamentResultsScreen extends StatefulWidget {
@@ -513,7 +515,8 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
     final matchesCount = summary?['matches_count'] ?? 0;
     final wins = summary?['wins'] ?? 0;
     final losses = summary?['losses'] ?? 0;
-    final ratingChange = summary?['rating_change'] ?? 0;
+    final ratingChange = (summary?['rating_change'] as num?)?.toInt() ?? 0;
+    final precise = context.watch<SettingsProvider>().preciseRating;
 
     final l10n = AppLocalizations.of(context)!;
     return Padding(
@@ -525,7 +528,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
           _buildSummaryCard('$wins / $losses', l10n.winsLabel),
           const SizedBox(width: 10),
           _buildSummaryCard(
-            ratingChange >= 0 ? '+$ratingChange' : '$ratingChange',
+            RatingFormatter.formatRatingChange(ratingChange, precise, decimals: 4),
             l10n.ratingLabel,
             valueColor:
                 ratingChange >= 0 ? AppTheme.accent : const Color(0xFFEF4444),
@@ -664,7 +667,11 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
                     size: 20,
                   ),
                   Text(
-                    ratingChange >= 0 ? '+$ratingChange' : '$ratingChange',
+                    RatingFormatter.formatRatingChange(
+                      ratingChange,
+                      context.watch<SettingsProvider>().preciseRating,
+                      decimals: 4,
+                    ),
                     style: TextStyle(
                       color: ratingChange >= 0
                           ? AppTheme.accent

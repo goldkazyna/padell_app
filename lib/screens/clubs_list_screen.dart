@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/club.dart';
 import '../services/club_service.dart';
 import '../theme/app_theme.dart';
@@ -7,7 +8,15 @@ import '../widgets/app_back_button.dart';
 import 'club_detail_screen.dart';
 
 class ClubsListScreen extends StatefulWidget {
-  const ClubsListScreen({super.key});
+  /// 'club' (по умолчанию) — обычные клубы; 'community' — комьюнити.
+  final String type;
+  final String title;
+
+  const ClubsListScreen({
+    super.key,
+    this.type = 'club',
+    this.title = 'Клубы',
+  });
 
   @override
   State<ClubsListScreen> createState() => _ClubsListScreenState();
@@ -19,6 +28,15 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
   bool _isLoading = false;
   String? _error;
   String _search = '';
+  String? _activeCity; // null = все
+
+  static const _cities = <String>[
+    'Алматы',
+    'Астана',
+    'Шымкент',
+    'Караганда',
+    'Актобе',
+  ];
 
   @override
   void initState() {
@@ -38,7 +56,11 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
       _error = null;
     });
     try {
-      final clubs = await context.read<ClubService>().getClubs(search: _search);
+      final clubs = await context.read<ClubService>().getClubs(
+            search: _search,
+            type: widget.type,
+            city: _activeCity,
+          );
       if (!mounted) return;
       setState(() {
         _clubs = clubs;
@@ -62,8 +84,67 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
           children: [
             _buildAppBar(),
             _buildSearch(),
+            const SizedBox(height: 4),
+            _buildCityTabs(),
+            const SizedBox(height: 8),
             Expanded(child: _buildList()),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCityTabs() {
+    final tabs = <(String?, String)>[
+      (null, AppLocalizations.of(context)!.cityAll),
+    ];
+    for (final c in _cities) {
+      tabs.add((c, c));
+    }
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF27272A), width: 1),
+        ),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            for (final t in tabs) _buildCityTab(t.$1, t.$2),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCityTab(String? value, String label) {
+    final isActive = _activeCity == value;
+    return GestureDetector(
+      onTap: () {
+        if (_activeCity != value) {
+          setState(() => _activeCity = value);
+          _load();
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppTheme.accent : Colors.transparent,
+              width: 2,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -76,9 +157,9 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
         children: [
           const AppBackButton(),
           const SizedBox(width: 14),
-          const Text(
-            'Клубы',
-            style: TextStyle(
+          Text(
+            widget.title,
+            style: const TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 22,
               fontWeight: FontWeight.w800,
@@ -90,29 +171,33 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
   }
 
   Widget _buildSearch() {
+    final l = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
-        ),
-        child: TextField(
-          controller: _searchController,
-          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
-          decoration: const InputDecoration(
-            hintText: 'Поиск клуба или города',
-            hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
-            prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary, size: 20),
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: TextField(
+        controller: _searchController,
+        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+        decoration: InputDecoration(
+          hintText: widget.type == 'community'
+              ? l.searchCommunityHint
+              : l.searchClubHint,
+          hintStyle: const TextStyle(
+              color: AppTheme.textSecondary, fontSize: 14),
+          filled: true,
+          fillColor: AppTheme.card,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
-          onChanged: (value) {
-            _search = value.trim();
-            _load();
-          },
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          prefixIcon: const Icon(Icons.search,
+              color: AppTheme.textSecondary, size: 20),
         ),
+        onChanged: (value) {
+          _search = value.trim();
+          _load();
+        },
       ),
     );
   }

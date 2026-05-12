@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../pressable_card.dart';
 
 class CourtBookingBanner extends StatelessWidget {
   final VoidCallback onTap;
@@ -9,14 +10,14 @@ class CourtBookingBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return PressableCard(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF22C55E), Color(0xFF16A34A)],
+            colors: [Color(0xFF22C55E), Color(0xFF166534)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

@@ -12,10 +12,12 @@ class TournamentProvider extends ChangeNotifier {
   List<Tournament> _openTournaments = [];
   List<Tournament> _myTournaments = [];
   List<Tournament> _archiveTournaments = [];
+  List<Tournament> _cancelledTournaments = [];
 
   bool _isLoadingOpen = false;
   bool _isLoadingMy = false;
   bool _isLoadingArchive = false;
+  bool _isLoadingCancelled = false;
 
   // Детали турнира
   Tournament? _selectedTournament;
@@ -34,10 +36,12 @@ class TournamentProvider extends ChangeNotifier {
   List<Tournament> get openTournaments => _openTournaments;
   List<Tournament> get myTournaments => _myTournaments;
   List<Tournament> get archiveTournaments => _archiveTournaments;
+  List<Tournament> get cancelledTournaments => _cancelledTournaments;
 
   bool get isLoadingOpen => _isLoadingOpen;
   bool get isLoadingMy => _isLoadingMy;
   bool get isLoadingArchive => _isLoadingArchive;
+  bool get isLoadingCancelled => _isLoadingCancelled;
 
   Tournament? get selectedTournament => _selectedTournament;
   bool get isLoadingDetail => _isLoadingDetail;
@@ -104,6 +108,24 @@ class TournamentProvider extends ChangeNotifier {
     }
 
     _isLoadingArchive = false;
+    notifyListeners();
+  }
+
+  Future<void> loadCancelledTournaments() async {
+    final token = await _storage.getToken();
+    if (token == null) return;
+
+    _isLoadingCancelled = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _cancelledTournaments = await _service.getCancelledTournaments(token);
+    } catch (e) {
+      _error = 'Ошибка загрузки турниров: $e';
+    }
+
+    _isLoadingCancelled = false;
     notifyListeners();
   }
 

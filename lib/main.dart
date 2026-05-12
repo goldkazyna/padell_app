@@ -26,6 +26,7 @@ import 'services/club_service.dart';
 import 'services/admin_service.dart';
 import 'providers/court_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/settings_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,6 +106,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => LocaleProvider(storageService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider(storageService),
         ),
         Provider<ProfileService>.value(value: profileService),
         Provider<RatingService>.value(value: ratingService),

@@ -192,12 +192,16 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 border: Border(
                     bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
               ),
-              child: Row(
-                children: [
-                  _buildTab(AppLocalizations.of(context)!.openTab, 0),
-                  _buildTab(AppLocalizations.of(context)!.myTab, 1),
-                  _buildTab(AppLocalizations.of(context)!.archiveTab, 2),
-                ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildTab(AppLocalizations.of(context)!.openTab, 0),
+                    _buildTab(AppLocalizations.of(context)!.myTab, 1),
+                    _buildTab(AppLocalizations.of(context)!.archiveTab, 2),
+                    _buildTab(AppLocalizations.of(context)!.cancelledTab, 3),
+                  ],
+                ),
               ),
             ),
           ),
@@ -212,6 +216,8 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 onFormatTap: _openFormatFilter,
                 onDateTap: _openDateFilter,
                 onClubTap: () => _openClubFilter(provider.openTournaments),
+                onToggleCommunity: () => setState(() =>
+                    _filter = _filter.copyWith(onlyCommunity: !_filter.onlyCommunity)),
               ),
             ),
             const SizedBox(height: 8),
@@ -223,6 +229,7 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 _OpenTab(userLevel: _userLevel, filter: _filter),
                 _MyTab(userLevel: _userLevel),
                 _ArchiveTab(userLevel: _userLevel),
+                _CancelledTab(userLevel: _userLevel),
               ],
             ),
           ),
@@ -319,6 +326,9 @@ List<Tournament> _applyFilter(
   }
   if (filter.clubIds.isNotEmpty) {
     list = list.where((t) => filter.clubIds.contains(t.club.id)).toList();
+  }
+  if (filter.onlyCommunity) {
+    list = list.where((t) => t.club.isCommunity).toList();
   }
   return list;
 }
@@ -922,6 +932,71 @@ class _ArchiveClubBlock extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// === Cancelled tab ===
+
+class _CancelledTab extends StatefulWidget {
+  final double? userLevel;
+  const _CancelledTab({required this.userLevel});
+
+  @override
+  State<_CancelledTab> createState() => _CancelledTabState();
+}
+
+class _CancelledTabState extends State<_CancelledTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TournamentProvider>().loadCancelledTournaments();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<TournamentProvider>(
+      builder: (_, provider, __) {
+        if (provider.isLoadingCancelled) {
+          return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+        }
+        if (provider.cancelledTournaments.isEmpty) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)!.noCancelledTournaments,
+              style: const TextStyle(color: AppTheme.textSecondary),
+            ),
+          );
+        }
+
+        final byClub = <int, List<Tournament>>{};
+        for (final t in provider.cancelledTournaments) {
+          byClub.putIfAbsent(t.club.id, () => []).add(t);
+        }
+        final clubIds = byClub.keys.toList()
+          ..sort((a, b) =>
+              byClub[a]!.first.club.name.compareTo(byClub[b]!.first.club.name));
+
+        return RefreshIndicator(
+          onRefresh: () => provider.loadCancelledTournaments(),
+          color: AppTheme.accent,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            children: [
+              for (final clubId in clubIds) ...[
+                const SizedBox(height: 8),
+                _ArchiveClubBlock(
+                  tournaments: byClub[clubId]!
+                    ..sort((a, b) => b.datetime.compareTo(a.datetime)),
+                  userLevel: widget.userLevel,
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }

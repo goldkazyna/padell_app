@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
@@ -6,6 +7,7 @@ import '../../providers/locale_provider.dart';
 import '../../screens/notification_settings_screen.dart';
 import '../../screens/my_bookings_screen.dart';
 import '../../screens/edit_profile_screen.dart';
+import '../../screens/settings_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -62,6 +64,17 @@ class ProfileMenu extends StatelessWidget {
             title: l.language,
             subtitle: localeProvider.isRussian ? 'Русский' : 'English',
             onTap: () => _showLanguageDialog(context),
+          ),
+          const _Divider(),
+          _SettingsRow(
+            icon: Icons.tune,
+            tint: AppTheme.accent,
+            title: l.settingsMenuItem,
+            subtitle: l.settingsMenuItemSubtitle,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
             isLast: true,
           ),
         ]),
@@ -93,7 +106,11 @@ class ProfileMenu extends StatelessWidget {
 
         // === РАЗРАБОТЧИК ===
         const SizedBox(height: 16),
+        _NewsChannelRow(),
+        const SizedBox(height: 12),
         _DevRow(),
+        const SizedBox(height: 10),
+        const _AppVersionLabel(),
       ],
     );
   }
@@ -126,6 +143,15 @@ class ProfileMenu extends StatelessWidget {
               isSelected: localeProvider.isEnglish,
               onTap: () {
                 localeProvider.setLocale(const Locale('en'));
+                Navigator.pop(ctx);
+              },
+            ),
+            const SizedBox(height: 8),
+            _LanguageOption(
+              label: 'Қазақша',
+              isSelected: localeProvider.isKazakh,
+              onTap: () {
+                localeProvider.setLocale(const Locale('kk'));
                 Navigator.pop(ctx);
               },
             ),
@@ -385,6 +411,54 @@ class _LanguageOption extends StatelessWidget {
   }
 }
 
+class _NewsChannelRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return GestureDetector(
+      onTap: () async {
+        final url = Uri.parse('https://t.me/padelkz_app');
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Row(
+          children: [
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: const Color(0xFF229ED9).withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.send, size: 16, color: Color(0xFF229ED9)),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l.newsChannelTitle,
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                  ),
+                  Text(
+                    l.newsChannelSubtitle,
+                    style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.open_in_new, size: 14, color: AppTheme.textDim),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _DevRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -426,6 +500,49 @@ class _DevRow extends StatelessWidget {
             ),
             const Icon(Icons.open_in_new, size: 14, color: AppTheme.textDim),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AppVersionLabel extends StatefulWidget {
+  const _AppVersionLabel();
+
+  @override
+  State<_AppVersionLabel> createState() => _AppVersionLabelState();
+}
+
+class _AppVersionLabelState extends State<_AppVersionLabel> {
+  String? _version;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() => _version = info.version);
+    } catch (_) {
+      // ignore — версия не отрисуется
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_version == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Text(
+        'v$_version',
+        style: const TextStyle(
+          color: AppTheme.textDim,
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
