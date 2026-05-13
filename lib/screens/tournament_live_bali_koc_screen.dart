@@ -50,13 +50,15 @@ class _TournamentLiveBaliKocScreenState
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-      _expandedInitialized = false;
-      _roundExpanded.clear();
-    });
+  Future<void> _load({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _loading = true;
+        _error = null;
+        _expandedInitialized = false;
+        _roundExpanded.clear();
+      });
+    }
     try {
       final token = await StorageService().getToken();
       final qs = widget.highlightPlayerId != null
@@ -74,6 +76,7 @@ class _TournamentLiveBaliKocScreenState
           _loading = false;
         });
       } else {
+        if (silent) return; // тихая перезагрузка: ошибки не подсвечиваем
         setState(() {
           _error = (response['message'] as String?) ?? 'Ошибка загрузки';
           _loading = false;
@@ -81,6 +84,7 @@ class _TournamentLiveBaliKocScreenState
       }
     } catch (e) {
       if (!mounted) return;
+      if (silent) return; // тихая перезагрузка: ошибки сети тоже игнорим
       setState(() {
         _error = 'Ошибка сети: $e';
         _loading = false;
@@ -291,7 +295,12 @@ class _TournamentLiveBaliKocScreenState
   Widget _baliTabBtn(_BaliTab tab) {
     final isActive = _activeTab == tab;
     return GestureDetector(
-      onTap: () => setState(() => _activeTab = tab),
+      onTap: () {
+        setState(() => _activeTab = tab);
+        // Тихо подтягиваем свежие данные с сервера, чтобы при переключении
+        // вкладки таблица/раунды были актуальными.
+        _load(silent: true);
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
