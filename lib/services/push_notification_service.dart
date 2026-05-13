@@ -9,6 +9,7 @@ import 'storage_service.dart';
 import '../screens/tournament_detail_screen.dart';
 import '../screens/challenge_detail_screen.dart';
 import '../screens/tournament_live_kingofcourt_screen.dart';
+import '../screens/tournament_live_bali_koc_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -389,6 +390,14 @@ class PushNotificationService {
       if (subtype == 'koc_round_generated') {
         _navigateWhenReady(
           () => TournamentLiveKingOfCourtScreen(tournamentId: id),
+        );
+        return;
+      }
+
+      // Bali Format — генерация раунда → live-экран
+      if (subtype == 'bali_koc_round_generated') {
+        _navigateWhenReady(
+          () => TournamentLiveBaliKocScreen(tournamentId: id),
         );
         return;
       }

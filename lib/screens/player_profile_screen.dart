@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import 'tournament_results_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
+import 'tournament_live_bali_koc_screen.dart';
 import '../models/tournament.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/main_tab_bar.dart';
@@ -224,7 +225,12 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                           tournamentId: tournament.id,
                           highlightPlayerId: widget.playerId,
                         )
-                      : TournamentResultsScreen(tournament: tournament, playerId: widget.playerId),
+                      : tournament.type == 'bali_koc'
+                          ? TournamentLiveBaliKocScreen(
+                              tournamentId: tournament.id,
+                              highlightPlayerId: widget.playerId,
+                            )
+                          : TournamentResultsScreen(tournament: tournament, playerId: widget.playerId),
                 ),
               );
             }

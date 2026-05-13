@@ -12,6 +12,7 @@ import '../widgets/tournaments/tournament_row_v2.dart';
 import 'tournament_detail_screen.dart';
 import 'tournament_stats_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
+import 'tournament_live_bali_koc_screen.dart';
 import 'club_detail_screen.dart';
 
 class TournamentsScreen extends StatefulWidget {
@@ -878,10 +879,12 @@ class _ArchiveClubBlock extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => t.type == 'king_of_court'
             ? TournamentLiveKingOfCourtScreen(tournamentId: t.id)
-            : TournamentStatsScreen(
-                tournamentId: t.id,
-                tournamentName: t.name,
-              ),
+            : t.type == 'bali_koc'
+                ? TournamentLiveBaliKocScreen(tournamentId: t.id)
+                : TournamentStatsScreen(
+                    tournamentId: t.id,
+                    tournamentName: t.name,
+                  ),
       ),
     );
   }

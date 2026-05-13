@@ -7,6 +7,7 @@ import '../../providers/settings_provider.dart';
 import '../../screens/player_profile_screen.dart';
 import '../../screens/tournament_results_screen.dart';
 import '../../screens/tournament_live_kingofcourt_screen.dart';
+import '../../screens/tournament_live_bali_koc_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/rating_formatter.dart';
 import 'medal.dart';
@@ -136,7 +137,9 @@ class _HistoryRow extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => tournament.type == 'king_of_court'
               ? TournamentLiveKingOfCourtScreen(tournamentId: tournament.id)
-              : TournamentResultsScreen(tournament: tournament),
+              : tournament.type == 'bali_koc'
+                  ? TournamentLiveBaliKocScreen(tournamentId: tournament.id)
+                  : TournamentResultsScreen(tournament: tournament),
         ),
       ),
       child: Container(

@@ -23,6 +23,7 @@ import 'tournament_live_screen.dart';
 import 'tournament_live_mexicano_screen.dart';
 import 'tournament_live_team_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
+import 'tournament_live_bali_koc_screen.dart';
 import 'club_select_screen.dart';
 import 'create_challenge_screen.dart';
 import 'challenges_screen.dart';
@@ -240,6 +241,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       } else if (isLive && t.type == 'king_of_court') {
                         target =
                             TournamentLiveKingOfCourtScreen(tournamentId: t.id);
+                      } else if (isLive && t.type == 'bali_koc') {
+                        target =
+                            TournamentLiveBaliKocScreen(tournamentId: t.id);
                       } else {
                         target = TournamentDetailScreen(tournamentId: t.id);
                       }
