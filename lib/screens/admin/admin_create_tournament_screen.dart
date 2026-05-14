@@ -37,7 +37,7 @@ class _AdminCreateTournamentScreenState
   final _reserveCount = TextEditingController(text: '0');
   final _roundsCount = TextEditingController(text: '7');
 
-  String _type = 'americano'; // americano / king_of_court
+  String _type = 'americano'; // americano / king_of_court / bali_koc
   DateTime? _startDate;
   double _minLevel = 1.5;
   double _maxLevel = 4.0;
@@ -479,20 +479,35 @@ class _AdminCreateTournamentScreenState
       );
     }
 
-    return Row(
+    return Column(
       children: [
-        card(
-          value: 'americano',
-          title: 'Американо',
-          subtitle: 'Группы, ротация партнёров',
-          icon: Icons.shuffle_rounded,
+        Row(
+          children: [
+            card(
+              value: 'americano',
+              title: 'Американо',
+              subtitle: 'Группы, ротация партнёров',
+              icon: Icons.shuffle_rounded,
+            ),
+            const SizedBox(width: 8),
+            card(
+              value: 'king_of_court',
+              title: 'Король корта',
+              subtitle: 'Ротация по кортам',
+              icon: Icons.emoji_events_outlined,
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        card(
-          value: 'king_of_court',
-          title: 'Король корта',
-          subtitle: 'Ротация по кортам',
-          icon: Icons.emoji_events_outlined,
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            card(
+              value: 'bali_koc',
+              title: 'Король Корта (Bali)',
+              subtitle: 'Фикс. пары, очки от корта',
+              icon: Icons.groups_rounded,
+            ),
+          ],
         ),
       ],
     );
