@@ -963,13 +963,44 @@ class _AdminTournamentDetailScreenState
       ));
     }
     if (t.canStart) {
+      // Bali KOC: до создания пар нельзя стартовать — заменяем кнопку.
+      final isBaliWithoutPairs =
+          t.type == 'bali_koc' && !t.baliPairsCreated;
       if (children.isNotEmpty) children.add(const SizedBox(height: 10));
-      children.add(_primaryButton(
-        label: _starting ? 'Запуск...' : 'Запустить турнир',
-        onTap: _starting ? null : _start,
-        loading: _starting,
-        color: AppTheme.accent,
-      ));
+      if (isBaliWithoutPairs) {
+        children.add(_primaryButton(
+          label: 'Создать пары',
+          onTap: _starting
+              ? null
+              : () async {
+                  final ok = await Navigator.of(context).push<bool>(
+                    MaterialPageRoute(
+                      builder: (_) => AdminBaliCreatePairsScreen(
+                        tournamentId: t.id,
+                        tournamentName: t.name,
+                      ),
+                    ),
+                  );
+                  if (ok == true) {
+                    // Перезагружаем карточку чтобы появилась кнопка «Запустить турнир»
+                    try {
+                      final fresh = await context
+                          .read<AdminService>()
+                          .getTournamentDetail(t.id);
+                      if (mounted) setState(() => _t = fresh);
+                    } catch (_) {}
+                  }
+                },
+          color: AppTheme.accent,
+        ));
+      } else {
+        children.add(_primaryButton(
+          label: _starting ? 'Запуск...' : 'Запустить турнир',
+          onTap: _starting ? null : _start,
+          loading: _starting,
+          color: AppTheme.accent,
+        ));
+      }
     }
     if (t.canDelete) {
       if (children.isNotEmpty) children.add(const SizedBox(height: 10));
