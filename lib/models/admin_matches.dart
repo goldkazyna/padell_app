@@ -281,6 +281,16 @@ class AdminMatchesResponse {
   final AdminPlayoff? playoff;
   final AdminMatchesSummary? summary;
 
+  /// Только для типа bali_koc: true означает, что пары ещё не созданы и
+  /// в UI вместо лидерборда/раундов нужно показать кнопку «Создать пары».
+  final bool pairsRequired;
+
+  /// Сколько участников зарегистрировано (для bali_koc, когда pairs_required=true).
+  final int participantsCount;
+
+  /// Сколько пар нужно создать (для bali_koc, когда pairs_required=true).
+  final int expectedPairsCount;
+
   const AdminMatchesResponse({
     required this.type,
     required this.unsupported,
@@ -288,6 +298,9 @@ class AdminMatchesResponse {
     required this.groups,
     required this.playoff,
     required this.summary,
+    this.pairsRequired = false,
+    this.participantsCount = 0,
+    this.expectedPairsCount = 0,
   });
 
   factory AdminMatchesResponse.fromJson(Map<String, dynamic> json) {
@@ -309,6 +322,9 @@ class AdminMatchesResponse {
           ? AdminMatchesSummary.fromJson(
               json['summary'] as Map<String, dynamic>)
           : null,
+      pairsRequired: json['pairs_required'] as bool? ?? false,
+      participantsCount: (json['participants_count'] as num?)?.toInt() ?? 0,
+      expectedPairsCount: (json['expected_pairs_count'] as num?)?.toInt() ?? 0,
     );
   }
 }

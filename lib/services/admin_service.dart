@@ -319,6 +319,49 @@ class AdminService {
     );
   }
 
+  /// Сохранить счёт матча Bali KOC. POST/PUT одинаковы — сервис сам откатит
+  /// прежние статы если матч уже completed. Счёт — в геймах.
+  Future<void> saveBaliKocScore(
+    int tournamentId,
+    int matchId, {
+    required int pair1Games,
+    required int pair2Games,
+  }) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/bali_koc/matches/$matchId/score',
+      {
+        'pair1_games': pair1Games,
+        'pair2_games': pair2Games,
+      },
+      token,
+    );
+  }
+
+  /// Получить список зарегистрированных участников + уже созданные пары Bali.
+  /// Возвращает raw Map, чтобы UI экрана сам распарсил (особая структура).
+  Future<Map<String, dynamic>> getBaliKocPairs(int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.get(
+      '/admin/tournaments/$tournamentId/bali_koc/pairs',
+      token,
+    );
+    return response;
+  }
+
+  /// Сохранить пары Bali. pairs — массив [[player1_id, player2_id], ...].
+  Future<void> saveBaliKocPairs(
+    int tournamentId,
+    List<List<int>> pairs,
+  ) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/bali_koc/pairs',
+      {'pairs': pairs},
+      token,
+    );
+  }
+
   /// Сгенерировать следующий раунд (KOC). Возвращает свежий /matches.
   Future<AdminMatchesResponse> generateNextRound(int tournamentId) async {
     final token = await _storage.getToken();

@@ -14,6 +14,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
+import 'admin_bali_create_pairs_screen.dart';
 
 /// Этап 3a/3b — экран управления существующим турниром.
 /// Таб «Матчи» — заглушка до 3c.
@@ -1870,6 +1871,11 @@ class _AdminTournamentDetailScreenState
       );
     }
 
+    // Bali KOC: пары ещё не созданы — показать кнопку «Создать пары»
+    if (r.pairsRequired) {
+      return _buildBaliPairsRequiredView(r);
+    }
+
     if (r.groups.isEmpty &&
         (r.playoff?.matches.isEmpty ?? true)) {
       return RefreshIndicator(
@@ -1925,6 +1931,104 @@ class _AdminTournamentDetailScreenState
             const SizedBox(height: 12),
             _buildPlayoffSection(r.playoff!),
           ],
+        ],
+      ),
+    );
+  }
+
+  /// Заглушка для Bali KOC, когда пары ещё не созданы.
+  Widget _buildBaliPairsRequiredView(AdminMatchesResponse r) {
+    final participants = r.participantsCount;
+    final expected = r.expectedPairsCount;
+    final ready = participants >= 8 && participants % 4 == 0;
+
+    return RefreshIndicator(
+      onRefresh: _loadMatches,
+      color: AppTheme.accent,
+      backgroundColor: AppTheme.card,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.groups_rounded,
+                        color: AppTheme.accent, size: 22),
+                    SizedBox(width: 10),
+                    Text(
+                      'Bali Format — нужны пары',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  participants > 0
+                      ? 'Зарегистрировано $participants игроков → '
+                          'нужно создать $expected пар.'
+                      : 'Сначала зарегистрируйте участников.',
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary, fontSize: 13),
+                ),
+                if (!ready) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Игроков должно быть минимум 8 и кратно 4.',
+                    style: TextStyle(
+                        color: AppTheme.amber,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ],
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: ElevatedButton.icon(
+                    onPressed: (_actionBusy || !ready)
+                        ? null
+                        : () async {
+                            final ok = await Navigator.of(context).push<bool>(
+                              MaterialPageRoute(
+                                builder: (_) => AdminBaliCreatePairsScreen(
+                                  tournamentId: widget.tournamentId,
+                                  tournamentName: _t?.name ?? 'Турнир',
+                                ),
+                              ),
+                            );
+                            if (ok == true) {
+                              await _loadMatches();
+                            }
+                          },
+                    icon: const Icon(Icons.shuffle_rounded, size: 18),
+                    label: const Text('Создать пары'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.accent,
+                      disabledBackgroundColor: AppTheme.accent.withOpacity(0.4),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      textStyle: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -2611,6 +2715,7 @@ class _AdminTournamentDetailScreenState
     final pm = playoffMatch;
 
     final isKoc = _matches?.type == 'king_of_court';
+    final isBali = _matches?.type == 'bali_koc';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -2634,8 +2739,8 @@ class _AdminTournamentDetailScreenState
         team2Title: team2Title,
         initialScore1: initial1,
         initialScore2: initial2,
-        // У плей-офф и KOC ничья запрещена
-        requireDifferent: isPlayoff || isKoc,
+        // У плей-офф, KOC и Bali ничья запрещена
+        requireDifferent: isPlayoff || isKoc || isBali,
       ),
     );
 
@@ -2663,6 +2768,13 @@ class _AdminTournamentDetailScreenState
               matchId,
               team1Score: result.score1,
               team2Score: result.score2,
+            );
+      } else if (isBali) {
+        await context.read<AdminService>().saveBaliKocScore(
+              tournamentId,
+              matchId,
+              pair1Games: result.score1,
+              pair2Games: result.score2,
             );
       } else {
         await context.read<AdminService>().saveAmericanoScore(
