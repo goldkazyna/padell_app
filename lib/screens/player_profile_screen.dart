@@ -13,6 +13,7 @@ import '../widgets/app_back_button.dart';
 import '../widgets/main_tab_bar.dart';
 import '../widgets/profile/medal.dart';
 import '../widgets/profile/player_hero.dart';
+import '../widgets/profile/rating_dynamics_card.dart';
 
 class PlayerProfileScreen extends StatefulWidget {
   final int playerId;
@@ -124,9 +125,15 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             _buildVerificationCard(p.levelVerification!),
           const SizedBox(height: 8),
 
+          // Карточка «Динамика рейтинга» — данные приходят явно из PlayerProfile.
+          RatingDynamicsCard.withData(
+            details: p.ratingTrendDetails,
+            trend: p.ratingTrend,
+          ),
+
           // History section
           const Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(
               'ИСТОРИЯ РЕЙТИНГА',
               style: TextStyle(

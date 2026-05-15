@@ -1,4 +1,5 @@
 import 'api_service.dart';
+import 'profile_service.dart' show RatingTrendPoint;
 import 'storage_service.dart';
 
 class RatingPlayer {
@@ -279,6 +280,7 @@ class RatingService {
         levelVerified: p['level_verified'] as bool? ?? false,
         levelVerification: levelVerification,
         ratingTrend: trendList.map((v) => (v as num).toInt()).toList(),
+        ratingTrendDetails: _parseTrendDetails(p['rating_trend_details']),
         history: historyList.map((h) => RatingHistoryItem.fromJson(h as Map<String, dynamic>)).toList(),
       );
     } catch (_) {
@@ -372,6 +374,22 @@ class RatingService {
       return GrowthResult(success: false, message: 'Ошибка загрузки');
     }
   }
+
+  /// Безопасный парсинг массива rating_trend_details: плохие записи пропускаем.
+  List<RatingTrendPoint> _parseTrendDetails(dynamic raw) {
+    if (raw is! List) return const [];
+    final result = <RatingTrendPoint>[];
+    for (final item in raw) {
+      if (item is Map<String, dynamic>) {
+        try {
+          result.add(RatingTrendPoint.fromJson(item));
+        } catch (_) {
+          // плохая запись — пропускаем
+        }
+      }
+    }
+    return result;
+  }
 }
 
 class PlayerProfile {
@@ -389,6 +407,7 @@ class PlayerProfile {
   final bool levelVerified;
   final LevelVerification? levelVerification;
   final List<int> ratingTrend;
+  final List<RatingTrendPoint> ratingTrendDetails;
   final List<RatingHistoryItem> history;
 
   PlayerProfile({
@@ -406,6 +425,7 @@ class PlayerProfile {
     this.levelVerified = false,
     this.levelVerification,
     this.ratingTrend = const [],
+    this.ratingTrendDetails = const [],
     required this.history,
   });
 

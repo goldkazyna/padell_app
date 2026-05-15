@@ -7,13 +7,44 @@ import '../../providers/settings_provider.dart';
 import '../../services/profile_service.dart';
 import '../../utils/rating_formatter.dart';
 
-/// Карточка «Динамика рейтинга» в профиле.
+/// Карточка «Динамика рейтинга».
 /// Показывает:
 ///   - текущий рейтинг + дельту выбранной точки (по умолчанию — последней)
 ///   - sparkline по последним до 10 турнирам с кликабельными точками
 ///   - блок последних до 15 матчей (W/L цветными ячейками)
+///
+/// По умолчанию (без параметров) берёт данные из ProfileProvider —
+/// используется в экране своего профиля. Если параметры переданы —
+/// рисует переданные данные (для чужого профиля).
 class RatingDynamicsCard extends StatefulWidget {
-  const RatingDynamicsCard({super.key});
+  /// Подробности 10 последних точек (название турнира, клуб, дата).
+  /// Если пуст — fallback на `ratingTrend`.
+  final List<RatingTrendPoint>? ratingTrendDetails;
+
+  /// Простой массив значений рейтинга — fallback если details не пришли.
+  final List<int>? ratingTrend;
+
+  /// Последние 15 матчей пользователя. Может быть пуст —
+  /// тогда блок матчей не показывается.
+  final List<Match>? recentMatches;
+
+  const RatingDynamicsCard({
+    super.key,
+    this.ratingTrendDetails,
+    this.ratingTrend,
+    this.recentMatches,
+  });
+
+  /// Удобный конструктор: данные приходят явно (используется в чужом
+  /// профиле PlayerProfileScreen).
+  const RatingDynamicsCard.withData({
+    super.key,
+    required List<RatingTrendPoint> details,
+    required List<int> trend,
+    List<Match> matches = const [],
+  })  : ratingTrendDetails = details,
+        ratingTrend = trend,
+        recentMatches = matches;
 
   @override
   State<RatingDynamicsCard> createState() => _RatingDynamicsCardState();
@@ -32,6 +63,17 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
 
   @override
   Widget build(BuildContext context) {
+    // Если данные переданы явно — используем их (чужой профиль).
+    // Иначе берём из ProfileProvider (свой профиль).
+    if (widget.ratingTrendDetails != null || widget.ratingTrend != null) {
+      final details = widget.ratingTrendDetails ?? const <RatingTrendPoint>[];
+      final trend = details.isNotEmpty
+          ? details.map((d) => d.rating).toList()
+          : (widget.ratingTrend ?? const <int>[]);
+      final matches = (widget.recentMatches ?? const <Match>[]).take(15).toList();
+      return _build(context, details, trend, matches);
+    }
+
     return Consumer<ProfileProvider>(
       builder: (_, profile, __) {
         final stats = profile.statistics;
@@ -43,10 +85,20 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
             : (stats?.ratingTrend ?? const <int>[]);
         final allMatches = profile.matches;
         final matches = allMatches.take(15).toList();
+        return _build(context, details, trend, matches);
+      },
+    );
+  }
 
-        if (trend.isEmpty && matches.isEmpty) {
-          return const SizedBox.shrink();
-        }
+  Widget _build(
+    BuildContext context,
+    List<RatingTrendPoint> details,
+    List<int> trend,
+    List<Match> matches,
+  ) {
+    if (trend.isEmpty && matches.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
         // Выбранная точка (по умолчанию — последняя)
         final selectedIdx = (_selectedIdx ?? (trend.length - 1))
@@ -102,8 +154,6 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
             ),
           ),
         );
-      },
-    );
   }
 
   Widget _buildHeader(BuildContext context, int value, int? delta) {
