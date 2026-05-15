@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../models/match.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../services/profile_service.dart';
+import '../../utils/rating_formatter.dart';
 
 /// Карточка «Динамика рейтинга» в профиле.
 /// Показывает:
@@ -75,7 +77,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(value, delta),
+                _buildHeader(context, value, delta),
                 if (selectedDetails != null) ...[
                   const SizedBox(height: 6),
                   _buildSelectedInfo(selectedDetails),
@@ -104,7 +106,8 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
     );
   }
 
-  Widget _buildHeader(int value, int? delta) {
+  Widget _buildHeader(BuildContext context, int value, int? delta) {
+    final precise = context.watch<SettingsProvider>().preciseRating;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -122,7 +125,9 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              _formatRating(value),
+              precise
+                  ? RatingFormatter.formatRating(value, true)
+                  : _formatRating(value),
               style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
@@ -148,7 +153,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      delta >= 0 ? '+$delta' : '$delta',
+                      RatingFormatter.formatRatingChange(delta, precise),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
