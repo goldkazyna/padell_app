@@ -16,18 +16,14 @@ import 'tournament_live_bali_koc_screen.dart';
 import 'club_detail_screen.dart';
 
 class TournamentsScreen extends StatefulWidget {
-  /// Какая вкладка открыта при первом показе экрана.
-  /// 0 — Открытые, 1 — Мои, 2 — Архив, 3 — Отменённые.
-  final int initialTabIndex;
-
-  const TournamentsScreen({super.key, this.initialTabIndex = 0});
+  const TournamentsScreen({super.key});
 
   @override
   State<TournamentsScreen> createState() => _TournamentsScreenState();
 }
 
 class _TournamentsScreenState extends State<TournamentsScreen> {
-  late int _tabIndex = widget.initialTabIndex;
+  int _tabIndex = 0;
   TournamentsFilter _filter = const TournamentsFilter();
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../screens/tournaments_screen.dart';
+import '../../screens/my_tournaments_screen.dart';
 
 /// Кнопка «Мои турниры» в профиле. Открывает экран турниров с вкладкой «Мои»,
 /// где показаны записанные на участие будущие/идущие турниры.
@@ -18,7 +18,7 @@ class MyTournamentsButton extends StatelessWidget {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => const TournamentsScreen(initialTabIndex: 1),
+                builder: (_) => const MyTournamentsScreen(),
               ),
             );
           },
