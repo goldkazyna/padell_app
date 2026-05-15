@@ -318,7 +318,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
 }
 
 List<Offset> _calcPoints(List<int> trend, double width, double height) {
-  if (trend.isEmpty) return const [];
+  if (trend.isEmpty) return const <Offset>[];
   const padL = 8.0, padR = 8.0, padT = 18.0, padB = 4.0;
   final innerW = width - padL - padR;
   final innerH = height - padT - padB;

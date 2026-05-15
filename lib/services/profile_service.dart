@@ -54,20 +54,34 @@ class ProfileStatistics {
   });
 
   factory ProfileStatistics.fromJson(Map<String, dynamic> json) {
-    final trendRaw = json['rating_trend'] as List<dynamic>? ?? [];
+    final trendRaw = (json['rating_trend'] as List?) ?? const <dynamic>[];
     final detailsRaw =
-        json['rating_trend_details'] as List<dynamic>? ?? [];
+        (json['rating_trend_details'] as List?) ?? const <dynamic>[];
+
+    final List<int> trend = [];
+    for (final e in trendRaw) {
+      if (e is num) trend.add(e.toInt());
+    }
+
+    final List<RatingTrendPoint> details = [];
+    for (final raw in detailsRaw) {
+      if (raw is Map<String, dynamic>) {
+        try {
+          details.add(RatingTrendPoint.fromJson(raw));
+        } catch (_) {
+          // плохая запись — пропускаем, не валим весь профиль
+        }
+      }
+    }
+
     return ProfileStatistics(
       matchesPlayed: json['matches_played'] as int? ?? 0,
       wins: json['wins'] as int? ?? 0,
       losses: json['losses'] as int? ?? 0,
       winrate: json['winrate'] as int? ?? 0,
       tournamentsCount: json['tournaments_count'] as int? ?? 0,
-      ratingTrend: trendRaw.map((e) => (e as num).toInt()).toList(),
-      ratingTrendDetails: detailsRaw
-          .whereType<Map<String, dynamic>>()
-          .map(RatingTrendPoint.fromJson)
-          .toList(),
+      ratingTrend: trend,
+      ratingTrendDetails: details,
     );
   }
 }
