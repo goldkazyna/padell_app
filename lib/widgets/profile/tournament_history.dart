@@ -4,7 +4,6 @@ import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
-import '../../screens/my_tournaments_history_screen.dart';
 import '../../screens/tournament_results_screen.dart';
 import '../../screens/tournament_live_kingofcourt_screen.dart';
 import '../../screens/tournament_live_bali_koc_screen.dart';
@@ -27,45 +26,16 @@ class TournamentHistory extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'История турниров',
-                      style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    if (tournaments.isNotEmpty)
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const MyTournamentsHistoryScreen(),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.allButton,
-                              style: const TextStyle(
-                                color: AppTheme.accent,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const Icon(Icons.chevron_right, size: 15, color: AppTheme.accent),
-                          ],
-                        ),
-                      ),
-                  ],
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  'История турниров',
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
