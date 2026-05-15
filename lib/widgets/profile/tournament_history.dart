@@ -4,7 +4,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
-import '../../screens/player_profile_screen.dart';
+import '../../screens/my_tournaments_history_screen.dart';
 import '../../screens/tournament_results_screen.dart';
 import '../../screens/tournament_live_kingofcourt_screen.dart';
 import '../../screens/tournament_live_bali_koc_screen.dart';
@@ -41,17 +41,13 @@ class TournamentHistory extends StatelessWidget {
                         letterSpacing: -0.2,
                       ),
                     ),
-                    if (tournaments.length > 4 && profile.user != null)
+                    if (tournaments.isNotEmpty)
                       GestureDetector(
                         onTap: () {
-                          final user = profile.user!;
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => PlayerProfileScreen(
-                                playerId: user.id,
-                                playerName: user.name,
-                              ),
+                              builder: (_) => const MyTournamentsHistoryScreen(),
                             ),
                           );
                         },
@@ -104,7 +100,7 @@ class TournamentHistory extends StatelessWidget {
                   child: Column(
                     children: [
                       for (int i = 0; i < visible.length; i++)
-                        _HistoryRow(
+                        TournamentHistoryRow(
                           tournament: visible[i],
                           isLast: i == visible.length - 1,
                         ),
@@ -119,11 +115,15 @@ class TournamentHistory extends StatelessWidget {
   }
 }
 
-class _HistoryRow extends StatelessWidget {
+class TournamentHistoryRow extends StatelessWidget {
   final Tournament tournament;
   final bool isLast;
 
-  const _HistoryRow({required this.tournament, required this.isLast});
+  const TournamentHistoryRow({
+    super.key,
+    required this.tournament,
+    required this.isLast,
+  });
 
   @override
   Widget build(BuildContext context) {
