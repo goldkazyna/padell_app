@@ -153,7 +153,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      RatingFormatter.formatRatingChange(delta, precise),
+                      RatingFormatter.formatRatingChange(delta, precise, decimals: 4),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
