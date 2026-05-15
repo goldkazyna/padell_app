@@ -5,6 +5,35 @@ import '../models/tournament.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
 
+class RatingTrendPoint {
+  final int? tournamentId;
+  final String name;
+  final String? clubName;
+  final String? date;
+  final int rating;
+  final int? delta;
+
+  const RatingTrendPoint({
+    this.tournamentId,
+    required this.name,
+    this.clubName,
+    this.date,
+    required this.rating,
+    this.delta,
+  });
+
+  factory RatingTrendPoint.fromJson(Map<String, dynamic> json) {
+    return RatingTrendPoint(
+      tournamentId: (json['tournament_id'] as num?)?.toInt(),
+      name: json['name'] as String? ?? 'Турнир',
+      clubName: json['club_name'] as String?,
+      date: json['date'] as String?,
+      rating: (json['rating'] as num?)?.toInt() ?? 0,
+      delta: (json['delta'] as num?)?.toInt(),
+    );
+  }
+}
+
 class ProfileStatistics {
   final int matchesPlayed;
   final int wins;
@@ -12,6 +41,7 @@ class ProfileStatistics {
   final int winrate;
   final int tournamentsCount;
   final List<int> ratingTrend;
+  final List<RatingTrendPoint> ratingTrendDetails;
 
   const ProfileStatistics({
     required this.matchesPlayed,
@@ -20,10 +50,13 @@ class ProfileStatistics {
     required this.winrate,
     required this.tournamentsCount,
     this.ratingTrend = const [],
+    this.ratingTrendDetails = const [],
   });
 
   factory ProfileStatistics.fromJson(Map<String, dynamic> json) {
     final trendRaw = json['rating_trend'] as List<dynamic>? ?? [];
+    final detailsRaw =
+        json['rating_trend_details'] as List<dynamic>? ?? [];
     return ProfileStatistics(
       matchesPlayed: json['matches_played'] as int? ?? 0,
       wins: json['wins'] as int? ?? 0,
@@ -31,6 +64,10 @@ class ProfileStatistics {
       winrate: json['winrate'] as int? ?? 0,
       tournamentsCount: json['tournaments_count'] as int? ?? 0,
       ratingTrend: trendRaw.map((e) => (e as num).toInt()).toList(),
+      ratingTrendDetails: detailsRaw
+          .whereType<Map<String, dynamic>>()
+          .map(RatingTrendPoint.fromJson)
+          .toList(),
     );
   }
 }

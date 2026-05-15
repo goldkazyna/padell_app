@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/match.dart';
 import '../../providers/profile_provider.dart';
+import '../../services/profile_service.dart';
 
 /// Карточка «Динамика рейтинга» в профиле.
 /// Показывает:
@@ -31,7 +32,13 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
   Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(
       builder: (_, profile, __) {
-        final trend = profile.statistics?.ratingTrend ?? const <int>[];
+        final stats = profile.statistics;
+        final details = stats?.ratingTrendDetails ?? const <RatingTrendPoint>[];
+        // Если есть подробности — используем их (с названиями и датами).
+        // Иначе fallback на простой массив значений rating_trend.
+        final trend = details.isNotEmpty
+            ? details.map((d) => d.rating).toList()
+            : (stats?.ratingTrend ?? const <int>[]);
         final allMatches = profile.matches;
         final matches = allMatches.take(15).toList();
 
@@ -40,11 +47,21 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
         }
 
         // Выбранная точка (по умолчанию — последняя)
-        final selectedIdx = (_selectedIdx ?? (trend.length - 1)).clamp(0, trend.isEmpty ? 0 : trend.length - 1);
+        final selectedIdx = (_selectedIdx ?? (trend.length - 1))
+            .clamp(0, trend.isEmpty ? 0 : trend.length - 1);
         final value = trend.isNotEmpty ? trend[selectedIdx] : 0;
-        final delta = trend.length >= 2 && selectedIdx >= 1
-            ? trend[selectedIdx] - trend[selectedIdx - 1]
-            : 0;
+        // Дельта для выбранной точки: из details если есть, иначе считаем
+        // относительно предыдущей точки.
+        int? delta;
+        if (details.isNotEmpty && selectedIdx < details.length) {
+          delta = details[selectedIdx].delta;
+        } else if (trend.length >= 2 && selectedIdx >= 1) {
+          delta = trend[selectedIdx] - trend[selectedIdx - 1];
+        }
+        final selectedDetails =
+            details.isNotEmpty && selectedIdx < details.length
+                ? details[selectedIdx]
+                : null;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -58,7 +75,11 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(value, delta, trend.length >= 2),
+                _buildHeader(value, delta),
+                if (selectedDetails != null) ...[
+                  const SizedBox(height: 6),
+                  _buildSelectedInfo(selectedDetails),
+                ],
                 if (trend.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   _buildChart(trend, selectedIdx),
@@ -83,7 +104,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
     );
   }
 
-  Widget _buildHeader(int value, int delta, bool hasDelta) {
+  Widget _buildHeader(int value, int? delta) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -112,22 +133,53 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
               ),
             ),
             const SizedBox(width: 8),
-            if (hasDelta)
+            if (delta != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 2),
-                child: Text(
-                  delta >= 0 ? '↗ +$delta' : '↘ $delta',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: delta >= 0 ? _green : _red,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      delta >= 0
+                          ? Icons.arrow_upward_rounded
+                          : Icons.arrow_downward_rounded,
+                      color: delta >= 0 ? _green : _red,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      delta >= 0 ? '+$delta' : '$delta',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: delta >= 0 ? _green : _red,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildSelectedInfo(RatingTrendPoint p) {
+    // Формат: «Название турнира — Клуб — Дата»
+    final parts = <String>[p.name];
+    if (p.clubName != null && p.clubName!.isNotEmpty) parts.add(p.clubName!);
+    if (p.date != null && p.date!.isNotEmpty) parts.add(p.date!);
+    final text = parts.join(' — ');
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: _muted,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -369,29 +421,29 @@ class _SparklinePainter extends CustomPainter {
       }
     }
 
-    // Точки
+    // Точки — крупные, чтобы попадать пальцем
     for (int i = 0; i < points.length; i++) {
       final isSel = i == selectedIdx;
       final p = points[i];
       if (isSel) {
         canvas.drawCircle(
           p,
-          9,
-          Paint()..color = green.withAlpha(46),
+          14,
+          Paint()..color = green.withAlpha(50),
         );
       }
+      // Внешний контур-обводка цветом карточки (чтобы точка отрывалась
+      // от линии графика).
       canvas.drawCircle(
         p,
-        isSel ? 4.5 : 3,
-        Paint()..color = green,
+        isSel ? 8 : 6,
+        Paint()..color = card,
       );
+      // Заливка зелёным
       canvas.drawCircle(
         p,
-        isSel ? 4.5 : 3,
-        Paint()
-          ..color = card
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = isSel ? 2.5 : 2,
+        isSel ? 6.5 : 4.5,
+        Paint()..color = green,
       );
     }
   }
