@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/profile/profile_hero.dart';
 import '../widgets/profile/my_tournaments_button.dart';
+import '../widgets/profile/rating_dynamics_card.dart';
 import '../widgets/profile/tournaments_history_button.dart';
 import '../widgets/profile/profile_menu.dart';
 import '../widgets/verification_blockers_banner.dart';
@@ -25,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final provider = context.read<ProfileProvider>();
       provider.loadProfile();
       provider.loadTournamentHistory();
+      provider.loadMatches();
     });
   }
 
@@ -67,6 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
                   const SizedBox(height: 12),
+                  const RatingDynamicsCard(),
                   const TournamentsHistoryButton(),
                   const MyTournamentsButton(),
                   const SizedBox(height: 22),

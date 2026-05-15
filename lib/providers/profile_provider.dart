@@ -101,6 +101,10 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> refresh() async {
-    await Future.wait([loadProfile(), loadTournamentHistory()]);
+    await Future.wait([
+      loadProfile(),
+      loadTournamentHistory(),
+      loadMatches(),
+    ]);
   }
 }
