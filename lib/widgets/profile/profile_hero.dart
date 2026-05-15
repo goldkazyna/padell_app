@@ -6,7 +6,6 @@ import '../../screens/edit_profile_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/rating_formatter.dart';
 import '../level_verification_sheet.dart';
-import 'sparkline.dart';
 import 'player_hero.dart' show openFullScreenAvatar;
 import '../verified_badge.dart';
 
@@ -304,32 +303,19 @@ class _RatingRow extends StatelessWidget {
       ],
     );
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          child: canTap
-              ? GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => LevelVerificationSheet.show(
-                    context,
-                    userId: userId!,
-                    playerName: playerName!,
-                  ),
-                  child: ratingBlock,
-                )
-              : ratingBlock,
-        ),
-        const SizedBox(width: 10),
-        if (trend.length >= 2)
-          Sparkline(
-            points: trend,
-            color: AppTheme.accent,
-            width: 110,
-            height: 38,
-          ),
-      ],
-    );
+    // График-спарклайн рядом с рейтингом убран — теперь есть полноразмерная
+    // карточка «Динамика рейтинга» под hero-блоком.
+    return canTap
+        ? GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => LevelVerificationSheet.show(
+              context,
+              userId: userId!,
+              playerName: playerName!,
+            ),
+            child: ratingBlock,
+          )
+        : ratingBlock;
   }
 }
 
