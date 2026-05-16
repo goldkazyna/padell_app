@@ -264,22 +264,17 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
     );
   }
 
-  // ===== Group tabs (стиль рейтинга, full width) =====
+  // ===== Group tabs (pill-кнопки, чтобы не сливались с главными табами) =====
   Widget _buildGroupTabs(List<Map<String, dynamic>> groups) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Color(0xFF27272A), width: 1),
-          ),
-        ),
-        child: Row(
-          children: [
-            for (var i = 0; i < groups.length; i++)
-              Expanded(child: _groupTabBtn(groups[i]['name'] as String?, i)),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
+      child: Row(
+        children: [
+          for (var i = 0; i < groups.length; i++) ...[
+            if (i > 0) const SizedBox(width: 8),
+            Expanded(child: _groupTabBtn(groups[i]['name'] as String?, i)),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -289,22 +284,24 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedGroupIdx = idx),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isActive ? AppTheme.accent : Colors.transparent,
-              width: 2,
-            ),
+          color: isActive ? AppTheme.accent : const Color(0xFF1F1F23),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color:
+                isActive ? AppTheme.accent : const Color(0xFF2A2A2F),
+            width: 1,
           ),
         ),
         alignment: Alignment.center,
         child: Text(
           label ?? 'Группа ${idx + 1}',
           style: TextStyle(
-            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            color: isActive ? Colors.black : AppTheme.textPrimary,
             fontSize: 13,
             fontWeight: FontWeight.w700,
+            letterSpacing: -0.1,
           ),
         ),
       ),
