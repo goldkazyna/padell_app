@@ -37,7 +37,7 @@ class _AdminCreateTournamentScreenState
   final _reserveCount = TextEditingController(text: '0');
   final _roundsCount = TextEditingController(text: '7');
 
-  String _type = 'americano'; // americano / king_of_court / bali_koc
+  String _type = 'americano'; // americano / king_of_court / bali_koc / team
   DateTime? _startDate;
   double _minLevel = 1.5;
   double _maxLevel = 4.0;
@@ -50,6 +50,13 @@ class _AdminCreateTournamentScreenState
   String _playoffFormat = 'cross';
   bool _hasLowerBracket = false;
   bool _hasBronzeMatch = false;
+
+  // Поля Team (Групповой + Плей-офф) — отдельный state, чтобы не путать с
+  // Американо. По умолчанию 2 группы, выходят 2 пары.
+  int _teamGroupsCount = 2;
+  int _teamsAdvance = 2;
+  bool _teamHasLowerBracket = false;
+  bool _teamHasBronzeMatch = false;
 
   // Корты — кол-во вычисляется как ceil(max_participants / 4) (как в Web)
   late final List<TextEditingController> _courtNames =
@@ -205,6 +212,14 @@ class _AdminCreateTournamentScreenState
         body['has_lower_bracket'] = _hasLowerBracket;
         body['has_bronze_match'] = _hasBronzeMatch;
       }
+    }
+
+    if (_type == 'team') {
+      body['groups_count'] = _teamGroupsCount;
+      body['teams_advance'] = _teamsAdvance;
+      body['has_lower_bracket'] = _teamHasLowerBracket;
+      body['has_bronze_match'] = _teamHasBronzeMatch;
+      // has_playoff на бэке будет принудительно true для team — не передаём.
     }
 
     setState(() {
@@ -386,6 +401,10 @@ class _AdminCreateTournamentScreenState
           const SizedBox(height: 12),
           _americanoSection(),
         ],
+        if (_type == 'team') ...[
+          const SizedBox(height: 12),
+          _teamSection(),
+        ],
         const SizedBox(height: 12),
         _section(
           title: 'Корты',
@@ -507,6 +526,13 @@ class _AdminCreateTournamentScreenState
               subtitle: 'Фикс. пары, очки от корта',
               icon: Icons.groups_rounded,
             ),
+            const SizedBox(width: 8),
+            card(
+              value: 'team',
+              title: 'Групповой + Плей-офф',
+              subtitle: 'Парный, выход в плей-офф',
+              icon: Icons.account_tree_outlined,
+            ),
           ],
         ),
       ],
@@ -536,6 +562,105 @@ class _AdminCreateTournamentScreenState
         _playoffSettings(),
       ],
     );
+  }
+
+  Widget _teamSection() {
+    return _section(
+      title: 'Групповой + Плей-офф',
+      children: [
+        const Text(
+          'Фиксированные пары играют групповой этап, лучшие выходят в плей-офф (на вылет). Количество указано в парах.',
+          style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+        ),
+        const SizedBox(height: 12),
+        _label('Количество групп'),
+        _teamGroupsSelector(),
+        const SizedBox(height: 12),
+        _label('Выходят из группы'),
+        _teamsAdvanceSelector(),
+        const SizedBox(height: 12),
+        _checkboxTile(
+          value: _teamHasLowerBracket,
+          label: 'Нижняя сетка (для проигравших в QF)',
+          onChanged: (v) => setState(() => _teamHasLowerBracket = v),
+        ),
+        _checkboxTile(
+          value: _teamHasBronzeMatch,
+          label: 'Матч за 3-е место',
+          onChanged: (v) => setState(() => _teamHasBronzeMatch = v),
+        ),
+      ],
+    );
+  }
+
+  Widget _teamGroupsSelector() {
+    Widget btn(int n) {
+      final active = _teamGroupsCount == n;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => setState(() => _teamGroupsCount = n),
+          child: Container(
+            margin: EdgeInsets.only(left: n == 1 ? 0 : 6),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color:
+                  active ? AppTheme.accent.withOpacity(0.15) : AppTheme.cardRaised,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: active ? AppTheme.accent : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              n == 1 ? '1 группа' : (n >= 5 ? '$n групп' : '$n группы'),
+              style: TextStyle(
+                color: active ? AppTheme.accent : AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(children: [btn(1), btn(2), btn(3), btn(4)]);
+  }
+
+  Widget _teamsAdvanceSelector() {
+    Widget btn(int n) {
+      final active = _teamsAdvance == n;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => setState(() => _teamsAdvance = n),
+          child: Container(
+            margin: EdgeInsets.only(left: n == 1 ? 0 : 6),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color:
+                  active ? AppTheme.accent.withOpacity(0.15) : AppTheme.cardRaised,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: active ? AppTheme.accent : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              n == 1 ? '1 пара' : '$n пары',
+              style: TextStyle(
+                color: active ? AppTheme.accent : AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(children: [btn(1), btn(2), btn(3), btn(4)]);
   }
 
   Widget _groupsSelector() {
