@@ -1163,6 +1163,7 @@ class _AdminTournamentDetailScreenState
     final pending = r.participants.where((p) => p.status == 'pending').toList();
     final approved =
         r.participants.where((p) => p.status == 'registered').toList();
+    final waiting = r.participants.where((p) => p.status == 'waiting').toList();
     final taken = approved.length + pending.length;
     final isFull = taken >= r.max;
 
@@ -1188,7 +1189,80 @@ class _AdminTournamentDetailScreenState
         else
           ...approved.map((p) =>
               _buildParticipantTile(p, canModify: r.canModify)),
+        if (waiting.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          _buildWaitlistBlock(waiting, r.canModify),
+        ],
       ],
+    );
+  }
+
+  /// Блок «Лист ожидания» — синий, с возможностью удалить.
+  Widget _buildWaitlistBlock(List<AdminParticipant> waiting, bool canModify) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.blue.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.blue.withOpacity(0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.hourglass_top, color: AppTheme.blue, size: 18),
+              const SizedBox(width: 8),
+              Text('Лист ожидания: ${waiting.length}',
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...List.generate(waiting.length, (i) {
+            final p = waiting[i];
+            return Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.card,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 22,
+                      child: Text(
+                        '${i + 1}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: AppTheme.blue,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    _avatar(p),
+                    const SizedBox(width: 10),
+                    Expanded(child: _nameAndMeta(p)),
+                    if (canModify)
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline,
+                            color: AppTheme.error),
+                        tooltip: 'Удалить из листа ожидания',
+                        onPressed: () => _removeOne(p),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 
@@ -1313,6 +1387,7 @@ class _AdminTournamentDetailScreenState
   Widget _buildTeamsList(AdminParticipantsResponse r) {
     final pending = r.teams.where((t) => t.status == 'pending').toList();
     final approved = r.teams.where((t) => t.status == 'approved').toList();
+    final waiting = r.teams.where((t) => t.status == 'waiting').toList();
     final taken = approved.length + pending.length;
     final isFull = taken >= r.max;
 
@@ -1339,7 +1414,41 @@ class _AdminTournamentDetailScreenState
         else
           ...approved.map((t) =>
               _buildTeamTile(t, canModify: r.canModify, pending: false)),
+        if (waiting.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          _buildWaitlistTeamsBlock(waiting, r.canModify),
+        ],
       ],
+    );
+  }
+
+  Widget _buildWaitlistTeamsBlock(List<AdminTeam> teams, bool canModify) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.blue.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.blue.withOpacity(0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.hourglass_top, color: AppTheme.blue, size: 18),
+              const SizedBox(width: 8),
+              Text('Пар в листе ожидания: ${teams.length}',
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...teams.map((t) =>
+              _buildTeamTile(t, canModify: canModify, pending: false)),
+        ],
+      ),
     );
   }
 
