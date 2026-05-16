@@ -534,20 +534,18 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           const SizedBox(height: 24),
           Row(
             children: [
-              const Icon(Icons.hourglass_top, color: _waitlistColor, size: 18),
-              const SizedBox(width: 6),
-              const Text(
+              Text(
                 'Лист ожидания',
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(width: 8),
-              _buildCountBadge(t.waitlistParticipants.length, _waitlistColor),
-              if (t.waitlistSize > 0) ...[
-                const Spacer(),
+              _buildCountBadge(t.waitlistParticipants.length, AppTheme.blue),
+              const Spacer(),
+              if (t.waitlistSize > 0)
                 Text(
                   '${t.waitlistParticipants.length} / ${t.waitlistSize}',
                   style: const TextStyle(
@@ -555,7 +553,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     fontSize: 14,
                   ),
                 ),
-              ],
             ],
           ),
           const SizedBox(height: 12),
@@ -572,76 +569,119 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
-  static const Color _waitlistColor = Color(0xFF60A5FA); // blue-400
-
   Widget _buildWaitlistRow({
     required int index,
     required TournamentParticipant participant,
     required bool isMe,
   }) {
+    final Color primaryColor = isMe ? AppTheme.blue : AppTheme.textPrimary;
+    final Color secondaryColor = isMe ? AppTheme.blue.withAlpha(180) : AppTheme.textSecondary;
+    final Color avatarBg = isMe ? AppTheme.blue : const Color(0xFF2A2A2A);
+
     return GestureDetector(
       onTap: () => _openPlayerProfile(participant.id, participant.name),
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: _waitlistColor.withAlpha(20),
+          color: AppTheme.blue.withAlpha(15),
           borderRadius: BorderRadius.circular(12),
-          border: Border(
-            left: BorderSide(color: _waitlistColor, width: 3),
-          ),
+          border: Border.all(color: AppTheme.blue.withAlpha(60), width: 0.5),
         ),
         child: Row(
           children: [
+            // Номер в очереди
             SizedBox(
-              width: 22,
+              width: 24,
               child: Text(
                 '$index',
-                style: const TextStyle(
-                  color: _waitlistColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            const SizedBox(width: 6),
-            const Icon(Icons.hourglass_bottom, color: _waitlistColor, size: 16),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                isMe ? '${participant.name} (вы)' : participant.name,
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: secondaryColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 10),
+
+            // Аватар
             Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: AppTheme.background,
-                borderRadius: BorderRadius.circular(8),
+                color: avatarBg,
+                shape: BoxShape.circle,
               ),
-              child: Text(
-                participant.level.toStringAsFixed(2),
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+              child: Center(
+                child: Text(
+                  participant.initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
-            Text(
-              '${participant.rating}',
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+            const SizedBox(width: 10),
+
+            // Имя + статус «В очереди»
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          participant.name,
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (participant.levelVerified) ...[
+                        const SizedBox(width: 5),
+                        const VerifiedBadge(size: 11),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Icon(Icons.hourglass_bottom, color: AppTheme.blue.withAlpha(200), size: 11),
+                      const SizedBox(width: 4),
+                      Text(
+                        'В очереди',
+                        style: TextStyle(
+                          color: AppTheme.blue.withAlpha(200),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
+
+            // Рейтинг
+            Builder(builder: (ctx) {
+              final precise = ctx.watch<SettingsProvider>().preciseRating;
+              return Text(
+                RatingFormatter.formatRating(participant.rating, precise),
+                style: TextStyle(
+                  color: primaryColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            }),
           ],
         ),
       ),

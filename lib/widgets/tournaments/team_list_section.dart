@@ -13,7 +13,7 @@ class TeamListSection extends StatelessWidget {
   final int? currentUserId;
 
   static const Color _pendingColor = Color(0xFFF59E0B);
-  static const Color _waitlistColor = Color(0xFF60A5FA);
+  static const Color _waitlistColor = AppTheme.blue;
 
   const TeamListSection({
     super.key,
@@ -141,8 +141,6 @@ class TeamListSection extends StatelessWidget {
           const SizedBox(height: 24),
           Row(
             children: [
-              const Icon(Icons.hourglass_top, color: _waitlistColor, size: 18),
-              const SizedBox(width: 6),
               const Text(
                 'Лист ожидания',
                 style: TextStyle(
@@ -153,8 +151,8 @@ class TeamListSection extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               _buildCountBadge(tournament.waitlistTeams.length, _waitlistColor),
-              if (tournament.waitlistSize > 0) ...[
-                const Spacer(),
+              const Spacer(),
+              if (tournament.waitlistSize > 0)
                 Text(
                   '${tournament.waitlistTeams.length} / ${tournament.waitlistSize} пар',
                   style: const TextStyle(
@@ -162,7 +160,6 @@ class TeamListSection extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-              ],
             ],
           ),
           const SizedBox(height: 12),
@@ -199,8 +196,8 @@ class TeamListSection extends StatelessWidget {
       bgColor = _pendingColor.withAlpha(15);
       borderColor = _pendingColor.withAlpha(60);
     } else if (isWaitlist) {
-      bgColor = _waitlistColor.withAlpha(20);
-      borderColor = _waitlistColor.withAlpha(80);
+      bgColor = _waitlistColor.withAlpha(15);
+      borderColor = _waitlistColor.withAlpha(60);
     } else if (isMyTeam) {
       bgColor = AppTheme.accent.withAlpha(15);
       borderColor = AppTheme.accent.withAlpha(60);
