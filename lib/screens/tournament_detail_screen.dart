@@ -606,23 +606,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             const SizedBox(width: 10),
 
             // Аватар
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: avatarBg,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  participant.initials,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+            _buildAvatar(
+              avatarUrl: participant.avatarUrl,
+              initials: participant.initials,
+              fallbackBg: avatarBg,
             ),
             const SizedBox(width: 10),
 
@@ -706,6 +693,39 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
+  /// Универсальный аватар: фото если есть avatarUrl, иначе инициалы на цветном фоне.
+  Widget _buildAvatar({
+    required String? avatarUrl,
+    required String initials,
+    required Color fallbackBg,
+    double size = 36,
+  }) {
+    final hasUrl = (avatarUrl ?? '').isNotEmpty;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: fallbackBg,
+        shape: BoxShape.circle,
+        image: hasUrl
+            ? DecorationImage(image: NetworkImage(avatarUrl!), fit: BoxFit.cover)
+            : null,
+      ),
+      child: hasUrl
+          ? null
+          : Center(
+              child: Text(
+                initials,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+    );
+  }
+
   void _openPlayerProfile(int playerId, String playerName) {
     if (playerId <= 0) return;
     Navigator.push(
@@ -751,24 +771,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
           const SizedBox(width: 10),
 
-          // Аватар (оранжевый)
-          Container(
-            width: 36,
-            height: 36,
-            decoration: const BoxDecoration(
-              color: _pendingColor,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                participant.initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+          // Аватар (оранжевый fallback)
+          _buildAvatar(
+            avatarUrl: participant.avatarUrl,
+            initials: participant.initials,
+            fallbackBg: _pendingColor,
           ),
           const SizedBox(width: 10),
 
@@ -887,23 +894,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           const SizedBox(width: 10),
 
           // Аватар
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: avatarBg,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                participant.initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+          _buildAvatar(
+            avatarUrl: participant.avatarUrl,
+            initials: participant.initials,
+            fallbackBg: avatarBg,
           ),
           const SizedBox(width: 10),
 

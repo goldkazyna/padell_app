@@ -353,25 +353,34 @@ class TeamListSection extends StatelessWidget {
         ),
         const SizedBox(width: 10),
 
-        // Avatar
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: avatarBg,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              player.initials,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+        // Avatar — фото если есть, иначе инициалы
+        Builder(builder: (_) {
+          final hasUrl = (player.avatarUrl ?? '').isNotEmpty;
+          return Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: avatarBg,
+              shape: BoxShape.circle,
+              image: hasUrl
+                  ? DecorationImage(
+                      image: NetworkImage(player.avatarUrl!), fit: BoxFit.cover)
+                  : null,
             ),
-          ),
-        ),
+            child: hasUrl
+                ? null
+                : Center(
+                    child: Text(
+                      player.initials,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+          );
+        }),
         const SizedBox(width: 10),
 
         // Name + level
