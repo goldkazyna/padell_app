@@ -384,6 +384,57 @@ class AdminService {
     return AdminMatchesResponse.fromJson(response);
   }
 
+  // === Team (Групповой + Плей-офф) ===
+
+  /// Сохранить счёт группового матча команды. POST для нового, PUT для апдейта.
+  Future<void> saveTeamGroupScore(
+    int tournamentId,
+    int matchId, {
+    required int team1Score,
+    required int team2Score,
+    required bool isUpdate,
+  }) async {
+    final token = await _storage.getToken();
+    final endpoint =
+        '/admin/tournaments/$tournamentId/team/group-match/$matchId/score';
+    final body = {'team1_score': team1Score, 'team2_score': team2Score};
+    if (isUpdate) {
+      await _api.put(endpoint, body, token);
+    } else {
+      await _api.post(endpoint, body, token);
+    }
+  }
+
+  /// Сохранить счёт плей-офф матча команды.
+  Future<void> saveTeamPlayoffScore(
+    int tournamentId,
+    int matchId, {
+    required int team1Score,
+    required int team2Score,
+    required bool isUpdate,
+  }) async {
+    final token = await _storage.getToken();
+    final endpoint =
+        '/admin/tournaments/$tournamentId/team/playoff-match/$matchId/score';
+    final body = {'team1_score': team1Score, 'team2_score': team2Score};
+    if (isUpdate) {
+      await _api.put(endpoint, body, token);
+    } else {
+      await _api.post(endpoint, body, token);
+    }
+  }
+
+  /// Сгенерировать плей-офф для team-турнира.
+  Future<AdminMatchesResponse> generateTeamPlayoff(int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/tournaments/$tournamentId/team/generate-playoff',
+      const {},
+      token,
+    );
+    return AdminMatchesResponse.fromJson(response);
+  }
+
   /// Завершить турнир (с применением ELO).
   Future<AdminTournamentDetail> finishTournament(int tournamentId) async {
     final token = await _storage.getToken();

@@ -2271,9 +2271,10 @@ class _AdminTournamentDetailScreenState
       _actionLabel = 'Генерируем плей-офф...';
     });
     try {
-      final fresh = await context
-          .read<AdminService>()
-          .generatePlayoff(widget.tournamentId);
+      final svc = context.read<AdminService>();
+      final fresh = _matches?.type == 'team'
+          ? await svc.generateTeamPlayoff(widget.tournamentId)
+          : await svc.generatePlayoff(widget.tournamentId);
       if (!mounted) return;
       setState(() {
         _matches = fresh;
@@ -2747,6 +2748,7 @@ class _AdminTournamentDetailScreenState
 
     final isKoc = _matches?.type == 'king_of_court';
     final isBali = _matches?.type == 'bali_koc';
+    final isTeam = _matches?.type == 'team';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -2770,7 +2772,8 @@ class _AdminTournamentDetailScreenState
         team2Title: team2Title,
         initialScore1: initial1,
         initialScore2: initial2,
-        // У плей-офф, KOC и Bali ничья запрещена
+        // У плей-офф, KOC и Bali ничья запрещена. У team — в плей-офф нельзя,
+        // в групповом этапе можно (ничья считается как одинаковые геймы).
         requireDifferent: isPlayoff || isKoc || isBali,
       ),
     );
@@ -2785,7 +2788,25 @@ class _AdminTournamentDetailScreenState
       _actionLabel = 'Сохраняем счёт...';
     });
     try {
-      if (isPlayoff) {
+      if (isTeam) {
+        if (isPlayoff) {
+          await context.read<AdminService>().saveTeamPlayoffScore(
+                tournamentId,
+                matchId,
+                team1Score: result.score1,
+                team2Score: result.score2,
+                isUpdate: isUpdate,
+              );
+        } else {
+          await context.read<AdminService>().saveTeamGroupScore(
+                tournamentId,
+                matchId,
+                team1Score: result.score1,
+                team2Score: result.score2,
+                isUpdate: isUpdate,
+              );
+        }
+      } else if (isPlayoff) {
         await context.read<AdminService>().saveAmericanoPlayoffScore(
               tournamentId,
               matchId,
