@@ -607,7 +607,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
             // Аватар
             _buildAvatar(
-              avatarUrl: participant.avatarUrl,
+              avatarUrl: participant.avatar,
               initials: participant.initials,
               fallbackBg: avatarBg,
             ),
@@ -782,7 +782,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
           // Аватар (оранжевый fallback)
           _buildAvatar(
-            avatarUrl: participant.avatarUrl,
+            avatarUrl: participant.avatar,
             initials: participant.initials,
             fallbackBg: _pendingColor,
           ),
@@ -904,7 +904,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
           // Аватар
           _buildAvatar(
-            avatarUrl: participant.avatarUrl,
+            avatarUrl: participant.avatar,
             initials: participant.initials,
             fallbackBg: avatarBg,
           ),

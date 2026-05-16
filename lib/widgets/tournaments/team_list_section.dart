@@ -370,11 +370,11 @@ class TeamListSection extends StatelessWidget {
               ),
             ),
           );
-          final hasUrl = (player.avatarUrl ?? '').isNotEmpty;
+          final hasUrl = (player.avatar ?? '').isNotEmpty;
           if (!hasUrl) return initialsWidget;
           return ClipOval(
             child: Image.network(
-              player.avatarUrl!,
+              player.avatar!,
               width: 36,
               height: 36,
               fit: BoxFit.cover,
