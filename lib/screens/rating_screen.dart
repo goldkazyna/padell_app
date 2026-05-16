@@ -29,6 +29,10 @@ class _RatingScreenState extends State<RatingScreen> {
   int _myGrowthPlace = 0;
   bool _growthLoading = false;
   String? _growthError;
+  int _growthPage = 1;
+  int _growthTotalPages = 1;
+  bool _growthLoadingMore = false;
+  bool get _growthHasMore => _growthPage < _growthTotalPages;
 
   // Tournaments state
   String _tournamentsSearch = '';
@@ -39,8 +43,14 @@ class _RatingScreenState extends State<RatingScreen> {
   int _myTournamentsPlace = 0;
   bool _tournamentsLoading = false;
   String? _tournamentsError;
+  int _tournamentsPage = 1;
+  int _tournamentsTotalPages = 1;
+  bool _tournamentsLoadingMore = false;
+  bool get _tournamentsHasMore => _tournamentsPage < _tournamentsTotalPages;
 
   final ScrollController _ratingScrollController = ScrollController();
+  final ScrollController _growthScrollController = ScrollController();
+  final ScrollController _tournamentsScrollController = ScrollController();
 
   @override
   void initState() {
@@ -53,12 +63,18 @@ class _RatingScreenState extends State<RatingScreen> {
       provider.loadRating();
     });
     _ratingScrollController.addListener(_onRatingScroll);
+    _growthScrollController.addListener(_onGrowthScroll);
+    _tournamentsScrollController.addListener(_onTournamentsScroll);
   }
 
   @override
   void dispose() {
     _ratingScrollController.removeListener(_onRatingScroll);
     _ratingScrollController.dispose();
+    _growthScrollController.removeListener(_onGrowthScroll);
+    _growthScrollController.dispose();
+    _tournamentsScrollController.removeListener(_onTournamentsScroll);
+    _tournamentsScrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -75,13 +91,38 @@ class _RatingScreenState extends State<RatingScreen> {
     }
   }
 
+  void _onGrowthScroll() {
+    if (!_growthScrollController.hasClients) return;
+    final pos = _growthScrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 300) {
+      if (_growthHasMore && !_growthLoadingMore && !_growthLoading) {
+        _loadMoreGrowth();
+      }
+    }
+  }
+
+  void _onTournamentsScroll() {
+    if (!_tournamentsScrollController.hasClients) return;
+    final pos = _tournamentsScrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 300) {
+      if (_tournamentsHasMore && !_tournamentsLoadingMore && !_tournamentsLoading) {
+        _loadMoreTournaments();
+      }
+    }
+  }
+
   Future<void> _loadGrowth() async {
     setState(() {
       _growthLoading = true;
       _growthError = null;
+      _growthPage = 1;
     });
 
-    final result = await context.read<RatingProvider>().service.getGrowth(period: _growthPeriod, search: _growthSearch.isNotEmpty ? _growthSearch : null);
+    final result = await context.read<RatingProvider>().service.getGrowth(
+          period: _growthPeriod,
+          search: _growthSearch.isNotEmpty ? _growthSearch : null,
+          page: 1,
+        );
 
     if (mounted) {
       setState(() {
@@ -90,6 +131,8 @@ class _RatingScreenState extends State<RatingScreen> {
           _growthPlayers = result.players;
           _myGrowth = result.myGrowth;
           _myGrowthPlace = result.myPlace;
+          _growthPage = result.page;
+          _growthTotalPages = result.totalPages;
         } else {
           _growthError = result.message;
         }
@@ -97,10 +140,39 @@ class _RatingScreenState extends State<RatingScreen> {
     }
   }
 
-  Future<void> _loadTournaments() async {
-    setState(() { _tournamentsLoading = true; _tournamentsError = null; });
+  Future<void> _loadMoreGrowth() async {
+    if (_growthLoadingMore || !_growthHasMore) return;
+    setState(() => _growthLoadingMore = true);
 
-    final result = await context.read<RatingProvider>().service.getTournaments(period: _tournamentsPeriod, search: _tournamentsSearch.isNotEmpty ? _tournamentsSearch : null);
+    final result = await context.read<RatingProvider>().service.getGrowth(
+          period: _growthPeriod,
+          search: _growthSearch.isNotEmpty ? _growthSearch : null,
+          page: _growthPage + 1,
+        );
+
+    if (!mounted) return;
+    setState(() {
+      _growthLoadingMore = false;
+      if (result.success) {
+        _growthPlayers.addAll(result.players);
+        _growthPage = result.page;
+        _growthTotalPages = result.totalPages;
+      }
+    });
+  }
+
+  Future<void> _loadTournaments() async {
+    setState(() {
+      _tournamentsLoading = true;
+      _tournamentsError = null;
+      _tournamentsPage = 1;
+    });
+
+    final result = await context.read<RatingProvider>().service.getTournaments(
+          period: _tournamentsPeriod,
+          search: _tournamentsSearch.isNotEmpty ? _tournamentsSearch : null,
+          page: 1,
+        );
 
     if (mounted) {
       setState(() {
@@ -110,11 +182,34 @@ class _RatingScreenState extends State<RatingScreen> {
           _myTournaments = result.myTournaments;
           _myTournamentsChange = result.myChange;
           _myTournamentsPlace = result.myPlace;
+          _tournamentsPage = result.page;
+          _tournamentsTotalPages = result.totalPages;
         } else {
           _tournamentsError = result.message;
         }
       });
     }
+  }
+
+  Future<void> _loadMoreTournaments() async {
+    if (_tournamentsLoadingMore || !_tournamentsHasMore) return;
+    setState(() => _tournamentsLoadingMore = true);
+
+    final result = await context.read<RatingProvider>().service.getTournaments(
+          period: _tournamentsPeriod,
+          search: _tournamentsSearch.isNotEmpty ? _tournamentsSearch : null,
+          page: _tournamentsPage + 1,
+        );
+
+    if (!mounted) return;
+    setState(() {
+      _tournamentsLoadingMore = false;
+      if (result.success) {
+        _tournamentsPlayers.addAll(result.players);
+        _tournamentsPage = result.page;
+        _tournamentsTotalPages = result.totalPages;
+      }
+    });
   }
 
   @override
@@ -703,9 +798,25 @@ class _RatingScreenState extends State<RatingScreen> {
       onRefresh: _loadGrowth,
       color: AppTheme.accent,
       child: ListView.builder(
+        controller: _growthScrollController,
         padding: const EdgeInsets.only(bottom: 20),
-        itemCount: _growthPlayers.length,
+        itemCount: _growthPlayers.length + (_growthHasMore ? 1 : 0),
         itemBuilder: (context, index) {
+          if (index == _growthPlayers.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: AppTheme.accent,
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+            );
+          }
           final gp = _growthPlayers[index];
           return _buildPlayerRow(gp.player, growthValue: gp.growth);
         },
@@ -880,9 +991,25 @@ class _RatingScreenState extends State<RatingScreen> {
       onRefresh: _loadTournaments,
       color: AppTheme.accent,
       child: ListView.builder(
+        controller: _tournamentsScrollController,
         padding: const EdgeInsets.only(bottom: 20),
-        itemCount: _tournamentsPlayers.length,
+        itemCount: _tournamentsPlayers.length + (_tournamentsHasMore ? 1 : 0),
         itemBuilder: (context, index) {
+          if (index == _tournamentsPlayers.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: AppTheme.accent,
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+            );
+          }
           final tp = _tournamentsPlayers[index];
           return _buildPlayerRow(tp.player, tournamentsValue: tp.tournamentsCount);
         },
