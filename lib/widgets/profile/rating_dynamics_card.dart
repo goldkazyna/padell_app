@@ -274,8 +274,12 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
   }
 
   Widget _buildMatches(List<Match> matches) {
-    final wins = matches.where((m) => m.isWin).length;
-    final losses = matches.length - wins;
+    // С бэка matches идут desc (новые первыми). Чтобы соответствовать
+    // подписям («N матчей назад» слева, «сейчас» справа) — переворачиваем:
+    // слева самые старые, справа — последний сыгранный.
+    final ordered = matches.reversed.toList();
+    final wins = ordered.where((m) => m.isWin).length;
+    final losses = ordered.length - wins;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -284,7 +288,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'ПОСЛЕДНИЕ ${matches.length} МАТЧЕЙ',
+              'ПОСЛЕДНИЕ ${ordered.length} МАТЧЕЙ',
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -306,24 +310,24 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
         const SizedBox(height: 8),
         Row(
           children: [
-            for (int i = 0; i < matches.length; i++) ...[
+            for (int i = 0; i < ordered.length; i++) ...[
               Expanded(
                 child: Container(
                   height: 26,
                   margin: EdgeInsets.only(
-                    right: i == matches.length - 1 ? 0 : 3,
+                    right: i == ordered.length - 1 ? 0 : 3,
                   ),
                   decoration: BoxDecoration(
-                    color: (matches[i].isWin ? _green : _red).withAlpha(220),
+                    color: (ordered[i].isWin ? _green : _red).withAlpha(220),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    matches[i].isWin ? 'В' : 'П',
+                    ordered[i].isWin ? 'В' : 'П',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
-                      color: matches[i].isWin
+                      color: ordered[i].isWin
                           ? const Color(0xFF06281A)
                           : Colors.white,
                     ),
@@ -338,7 +342,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${matches.length} матчей назад',
+              '${ordered.length} матчей назад',
               style: const TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
