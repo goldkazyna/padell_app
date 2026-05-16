@@ -271,7 +271,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             children: [
               const AppBackButton(),
               const SizedBox(width: 12),
-              const _LivePill(),
+              if (t['status'] == 'completed')
+                _DatePill(date: t['date'] as String? ?? '')
+              else
+                const _LivePill(),
             ],
           ),
           const SizedBox(height: 14),
@@ -1034,6 +1037,38 @@ class _RoundStatusPillState extends State<_RoundStatusPill>
             style: TextStyle(
               color: widget.color,
               fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DatePill extends StatelessWidget {
+  final String date;
+  const _DatePill({required this.date});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withAlpha(30),
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(color: AppTheme.amber.withAlpha(80)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.event_rounded, color: AppTheme.amber, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            date.isEmpty ? 'Завершён' : date,
+            style: const TextStyle(
+              color: AppTheme.amber,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
             ),
           ),

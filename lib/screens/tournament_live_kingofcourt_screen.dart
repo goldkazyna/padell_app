@@ -225,7 +225,7 @@ class _TournamentLiveKingOfCourtScreenState
               const AppBackButton(),
               const SizedBox(width: 12),
               if (t['status'] == 'completed')
-                const _CompletedPill()
+                _DatePill(date: t['date'] as String? ?? '')
               else
                 const _LivePill(),
             ],
@@ -991,8 +991,9 @@ class _RatingDeltaPill extends StatelessWidget {
   }
 }
 
-class _CompletedPill extends StatelessWidget {
-  const _CompletedPill();
+class _DatePill extends StatelessWidget {
+  final String date;
+  const _DatePill({required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -1005,12 +1006,12 @@ class _CompletedPill extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.emoji_events_rounded, color: AppTheme.amber, size: 14),
-          SizedBox(width: 6),
+        children: [
+          const Icon(Icons.event_rounded, color: AppTheme.amber, size: 14),
+          const SizedBox(width: 6),
           Text(
-            'Турнир завершён',
-            style: TextStyle(
+            date.isEmpty ? 'Завершён' : date,
+            style: const TextStyle(
               color: AppTheme.amber,
               fontSize: 13,
               fontWeight: FontWeight.w700,
