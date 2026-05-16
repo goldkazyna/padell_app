@@ -693,36 +693,45 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
-  /// Универсальный аватар: фото если есть avatarUrl, иначе инициалы на цветном фоне.
+  /// Универсальный аватар: фото если есть avatarUrl и оно грузится,
+  /// иначе fallback — инициалы на цветном фоне.
   Widget _buildAvatar({
     required String? avatarUrl,
     required String initials,
     required Color fallbackBg,
     double size = 36,
   }) {
-    final hasUrl = (avatarUrl ?? '').isNotEmpty;
-    return Container(
+    final initialsWidget = Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: fallbackBg,
-        shape: BoxShape.circle,
-        image: hasUrl
-            ? DecorationImage(image: NetworkImage(avatarUrl!), fit: BoxFit.cover)
-            : null,
+      decoration: BoxDecoration(color: fallbackBg, shape: BoxShape.circle),
+      child: Center(
+        child: Text(
+          initials,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
-      child: hasUrl
-          ? null
-          : Center(
-              child: Text(
-                initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+    );
+
+    final hasUrl = (avatarUrl ?? '').isNotEmpty;
+    if (!hasUrl) return initialsWidget;
+
+    return ClipOval(
+      child: Image.network(
+        avatarUrl!,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => initialsWidget,
+        loadingBuilder: (ctx, child, progress) {
+          if (progress == null) return child;
+          return initialsWidget;
+        },
+      ),
     );
   }
 

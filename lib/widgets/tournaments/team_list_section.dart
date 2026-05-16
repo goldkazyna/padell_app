@@ -353,32 +353,37 @@ class TeamListSection extends StatelessWidget {
         ),
         const SizedBox(width: 10),
 
-        // Avatar — фото если есть, иначе инициалы
+        // Avatar — фото если есть и грузится, иначе fallback на инициалы
         Builder(builder: (_) {
-          final hasUrl = (player.avatarUrl ?? '').isNotEmpty;
-          return Container(
+          final initialsWidget = Container(
             width: 36,
             height: 36,
-            decoration: BoxDecoration(
-              color: avatarBg,
-              shape: BoxShape.circle,
-              image: hasUrl
-                  ? DecorationImage(
-                      image: NetworkImage(player.avatarUrl!), fit: BoxFit.cover)
-                  : null,
+            decoration: BoxDecoration(color: avatarBg, shape: BoxShape.circle),
+            child: Center(
+              child: Text(
+                player.initials,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-            child: hasUrl
-                ? null
-                : Center(
-                    child: Text(
-                      player.initials,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+          );
+          final hasUrl = (player.avatarUrl ?? '').isNotEmpty;
+          if (!hasUrl) return initialsWidget;
+          return ClipOval(
+            child: Image.network(
+              player.avatarUrl!,
+              width: 36,
+              height: 36,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => initialsWidget,
+              loadingBuilder: (ctx, child, progress) {
+                if (progress == null) return child;
+                return initialsWidget;
+              },
+            ),
           );
         }),
         const SizedBox(width: 10),
