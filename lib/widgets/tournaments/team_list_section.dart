@@ -13,6 +13,7 @@ class TeamListSection extends StatelessWidget {
   final int? currentUserId;
 
   static const Color _pendingColor = Color(0xFFF59E0B);
+  static const Color _waitlistColor = Color(0xFF60A5FA);
 
   const TeamListSection({
     super.key,
@@ -134,6 +135,51 @@ class TeamListSection extends StatelessWidget {
               ),
             ),
           ),
+
+        // Лист ожидания
+        if (tournament.waitlistTeams.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              const Icon(Icons.hourglass_top, color: _waitlistColor, size: 18),
+              const SizedBox(width: 6),
+              const Text(
+                'Лист ожидания',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 8),
+              _buildCountBadge(tournament.waitlistTeams.length, _waitlistColor),
+              if (tournament.waitlistSize > 0) ...[
+                const Spacer(),
+                Text(
+                  '${tournament.waitlistTeams.length} / ${tournament.waitlistSize} пар',
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(tournament.waitlistTeams.length, (index) {
+            final team = tournament.waitlistTeams[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: _buildTeamRow(
+                context: context,
+                team: team,
+                isPending: false,
+                isWaitlist: true,
+                index: index + 1,
+              ),
+            );
+          }),
+        ],
       ],
     );
   }
@@ -142,6 +188,7 @@ class TeamListSection extends StatelessWidget {
     required BuildContext context,
     required TournamentTeam team,
     required bool isPending,
+    bool isWaitlist = false,
     int? index,
   }) {
     final isMyTeam = _isMyTeam(team);
@@ -151,6 +198,9 @@ class TeamListSection extends StatelessWidget {
     if (isPending) {
       bgColor = _pendingColor.withAlpha(15);
       borderColor = _pendingColor.withAlpha(60);
+    } else if (isWaitlist) {
+      bgColor = _waitlistColor.withAlpha(20);
+      borderColor = _waitlistColor.withAlpha(80);
     } else if (isMyTeam) {
       bgColor = AppTheme.accent.withAlpha(15);
       borderColor = AppTheme.accent.withAlpha(60);
@@ -159,9 +209,21 @@ class TeamListSection extends StatelessWidget {
       borderColor = const Color(0xFF2A2A2A);
     }
 
-    final Color primaryColor = isPending ? _pendingColor : (isMyTeam ? AppTheme.accent : AppTheme.textPrimary);
-    final Color secondaryColor = isPending ? _pendingColor : (isMyTeam ? AppTheme.accent.withAlpha(180) : AppTheme.textSecondary);
-    final Color avatarBg = isPending ? _pendingColor : (isMyTeam ? AppTheme.accent : const Color(0xFF2A2A2A));
+    final Color primaryColor = isPending
+        ? _pendingColor
+        : isWaitlist
+            ? _waitlistColor
+            : (isMyTeam ? AppTheme.accent : AppTheme.textPrimary);
+    final Color secondaryColor = isPending
+        ? _pendingColor
+        : isWaitlist
+            ? _waitlistColor.withAlpha(180)
+            : (isMyTeam ? AppTheme.accent.withAlpha(180) : AppTheme.textSecondary);
+    final Color avatarBg = isPending
+        ? _pendingColor
+        : isWaitlist
+            ? _waitlistColor
+            : (isMyTeam ? AppTheme.accent : const Color(0xFF2A2A2A));
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -211,6 +273,36 @@ class TeamListSection extends StatelessWidget {
                       AppLocalizations.of(context)!.pendingStatus,
                       style: const TextStyle(
                         color: _pendingColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+
+          if (isWaitlist) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _waitlistColor.withAlpha(25),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: _waitlistColor.withAlpha(60), width: 0.5),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.hourglass_bottom, color: _waitlistColor, size: 14),
+                    SizedBox(width: 4),
+                    Text(
+                      'В очереди',
+                      style: TextStyle(
+                        color: _waitlistColor,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),

@@ -285,6 +285,8 @@ class Tournament {
   final TournamentResult? myResult;
   final List<TournamentParticipant> participants;
   final List<TournamentTeam> teams;
+  final List<TournamentParticipant> waitlistParticipants;
+  final List<TournamentTeam> waitlistTeams;
   final int waitlistSize;
   final int waitlistCount;
   final bool waitlistAvailable;
@@ -318,6 +320,8 @@ class Tournament {
     this.myResult,
     this.participants = const [],
     this.teams = const [],
+    this.waitlistParticipants = const [],
+    this.waitlistTeams = const [],
     this.waitlistSize = 0,
     this.waitlistCount = 0,
     this.waitlistAvailable = false,
@@ -352,6 +356,26 @@ class Tournament {
       // Если парсинг команд сломался — просто пустой список
     }
 
+    List<TournamentParticipant> parsedWaitlist = [];
+    try {
+      final raw = json['waitlist_participants'] as List<dynamic>?;
+      if (raw != null) {
+        parsedWaitlist = raw
+            .map((p) => TournamentParticipant.fromJson(p as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (_) {}
+
+    List<TournamentTeam> parsedWaitlistTeams = [];
+    try {
+      final raw = json['waitlist_teams'] as List<dynamic>?;
+      if (raw != null) {
+        parsedWaitlistTeams = raw
+            .map((t) => TournamentTeam.fromJson(t as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (_) {}
+
     return Tournament(
       id: json['id'] as int,
       name: json['name'] as String,
@@ -382,6 +406,8 @@ class Tournament {
           : null,
       participants: parsedParticipants,
       teams: parsedTeams,
+      waitlistParticipants: parsedWaitlist,
+      waitlistTeams: parsedWaitlistTeams,
       waitlistSize: json['waitlist_size'] as int? ?? 0,
       waitlistCount: json['waitlist_count'] as int? ?? 0,
       waitlistAvailable: json['waitlist_available'] as bool? ?? false,

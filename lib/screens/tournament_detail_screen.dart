@@ -528,7 +528,123 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               ),
             ),
           ),
+
+        // === Лист ожидания ===
+        if (t.waitlistParticipants.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              const Icon(Icons.hourglass_top, color: _waitlistColor, size: 18),
+              const SizedBox(width: 6),
+              const Text(
+                'Лист ожидания',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 8),
+              _buildCountBadge(t.waitlistParticipants.length, _waitlistColor),
+              if (t.waitlistSize > 0) ...[
+                const Spacer(),
+                Text(
+                  '${t.waitlistParticipants.length} / ${t.waitlistSize}',
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(t.waitlistParticipants.length, (index) {
+            final p = t.waitlistParticipants[index];
+            final isMe = currentUserId != null && p.id == currentUserId;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: _buildWaitlistRow(index: index + 1, participant: p, isMe: isMe),
+            );
+          }),
+        ],
       ],
+    );
+  }
+
+  static const Color _waitlistColor = Color(0xFF60A5FA); // blue-400
+
+  Widget _buildWaitlistRow({
+    required int index,
+    required TournamentParticipant participant,
+    required bool isMe,
+  }) {
+    return GestureDetector(
+      onTap: () => _openPlayerProfile(participant.id, participant.name),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: _waitlistColor.withAlpha(20),
+          borderRadius: BorderRadius.circular(12),
+          border: Border(
+            left: BorderSide(color: _waitlistColor, width: 3),
+          ),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 22,
+              child: Text(
+                '$index',
+                style: const TextStyle(
+                  color: _waitlistColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Icon(Icons.hourglass_bottom, color: _waitlistColor, size: 16),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                isMe ? '${participant.name} (вы)' : participant.name,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppTheme.background,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                participant.level.toStringAsFixed(2),
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Text(
+              '${participant.rating}',
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
