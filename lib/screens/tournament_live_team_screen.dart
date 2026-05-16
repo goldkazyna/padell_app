@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/settings_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
 import 'player_profile_screen.dart';
 
@@ -649,6 +652,7 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
     final completed = m['status'] == 'completed';
     final hasMe = m['has_me'] == true;
     final court = m['court_number'];
+    final myDelta = (m['my_rating_change'] as num?)?.toInt();
 
     final t1Win = completed && (score1 ?? 0) > (score2 ?? 0);
     final t2Win = completed && (score2 ?? 0) > (score1 ?? 0);
@@ -702,6 +706,10 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
                             fontWeight: FontWeight.w700),
                       ),
                     ),
+                  ],
+                  if (hasMe && completed && myDelta != null) ...[
+                    const SizedBox(width: 6),
+                    _MatchRatingPill(delta: myDelta),
                   ],
                 ],
               ),
@@ -1159,6 +1167,46 @@ class _Avatar extends StatelessWidget {
         height: size,
         fit: BoxFit.cover,
         errorBuilder: (c, e, s) => fallback,
+      ),
+    );
+  }
+}
+
+class _MatchRatingPill extends StatelessWidget {
+  final int delta;
+  const _MatchRatingPill({required this.delta});
+
+  @override
+  Widget build(BuildContext context) {
+    final positive = delta >= 0;
+    final color = positive ? AppTheme.accent : AppTheme.error;
+    final precise = context.watch<SettingsProvider>().preciseRating;
+    final text = RatingFormatter.formatRatingChange(delta, precise, decimals: 4);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withAlpha(38),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            positive ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+            color: color,
+            size: 11,
+          ),
+          const SizedBox(width: 2),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
       ),
     );
   }
