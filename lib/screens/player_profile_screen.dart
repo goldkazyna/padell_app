@@ -159,6 +159,23 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
     );
   }
 
+  Widget _buildManualIcon() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: const Color(0x14F59E0B), // амбер с прозрачностью
+        borderRadius: BorderRadius.circular(12),
+      ),
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.tune_rounded,
+        size: 22,
+        color: AppTheme.amber,
+      ),
+    );
+  }
+
   Widget _buildPlaceIcon(int? place) {
     return Container(
       width: 48,
@@ -189,6 +206,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
 
   Widget _buildHistoryRow(RatingHistoryItem h) {
     final isPositive = h.change >= 0;
+    final isManual = h.tournamentId == null;
 
     return GestureDetector(
       onTap: h.tournamentId != null
@@ -249,7 +267,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
-            _buildPlaceIcon(h.place),
+            isManual ? _buildManualIcon() : _buildPlaceIcon(h.place),
             const SizedBox(width: 10),
             Expanded(
               child: Column(

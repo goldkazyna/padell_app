@@ -12,6 +12,7 @@ class RatingTrendPoint {
   final String? date;
   final int rating;
   final int? delta;
+  final bool isManual;
 
   const RatingTrendPoint({
     this.tournamentId,
@@ -20,6 +21,7 @@ class RatingTrendPoint {
     this.date,
     required this.rating,
     this.delta,
+    this.isManual = false,
   });
 
   factory RatingTrendPoint.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,7 @@ class RatingTrendPoint {
       date: json['date'] as String?,
       rating: (json['rating'] as num?)?.toInt() ?? 0,
       delta: (json['delta'] as num?)?.toInt(),
+      isManual: json['is_manual'] as bool? ?? (json['tournament_id'] == null),
     );
   }
 }
