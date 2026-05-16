@@ -40,6 +40,8 @@ class _RatingScreenState extends State<RatingScreen> {
   bool _tournamentsLoading = false;
   String? _tournamentsError;
 
+  final ScrollController _ratingScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -50,12 +52,27 @@ class _RatingScreenState extends State<RatingScreen> {
       _showSearch = false;
       provider.loadRating();
     });
+    _ratingScrollController.addListener(_onRatingScroll);
   }
 
   @override
   void dispose() {
+    _ratingScrollController.removeListener(_onRatingScroll);
+    _ratingScrollController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// Подгрузка следующих 50 пользователей, когда долистали почти до низа.
+  void _onRatingScroll() {
+    if (!_ratingScrollController.hasClients) return;
+    final pos = _ratingScrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 300) {
+      final provider = context.read<RatingProvider>();
+      if (provider.hasMore && !provider.isLoadingMore && !provider.isLoading) {
+        provider.loadMore();
+      }
+    }
   }
 
   Future<void> _loadGrowth() async {
@@ -370,10 +387,25 @@ class _RatingScreenState extends State<RatingScreen> {
       onRefresh: () => rating.refresh(),
       color: AppTheme.accent,
       child: ListView.builder(
+        controller: _ratingScrollController,
         padding: const EdgeInsets.only(bottom: 20),
         itemCount: rating.players.length + (rating.hasMore ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index == rating.players.length) return _buildLoadMoreButton(rating);
+          if (index == rating.players.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: AppTheme.accent,
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+            );
+          }
           return _buildPlayerRow(rating.players[index]);
         },
       ),
@@ -564,36 +596,6 @@ class _RatingScreenState extends State<RatingScreen> {
             );
           }),
         ],
-      ),
-    );
-  }
-
-  Widget _buildLoadMoreButton(RatingProvider rating) {
-    final l10n = AppLocalizations.of(context)!;
-    final remaining = rating.total - rating.players.length;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      child: GestureDetector(
-        onTap: rating.isLoadingMore ? null : () => rating.loadMore(),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(12)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (rating.isLoadingMore)
-                const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: AppTheme.accent, strokeWidth: 2))
-              else ...[
-                const Icon(Icons.more_horiz, color: AppTheme.textSecondary),
-                const SizedBox(width: 8),
-                Text(l10n.ratingRemainingPlayers(remaining), style: const TextStyle(color: AppTheme.textSecondary)),
-              ],
-              const SizedBox(width: 8),
-              Text(l10n.ratingShowAll, style: const TextStyle(color: AppTheme.accent)),
-            ],
-          ),
-        ),
       ),
     );
   }
