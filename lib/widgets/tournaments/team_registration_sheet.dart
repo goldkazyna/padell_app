@@ -41,12 +41,39 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
 
   void _onRegister() async {
     final provider = context.read<TournamentProvider>();
-    final result = await provider.registerTeam(widget.tournamentId);
+    var result = await provider.registerTeam(widget.tournamentId);
+
+    if (result.isWaitlistConfirm && mounted) {
+      final pos = result.result?.waitlistPosition;
+      final size = result.result?.waitlistSize ?? 0;
+      final posText =
+          pos != null && size > 0 ? '\nВаша позиция: $pos из $size пар' : '';
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Все места заняты'),
+          content: Text(
+              'Встать парой в лист ожидания? Если кто-то отменится — вас переведут на турнир.$posText'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Нет')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Встать в очередь')),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+      result = await provider.registerTeam(widget.tournamentId,
+          confirmWaitlist: true);
+    }
+
     if (mounted) {
-      if (result.success) {
+      if (result.isSuccess) {
         Navigator.of(context).pop();
       }
-      showAppAlert(context, result.message, isError: !result.success);
+      showAppAlert(context, result.message, isError: !result.isSuccess);
     }
   }
 

@@ -161,34 +161,49 @@ class TournamentProvider extends ChangeNotifier {
 
   // === Записаться ===
 
-  Future<({bool success, String message})> registerForTournament(
+  Future<RegisterOutcome> registerForTournament(
     int id, {
     int? friendUserId,
+    bool confirmWaitlist = false,
   }) async {
     final token = await _storage.getToken();
-    if (token == null) return (success: false, message: 'Нет авторизации');
+    if (token == null) {
+      return RegisterOutcome.error('Нет авторизации');
+    }
 
     _isActionLoading = true;
     notifyListeners();
 
     try {
-      final message = await _service.register(id, token, friendUserId: friendUserId);
+      final result = await _service.register(
+        id,
+        token,
+        friendUserId: friendUserId,
+        confirmWaitlist: confirmWaitlist,
+      );
+      // Если требуется подтверждение листа ожидания — не перезагружаем
+      if (result.requiresWaitlistConfirmation) {
+        _isActionLoading = false;
+        notifyListeners();
+        return RegisterOutcome.waitlistConfirm(result);
+      }
       await loadTournamentDetails(id);
       await Future.wait([loadOpenTournaments(), loadMyTournaments()]);
       _isActionLoading = false;
       notifyListeners();
-      return (success: true, message: message);
+      return result.success
+          ? RegisterOutcome.success(result)
+          : RegisterOutcome.error(result.message);
     } on ApiException catch (e) {
       _isActionLoading = false;
       notifyListeners();
-      // Обновить данные — возможно мест уже нет
       loadTournamentDetails(id);
-      return (success: false, message: e.message);
+      return RegisterOutcome.error(e.message);
     } catch (e) {
       _isActionLoading = false;
       notifyListeners();
       loadTournamentDetails(id);
-      return (success: false, message: 'Ошибка: $e');
+      return RegisterOutcome.error('Ошибка: $e');
     }
   }
 
@@ -257,32 +272,47 @@ class TournamentProvider extends ChangeNotifier {
 
   // === Регистрация команды ===
 
-  Future<({bool success, String message})> registerTeam(int tournamentId) async {
+  Future<RegisterOutcome> registerTeam(int tournamentId,
+      {bool confirmWaitlist = false}) async {
     final token = await _storage.getToken();
-    if (token == null) return (success: false, message: 'Нет авторизации');
-    if (_selectedPartner == null) return (success: false, message: 'Выберите партнёра');
+    if (token == null) return RegisterOutcome.error('Нет авторизации');
+    if (_selectedPartner == null) {
+      return RegisterOutcome.error('Выберите партнёра');
+    }
 
     _isActionLoading = true;
     notifyListeners();
 
     try {
-      final message = await _service.registerTeam(tournamentId, _selectedPartner!.id, token);
+      final result = await _service.registerTeam(
+        tournamentId,
+        _selectedPartner!.id,
+        token,
+        confirmWaitlist: confirmWaitlist,
+      );
+      if (result.requiresWaitlistConfirmation) {
+        _isActionLoading = false;
+        notifyListeners();
+        return RegisterOutcome.waitlistConfirm(result);
+      }
       clearPartnerSearch();
       await loadTournamentDetails(tournamentId);
       await Future.wait([loadOpenTournaments(), loadMyTournaments()]);
       _isActionLoading = false;
       notifyListeners();
-      return (success: true, message: message);
+      return result.success
+          ? RegisterOutcome.success(result)
+          : RegisterOutcome.error(result.message);
     } on ApiException catch (e) {
       _isActionLoading = false;
       notifyListeners();
       loadTournamentDetails(tournamentId);
-      return (success: false, message: e.message);
+      return RegisterOutcome.error(e.message);
     } catch (e) {
       _isActionLoading = false;
       notifyListeners();
       loadTournamentDetails(tournamentId);
-      return (success: false, message: 'Ошибка: $e');
+      return RegisterOutcome.error('Ошибка: $e');
     }
   }
 
@@ -378,4 +408,43 @@ class TournamentProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+}
+
+/// Результат попытки регистрации на турнир.
+/// Бывает трёх видов:
+/// - [success]: успешно записан/в waitlist
+/// - [waitlistConfirm]: основной состав полный, требуется подтверждение
+/// - [error]: ошибка
+class RegisterOutcome {
+  final bool isSuccess;
+  final bool isWaitlistConfirm;
+  final String message;
+  final RegisterResult? result;
+
+  const RegisterOutcome._({
+    required this.isSuccess,
+    required this.isWaitlistConfirm,
+    required this.message,
+    this.result,
+  });
+
+  factory RegisterOutcome.success(RegisterResult r) => RegisterOutcome._(
+        isSuccess: true,
+        isWaitlistConfirm: false,
+        message: r.message,
+        result: r,
+      );
+
+  factory RegisterOutcome.waitlistConfirm(RegisterResult r) => RegisterOutcome._(
+        isSuccess: false,
+        isWaitlistConfirm: true,
+        message: r.message,
+        result: r,
+      );
+
+  factory RegisterOutcome.error(String msg) => RegisterOutcome._(
+        isSuccess: false,
+        isWaitlistConfirm: false,
+        message: msg,
+      );
 }

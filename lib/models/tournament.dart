@@ -285,6 +285,11 @@ class Tournament {
   final TournamentResult? myResult;
   final List<TournamentParticipant> participants;
   final List<TournamentTeam> teams;
+  final int waitlistSize;
+  final int waitlistCount;
+  final bool waitlistAvailable;
+  final bool inWaitlist;
+  final int? waitlistPosition;
 
   Tournament({
     required this.id,
@@ -313,6 +318,11 @@ class Tournament {
     this.myResult,
     this.participants = const [],
     this.teams = const [],
+    this.waitlistSize = 0,
+    this.waitlistCount = 0,
+    this.waitlistAvailable = false,
+    this.inWaitlist = false,
+    this.waitlistPosition,
   });
 
   bool get isTeamTournament => type == 'team';
@@ -372,6 +382,11 @@ class Tournament {
           : null,
       participants: parsedParticipants,
       teams: parsedTeams,
+      waitlistSize: json['waitlist_size'] as int? ?? 0,
+      waitlistCount: json['waitlist_count'] as int? ?? 0,
+      waitlistAvailable: json['waitlist_available'] as bool? ?? false,
+      inWaitlist: json['in_waitlist'] as bool? ?? false,
+      waitlistPosition: json['waitlist_position'] as int?,
     );
   }
 

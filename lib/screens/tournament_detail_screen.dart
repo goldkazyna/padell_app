@@ -1075,6 +1075,52 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       );
     }
 
+    // В листе ожидания — можно отменить
+    if (t.registrationStatus == 'waiting') {
+      final pos = t.waitlistPosition;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.hourglass_top, color: Color(0xFFFFB020), size: 16),
+              const SizedBox(width: 6),
+              Text(
+                pos != null
+                    ? 'В листе ожидания · позиция $pos'
+                    : 'В листе ожидания',
+                style: const TextStyle(
+                    color: Color(0xFFFFB020), fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton(
+              onPressed: () => _onCancel(t.id),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.error,
+                side: const BorderSide(color: AppTheme.error, width: 1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.close, size: 20),
+                  SizedBox(width: 6),
+                  Text('Выйти из листа ожидания',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     // Заявка на модерации (pending) — можно отменить
     if (t.registrationStatus == 'pending') {
       return Column(
@@ -1268,10 +1314,46 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   void _onRegister(int id) async {
     final provider = context.read<TournamentProvider>();
-    final result = await provider.registerForTournament(id);
-    if (mounted) {
-      _showResultDialog(result.success, result.message);
+    var result = await provider.registerForTournament(id);
+
+    if (result.isWaitlistConfirm && mounted) {
+      final confirmed = await _askWaitlistConfirmation(result);
+      if (confirmed != true || !mounted) return;
+      result = await provider.registerForTournament(id, confirmWaitlist: true);
     }
+
+    if (mounted) {
+      _showResultDialog(result.isSuccess, result.message);
+    }
+  }
+
+  /// Спрашивает у пользователя согласие встать в лист ожидания.
+  Future<bool?> _askWaitlistConfirmation(RegisterOutcome outcome) {
+    final pos = outcome.result?.waitlistPosition;
+    final size = outcome.result?.waitlistSize ?? 0;
+    final posText = pos != null && size > 0 ? '\nВаша позиция: $pos из $size' : '';
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Все места заняты', style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text(
+          'Встать в лист ожидания? Если кто-то отменит запись — вас автоматически переведут на турнир.$posText',
+          style: const TextStyle(color: AppTheme.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Нет', style: TextStyle(color: AppTheme.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Встать в очередь', style: TextStyle(color: AppTheme.accent)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onCancel(int id) async {

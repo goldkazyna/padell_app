@@ -35,6 +35,7 @@ class _AdminCreateTournamentScreenState
   final _maxParticipants = TextEditingController(text: '16');
   final _price = TextEditingController();
   final _reserveCount = TextEditingController(text: '0');
+  final _waitlistSize = TextEditingController(text: '0');
   final _roundsCount = TextEditingController(text: '7');
 
   String _type = 'americano'; // americano / king_of_court / bali_koc / team
@@ -101,6 +102,7 @@ class _AdminCreateTournamentScreenState
     _maxParticipants.dispose();
     _price.dispose();
     _reserveCount.dispose();
+    _waitlistSize.dispose();
     _roundsCount.dispose();
     for (final c in _courtNames) {
       c.dispose();
@@ -157,6 +159,12 @@ class _AdminCreateTournamentScreenState
           title: 'Ошибка', isError: true);
       return;
     }
+    final waitlistSize = int.tryParse(_waitlistSize.text.trim()) ?? 0;
+    if (waitlistSize < 0 || waitlistSize > 32) {
+      await showAppAlert(context, 'Лист ожидания: 0–32',
+          title: 'Ошибка', isError: true);
+      return;
+    }
 
     final courts = List<String?>.generate(_courtsCount, (i) {
       final t = _courtNames[i].text.trim();
@@ -189,6 +197,7 @@ class _AdminCreateTournamentScreenState
       'courts': courts,
       'courts_count': _courtsCount,
       'reserve_count': reserve,
+      'waitlist_size': waitlistSize,
     };
 
     if (_type == 'americano') {
@@ -388,6 +397,16 @@ class _AdminCreateTournamentScreenState
             _label('Резервных игроков (0–10)'),
             _textField(
               _reserveCount,
+              hint: '0',
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            const SizedBox(height: 12),
+            _label(_type == 'team'
+                ? 'Лист ожидания, пар (0–32)'
+                : 'Лист ожидания, человек (0–32)'),
+            _textField(
+              _waitlistSize,
               hint: '0',
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],

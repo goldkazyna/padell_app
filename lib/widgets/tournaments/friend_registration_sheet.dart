@@ -59,15 +59,40 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
     final selected = provider.selectedPartner;
     if (selected == null) return;
 
-    final result = await provider.registerForTournament(
+    var result = await provider.registerForTournament(
       widget.tournamentId,
       friendUserId: selected.id,
     );
+
+    if (result.isWaitlistConfirm && mounted) {
+      final pos = result.result?.waitlistPosition;
+      final size = result.result?.waitlistSize ?? 0;
+      final posText = pos != null && size > 0 ? '\nВаша позиция: $pos из $size' : '';
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Мест для двоих нет'),
+          content: Text(
+              'Встать вдвоём в лист ожидания? Если кто-то отменит запись — вас переведут на турнир.$posText'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Нет')),
+            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Встать в очередь')),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+      result = await provider.registerForTournament(
+        widget.tournamentId,
+        friendUserId: selected.id,
+        confirmWaitlist: true,
+      );
+    }
+
     if (mounted) {
-      if (result.success) {
+      if (result.isSuccess) {
         Navigator.of(context).pop();
       }
-      showAppAlert(context, result.message, isError: !result.success);
+      showAppAlert(context, result.message, isError: !result.isSuccess);
     }
   }
 

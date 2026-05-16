@@ -52,17 +52,21 @@ class TournamentService {
   }
 
   /// Записаться на одиночный турнир.
-  /// [friendUserId] — опциональный id друга, которого записываем вместе
-  /// с собой как отдельных участников (оба идут на модерацию).
-  Future<String> register(int tournamentId, String token, {int? friendUserId}) async {
-    final body = <String, dynamic>{};
-    if (friendUserId != null) body['friend_user_id'] = friendUserId;
+  /// [friendUserId] — опциональный id друга.
+  /// [confirmWaitlist] — true чтобы согласиться встать в лист ожидания,
+  /// если основной состав полный.
+  Future<RegisterResult> register(int tournamentId, String token,
+      {int? friendUserId, bool confirmWaitlist = false}) async {
+    final body = <String, dynamic>{
+      if (friendUserId != null) 'friend_user_id': friendUserId,
+      if (confirmWaitlist) 'confirm_waitlist': true,
+    };
     final response = await _api.post(
       '/tournaments/$tournamentId/register',
       body,
       token,
     );
-    return response['message'] as String;
+    return RegisterResult.fromJson(response);
   }
 
   Future<String> cancel(int tournamentId, String token) async {
@@ -88,13 +92,17 @@ class TournamentService {
         .toList();
   }
 
-  Future<String> registerTeam(int tournamentId, int partnerId, String token) async {
+  Future<RegisterResult> registerTeam(int tournamentId, int partnerId, String token,
+      {bool confirmWaitlist = false}) async {
     final response = await _api.post(
       '/tournaments/$tournamentId/register-team',
-      {'partner_id': partnerId},
+      {
+        'partner_id': partnerId,
+        if (confirmWaitlist) 'confirm_waitlist': true,
+      },
       token,
     );
-    return response['message'] as String;
+    return RegisterResult.fromJson(response);
   }
 
   Future<String> cancelTeam(int tournamentId, String token) async {
@@ -113,4 +121,37 @@ class TournamentService {
     final response = await _api.post('/tournaments/$tournamentId/unsubscribe', {}, token);
     return response['message'] as String;
   }
+}
+
+class RegisterResult {
+  final bool success;
+  final bool requiresWaitlistConfirmation;
+  final String message;
+  final String? registrationStatus;
+  final int? waitlistPosition;
+  final int? waitlistSize;
+
+  const RegisterResult({
+    required this.success,
+    required this.requiresWaitlistConfirmation,
+    required this.message,
+    this.registrationStatus,
+    this.waitlistPosition,
+    this.waitlistSize,
+  });
+
+  bool get isWaitlisted => registrationStatus == 'waiting';
+
+  factory RegisterResult.fromJson(Map<String, dynamic> json) => RegisterResult(
+        success: json['success'] == true,
+        requiresWaitlistConfirmation:
+            json['requires_waitlist_confirmation'] == true,
+        message: (json['message'] as String?) ?? '',
+        registrationStatus: json['registration_status'] as String?,
+        waitlistPosition: json['waitlist_position'] is int
+            ? json['waitlist_position'] as int
+            : null,
+        waitlistSize:
+            json['waitlist_size'] is int ? json['waitlist_size'] as int : null,
+      );
 }
