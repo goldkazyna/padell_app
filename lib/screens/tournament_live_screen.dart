@@ -741,29 +741,32 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (court != null)
+          // Строка-заголовок матча: корт (если есть) + «Вы играете» + дельта.
+          // Рисуем если есть хоть один из этих элементов.
+          if (court != null || hasMe)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 7, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppTheme.cardRaised,
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: const Color(0xFF2A2A2A)),
+                  if (court != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppTheme.cardRaised,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: const Color(0xFF2A2A2A)),
+                      ),
+                      child: Text(
+                        'Корт $court',
+                        style: const TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600),
+                      ),
                     ),
-                    child: Text(
-                      'Корт $court',
-                      style: const TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
                   if (hasMe) ...[
-                    const SizedBox(width: 6),
+                    if (court != null) const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 7, vertical: 2),
