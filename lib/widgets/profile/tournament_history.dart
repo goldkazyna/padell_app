@@ -4,9 +4,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
-import '../../screens/tournament_results_screen.dart';
-import '../../screens/tournament_live_kingofcourt_screen.dart';
-import '../../screens/tournament_live_bali_koc_screen.dart';
+import '../../utils/tournament_navigation.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/rating_formatter.dart';
 import 'medal.dart';
@@ -102,16 +100,7 @@ class TournamentHistoryRow extends StatelessWidget {
     final isPositive = delta >= 0;
 
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => tournament.type == 'king_of_court'
-              ? TournamentLiveKingOfCourtScreen(tournamentId: tournament.id)
-              : tournament.type == 'bali_koc'
-                  ? TournamentLiveBaliKocScreen(tournamentId: tournament.id)
-                  : TournamentResultsScreen(tournament: tournament),
-        ),
-      ),
+      onTap: () => openTournamentLive(context, tournament),
       child: Container(
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         decoration: BoxDecoration(
