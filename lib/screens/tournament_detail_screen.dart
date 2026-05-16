@@ -14,6 +14,7 @@ import '../widgets/app_back_button.dart';
 import '../widgets/tournaments/team_list_section.dart';
 import '../widgets/tournaments/team_info_card.dart';
 import '../widgets/tournaments/team_registration_sheet.dart';
+import '../widgets/tournaments/friend_registration_sheet.dart';
 import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 
@@ -1028,26 +1029,49 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
         );
       }
-      return SizedBox(
-        width: double.infinity,
-        height: 52,
-        child: ElevatedButton(
-          onPressed: () => _onRegister(t.id),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.accent,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            elevation: 0,
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () => _onRegister(t.id),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.accent,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                elevation: 0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.add, size: 20),
+                  const SizedBox(width: 6),
+                  Text(AppLocalizations.of(context)!.registerButton, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.add, size: 20),
-              const SizedBox(width: 6),
-              Text(AppLocalizations.of(context)!.registerButton, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            ],
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: () => _openFriendRegistrationSheet(t.id),
+              icon: const Icon(Icons.group_add_outlined, size: 18),
+              label: const Text(
+                'Записаться с другом',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.accent,
+                side: const BorderSide(color: AppTheme.accent, width: 1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
 
@@ -1539,6 +1563,20 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       builder: (_) => ChangeNotifierProvider.value(
         value: provider,
         child: TeamRegistrationSheet(tournamentId: tournamentId),
+      ),
+    );
+  }
+
+  void _openFriendRegistrationSheet(int tournamentId) {
+    final provider = context.read<TournamentProvider>();
+    provider.clearPartnerSearch();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ChangeNotifierProvider.value(
+        value: provider,
+        child: FriendRegistrationSheet(tournamentId: tournamentId),
       ),
     );
   }

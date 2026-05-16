@@ -161,7 +161,10 @@ class TournamentProvider extends ChangeNotifier {
 
   // === Записаться ===
 
-  Future<({bool success, String message})> registerForTournament(int id) async {
+  Future<({bool success, String message})> registerForTournament(
+    int id, {
+    int? friendUserId,
+  }) async {
     final token = await _storage.getToken();
     if (token == null) return (success: false, message: 'Нет авторизации');
 
@@ -169,7 +172,7 @@ class TournamentProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final message = await _service.register(id, token);
+      final message = await _service.register(id, token, friendUserId: friendUserId);
       await loadTournamentDetails(id);
       await Future.wait([loadOpenTournaments(), loadMyTournaments()]);
       _isActionLoading = false;

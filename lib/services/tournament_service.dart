@@ -51,8 +51,17 @@ class TournamentService {
     return Tournament.fromJson(tournamentJson);
   }
 
-  Future<String> register(int tournamentId, String token) async {
-    final response = await _api.post('/tournaments/$tournamentId/register', {}, token);
+  /// Записаться на одиночный турнир.
+  /// [friendUserId] — опциональный id друга, которого записываем вместе
+  /// с собой как отдельных участников (оба идут на модерацию).
+  Future<String> register(int tournamentId, String token, {int? friendUserId}) async {
+    final body = <String, dynamic>{};
+    if (friendUserId != null) body['friend_user_id'] = friendUserId;
+    final response = await _api.post(
+      '/tournaments/$tournamentId/register',
+      body,
+      token,
+    );
     return response['message'] as String;
   }
 
