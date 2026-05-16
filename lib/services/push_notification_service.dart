@@ -402,6 +402,14 @@ class PushNotificationService {
         return;
       }
 
+      // Записали с другом → деталка турнира (где юзер увидит свою pending-заявку)
+      if (subtype == 'registered_by_friend') {
+        _navigateWhenReady(
+          () => TournamentDetailScreen(tournamentId: id),
+        );
+        return;
+      }
+
       _navigateWhenReady(
         () => TournamentDetailScreen(tournamentId: id),
       );
