@@ -483,15 +483,15 @@ class _DevRow extends StatelessWidget {
               child: const Icon(Icons.code, size: 16, color: AppTheme.blue),
             ),
             const SizedBox(width: 10),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Разработчик',
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                    AppLocalizations.of(context)!.developerLabel,
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                   ),
-                  Text(
+                  const Text(
                     'Дудников Денис · @mdlabkz',
                     style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                   ),

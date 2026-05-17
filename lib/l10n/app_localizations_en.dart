@@ -165,6 +165,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerStatTournaments => 'Tournaments';
 
   @override
+  String get developerLabel => 'Developer';
+
+  @override
   String get selectClub => 'Select Club';
 
   @override

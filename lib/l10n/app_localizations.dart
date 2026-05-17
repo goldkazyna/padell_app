@@ -400,6 +400,12 @@ abstract class AppLocalizations {
   /// **'Турниры'**
   String get playerStatTournaments;
 
+  /// No description provided for @developerLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разработчик'**
+  String get developerLabel;
+
   /// No description provided for @selectClub.
   ///
   /// In ru, this message translates to:

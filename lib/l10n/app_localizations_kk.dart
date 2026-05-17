@@ -165,6 +165,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get playerStatTournaments => 'Турнирлер';
 
   @override
+  String get developerLabel => 'Әзірлеуші';
+
+  @override
   String get selectClub => 'Клуб таңдаңыз';
 
   @override

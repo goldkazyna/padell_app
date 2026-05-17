@@ -64,6 +64,8 @@
   "playerStatWins": "Побед",
   "playerStatTournaments": "Турниры",
 
+  "developerLabel": "Разработчик",
+
   "selectClub": "Выберите клуб",
   "searchClub": "Поиск клуба...",
   "allCities": "Все",

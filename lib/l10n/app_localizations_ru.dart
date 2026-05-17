@@ -165,6 +165,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get playerStatTournaments => 'Турниры';
 
   @override
+  String get developerLabel => 'Разработчик';
+
+  @override
   String get selectClub => 'Выберите клуб';
 
   @override
