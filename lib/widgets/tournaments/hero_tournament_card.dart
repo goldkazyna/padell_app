@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/tournament_type_l10n.dart';
@@ -49,7 +50,7 @@ class HeroTournamentCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // 1) Date+day+time row + action button
-            _buildTopRow(full),
+            _buildTopRow(context, full),
             const SizedBox(height: 10),
 
             // 2) Title
@@ -73,7 +74,7 @@ class HeroTournamentCard extends StatelessWidget {
             const SizedBox(height: 10),
 
             // 4) Level fit indicator (с шкалой 1.0–5.0)
-            _buildLevelFit(inRange),
+            _buildLevelFit(context, inRange),
 
             const SizedBox(height: 8),
 
@@ -86,7 +87,7 @@ class HeroTournamentCard extends StatelessWidget {
   }
 
   // ===== Top row: date+day+time + button =====
-  Widget _buildTopRow(bool full) {
+  Widget _buildTopRow(BuildContext context, bool full) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -128,15 +129,16 @@ class HeroTournamentCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        _buildActionButton(full),
+        _buildActionButton(context, full),
       ],
     );
   }
 
-  Widget _buildActionButton(bool full) {
+  Widget _buildActionButton(BuildContext context, bool full) {
+    final l = AppLocalizations.of(context)!;
     if (tournament.isRegistered) {
       return _pillButton(
-        text: 'Вы участвуете',
+        text: l.youAreParticipating,
         bg: AppTheme.accentSoft,
         fg: AppTheme.accent,
       );
@@ -144,7 +146,7 @@ class HeroTournamentCard extends StatelessWidget {
 
     if (full) {
       return _pillButton(
-        text: tournament.isSubscribed ? 'Подписан' : 'Уведомить',
+        text: tournament.isSubscribed ? l.subscribedButton : l.notifyButton,
         bg: AppTheme.blue.withValues(alpha: 0.16),
         fg: AppTheme.blue,
         icon: Icons.notifications_outlined,
@@ -152,7 +154,7 @@ class HeroTournamentCard extends StatelessWidget {
     }
 
     return _pillButton(
-      text: 'Записаться',
+      text: l.registerButton,
       bg: AppTheme.accent,
       fg: const Color(0xFF0A0A0D),
     );
@@ -226,7 +228,8 @@ class HeroTournamentCard extends StatelessWidget {
   }
 
   // ===== Level fit indicator with absolute scale 1.0–5.0 =====
-  Widget _buildLevelFit(bool inRange) {
+  Widget _buildLevelFit(BuildContext context, bool inRange) {
+    final l = AppLocalizations.of(context)!;
     final ok = inRange;
     final boxColor = ok
         ? AppTheme.accent.withValues(alpha: 0.08)
@@ -248,9 +251,9 @@ class HeroTournamentCard extends StatelessWidget {
           // Head: "Уровень турнира" + статус
           Row(
             children: [
-              const Text(
-                'Уровень турнира',
-                style: TextStyle(
+              Text(
+                l.tournamentLevelLabel,
+                style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -266,7 +269,7 @@ class HeroTournamentCard extends StatelessWidget {
               Text(
                 userLevel == null
                     ? '${tournament.minLevel.toStringAsFixed(2)}–${tournament.maxLevel.toStringAsFixed(2)}'
-                    : (ok ? 'Подходит' : 'Не подходит'),
+                    : (ok ? l.levelSuits : l.levelDoesNotSuit),
                 style: TextStyle(
                   color: ok ? AppTheme.accent : const Color(0xFFFCA7A2),
                   fontSize: 12,
@@ -301,7 +304,7 @@ class HeroTournamentCard extends StatelessWidget {
               const Spacer(),
               if (userLevel != null)
                 Text(
-                  'вы ${userLevel!.toStringAsFixed(2)}',
+                  l.yourLevelMark(userLevel!.toStringAsFixed(2)),
                   style: TextStyle(
                     color: ok
                         ? AppTheme.textPrimary

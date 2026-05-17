@@ -168,6 +168,69 @@ class AppLocalizationsRu extends AppLocalizations {
   String get developerLabel => 'Разработчик';
 
   @override
+  String get filterLevel => 'Уровень';
+
+  @override
+  String get filterMyLevel => 'Мой уровень';
+
+  @override
+  String get filterFormat => 'Формат';
+
+  @override
+  String filterFormatWithCount(int count) {
+    return 'Формат · $count';
+  }
+
+  @override
+  String get filterDate => 'Дата';
+
+  @override
+  String get filterDateTomorrow => 'Завтра';
+
+  @override
+  String get filterDateWeek => 'Неделя';
+
+  @override
+  String get filterClub => 'Клуб';
+
+  @override
+  String filterClubWithCount(int count) {
+    return 'Клуб · $count';
+  }
+
+  @override
+  String get filterCommunity => 'Комьюнити';
+
+  @override
+  String get forYouSection => 'Для вас';
+
+  @override
+  String get tournamentLevelLabel => 'Уровень турнира';
+
+  @override
+  String get levelSuits => 'Подходит';
+
+  @override
+  String get levelDoesNotSuit => 'Не подходит';
+
+  @override
+  String yourLevelMark(String level) {
+    return 'вы $level';
+  }
+
+  @override
+  String get notifyButton => 'Уведомить';
+
+  @override
+  String get subscribedButton => 'Подписан';
+
+  @override
+  String get dateAll => 'Все даты';
+
+  @override
+  String get dateThisWeek => 'На этой неделе';
+
+  @override
   String get selectClub => 'Выберите клуб';
 
   @override

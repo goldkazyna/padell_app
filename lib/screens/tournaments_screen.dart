@@ -90,11 +90,12 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
   }
 
   Future<void> _openDateFilter() async {
+    final l = AppLocalizations.of(context)!;
     final options = [
-      const _DateOption(null, 'Все даты'),
-      const _DateOption('today', 'Сегодня'),
-      const _DateOption('tomorrow', 'Завтра'),
-      const _DateOption('week', 'На этой неделе'),
+      _DateOption(null, l.dateAll),
+      _DateOption('today', l.today),
+      _DateOption('tomorrow', l.filterDateTomorrow),
+      _DateOption('week', l.dateThisWeek),
     ];
     await showModalBottomSheet(
       context: context,
@@ -103,7 +104,7 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) => _FilterSheet(
-        title: 'Дата',
+        title: l.filterDate,
         children: options.map((o) {
           final selected = _filter.dateFilter == o.value;
           return _RadioRow(
@@ -137,7 +138,7 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
             return _FilterSheet(
-              title: 'Клуб',
+              title: AppLocalizations.of(context)!.filterClub,
               onReset: () {
                 setState(() => _filter = _filter.copyWith(clubIds: {}));
                 Navigator.pop(ctx);
@@ -459,9 +460,9 @@ class _OpenTab extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Для вас',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.forYouSection,
+            style: const TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 15,
               fontWeight: FontWeight.w700,

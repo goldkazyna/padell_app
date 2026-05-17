@@ -168,6 +168,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get developerLabel => 'Developer';
 
   @override
+  String get filterLevel => 'Level';
+
+  @override
+  String get filterMyLevel => 'My level';
+
+  @override
+  String get filterFormat => 'Format';
+
+  @override
+  String filterFormatWithCount(int count) {
+    return 'Format · $count';
+  }
+
+  @override
+  String get filterDate => 'Date';
+
+  @override
+  String get filterDateTomorrow => 'Tomorrow';
+
+  @override
+  String get filterDateWeek => 'Week';
+
+  @override
+  String get filterClub => 'Club';
+
+  @override
+  String filterClubWithCount(int count) {
+    return 'Club · $count';
+  }
+
+  @override
+  String get filterCommunity => 'Community';
+
+  @override
+  String get forYouSection => 'For you';
+
+  @override
+  String get tournamentLevelLabel => 'Tournament level';
+
+  @override
+  String get levelSuits => 'Suits';
+
+  @override
+  String get levelDoesNotSuit => 'Doesn\'t suit';
+
+  @override
+  String yourLevelMark(String level) {
+    return 'you $level';
+  }
+
+  @override
+  String get notifyButton => 'Notify';
+
+  @override
+  String get subscribedButton => 'Subscribed';
+
+  @override
+  String get dateAll => 'All dates';
+
+  @override
+  String get dateThisWeek => 'This week';
+
+  @override
   String get selectClub => 'Select Club';
 
   @override

@@ -406,6 +406,120 @@ abstract class AppLocalizations {
   /// **'Разработчик'**
   String get developerLabel;
 
+  /// No description provided for @filterLevel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень'**
+  String get filterLevel;
+
+  /// No description provided for @filterMyLevel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мой уровень'**
+  String get filterMyLevel;
+
+  /// No description provided for @filterFormat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Формат'**
+  String get filterFormat;
+
+  /// No description provided for @filterFormatWithCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Формат · {count}'**
+  String filterFormatWithCount(int count);
+
+  /// No description provided for @filterDate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата'**
+  String get filterDate;
+
+  /// No description provided for @filterDateTomorrow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Завтра'**
+  String get filterDateTomorrow;
+
+  /// No description provided for @filterDateWeek.
+  ///
+  /// In ru, this message translates to:
+  /// **'Неделя'**
+  String get filterDateWeek;
+
+  /// No description provided for @filterClub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клуб'**
+  String get filterClub;
+
+  /// No description provided for @filterClubWithCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клуб · {count}'**
+  String filterClubWithCount(int count);
+
+  /// No description provided for @filterCommunity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Комьюнити'**
+  String get filterCommunity;
+
+  /// No description provided for @forYouSection.
+  ///
+  /// In ru, this message translates to:
+  /// **'Для вас'**
+  String get forYouSection;
+
+  /// No description provided for @tournamentLevelLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень турнира'**
+  String get tournamentLevelLabel;
+
+  /// No description provided for @levelSuits.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подходит'**
+  String get levelSuits;
+
+  /// No description provided for @levelDoesNotSuit.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не подходит'**
+  String get levelDoesNotSuit;
+
+  /// No description provided for @yourLevelMark.
+  ///
+  /// In ru, this message translates to:
+  /// **'вы {level}'**
+  String yourLevelMark(String level);
+
+  /// No description provided for @notifyButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомить'**
+  String get notifyButton;
+
+  /// No description provided for @subscribedButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подписан'**
+  String get subscribedButton;
+
+  /// No description provided for @dateAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все даты'**
+  String get dateAll;
+
+  /// No description provided for @dateThisWeek.
+  ///
+  /// In ru, this message translates to:
+  /// **'На этой неделе'**
+  String get dateThisWeek;
+
   /// No description provided for @selectClub.
   ///
   /// In ru, this message translates to:

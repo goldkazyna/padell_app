@@ -168,6 +168,69 @@ class AppLocalizationsKk extends AppLocalizations {
   String get developerLabel => 'Әзірлеуші';
 
   @override
+  String get filterLevel => 'Деңгей';
+
+  @override
+  String get filterMyLevel => 'Менің деңгейім';
+
+  @override
+  String get filterFormat => 'Формат';
+
+  @override
+  String filterFormatWithCount(int count) {
+    return 'Формат · $count';
+  }
+
+  @override
+  String get filterDate => 'Күн';
+
+  @override
+  String get filterDateTomorrow => 'Ертең';
+
+  @override
+  String get filterDateWeek => 'Апта';
+
+  @override
+  String get filterClub => 'Клуб';
+
+  @override
+  String filterClubWithCount(int count) {
+    return 'Клуб · $count';
+  }
+
+  @override
+  String get filterCommunity => 'Комьюнити';
+
+  @override
+  String get forYouSection => 'Сіз үшін';
+
+  @override
+  String get tournamentLevelLabel => 'Турнир деңгейі';
+
+  @override
+  String get levelSuits => 'Сай келеді';
+
+  @override
+  String get levelDoesNotSuit => 'Сай емес';
+
+  @override
+  String yourLevelMark(String level) {
+    return 'сіз $level';
+  }
+
+  @override
+  String get notifyButton => 'Хабарлау';
+
+  @override
+  String get subscribedButton => 'Жазылдыңыз';
+
+  @override
+  String get dateAll => 'Барлық күндер';
+
+  @override
+  String get dateThisWeek => 'Осы аптада';
+
+  @override
   String get selectClub => 'Клуб таңдаңыз';
 
   @override

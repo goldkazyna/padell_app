@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 
 /// Состояние фильтров экрана турниров.
@@ -67,6 +68,7 @@ class FilterPills extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return SizedBox(
       height: 36,
       child: ListView(
@@ -74,37 +76,43 @@ class FilterPills extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           _pill(
-            'Все',
+            l.all,
             active: filter.isEmpty,
             onTap: onReset,
           ),
           const SizedBox(width: 6),
           _pill(
-            filter.onlyMyLevel ? 'Мой уровень' : 'Уровень',
+            filter.onlyMyLevel ? l.filterMyLevel : l.filterLevel,
             active: filter.onlyMyLevel,
             onTap: onToggleLevel,
           ),
           const SizedBox(width: 6),
           _pill(
-            filter.formats.isEmpty ? 'Формат' : 'Формат · ${filter.formats.length}',
+            filter.formats.isEmpty
+                ? l.filterFormat
+                : l.filterFormatWithCount(filter.formats.length),
             active: filter.formats.isNotEmpty,
             onTap: onFormatTap,
           ),
           const SizedBox(width: 6),
           _pill(
-            filter.dateFilter == null ? 'Дата' : _dateLabel(filter.dateFilter!),
+            filter.dateFilter == null
+                ? l.filterDate
+                : _dateLabel(l, filter.dateFilter!),
             active: filter.dateFilter != null,
             onTap: onDateTap,
           ),
           const SizedBox(width: 6),
           _pill(
-            filter.clubIds.isEmpty ? 'Клуб' : 'Клуб · ${filter.clubIds.length}',
+            filter.clubIds.isEmpty
+                ? l.filterClub
+                : l.filterClubWithCount(filter.clubIds.length),
             active: filter.clubIds.isNotEmpty,
             onTap: onClubTap,
           ),
           const SizedBox(width: 6),
           _pill(
-            'Комьюнити',
+            l.filterCommunity,
             active: filter.onlyCommunity,
             onTap: onToggleCommunity,
           ),
@@ -137,16 +145,16 @@ class FilterPills extends StatelessWidget {
     );
   }
 
-  String _dateLabel(String key) {
+  String _dateLabel(AppLocalizations l, String key) {
     switch (key) {
       case 'today':
-        return 'Сегодня';
+        return l.today;
       case 'tomorrow':
-        return 'Завтра';
+        return l.filterDateTomorrow;
       case 'week':
-        return 'Неделя';
+        return l.filterDateWeek;
       default:
-        return 'Дата';
+        return l.filterDate;
     }
   }
 }
