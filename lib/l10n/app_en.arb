@@ -34,6 +34,9 @@
   "matches": "MATCHES",
   "wins": "WINS",
   "winrate": "WIN RATE",
+  "losses": "LOSSES",
+  "levelProgressLabel": "Level {from} → {to}",
+  "@levelProgressLabel": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" } } },
 
   "selectClub": "Select Club",
   "searchClub": "Search club...",

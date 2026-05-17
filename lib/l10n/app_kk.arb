@@ -36,6 +36,9 @@
   "matches": "МАТЧТАР",
   "wins": "ЖЕҢІСТЕР",
   "winrate": "ЖЕҢУ %",
+  "losses": "ЖЕҢІЛІС",
+  "levelProgressLabel": "Деңгей {from} → {to}",
+  "@levelProgressLabel": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" } } },
 
   "selectClub": "Клуб таңдаңыз",
   "searchClub": "Клуб іздеу...",

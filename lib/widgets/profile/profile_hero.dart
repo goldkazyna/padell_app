@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../screens/edit_profile_screen.dart';
@@ -261,9 +262,9 @@ class _RatingRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'РЕЙТИНГ',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.rating,
+          style: const TextStyle(
             color: AppTheme.textDim,
             fontSize: 10,
             fontWeight: FontWeight.w600,
@@ -352,7 +353,10 @@ class _LevelProgress extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Уровень $levelStr → ${nextLevel.toStringAsFixed(2)}',
+              AppLocalizations.of(context)!.levelProgressLabel(
+                levelStr,
+                nextLevel.toStringAsFixed(2),
+              ),
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 10,
@@ -421,6 +425,7 @@ class _StatsStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -431,10 +436,10 @@ class _StatsStrip extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _item('$matches', 'Матчей'),
-          _item('$wins', 'Побед'),
-          _item('$winrate%', 'Винрейт', color: winrateColor),
-          _item('$losses', 'Пораж.', color: AppTheme.textSecondary),
+          _item('$matches', l10n.matches),
+          _item('$wins', l10n.wins),
+          _item('$winrate%', l10n.winrate, color: winrateColor),
+          _item('$losses', l10n.losses, color: AppTheme.textSecondary),
         ],
       ),
     );

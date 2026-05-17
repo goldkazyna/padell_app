@@ -36,6 +36,9 @@
   "matches": "МАТЧЕЙ",
   "wins": "ПОБЕД",
   "winrate": "ВИНРЕЙТ",
+  "losses": "ПОРАЖ.",
+  "levelProgressLabel": "Уровень {from} → {to}",
+  "@levelProgressLabel": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" } } },
 
   "selectClub": "Выберите клуб",
   "searchClub": "Поиск клуба...",
