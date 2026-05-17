@@ -38,6 +38,25 @@
   "levelProgressLabel": "Level {from} → {to}",
   "@levelProgressLabel": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" } } },
 
+  "weekdayShortMon": "MO",
+  "weekdayShortTue": "TU",
+  "weekdayShortWed": "WE",
+  "weekdayShortThu": "TH",
+  "weekdayShortFri": "FR",
+  "weekdayShortSat": "SA",
+  "weekdayShortSun": "SU",
+
+  "tournamentTypeAmericano": "Americano",
+  "tournamentTypeMexicano": "Mexicano",
+  "tournamentTypeKingOfCourt": "King of the Court",
+  "tournamentTypeBaliKoc": "King of the Court (Bali Format)",
+  "tournamentTypeTeam": "Doubles + Playoff",
+  "tournamentTypeClassic": "Classic",
+
+  "challengeCreateSubtitle": "Challenge a player",
+  "challengesCardTitle": "Games",
+  "challengesCardSubtitle": "All challenges",
+
   "selectClub": "Select Club",
   "searchClub": "Search club...",
   "allCities": "All",

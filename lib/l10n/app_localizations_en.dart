@@ -97,6 +97,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get winrate => 'WIN RATE';
 
   @override
+  String get losses => 'LOSSES';
+
+  @override
+  String levelProgressLabel(String from, String to) {
+    return 'Level $from → $to';
+  }
+
+  @override
+  String get weekdayShortMon => 'MO';
+
+  @override
+  String get weekdayShortTue => 'TU';
+
+  @override
+  String get weekdayShortWed => 'WE';
+
+  @override
+  String get weekdayShortThu => 'TH';
+
+  @override
+  String get weekdayShortFri => 'FR';
+
+  @override
+  String get weekdayShortSat => 'SA';
+
+  @override
+  String get weekdayShortSun => 'SU';
+
+  @override
+  String get tournamentTypeAmericano => 'Americano';
+
+  @override
+  String get tournamentTypeMexicano => 'Mexicano';
+
+  @override
+  String get tournamentTypeKingOfCourt => 'King of the Court';
+
+  @override
+  String get tournamentTypeBaliKoc => 'King of the Court (Bali Format)';
+
+  @override
+  String get tournamentTypeTeam => 'Doubles + Playoff';
+
+  @override
+  String get tournamentTypeClassic => 'Classic';
+
+  @override
+  String get challengeCreateSubtitle => 'Challenge a player';
+
+  @override
+  String get challengesCardTitle => 'Games';
+
+  @override
+  String get challengesCardSubtitle => 'All challenges';
+
+  @override
   String get selectClub => 'Select Club';
 
   @override

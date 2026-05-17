@@ -40,6 +40,25 @@
   "levelProgressLabel": "Деңгей {from} → {to}",
   "@levelProgressLabel": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" } } },
 
+  "weekdayShortMon": "ДС",
+  "weekdayShortTue": "СС",
+  "weekdayShortWed": "СР",
+  "weekdayShortThu": "БС",
+  "weekdayShortFri": "ЖМ",
+  "weekdayShortSat": "СБ",
+  "weekdayShortSun": "ЖС",
+
+  "tournamentTypeAmericano": "Американо",
+  "tournamentTypeMexicano": "Мексикано",
+  "tournamentTypeKingOfCourt": "Корт королі",
+  "tournamentTypeBaliKoc": "Корт королі (Bali Format)",
+  "tournamentTypeTeam": "Топтық + Плей-офф",
+  "tournamentTypeClassic": "Классикалық",
+
+  "challengeCreateSubtitle": "Ойынға шақыру",
+  "challengesCardTitle": "Ойындар",
+  "challengesCardSubtitle": "Барлық шақырулар",
+
   "selectClub": "Клуб таңдаңыз",
   "searchClub": "Клуб іздеу...",
   "allCities": "Барлығы",

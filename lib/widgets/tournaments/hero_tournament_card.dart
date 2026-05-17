@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/tournament_type_l10n.dart';
 
 /// Карточка «героя» турнира в секции «Для вас» — V2 дизайн.
 ///
@@ -67,7 +68,7 @@ class HeroTournamentCard extends StatelessWidget {
             const SizedBox(height: 4),
 
             // 3) Format · price
-            _buildMetaRow(),
+            _buildMetaRow(context),
 
             const SizedBox(height: 10),
 
@@ -190,12 +191,12 @@ class HeroTournamentCard extends StatelessWidget {
   }
 
   // ===== Meta row: format · price =====
-  Widget _buildMetaRow() {
+  Widget _buildMetaRow(BuildContext context) {
     final fmt = _formatChipColors(tournament.formatColor);
     return Row(
       children: [
         Text(
-          tournament.typeName,
+          localizeTournamentType(context, tournament.type, fallback: tournament.typeName),
           style: TextStyle(
             color: fmt.fg,
             fontSize: 12,

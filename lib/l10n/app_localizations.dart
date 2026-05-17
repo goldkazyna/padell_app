@@ -268,6 +268,114 @@ abstract class AppLocalizations {
   /// **'ВИНРЕЙТ'**
   String get winrate;
 
+  /// No description provided for @losses.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОРАЖ.'**
+  String get losses;
+
+  /// No description provided for @levelProgressLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень {from} → {to}'**
+  String levelProgressLabel(String from, String to);
+
+  /// No description provided for @weekdayShortMon.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПН'**
+  String get weekdayShortMon;
+
+  /// No description provided for @weekdayShortTue.
+  ///
+  /// In ru, this message translates to:
+  /// **'ВТ'**
+  String get weekdayShortTue;
+
+  /// No description provided for @weekdayShortWed.
+  ///
+  /// In ru, this message translates to:
+  /// **'СР'**
+  String get weekdayShortWed;
+
+  /// No description provided for @weekdayShortThu.
+  ///
+  /// In ru, this message translates to:
+  /// **'ЧТ'**
+  String get weekdayShortThu;
+
+  /// No description provided for @weekdayShortFri.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПТ'**
+  String get weekdayShortFri;
+
+  /// No description provided for @weekdayShortSat.
+  ///
+  /// In ru, this message translates to:
+  /// **'СБ'**
+  String get weekdayShortSat;
+
+  /// No description provided for @weekdayShortSun.
+  ///
+  /// In ru, this message translates to:
+  /// **'ВС'**
+  String get weekdayShortSun;
+
+  /// No description provided for @tournamentTypeAmericano.
+  ///
+  /// In ru, this message translates to:
+  /// **'Американо'**
+  String get tournamentTypeAmericano;
+
+  /// No description provided for @tournamentTypeMexicano.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мексикано'**
+  String get tournamentTypeMexicano;
+
+  /// No description provided for @tournamentTypeKingOfCourt.
+  ///
+  /// In ru, this message translates to:
+  /// **'Король корта'**
+  String get tournamentTypeKingOfCourt;
+
+  /// No description provided for @tournamentTypeBaliKoc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Король Корта (Bali Format)'**
+  String get tournamentTypeBaliKoc;
+
+  /// No description provided for @tournamentTypeTeam.
+  ///
+  /// In ru, this message translates to:
+  /// **'Групповой + Плей-офф'**
+  String get tournamentTypeTeam;
+
+  /// No description provided for @tournamentTypeClassic.
+  ///
+  /// In ru, this message translates to:
+  /// **'Классический'**
+  String get tournamentTypeClassic;
+
+  /// No description provided for @challengeCreateSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вызвать на игру'**
+  String get challengeCreateSubtitle;
+
+  /// No description provided for @challengesCardTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игры'**
+  String get challengesCardTitle;
+
+  /// No description provided for @challengesCardSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все вызовы'**
+  String get challengesCardSubtitle;
+
   /// No description provided for @selectClub.
   ///
   /// In ru, this message translates to:

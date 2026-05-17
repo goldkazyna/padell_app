@@ -97,6 +97,62 @@ class AppLocalizationsKk extends AppLocalizations {
   String get winrate => 'ЖЕҢУ %';
 
   @override
+  String get losses => 'ЖЕҢІЛІС';
+
+  @override
+  String levelProgressLabel(String from, String to) {
+    return 'Деңгей $from → $to';
+  }
+
+  @override
+  String get weekdayShortMon => 'ДС';
+
+  @override
+  String get weekdayShortTue => 'СС';
+
+  @override
+  String get weekdayShortWed => 'СР';
+
+  @override
+  String get weekdayShortThu => 'БС';
+
+  @override
+  String get weekdayShortFri => 'ЖМ';
+
+  @override
+  String get weekdayShortSat => 'СБ';
+
+  @override
+  String get weekdayShortSun => 'ЖС';
+
+  @override
+  String get tournamentTypeAmericano => 'Американо';
+
+  @override
+  String get tournamentTypeMexicano => 'Мексикано';
+
+  @override
+  String get tournamentTypeKingOfCourt => 'Корт королі';
+
+  @override
+  String get tournamentTypeBaliKoc => 'Корт королі (Bali Format)';
+
+  @override
+  String get tournamentTypeTeam => 'Топтық + Плей-офф';
+
+  @override
+  String get tournamentTypeClassic => 'Классикалық';
+
+  @override
+  String get challengeCreateSubtitle => 'Ойынға шақыру';
+
+  @override
+  String get challengesCardTitle => 'Ойындар';
+
+  @override
+  String get challengesCardSubtitle => 'Барлық шақырулар';
+
+  @override
   String get selectClub => 'Клуб таңдаңыз';
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/tournament_type_l10n.dart';
 import '../tournaments/club_logo.dart';
 
 /// «Скоро» V2: горизонтальная лента дней (14) + список турниров выбранного дня.
@@ -142,12 +143,21 @@ class _DayStripState extends State<_DayStrip> {
     super.dispose();
   }
 
-  static const _dows = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
   static const _cellWidth = 50.0;
   static const _gap = 6.0;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final dows = <String>[
+      l10n.weekdayShortMon,
+      l10n.weekdayShortTue,
+      l10n.weekdayShortWed,
+      l10n.weekdayShortThu,
+      l10n.weekdayShortFri,
+      l10n.weekdayShortSat,
+      l10n.weekdayShortSun,
+    ];
     return SizedBox(
       height: 70,
       child: ListView.separated(
@@ -160,7 +170,7 @@ class _DayStripState extends State<_DayStrip> {
           final day = widget.days[i];
           final list = widget.byDay[day] ?? const <Tournament>[];
           return _DayCell(
-            dow: _dows[(day.weekday - 1) % 7],
+            dow: dows[(day.weekday - 1) % 7],
             day: day.day,
             count: list.length,
             selected: i == widget.selectedIndex,
@@ -330,7 +340,7 @@ class _TournamentRow extends StatelessWidget {
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          '${t.typeName} · ${AppLocalizations.of(context)!.levelShort(t.levelText)}',
+                          '${localizeTournamentType(context, t.type, fallback: t.typeName)} · ${AppLocalizations.of(context)!.levelShort(t.levelText)}',
                           style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,

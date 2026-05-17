@@ -260,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                         child: _buildActionCard(
                           title: AppLocalizations.of(context)!.challengeCreateButton,
-                          subtitle: 'Вызвать на игру',
+                          subtitle: AppLocalizations.of(context)!.challengeCreateSubtitle,
                           icon: Icons.add_circle_outline,
                           gradient: const [Color(0xFF3B82F6), Color(0xFF1E40AF)],
                           shadowColor: const Color(0xFF3B82F6),
@@ -273,8 +273,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _buildActionCard(
-                          title: 'Игры',
-                          subtitle: 'Все вызовы',
+                          title: AppLocalizations.of(context)!.challengesCardTitle,
+                          subtitle: AppLocalizations.of(context)!.challengesCardSubtitle,
                           icon: Icons.sports_tennis,
                           gradient: const [Color(0xFFF97316), Color(0xFF9A3412)],
                           shadowColor: const Color(0xFFF97316),
