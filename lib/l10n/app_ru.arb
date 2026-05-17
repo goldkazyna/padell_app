@@ -59,6 +59,11 @@
   "challengesCardTitle": "Игры",
   "challengesCardSubtitle": "Все вызовы",
 
+  "playerStatRating": "Рейтинг",
+  "playerStatGames": "Игры",
+  "playerStatWins": "Побед",
+  "playerStatTournaments": "Турниры",
+
   "selectClub": "Выберите клуб",
   "searchClub": "Поиск клуба...",
   "allCities": "Все",

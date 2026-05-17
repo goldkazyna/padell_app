@@ -153,6 +153,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengesCardSubtitle => 'All challenges';
 
   @override
+  String get playerStatRating => 'Rating';
+
+  @override
+  String get playerStatGames => 'Games';
+
+  @override
+  String get playerStatWins => 'Wins';
+
+  @override
+  String get playerStatTournaments => 'Tournaments';
+
+  @override
   String get selectClub => 'Select Club';
 
   @override

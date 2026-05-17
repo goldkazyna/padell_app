@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/settings_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/rating_formatter.dart';
@@ -247,9 +248,9 @@ class _RatingRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'РЕЙТИНГ',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.rating,
+          style: const TextStyle(
             color: AppTheme.textDim,
             fontSize: 10,
             fontWeight: FontWeight.w600,
@@ -351,7 +352,10 @@ class _LevelProgress extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Уровень $levelStr → ${nextLevel.toStringAsFixed(2)}',
+              AppLocalizations.of(context)!.levelProgressLabel(
+                levelStr,
+                nextLevel.toStringAsFixed(2),
+              ),
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 10,
@@ -420,6 +424,7 @@ class _StatsStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -430,10 +435,10 @@ class _StatsStrip extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _item('$rating', 'Рейтинг', color: AppTheme.accent),
-          _item('$matches', 'Игры'),
-          _item('$wins', 'Побед'),
-          _item('$tournamentsCount', 'Турниры'),
+          _item('$rating', l10n.playerStatRating, color: AppTheme.accent),
+          _item('$matches', l10n.playerStatGames),
+          _item('$wins', l10n.playerStatWins),
+          _item('$tournamentsCount', l10n.playerStatTournaments),
         ],
       ),
     );

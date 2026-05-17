@@ -59,6 +59,11 @@
   "challengesCardTitle": "Ойындар",
   "challengesCardSubtitle": "Барлық шақырулар",
 
+  "playerStatRating": "Рейтинг",
+  "playerStatGames": "Ойындар",
+  "playerStatWins": "Жеңістер",
+  "playerStatTournaments": "Турнирлер",
+
   "selectClub": "Клуб таңдаңыз",
   "searchClub": "Клуб іздеу...",
   "allCities": "Барлығы",

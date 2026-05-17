@@ -153,6 +153,18 @@ class AppLocalizationsKk extends AppLocalizations {
   String get challengesCardSubtitle => 'Барлық шақырулар';
 
   @override
+  String get playerStatRating => 'Рейтинг';
+
+  @override
+  String get playerStatGames => 'Ойындар';
+
+  @override
+  String get playerStatWins => 'Жеңістер';
+
+  @override
+  String get playerStatTournaments => 'Турнирлер';
+
+  @override
   String get selectClub => 'Клуб таңдаңыз';
 
   @override

@@ -153,6 +153,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengesCardSubtitle => 'Все вызовы';
 
   @override
+  String get playerStatRating => 'Рейтинг';
+
+  @override
+  String get playerStatGames => 'Игры';
+
+  @override
+  String get playerStatWins => 'Побед';
+
+  @override
+  String get playerStatTournaments => 'Турниры';
+
+  @override
   String get selectClub => 'Выберите клуб';
 
   @override

@@ -376,6 +376,30 @@ abstract class AppLocalizations {
   /// **'Все вызовы'**
   String get challengesCardSubtitle;
 
+  /// No description provided for @playerStatRating.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинг'**
+  String get playerStatRating;
+
+  /// No description provided for @playerStatGames.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игры'**
+  String get playerStatGames;
+
+  /// No description provided for @playerStatWins.
+  ///
+  /// In ru, this message translates to:
+  /// **'Побед'**
+  String get playerStatWins;
+
+  /// No description provided for @playerStatTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турниры'**
+  String get playerStatTournaments;
+
   /// No description provided for @selectClub.
   ///
   /// In ru, this message translates to:
