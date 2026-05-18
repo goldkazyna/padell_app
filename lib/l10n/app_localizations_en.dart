@@ -231,6 +231,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateThisWeek => 'This week';
 
   @override
+  String get tournamentStatusDraft => 'Draft';
+
+  @override
+  String get tournamentStatusOpen => 'Registration open';
+
+  @override
+  String get tournamentStatusClosed => 'Registration closed';
+
+  @override
+  String get tournamentStatusInProgress => 'In progress';
+
+  @override
+  String get tournamentStatusCompleted => 'Completed';
+
+  @override
+  String get tournamentStatusCancelled => 'Cancelled';
+
+  @override
   String get selectClub => 'Select Club';
 
   @override

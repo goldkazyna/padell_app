@@ -89,6 +89,13 @@
   "dateAll": "Барлық күндер",
   "dateThisWeek": "Осы аптада",
 
+  "tournamentStatusDraft": "Жоба",
+  "tournamentStatusOpen": "Тіркеу ашық",
+  "tournamentStatusClosed": "Тіркеу жабық",
+  "tournamentStatusInProgress": "Жүріп жатыр",
+  "tournamentStatusCompleted": "Аяқталды",
+  "tournamentStatusCancelled": "Бас тартылды",
+
   "selectClub": "Клуб таңдаңыз",
   "searchClub": "Клуб іздеу...",
   "allCities": "Барлығы",

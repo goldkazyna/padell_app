@@ -89,6 +89,13 @@
   "dateAll": "Все даты",
   "dateThisWeek": "На этой неделе",
 
+  "tournamentStatusDraft": "Черновик",
+  "tournamentStatusOpen": "Открыта регистрация",
+  "tournamentStatusClosed": "Регистрация закрыта",
+  "tournamentStatusInProgress": "Идёт турнир",
+  "tournamentStatusCompleted": "Завершён",
+  "tournamentStatusCancelled": "Отменён",
+
   "selectClub": "Выберите клуб",
   "searchClub": "Поиск клуба...",
   "allCities": "Все",

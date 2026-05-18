@@ -231,6 +231,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dateThisWeek => 'На этой неделе';
 
   @override
+  String get tournamentStatusDraft => 'Черновик';
+
+  @override
+  String get tournamentStatusOpen => 'Открыта регистрация';
+
+  @override
+  String get tournamentStatusClosed => 'Регистрация закрыта';
+
+  @override
+  String get tournamentStatusInProgress => 'Идёт турнир';
+
+  @override
+  String get tournamentStatusCompleted => 'Завершён';
+
+  @override
+  String get tournamentStatusCancelled => 'Отменён';
+
+  @override
   String get selectClub => 'Выберите клуб';
 
   @override

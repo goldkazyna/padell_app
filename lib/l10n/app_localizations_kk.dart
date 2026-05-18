@@ -231,6 +231,24 @@ class AppLocalizationsKk extends AppLocalizations {
   String get dateThisWeek => 'Осы аптада';
 
   @override
+  String get tournamentStatusDraft => 'Жоба';
+
+  @override
+  String get tournamentStatusOpen => 'Тіркеу ашық';
+
+  @override
+  String get tournamentStatusClosed => 'Тіркеу жабық';
+
+  @override
+  String get tournamentStatusInProgress => 'Жүріп жатыр';
+
+  @override
+  String get tournamentStatusCompleted => 'Аяқталды';
+
+  @override
+  String get tournamentStatusCancelled => 'Бас тартылды';
+
+  @override
   String get selectClub => 'Клуб таңдаңыз';
 
   @override

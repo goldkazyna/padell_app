@@ -520,6 +520,42 @@ abstract class AppLocalizations {
   /// **'На этой неделе'**
   String get dateThisWeek;
 
+  /// No description provided for @tournamentStatusDraft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Черновик'**
+  String get tournamentStatusDraft;
+
+  /// No description provided for @tournamentStatusOpen.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыта регистрация'**
+  String get tournamentStatusOpen;
+
+  /// No description provided for @tournamentStatusClosed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Регистрация закрыта'**
+  String get tournamentStatusClosed;
+
+  /// No description provided for @tournamentStatusInProgress.
+  ///
+  /// In ru, this message translates to:
+  /// **'Идёт турнир'**
+  String get tournamentStatusInProgress;
+
+  /// No description provided for @tournamentStatusCompleted.
+  ///
+  /// In ru, this message translates to:
+  /// **'Завершён'**
+  String get tournamentStatusCompleted;
+
+  /// No description provided for @tournamentStatusCancelled.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменён'**
+  String get tournamentStatusCancelled;
+
   /// No description provided for @selectClub.
   ///
   /// In ru, this message translates to:

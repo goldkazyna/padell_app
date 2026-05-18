@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/tournament_type_l10n.dart';
 import '../utils/app_alert.dart';
 import '../utils/rating_formatter.dart';
 import '../models/tournament.dart';
@@ -203,15 +205,38 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   Widget _buildTags(Tournament t) {
     final l10n = AppLocalizations.of(context)!;
     final statusColor = t.isFull ? AppTheme.error : AppTheme.accent;
-    final statusText = t.isFull ? l10n.noSpotsLeftUpper : t.statusName.toUpperCase();
+    final statusText = t.isFull
+        ? l10n.noSpotsLeftUpper
+        : _localizeStatus(l10n, t.status).toUpperCase();
+    final typeLabel = localizeTournamentType(context, t.type, fallback: t.typeName)
+        .toUpperCase();
 
     return Row(
       children: [
-        _buildTag(t.typeName.toUpperCase(), t.typeColor),
+        _buildTag(typeLabel, t.typeColor),
         const SizedBox(width: 8),
         _buildTag(statusText, statusColor),
       ],
     );
+  }
+
+  String _localizeStatus(AppLocalizations l, String status) {
+    switch (status) {
+      case 'open':
+        return l.tournamentStatusOpen;
+      case 'closed':
+        return l.tournamentStatusClosed;
+      case 'in_progress':
+        return l.tournamentStatusInProgress;
+      case 'completed':
+        return l.tournamentStatusCompleted;
+      case 'cancelled':
+        return l.tournamentStatusCancelled;
+      case 'draft':
+        return l.tournamentStatusDraft;
+      default:
+        return status;
+    }
   }
 
   Widget _buildTag(String text, Color color) {
@@ -268,14 +293,18 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   // === Дата и Время ===
   Widget _buildDateTimeRow(Tournament t) {
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final dateText = DateFormat('d MMMM', locale).format(t.datetime);
+    final dowText = toBeginningOfSentenceCase(
+        DateFormat.EEEE(locale).format(t.datetime)) ?? '';
     return IntrinsicHeight(child: Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildInfoCard(
           label: l10n.dateLabel,
           icon: Icons.calendar_today_outlined,
-          value: t.dateFormatted,
-          subtitle: t.dayOfWeek,
+          value: dateText,
+          subtitle: dowText,
         ),
         const SizedBox(width: 8),
         _buildInfoCard(

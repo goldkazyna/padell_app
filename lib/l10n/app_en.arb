@@ -87,6 +87,13 @@
   "dateAll": "All dates",
   "dateThisWeek": "This week",
 
+  "tournamentStatusDraft": "Draft",
+  "tournamentStatusOpen": "Registration open",
+  "tournamentStatusClosed": "Registration closed",
+  "tournamentStatusInProgress": "In progress",
+  "tournamentStatusCompleted": "Completed",
+  "tournamentStatusCancelled": "Cancelled",
+
   "selectClub": "Select Club",
   "searchClub": "Search club...",
   "allCities": "All",
