@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
@@ -98,6 +99,8 @@ class TournamentHistoryRow extends StatelessWidget {
     final place = tournament.myResult?.place;
     final delta = tournament.myResult?.ratingChange ?? 0;
     final isPositive = delta >= 0;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final dateText = DateFormat('d MMMM', locale).format(tournament.datetime);
 
     return InkWell(
       onTap: () => openTournamentLive(context, tournament),
@@ -155,7 +158,7 @@ class TournamentHistoryRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    tournament.dateFormatted,
+                    dateText,
                     style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
                   ),
                 ],

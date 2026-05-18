@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
 
@@ -28,6 +29,9 @@ class TournamentRowV2 extends StatelessWidget {
     final fmt = _chipColorsFor(tournament.formatColor);
     final spotsLeft = tournament.spotsLeft;
     final amberClose = !full && spotsLeft > 0 && spotsLeft <= 2;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final dowShort = DateFormat.E(locale).format(tournament.datetime);
+    final dateShort = DateFormat('d MMM', locale).format(tournament.datetime);
 
     return InkWell(
       onTap: onTap,
@@ -51,7 +55,7 @@ class TournamentRowV2 extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          tournament.dayOfWeekShort.toUpperCase(),
+                          dowShort.toUpperCase(),
                           style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
@@ -156,7 +160,7 @@ class TournamentRowV2 extends StatelessWidget {
                             const SizedBox(width: 6),
                             Flexible(
                               child: Text(
-                                tournament.dateShort,
+                                dateShort,
                                 style: const TextStyle(
                                   color: AppTheme.textDim,
                                   fontSize: 11,

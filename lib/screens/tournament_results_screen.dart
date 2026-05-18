@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/tournament.dart';
@@ -138,7 +139,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            '${t.dateFormatted} · ${t.club.name}',
+            '${DateFormat('d MMMM', Localizations.localeOf(context).toLanguageTag()).format(t.datetime)} · ${t.club.name}',
             style: const TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 14,

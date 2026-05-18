@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import '../../l10n/app_localizations.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
@@ -88,6 +89,9 @@ class HeroTournamentCard extends StatelessWidget {
 
   // ===== Top row: date+day+time + button =====
   Widget _buildTopRow(BuildContext context, bool full) {
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final dateShort = DateFormat('d MMM', locale).format(tournament.datetime);
+    final dowShort = DateFormat.E(locale).format(tournament.datetime);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,7 +102,7 @@ class HeroTournamentCard extends StatelessWidget {
             runSpacing: 4,
             children: [
               Text(
-                tournament.dateShort,
+                dateShort,
                 style: const TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
@@ -108,7 +112,7 @@ class HeroTournamentCard extends StatelessWidget {
                 ),
               ),
               Text(
-                tournament.dayOfWeekShort.toUpperCase(),
+                dowShort.toUpperCase(),
                 style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
