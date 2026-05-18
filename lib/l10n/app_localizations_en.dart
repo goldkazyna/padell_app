@@ -249,6 +249,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tournamentStatusCancelled => 'Cancelled';
 
   @override
+  String get sectionContacts => 'CONTACTS';
+
+  @override
+  String get sectionAbout => 'ABOUT YOU';
+
+  @override
+  String get sectionGameStyle => 'GAME STYLE';
+
+  @override
+  String get nameHint => 'Enter name';
+
+  @override
+  String get agePlaceholder => 'Select birth date';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get profileNameless => 'No name';
+
+  @override
+  String get profileFilled => 'Profile is complete';
+
+  @override
+  String get profileFillBio =>
+      'Add your age and court position so people can find a partner';
+
+  @override
+  String get profileFillAge => 'Add your age so it\'s easier to find a partner';
+
+  @override
+  String get profileFillPosition => 'Set your court position';
+
+  @override
+  String get profileFillHand => 'Add your dominant hand';
+
+  @override
+  String get profileFillGender => 'Specify your gender';
+
+  @override
+  String get profileFillCity => 'Select your city';
+
+  @override
+  String get fieldHand => 'Dominant hand';
+
+  @override
+  String get fieldPosition => 'Court position';
+
+  @override
+  String get fieldGender => 'Gender';
+
+  @override
+  String rankInRatingShort(int n) {
+    return '#$n in rating';
+  }
+
+  @override
+  String ratingValueShort(int n) {
+    return '$n rating';
+  }
+
+  @override
+  String get notFilled => 'Not filled';
+
+  @override
   String get selectClub => 'Select Club';
 
   @override

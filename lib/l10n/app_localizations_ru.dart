@@ -249,6 +249,72 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tournamentStatusCancelled => 'Отменён';
 
   @override
+  String get sectionContacts => 'КОНТАКТЫ';
+
+  @override
+  String get sectionAbout => 'О ВАС';
+
+  @override
+  String get sectionGameStyle => 'ИГРОВОЙ СТИЛЬ';
+
+  @override
+  String get nameHint => 'Укажите имя';
+
+  @override
+  String get agePlaceholder => 'Укажите дату рождения';
+
+  @override
+  String get saveChanges => 'Сохранить изменения';
+
+  @override
+  String get profileNameless => 'Без имени';
+
+  @override
+  String get profileFilled => 'Профиль заполнен';
+
+  @override
+  String get profileFillBio =>
+      'Заполните возраст и позицию на корте, чтобы находить пары';
+
+  @override
+  String get profileFillAge =>
+      'Укажите возраст, чтобы было проще найти партнёра';
+
+  @override
+  String get profileFillPosition => 'Укажите позицию на корте';
+
+  @override
+  String get profileFillHand => 'Добавьте ведущую руку';
+
+  @override
+  String get profileFillGender => 'Укажите пол';
+
+  @override
+  String get profileFillCity => 'Выберите город';
+
+  @override
+  String get fieldHand => 'Ведущая рука';
+
+  @override
+  String get fieldPosition => 'Позиция на корте';
+
+  @override
+  String get fieldGender => 'Пол';
+
+  @override
+  String rankInRatingShort(int n) {
+    return '#$n в рейтинге';
+  }
+
+  @override
+  String ratingValueShort(int n) {
+    return '$n рейтинг';
+  }
+
+  @override
+  String get notFilled => 'Не заполнено';
+
+  @override
   String get selectClub => 'Выберите клуб';
 
   @override

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
@@ -9,6 +10,7 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_alert.dart';
+import '../utils/city_l10n.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
 
@@ -136,15 +138,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return ((filled / 7) * 100).round();
   }
 
-  String? get _missingFieldHint {
-    if (_birthDate == null && _position == null) {
-      return 'Заполните возраст и позицию на корте, чтобы находить пары';
-    }
-    if (_birthDate == null) return 'Укажите возраст, чтобы было проще найти партнёра';
-    if (_position == null) return 'Укажите позицию на корте';
-    if (_hand == null) return 'Добавьте ведущую руку';
-    if (_gender == null) return 'Укажите пол';
-    if (_city == null || _city!.isEmpty) return 'Выберите город';
+  String? _missingFieldHint(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    if (_birthDate == null && _position == null) return l.profileFillBio;
+    if (_birthDate == null) return l.profileFillAge;
+    if (_position == null) return l.profileFillPosition;
+    if (_hand == null) return l.profileFillHand;
+    if (_gender == null) return l.profileFillGender;
+    if (_city == null || _city!.isEmpty) return l.profileFillCity;
     return null;
   }
 
@@ -199,7 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         showAppAlert(
           context,
           AppLocalizations.of(context)!.saveError(e.toString()),
-          title: 'Ошибка',
+          title: AppLocalizations.of(context)!.error,
           isError: true,
         );
       }
@@ -323,7 +324,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 8),
             ...cities.map((city) => ListTile(
               title: Text(
-                city,
+                localizeCity(context, city),
                 style: TextStyle(
                   color: city == _city ? _T.green : _T.text,
                   fontWeight: city == _city ? FontWeight.w600 : FontWeight.normal,
@@ -358,13 +359,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Column(
                         children: [
                           _buildHero(),
-                          _buildSectionTitle('КОНТАКТЫ'),
+                          _buildSectionTitle(AppLocalizations.of(context)!.sectionContacts),
                           _buildCard(children: [
                             _buildEditableRow(
                               icon: Icons.person_outline,
-                              label: 'Имя',
+                              label: AppLocalizations.of(context)!.fieldName,
                               controller: _nameController,
-                              hint: 'Укажите имя',
+                              hint: AppLocalizations.of(context)!.nameHint,
                             ),
                             _divider(),
                             // Если телефон пуст — позволяем ввести,
@@ -372,7 +373,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             _phone.isEmpty
                                 ? _buildEditableRow(
                                     icon: Icons.phone_outlined,
-                                    label: 'Телефон',
+                                    label: AppLocalizations.of(context)!.fieldPhone,
                                     controller: _phoneController,
                                     hint: '+7 777 ...',
                                     keyboardType: TextInputType.phone,
@@ -380,31 +381,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   )
                                 : _buildInfoRow(
                                     icon: Icons.phone_outlined,
-                                    label: 'Телефон',
+                                    label: AppLocalizations.of(context)!.fieldPhone,
                                     value: _formatPhone(_phone),
                                     trailing: const Icon(Icons.lock_outline, size: 15, color: _T.dim),
                                   ),
                             _divider(),
                             _buildInfoRow(
                               icon: Icons.location_on_outlined,
-                              label: 'Город',
-                              value: _city,
-                              placeholder: 'Выберите город',
+                              label: AppLocalizations.of(context)!.fieldCity,
+                              value: _city != null && _city!.isNotEmpty
+                                  ? localizeCity(context, _city)
+                                  : null,
+                              placeholder: AppLocalizations.of(context)!.selectCity,
                               trailing: const Icon(Icons.chevron_right, size: 16, color: _T.dim),
                               onTap: _pickCity,
                               incomplete: _city == null || _city!.isEmpty,
                               isLast: true,
                             ),
                           ]),
-                          _buildSectionTitle('О ВАС', optional: true),
+                          _buildSectionTitle(AppLocalizations.of(context)!.sectionAbout, optional: true),
                           _buildCard(children: [
                             _buildInfoRow(
                               icon: Icons.cake_outlined,
-                              label: 'Возраст',
+                              label: AppLocalizations.of(context)!.fieldAge,
                               value: _birthDate != null
                                   ? '${_ageFromDate(_birthDate!)} · ${_formatDate(_birthDate!)}'
                                   : null,
-                              placeholder: 'Укажите дату рождения',
+                              placeholder: AppLocalizations.of(context)!.agePlaceholder,
                               trailing: const Icon(Icons.chevron_right, size: 16, color: _T.dim),
                               onTap: _pickBirthDate,
                               incomplete: _birthDate == null,
@@ -412,10 +415,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             _divider(),
                             _buildChipRow(
                               icon: Icons.wc_outlined,
-                              label: 'Пол',
-                              options: const [
-                                _ChipOption('male', 'Мужской'),
-                                _ChipOption('female', 'Женский'),
+                              label: AppLocalizations.of(context)!.fieldGender,
+                              options: [
+                                _ChipOption('male', AppLocalizations.of(context)!.genderMale),
+                                _ChipOption('female', AppLocalizations.of(context)!.genderFemale),
                               ],
                               value: _gender,
                               onChanged: (v) => setState(() => _gender = v),
@@ -423,14 +426,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               isLast: true,
                             ),
                           ]),
-                          _buildSectionTitle('ИГРОВОЙ СТИЛЬ'),
+                          _buildSectionTitle(AppLocalizations.of(context)!.sectionGameStyle),
                           _buildCard(children: [
                             _buildChipRow(
                               icon: Icons.back_hand_outlined,
-                              label: 'Ведущая рука',
-                              options: const [
-                                _ChipOption('right', 'Правша'),
-                                _ChipOption('left', 'Левша'),
+                              label: AppLocalizations.of(context)!.fieldHand,
+                              options: [
+                                _ChipOption('right', AppLocalizations.of(context)!.handRight),
+                                _ChipOption('left', AppLocalizations.of(context)!.handLeft),
                               ],
                               value: _hand,
                               onChanged: (v) => setState(() => _hand = v),
@@ -439,11 +442,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             _divider(),
                             _buildChipRow(
                               icon: Icons.sports_tennis_outlined,
-                              label: 'Позиция на корте',
-                              options: const [
-                                _ChipOption('right', 'Справа'),
-                                _ChipOption('left', 'Слева'),
-                                _ChipOption('any', 'Любая'),
+                              label: AppLocalizations.of(context)!.fieldPosition,
+                              options: [
+                                _ChipOption('right', AppLocalizations.of(context)!.positionRight),
+                                _ChipOption('left', AppLocalizations.of(context)!.positionLeft),
+                                _ChipOption('any', AppLocalizations.of(context)!.positionAny),
                               ],
                               value: _position,
                               onChanged: (v) => setState(() => _position = v),
@@ -470,9 +473,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           const AppBackButton(),
           const SizedBox(width: 10),
-          const Text(
-            'Настройки профиля',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.editProfile,
+            style: const TextStyle(
               color: _T.text, fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: -0.2,
             ),
           ),
@@ -491,7 +494,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      'Сохранить',
+                      AppLocalizations.of(context)!.saveProfile,
                       style: TextStyle(
                         color: _isDirty ? _T.green : _T.dim,
                         fontSize: 13, fontWeight: FontWeight.w600,
@@ -506,9 +509,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildHero() {
     final pct = _completionPct;
-    final hint = _missingFieldHint;
+    final hint = _missingFieldHint(context);
     final levelText = _level != null ? _level!.toStringAsFixed(2) : '—';
-    final cityLabel = _city ?? '—';
+    final cityLabel = _city != null && _city!.isNotEmpty
+        ? localizeCity(context, _city)
+        : '—';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
@@ -534,7 +539,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _nameController.text.trim().isEmpty ? 'Без имени' : _nameController.text.trim(),
+                        _nameController.text.trim().isEmpty
+                            ? AppLocalizations.of(context)!.profileNameless
+                            : _nameController.text.trim(),
                         style: const TextStyle(
                           color: _T.text, fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: -0.3,
                         ),
@@ -543,17 +550,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '$cityLabel · Уровень $levelText',
+                        '$cityLabel · ${AppLocalizations.of(context)!.profileLevelLabel(levelText)}',
                         style: const TextStyle(color: _T.muted, fontSize: 12),
                       ),
                       const SizedBox(height: 6),
                       Wrap(spacing: 4, runSpacing: 4, children: [
                         if (_hand != null)
-                          _heroBadge(_handLabel(_hand!), _T.greenSoft, _T.green),
+                          _heroBadge(_handLabel(context, _hand!), _T.greenSoft, _T.green),
                         if (_place != null)
-                          _heroBadge('#$_place в рейтинге', const Color(0x0AFFFFFF), _T.muted),
+                          _heroBadge(AppLocalizations.of(context)!.rankInRatingShort(_place!), const Color(0x0AFFFFFF), _T.muted),
                         if (_rating != null && _rating! > 0)
-                          _heroBadge('$_rating рейтинг', const Color(0x0AFFFFFF), _T.muted),
+                          _heroBadge(AppLocalizations.of(context)!.ratingValueShort(_rating!), const Color(0x0AFFFFFF), _T.muted),
                       ]),
                     ],
                   ),
@@ -572,10 +579,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Профиль заполнен',
-                          style: TextStyle(color: _T.muted, fontSize: 12),
+                          AppLocalizations.of(context)!.profileFilled,
+                          style: const TextStyle(color: _T.muted, fontSize: 12),
                         ),
                       ),
                       Text(
@@ -697,9 +704,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 color: const Color(0x08FFFFFF),
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: const Text(
-                'Опционально',
-                style: TextStyle(color: _T.dim, fontSize: 10, fontWeight: FontWeight.w500),
+              child: Text(
+                AppLocalizations.of(context)!.optional,
+                style: const TextStyle(color: _T.dim, fontSize: 10, fontWeight: FontWeight.w500),
               ),
             ),
         ],
@@ -771,14 +778,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Text(label, style: const TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
                       if (incomplete && empty) ...[
                         const SizedBox(width: 5),
-                        const Text('• Не заполнено',
-                          style: TextStyle(color: _T.amber, fontSize: 11, height: 1.2)),
+                        Text('• ${AppLocalizations.of(context)!.notFilled}',
+                          style: const TextStyle(color: _T.amber, fontSize: 11, height: 1.2)),
                       ],
                     ],
                   ),
                   const SizedBox(height: 1),
                   Text(
-                    empty ? (placeholder ?? 'Не указано') : value,
+                    empty ? (placeholder ?? AppLocalizations.of(context)!.notSpecified) : value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -951,7 +958,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                   )
                 : Text(
-                    'Сохранить изменения',
+                    AppLocalizations.of(context)!.saveChanges,
                     style: TextStyle(
                       color: enabled ? Colors.white : _T.dim,
                       fontSize: 15, fontWeight: FontWeight.w600,
@@ -971,8 +978,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   String _formatDate(DateTime d) {
-    const months = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-    return '${d.day} ${months[d.month - 1]} ${d.year}';
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    return DateFormat('d MMM y', locale).format(d);
   }
 
   int _ageFromDate(DateTime birth) {
@@ -984,7 +991,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return years;
   }
 
-  String _handLabel(String hand) => hand == 'right' ? 'Правша' : hand == 'left' ? 'Левша' : hand;
+  String _handLabel(BuildContext context, String hand) {
+    final l = AppLocalizations.of(context)!;
+    if (hand == 'right') return l.handRight;
+    if (hand == 'left') return l.handLeft;
+    return hand;
+  }
 }
 
 class _ChipOption {

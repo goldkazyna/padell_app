@@ -556,6 +556,126 @@ abstract class AppLocalizations {
   /// **'Отменён'**
   String get tournamentStatusCancelled;
 
+  /// No description provided for @sectionContacts.
+  ///
+  /// In ru, this message translates to:
+  /// **'КОНТАКТЫ'**
+  String get sectionContacts;
+
+  /// No description provided for @sectionAbout.
+  ///
+  /// In ru, this message translates to:
+  /// **'О ВАС'**
+  String get sectionAbout;
+
+  /// No description provided for @sectionGameStyle.
+  ///
+  /// In ru, this message translates to:
+  /// **'ИГРОВОЙ СТИЛЬ'**
+  String get sectionGameStyle;
+
+  /// No description provided for @nameHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите имя'**
+  String get nameHint;
+
+  /// No description provided for @agePlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите дату рождения'**
+  String get agePlaceholder;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сохранить изменения'**
+  String get saveChanges;
+
+  /// No description provided for @profileNameless.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без имени'**
+  String get profileNameless;
+
+  /// No description provided for @profileFilled.
+  ///
+  /// In ru, this message translates to:
+  /// **'Профиль заполнен'**
+  String get profileFilled;
+
+  /// No description provided for @profileFillBio.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заполните возраст и позицию на корте, чтобы находить пары'**
+  String get profileFillBio;
+
+  /// No description provided for @profileFillAge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите возраст, чтобы было проще найти партнёра'**
+  String get profileFillAge;
+
+  /// No description provided for @profileFillPosition.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите позицию на корте'**
+  String get profileFillPosition;
+
+  /// No description provided for @profileFillHand.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавьте ведущую руку'**
+  String get profileFillHand;
+
+  /// No description provided for @profileFillGender.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите пол'**
+  String get profileFillGender;
+
+  /// No description provided for @profileFillCity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите город'**
+  String get profileFillCity;
+
+  /// No description provided for @fieldHand.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ведущая рука'**
+  String get fieldHand;
+
+  /// No description provided for @fieldPosition.
+  ///
+  /// In ru, this message translates to:
+  /// **'Позиция на корте'**
+  String get fieldPosition;
+
+  /// No description provided for @fieldGender.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пол'**
+  String get fieldGender;
+
+  /// No description provided for @rankInRatingShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'#{n} в рейтинге'**
+  String rankInRatingShort(int n);
+
+  /// No description provided for @ratingValueShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'{n} рейтинг'**
+  String ratingValueShort(int n);
+
+  /// No description provided for @notFilled.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не заполнено'**
+  String get notFilled;
+
   /// No description provided for @selectClub.
   ///
   /// In ru, this message translates to:

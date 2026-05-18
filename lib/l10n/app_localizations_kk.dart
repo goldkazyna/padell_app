@@ -249,6 +249,70 @@ class AppLocalizationsKk extends AppLocalizations {
   String get tournamentStatusCancelled => 'Бас тартылды';
 
   @override
+  String get sectionContacts => 'БАЙЛАНЫСТАР';
+
+  @override
+  String get sectionAbout => 'СІЗ ТУРАЛЫ';
+
+  @override
+  String get sectionGameStyle => 'ОЙЫН СТИЛІ';
+
+  @override
+  String get nameHint => 'Атыңызды енгізіңіз';
+
+  @override
+  String get agePlaceholder => 'Туған күніңізді көрсетіңіз';
+
+  @override
+  String get saveChanges => 'Өзгерістерді сақтау';
+
+  @override
+  String get profileNameless => 'Атсыз';
+
+  @override
+  String get profileFilled => 'Профиль толтырылған';
+
+  @override
+  String get profileFillBio => 'Жасыңыз бен корттағы позицияңызды толтырыңыз';
+
+  @override
+  String get profileFillAge => 'Серіктес табу үшін жасыңызды көрсетіңіз';
+
+  @override
+  String get profileFillPosition => 'Корттағы позицияны көрсетіңіз';
+
+  @override
+  String get profileFillHand => 'Жетекші қолды қосыңыз';
+
+  @override
+  String get profileFillGender => 'Жынысыңызды көрсетіңіз';
+
+  @override
+  String get profileFillCity => 'Қаланы таңдаңыз';
+
+  @override
+  String get fieldHand => 'Жетекші қол';
+
+  @override
+  String get fieldPosition => 'Корттағы позиция';
+
+  @override
+  String get fieldGender => 'Жыныс';
+
+  @override
+  String rankInRatingShort(int n) {
+    return 'Рейтингте #$n';
+  }
+
+  @override
+  String ratingValueShort(int n) {
+    return 'Рейтинг $n';
+  }
+
+  @override
+  String get notFilled => 'Толтырылмаған';
+
+  @override
   String get selectClub => 'Клуб таңдаңыз';
 
   @override
