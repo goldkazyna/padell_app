@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/court_provider.dart';
 import '../models/club.dart';
 import '../theme/app_theme.dart';
+import '../utils/city_l10n.dart';
 import '../widgets/app_back_button.dart';
 import 'court_schedule_screen.dart';
 
@@ -104,7 +105,7 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
                           onTap: () => provider.setCity(null),
                         ),
                         ...provider.cities.map((city) => _CityChip(
-                          label: city,
+                          label: localizeCity(context, city),
                           isSelected: provider.selectedCity == city,
                           onTap: () => provider.setCity(city),
                         )),
