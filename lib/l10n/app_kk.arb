@@ -679,5 +679,7 @@
   "clubCardSaved": "Клуб картасы сақталды",
 
   "clubTelegram": "Телеграм-арна",
-  "openTelegramChannel": "Телеграм-арнаны ашу"
+  "openTelegramChannel": "Телеграм-арнаны ашу",
+  "clubInstagram": "Instagram",
+  "openInstagram": "Instagram-ды ашу"
 }

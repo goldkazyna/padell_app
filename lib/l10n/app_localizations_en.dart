@@ -1840,4 +1840,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openTelegramChannel => 'Open Telegram channel';
+
+  @override
+  String get clubInstagram => 'Instagram';
+
+  @override
+  String get openInstagram => 'Open Instagram';
 }

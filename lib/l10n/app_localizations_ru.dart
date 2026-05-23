@@ -1843,4 +1843,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get openTelegramChannel => 'Открыть телеграм-канал';
+
+  @override
+  String get clubInstagram => 'Инстаграм';
+
+  @override
+  String get openInstagram => 'Открыть инстаграм';
 }

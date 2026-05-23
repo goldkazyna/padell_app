@@ -1820,4 +1820,10 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get openTelegramChannel => 'Телеграм-арнаны ашу';
+
+  @override
+  String get clubInstagram => 'Instagram';
+
+  @override
+  String get openInstagram => 'Instagram-ды ашу';
 }

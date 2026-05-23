@@ -3489,6 +3489,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Открыть телеграм-канал'**
   String get openTelegramChannel;
+
+  /// No description provided for @clubInstagram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Инстаграм'**
+  String get clubInstagram;
+
+  /// No description provided for @openInstagram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть инстаграм'**
+  String get openInstagram;
 }
 
 class _AppLocalizationsDelegate

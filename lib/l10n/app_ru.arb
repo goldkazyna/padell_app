@@ -679,5 +679,7 @@
   "clubCardSaved": "Карточка клуба сохранена",
 
   "clubTelegram": "Телеграм-канал",
-  "openTelegramChannel": "Открыть телеграм-канал"
+  "openTelegramChannel": "Открыть телеграм-канал",
+  "clubInstagram": "Инстаграм",
+  "openInstagram": "Открыть инстаграм"
 }

@@ -660,5 +660,7 @@
   "clubCardSaved": "Club card saved",
 
   "clubTelegram": "Telegram channel",
-  "openTelegramChannel": "Open Telegram channel"
+  "openTelegramChannel": "Open Telegram channel",
+  "clubInstagram": "Instagram",
+  "openInstagram": "Open Instagram"
 }
