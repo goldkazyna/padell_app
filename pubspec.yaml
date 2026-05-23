@@ -78,7 +78,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
 
   # Brand icons (Telegram, Instagram, etc.)
-  font_awesome_flutter: ^10.7.0
+  font_awesome_flutter: ^11.0.0
 
   # Google Sign-In
   google_sign_in: ^6.2.1
