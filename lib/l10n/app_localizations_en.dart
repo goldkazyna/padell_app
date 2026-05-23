@@ -1804,4 +1804,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restartTournamentSuccess => 'Tournament restarted';
+
+  @override
+  String get editClubCard => 'Edit club card';
+
+  @override
+  String get editClubCardSubtitle => 'Name, contacts, description';
+
+  @override
+  String get clubName => 'Club name';
+
+  @override
+  String get clubAddress => 'Address';
+
+  @override
+  String get clubCity => 'City';
+
+  @override
+  String get clubPhone => 'Phone';
+
+  @override
+  String get clubEmail => 'Email';
+
+  @override
+  String get clubDescription => 'Description';
+
+  @override
+  String get clubPaymentUrl => 'Payment link';
+
+  @override
+  String get clubCardSaved => 'Club card saved';
 }

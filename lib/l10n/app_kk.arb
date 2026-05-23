@@ -665,5 +665,16 @@
   "restartTournamentConfirmTitle": "Турнирді қайта бастау?",
   "restartTournamentConfirmMessage": "Тор мен нәтижелер жойылады; қатысушыларды өзгерте аласыз. Бұл әрекетті қайтару мүмкін емес.",
   "restartTournamentConfirmOk": "Қайта бастау",
-  "restartTournamentSuccess": "Турнир қайта басталды"
+  "restartTournamentSuccess": "Турнир қайта басталды",
+
+  "editClubCard": "Клуб картасын өңдеу",
+  "editClubCardSubtitle": "Атауы, байланыстар, сипаттама",
+  "clubName": "Клуб атауы",
+  "clubAddress": "Мекенжай",
+  "clubCity": "Қала",
+  "clubPhone": "Телефон",
+  "clubEmail": "Email",
+  "clubDescription": "Сипаттама",
+  "clubPaymentUrl": "Төлем сілтемесі",
+  "clubCardSaved": "Клуб картасы сақталды"
 }

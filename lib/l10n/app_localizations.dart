@@ -3417,6 +3417,66 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Турнир перезапущен'**
   String get restartTournamentSuccess;
+
+  /// No description provided for @editClubCard.
+  ///
+  /// In ru, this message translates to:
+  /// **'Редактировать карточку клуба'**
+  String get editClubCard;
+
+  /// No description provided for @editClubCardSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Название, контакты, описание'**
+  String get editClubCardSubtitle;
+
+  /// No description provided for @clubName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Название клуба'**
+  String get clubName;
+
+  /// No description provided for @clubAddress.
+  ///
+  /// In ru, this message translates to:
+  /// **'Адрес'**
+  String get clubAddress;
+
+  /// No description provided for @clubCity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Город'**
+  String get clubCity;
+
+  /// No description provided for @clubPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Телефон'**
+  String get clubPhone;
+
+  /// No description provided for @clubEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Email'**
+  String get clubEmail;
+
+  /// No description provided for @clubDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Описание'**
+  String get clubDescription;
+
+  /// No description provided for @clubPaymentUrl.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ссылка для оплаты'**
+  String get clubPaymentUrl;
+
+  /// No description provided for @clubCardSaved.
+  ///
+  /// In ru, this message translates to:
+  /// **'Карточка клуба сохранена'**
+  String get clubCardSaved;
 }
 
 class _AppLocalizationsDelegate

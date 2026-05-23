@@ -646,5 +646,16 @@
   "restartTournamentConfirmTitle": "Restart tournament?",
   "restartTournamentConfirmMessage": "The bracket and results will be deleted; you'll be able to change participants. This action cannot be undone.",
   "restartTournamentConfirmOk": "Restart",
-  "restartTournamentSuccess": "Tournament restarted"
+  "restartTournamentSuccess": "Tournament restarted",
+
+  "editClubCard": "Edit club card",
+  "editClubCardSubtitle": "Name, contacts, description",
+  "clubName": "Club name",
+  "clubAddress": "Address",
+  "clubCity": "City",
+  "clubPhone": "Phone",
+  "clubEmail": "Email",
+  "clubDescription": "Description",
+  "clubPaymentUrl": "Payment link",
+  "clubCardSaved": "Club card saved"
 }

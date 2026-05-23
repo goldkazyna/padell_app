@@ -1784,4 +1784,34 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get restartTournamentSuccess => 'Турнир қайта басталды';
+
+  @override
+  String get editClubCard => 'Клуб картасын өңдеу';
+
+  @override
+  String get editClubCardSubtitle => 'Атауы, байланыстар, сипаттама';
+
+  @override
+  String get clubName => 'Клуб атауы';
+
+  @override
+  String get clubAddress => 'Мекенжай';
+
+  @override
+  String get clubCity => 'Қала';
+
+  @override
+  String get clubPhone => 'Телефон';
+
+  @override
+  String get clubEmail => 'Email';
+
+  @override
+  String get clubDescription => 'Сипаттама';
+
+  @override
+  String get clubPaymentUrl => 'Төлем сілтемесі';
+
+  @override
+  String get clubCardSaved => 'Клуб картасы сақталды';
 }

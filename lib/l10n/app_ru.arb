@@ -665,5 +665,16 @@
   "restartTournamentConfirmTitle": "Перезапустить турнир?",
   "restartTournamentConfirmMessage": "Сетка и результаты будут удалены, участников можно будет изменить. Действие необратимо.",
   "restartTournamentConfirmOk": "Перезапустить",
-  "restartTournamentSuccess": "Турнир перезапущен"
+  "restartTournamentSuccess": "Турнир перезапущен",
+
+  "editClubCard": "Редактировать карточку клуба",
+  "editClubCardSubtitle": "Название, контакты, описание",
+  "clubName": "Название клуба",
+  "clubAddress": "Адрес",
+  "clubCity": "Город",
+  "clubPhone": "Телефон",
+  "clubEmail": "Email",
+  "clubDescription": "Описание",
+  "clubPaymentUrl": "Ссылка для оплаты",
+  "clubCardSaved": "Карточка клуба сохранена"
 }

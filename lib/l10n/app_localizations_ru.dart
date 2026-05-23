@@ -1807,4 +1807,34 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get restartTournamentSuccess => 'Турнир перезапущен';
+
+  @override
+  String get editClubCard => 'Редактировать карточку клуба';
+
+  @override
+  String get editClubCardSubtitle => 'Название, контакты, описание';
+
+  @override
+  String get clubName => 'Название клуба';
+
+  @override
+  String get clubAddress => 'Адрес';
+
+  @override
+  String get clubCity => 'Город';
+
+  @override
+  String get clubPhone => 'Телефон';
+
+  @override
+  String get clubEmail => 'Email';
+
+  @override
+  String get clubDescription => 'Описание';
+
+  @override
+  String get clubPaymentUrl => 'Ссылка для оплаты';
+
+  @override
+  String get clubCardSaved => 'Карточка клуба сохранена';
 }
