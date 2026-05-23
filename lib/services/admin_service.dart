@@ -1,3 +1,4 @@
+import '../models/admin_club_edit.dart';
 import '../models/admin_club_user.dart';
 import '../models/admin_matches.dart';
 import '../models/admin_participant.dart';
@@ -13,6 +14,22 @@ class AdminService {
   final StorageService _storage;
 
   AdminService(this._api, this._storage);
+
+  // ---------------------------------------------------------------------------
+  // Управление клубом
+  // ---------------------------------------------------------------------------
+
+  Future<AdminClubEdit> getClub(int clubId) async {
+    final token = await _storage.getToken();
+    final response = await _api.get('/admin/clubs/$clubId', token);
+    return AdminClubEdit.fromJson(response['club'] as Map<String, dynamic>);
+  }
+
+  Future<AdminClubEdit> updateClub(int clubId, Map<String, dynamic> body) async {
+    final token = await _storage.getToken();
+    final response = await _api.put('/admin/clubs/$clubId', body, token);
+    return AdminClubEdit.fromJson(response['club'] as Map<String, dynamic>);
+  }
 
   // ---------------------------------------------------------------------------
   // Управление игроками клуба (feature 'users')
