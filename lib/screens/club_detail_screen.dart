@@ -697,7 +697,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'ОПИСАНИЕ',
+            'О КЛУБЕ',
             style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 11,
