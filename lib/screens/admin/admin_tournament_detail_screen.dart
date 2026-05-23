@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/admin_matches.dart';
 import '../../models/admin_participant.dart';
 import '../../models/admin_participants_response.dart';
@@ -218,6 +219,42 @@ class _AdminTournamentDetailScreenState
       unawaited(_loadMatches());
       unawaited(_loadParticipants());
       await showAppAlert(context, 'Турнир запущен');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _starting = false);
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    }
+  }
+
+  Future<void> _restart() async {
+    final t = _t;
+    if (t == null) return;
+    final l10n = AppLocalizations.of(context)!;
+
+    final ok = await _confirm(
+      title: l10n.restartTournamentConfirmTitle,
+      message: l10n.restartTournamentConfirmMessage,
+      okText: l10n.restartTournamentConfirmOk,
+      destructive: true,
+    );
+    if (!ok) return;
+
+    setState(() => _starting = true);
+    try {
+      final updated =
+          await context.read<AdminService>().restartTournament(t.id);
+      if (!mounted) return;
+      _applyToForm(updated);
+      setState(() {
+        _t = updated;
+        _starting = false;
+        _matches = null;
+        _participants = null;
+      });
+      unawaited(_loadMatches());
+      unawaited(_loadParticipants());
+      if (!mounted) return;
+      await showAppAlert(context, l10n.restartTournamentSuccess);
     } catch (e) {
       if (!mounted) return;
       setState(() => _starting = false);
@@ -447,6 +484,29 @@ class _AdminTournamentDetailScreenState
                 ),
               ],
             ),
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: AppTheme.textPrimary),
+            color: AppTheme.card,
+            onSelected: (value) {
+              if (value == 'start') _start();
+              if (value == 'restart') _restart();
+            },
+            itemBuilder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return [
+                PopupMenuItem<String>(
+                  value: 'start',
+                  enabled: _t?.canStart ?? false,
+                  child: Text(l10n.startTournamentMenu),
+                ),
+                PopupMenuItem<String>(
+                  value: 'restart',
+                  enabled: _t?.canRestart ?? false,
+                  child: Text(l10n.restartTournament),
+                ),
+              ];
+            },
           ),
         ],
       ),
