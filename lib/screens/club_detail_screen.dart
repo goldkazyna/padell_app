@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import '../models/club.dart';
 import '../providers/tournament_provider.dart';
 import '../services/club_service.dart';
@@ -87,6 +88,13 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     final url = Uri.parse('tel:$phone');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
+    }
+  }
+
+  Future<void> _openTelegram(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
@@ -178,6 +186,13 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               label: 'Телефон',
               value: club.phone!,
               onTap: () => _callPhone(club.phone!),
+            ),
+          if ((club.telegramUrl ?? '').isNotEmpty)
+            _buildInfoRow(
+              icon: Icons.send,
+              label: AppLocalizations.of(context)!.clubTelegram,
+              value: AppLocalizations.of(context)!.openTelegramChannel,
+              onTap: () => _openTelegram(club.telegramUrl!),
             ),
           if (club.description != null && club.description!.isNotEmpty) ...[
             const SizedBox(height: 12),
