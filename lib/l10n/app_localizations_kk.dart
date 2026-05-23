@@ -78,7 +78,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get activeTournamentInfo =>
-      'Мұнда дәл қазір өтіп жатқан турнир тікелей эфирде (live) көрсетіледі. Матчтар мен есепті бақылау үшін оны ашыңыз.';
+      'Мұнда сіз қатысып жатқан және дәл қазір өтіп жатқан турнир көрсетіледі. Матчтар мен есепті тікелей эфирде (live) бақылау үшін оны ашыңыз.';
 
   @override
   String get upcoming => 'Жақында';

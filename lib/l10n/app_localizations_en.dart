@@ -78,7 +78,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activeTournamentInfo =>
-      'This shows the tournament that is happening right now, live. Open it to follow the matches and score in real time.';
+      'This shows the tournament you are participating in that is happening right now. Open it to follow the matches and score live, in real time.';
 
   @override
   String get upcoming => 'Upcoming';

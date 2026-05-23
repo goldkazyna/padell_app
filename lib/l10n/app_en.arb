@@ -26,7 +26,7 @@
   "nearestTournament": "Nearest Tournament",
   "activeTournament": "Live Tournament",
   "nearestTournamentInfo": "This shows your nearest tournament that you are registered for and that hasn't started yet.",
-  "activeTournamentInfo": "This shows the tournament that is happening right now, live. Open it to follow the matches and score in real time.",
+  "activeTournamentInfo": "This shows the tournament you are participating in that is happening right now. Open it to follow the matches and score live, in real time.",
   "upcoming": "Upcoming",
   "all": "All",
 
