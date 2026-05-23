@@ -70,7 +70,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nearestTournament => 'Ближайший турнир';
 
   @override
-  String get activeTournament => 'Активный турнир';
+  String get activeTournament => 'Live турнир';
+
+  @override
+  String get nearestTournamentInfo =>
+      'Здесь показывается ваш ближайший турнир, на который вы записаны и который ещё не начался.';
+
+  @override
+  String get activeTournamentInfo =>
+      'Здесь в реальном времени (live) показывается турнир, который идёт прямо сейчас. Откройте его, чтобы следить за матчами и счётом.';
 
   @override
   String get upcoming => 'Скоро';

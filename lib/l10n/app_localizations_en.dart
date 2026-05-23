@@ -70,7 +70,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nearestTournament => 'Nearest Tournament';
 
   @override
-  String get activeTournament => 'Active Tournament';
+  String get activeTournament => 'Live Tournament';
+
+  @override
+  String get nearestTournamentInfo =>
+      'This shows your nearest tournament that you are registered for and that hasn\'t started yet.';
+
+  @override
+  String get activeTournamentInfo =>
+      'This shows the tournament that is happening right now, live. Open it to follow the matches and score in real time.';
 
   @override
   String get upcoming => 'Upcoming';

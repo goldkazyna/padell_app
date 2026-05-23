@@ -205,7 +205,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  SectionTitle(title: AppLocalizations.of(context)!.nearestTournament),
+                  SectionTitle(
+                    title: AppLocalizations.of(context)!.nearestTournament,
+                    onInfoTap: () => _showInfoDialog(
+                      context,
+                      AppLocalizations.of(context)!.nearestTournament,
+                      AppLocalizations.of(context)!.nearestTournamentInfo,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   NearestTournamentCard(
                     tournament: home.nearestTournament,
@@ -224,7 +231,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     onBrowse: () => widget.onNavigateToTab?.call(1),
                   ),
                   const SizedBox(height: 12),
-                  SectionTitle(title: AppLocalizations.of(context)!.activeTournament),
+                  SectionTitle(
+                    title: AppLocalizations.of(context)!.activeTournament,
+                    onInfoTap: () => _showInfoDialog(
+                      context,
+                      AppLocalizations.of(context)!.activeTournament,
+                      AppLocalizations.of(context)!.activeTournamentInfo,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   ActiveTournamentCard(
                     tournament: home.activeTournament,
@@ -329,6 +343,46 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showInfoDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: AppTheme.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: AppTheme.textSecondary,
+            fontSize: 14,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              AppLocalizations.of(context)!.understood,
+              style: const TextStyle(
+                color: AppTheme.accent,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

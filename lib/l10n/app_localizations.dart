@@ -217,8 +217,20 @@ abstract class AppLocalizations {
   /// No description provided for @activeTournament.
   ///
   /// In ru, this message translates to:
-  /// **'Активный турнир'**
+  /// **'Live турнир'**
   String get activeTournament;
+
+  /// No description provided for @nearestTournamentInfo.
+  ///
+  /// In ru, this message translates to:
+  /// **'Здесь показывается ваш ближайший турнир, на который вы записаны и который ещё не начался.'**
+  String get nearestTournamentInfo;
+
+  /// No description provided for @activeTournamentInfo.
+  ///
+  /// In ru, this message translates to:
+  /// **'Здесь в реальном времени (live) показывается турнир, который идёт прямо сейчас. Откройте его, чтобы следить за матчами и счётом.'**
+  String get activeTournamentInfo;
 
   /// No description provided for @upcoming.
   ///

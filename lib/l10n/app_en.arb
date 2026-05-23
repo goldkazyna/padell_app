@@ -24,7 +24,9 @@
   "bookCourtSubtitle": "Choose a club and time",
 
   "nearestTournament": "Nearest Tournament",
-  "activeTournament": "Active Tournament",
+  "activeTournament": "Live Tournament",
+  "nearestTournamentInfo": "This shows your nearest tournament that you are registered for and that hasn't started yet.",
+  "activeTournamentInfo": "This shows the tournament that is happening right now, live. Open it to follow the matches and score in real time.",
   "upcoming": "Upcoming",
   "all": "All",
 

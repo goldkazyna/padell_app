@@ -70,7 +70,15 @@ class AppLocalizationsKk extends AppLocalizations {
   String get nearestTournament => 'Жақын арадағы турнир';
 
   @override
-  String get activeTournament => 'Белсенді турнир';
+  String get activeTournament => 'Live турнир';
+
+  @override
+  String get nearestTournamentInfo =>
+      'Мұнда сіз тіркелген және әлі басталмаған ең жақын турнир көрсетіледі.';
+
+  @override
+  String get activeTournamentInfo =>
+      'Мұнда дәл қазір өтіп жатқан турнир тікелей эфирде (live) көрсетіледі. Матчтар мен есепті бақылау үшін оны ашыңыз.';
 
   @override
   String get upcoming => 'Жақында';
