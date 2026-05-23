@@ -4,6 +4,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
+import '../screens/club_detail_screen.dart';
 import '../screens/tournament_detail_screen.dart';
 
 /// Слушает входящие deep-link'и (padelp://tournament/{id}) и роутит на
@@ -56,6 +57,7 @@ class DeepLinkService {
   void _handleUri(Uri uri, {bool fromInitial = false}) {
     if (kDebugMode) debugPrint('DeepLink: $uri (initial=$fromInitial)');
 
+    // --- Tournament ---
     // padelp://tournament/123  — host=tournament, segments=[123]
     // https://padel-p.kz/t/123 — segments=[t, 123]
     int? tournamentId;
@@ -66,8 +68,25 @@ class DeepLinkService {
       tournamentId = int.tryParse(uri.pathSegments[1]);
     }
 
-    if (tournamentId == null) return;
-    _navigateToTournament(tournamentId, fromInitial: fromInitial);
+    if (tournamentId != null) {
+      _navigateToTournament(tournamentId, fromInitial: fromInitial);
+      return;
+    }
+
+    // --- Club ---
+    // padelp://club/123  — host=club, segments=[123]
+    // https://padel-p.kz/c/123 — segments=[c, 123]
+    int? clubId;
+    if (uri.host == 'club' && uri.pathSegments.isNotEmpty) {
+      clubId = int.tryParse(uri.pathSegments.first);
+    } else if (uri.pathSegments.length >= 2 &&
+        (uri.pathSegments[0] == 'c' || uri.pathSegments[0] == 'club')) {
+      clubId = int.tryParse(uri.pathSegments[1]);
+    }
+
+    if (clubId != null) {
+      _navigateToClub(clubId, fromInitial: fromInitial);
+    }
   }
 
   Future<void> _navigateToTournament(int id, {required bool fromInitial}) async {
@@ -81,6 +100,25 @@ class DeepLinkService {
         state.push(
           MaterialPageRoute(
             builder: (_) => TournamentDetailScreen(tournamentId: id),
+          ),
+        );
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
+  Future<void> _navigateToClub(int id, {required bool fromInitial}) async {
+    final key = _navigatorKey;
+    if (key == null) return;
+
+    // При cold-start Navigator может быть ещё не готов — ждём.
+    for (int i = 0; i < 100; i++) {
+      final state = key.currentState;
+      if (state != null && state.mounted) {
+        state.push(
+          MaterialPageRoute(
+            builder: (_) => ClubDetailScreen(clubId: id),
           ),
         );
         return;
