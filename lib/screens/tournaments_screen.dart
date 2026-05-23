@@ -16,7 +16,9 @@ import 'tournament_live_bali_koc_screen.dart';
 import 'club_detail_screen.dart';
 
 class TournamentsScreen extends StatefulWidget {
-  const TournamentsScreen({super.key});
+  final int? initialClubId;
+
+  const TournamentsScreen({super.key, this.initialClubId});
 
   @override
   State<TournamentsScreen> createState() => _TournamentsScreenState();
@@ -24,11 +26,14 @@ class TournamentsScreen extends StatefulWidget {
 
 class _TournamentsScreenState extends State<TournamentsScreen> {
   int _tabIndex = 0;
-  TournamentsFilter _filter = const TournamentsFilter();
+  late TournamentsFilter _filter;
 
   @override
   void initState() {
     super.initState();
+    _filter = widget.initialClubId != null
+        ? TournamentsFilter(clubIds: {widget.initialClubId!})
+        : const TournamentsFilter();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TournamentProvider>().loadAll();
     });
