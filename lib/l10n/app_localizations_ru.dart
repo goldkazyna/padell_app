@@ -1788,4 +1788,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get bannerBookCourtSubtitle => 'Выберите клуб и удобное время';
+
+  @override
+  String get restartTournament => 'Перезапустить турнир';
+
+  @override
+  String get startTournamentMenu => 'Запустить турнир';
+
+  @override
+  String get restartTournamentConfirmTitle => 'Перезапустить турнир?';
+
+  @override
+  String get restartTournamentConfirmMessage =>
+      'Сетка и результаты будут удалены, участников можно будет изменить. Действие необратимо.';
+
+  @override
+  String get restartTournamentConfirmOk => 'Перезапустить';
+
+  @override
+  String get restartTournamentSuccess => 'Турнир перезапущен';
 }

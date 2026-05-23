@@ -1765,4 +1765,23 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get bannerBookCourtSubtitle => 'Клуб пен ыңғайлы уақытты таңдаңыз';
+
+  @override
+  String get restartTournament => 'Турнирді қайта бастау';
+
+  @override
+  String get startTournamentMenu => 'Турнирді бастау';
+
+  @override
+  String get restartTournamentConfirmTitle => 'Турнирді қайта бастау?';
+
+  @override
+  String get restartTournamentConfirmMessage =>
+      'Тор мен нәтижелер жойылады; қатысушыларды өзгерте аласыз. Бұл әрекетті қайтару мүмкін емес.';
+
+  @override
+  String get restartTournamentConfirmOk => 'Қайта бастау';
+
+  @override
+  String get restartTournamentSuccess => 'Турнир қайта басталды';
 }

@@ -658,5 +658,12 @@
   "bannerCreateTournamentTitle": "Турнир құру",
   "bannerCreateTournamentSubtitle": "Өз шараңды ұйымдастыр",
   "bannerBookCourtTitle": "Корт брондау",
-  "bannerBookCourtSubtitle": "Клуб пен ыңғайлы уақытты таңдаңыз"
+  "bannerBookCourtSubtitle": "Клуб пен ыңғайлы уақытты таңдаңыз",
+
+  "restartTournament": "Турнирді қайта бастау",
+  "startTournamentMenu": "Турнирді бастау",
+  "restartTournamentConfirmTitle": "Турнирді қайта бастау?",
+  "restartTournamentConfirmMessage": "Тор мен нәтижелер жойылады; қатысушыларды өзгерте аласыз. Бұл әрекетті қайтару мүмкін емес.",
+  "restartTournamentConfirmOk": "Қайта бастау",
+  "restartTournamentSuccess": "Турнир қайта басталды"
 }

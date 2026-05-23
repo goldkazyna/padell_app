@@ -639,5 +639,12 @@
   "bannerCreateTournamentTitle": "Create tournament",
   "bannerCreateTournamentSubtitle": "Organize your event",
   "bannerBookCourtTitle": "Book a court",
-  "bannerBookCourtSubtitle": "Pick a club and time"
+  "bannerBookCourtSubtitle": "Pick a club and time",
+
+  "restartTournament": "Restart tournament",
+  "startTournamentMenu": "Start tournament",
+  "restartTournamentConfirmTitle": "Restart tournament?",
+  "restartTournamentConfirmMessage": "The bracket and results will be deleted; you'll be able to change participants. This action cannot be undone.",
+  "restartTournamentConfirmOk": "Restart",
+  "restartTournamentSuccess": "Tournament restarted"
 }

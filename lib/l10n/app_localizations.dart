@@ -3381,6 +3381,42 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Выберите клуб и удобное время'**
   String get bannerBookCourtSubtitle;
+
+  /// No description provided for @restartTournament.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перезапустить турнир'**
+  String get restartTournament;
+
+  /// No description provided for @startTournamentMenu.
+  ///
+  /// In ru, this message translates to:
+  /// **'Запустить турнир'**
+  String get startTournamentMenu;
+
+  /// No description provided for @restartTournamentConfirmTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перезапустить турнир?'**
+  String get restartTournamentConfirmTitle;
+
+  /// No description provided for @restartTournamentConfirmMessage.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сетка и результаты будут удалены, участников можно будет изменить. Действие необратимо.'**
+  String get restartTournamentConfirmMessage;
+
+  /// No description provided for @restartTournamentConfirmOk.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перезапустить'**
+  String get restartTournamentConfirmOk;
+
+  /// No description provided for @restartTournamentSuccess.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турнир перезапущен'**
+  String get restartTournamentSuccess;
 }
 
 class _AppLocalizationsDelegate

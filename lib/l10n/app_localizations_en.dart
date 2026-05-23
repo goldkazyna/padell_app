@@ -1785,4 +1785,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bannerBookCourtSubtitle => 'Pick a club and time';
+
+  @override
+  String get restartTournament => 'Restart tournament';
+
+  @override
+  String get startTournamentMenu => 'Start tournament';
+
+  @override
+  String get restartTournamentConfirmTitle => 'Restart tournament?';
+
+  @override
+  String get restartTournamentConfirmMessage =>
+      'The bracket and results will be deleted; you\'ll be able to change participants. This action cannot be undone.';
+
+  @override
+  String get restartTournamentConfirmOk => 'Restart';
+
+  @override
+  String get restartTournamentSuccess => 'Tournament restarted';
 }

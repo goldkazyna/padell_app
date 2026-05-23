@@ -658,5 +658,12 @@
   "bannerCreateTournamentTitle": "Создать турнир",
   "bannerCreateTournamentSubtitle": "Организуй своё событие",
   "bannerBookCourtTitle": "Забронировать корт",
-  "bannerBookCourtSubtitle": "Выберите клуб и удобное время"
+  "bannerBookCourtSubtitle": "Выберите клуб и удобное время",
+
+  "restartTournament": "Перезапустить турнир",
+  "startTournamentMenu": "Запустить турнир",
+  "restartTournamentConfirmTitle": "Перезапустить турнир?",
+  "restartTournamentConfirmMessage": "Сетка и результаты будут удалены, участников можно будет изменить. Действие необратимо.",
+  "restartTournamentConfirmOk": "Перезапустить",
+  "restartTournamentSuccess": "Турнир перезапущен"
 }
