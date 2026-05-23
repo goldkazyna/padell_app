@@ -214,14 +214,17 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   // ── Step 1: Cover header ────────────────────────────────────────────────────
 
   Widget _buildCoverHeader(Club club) {
-    final coverHeight = MediaQuery.of(context).size.height * 0.32;
-    return SizedBox(
-      height: coverHeight,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background image or colour
-          if (club.cover != null)
+    final hasCover = (club.cover ?? '').isNotEmpty;
+
+    if (hasCover) {
+      // ── With cover: existing full-height Stack ──────────────────────────────
+      final coverHeight = MediaQuery.of(context).size.height * 0.32;
+      return SizedBox(
+        height: coverHeight,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background image
             Image.network(
               club.cover!,
               fit: BoxFit.cover,
@@ -229,129 +232,168 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               height: coverHeight,
               errorBuilder: (ctx, err, stack) =>
                   Container(color: AppTheme.card),
-            )
-          else
-            Container(color: AppTheme.card),
+            ),
 
-          // Bottom dark gradient — cinematic three-stop fade
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.15),
-                    Colors.black.withValues(alpha: 0.85),
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
+            // Bottom dark gradient — cinematic three-stop fade
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.15),
+                      Colors.black.withValues(alpha: 0.85),
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Back + Share buttons
-          SafeArea(
-            child: Stack(
+            // Back + Share buttons (translucent on image)
+            SafeArea(
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 8,
+                    left: 12,
+                    child: _CircleButton(
+                      icon: Icons.arrow_back_ios_new,
+                      onTap: () => Navigator.pop(context),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 12,
+                    child: _CircleButton(
+                      icon: Icons.ios_share,
+                      onTap: _share,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Logo + badge + name overlay near bottom
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 16,
+              child: _buildLogoAndName(club, nameColor: Colors.white),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ── Without cover: compact header pinned to the top ─────────────────────
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Back + Share row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Positioned(
-                  top: 8,
-                  left: 12,
-                  child: _CircleButton(
-                    icon: Icons.arrow_back_ios_new,
-                    onTap: () => Navigator.pop(context),
-                  ),
+                _CircleButton(
+                  icon: Icons.arrow_back_ios_new,
+                  onTap: () => Navigator.pop(context),
+                  backgroundColor: AppTheme.card,
                 ),
-                Positioned(
-                  top: 8,
-                  right: 12,
-                  child: _CircleButton(
-                    icon: Icons.ios_share,
-                    onTap: _share,
-                  ),
+                _CircleButton(
+                  icon: Icons.ios_share,
+                  onTap: _share,
+                  backgroundColor: AppTheme.card,
                 ),
               ],
             ),
-          ),
-
-          // Logo + badge + name overlay near bottom
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // Circular logo
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                    color: AppTheme.card,
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: ClipOval(
-                    child: club.logo != null
-                        ? Image.network(
-                            club.logo!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (ctx, err, stack) =>
-                                _buildInitials(club.name),
-                          )
-                        : _buildInitials(club.name),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Badge pill
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF22C55E), Color(0xFF166534)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          club.isCommunity ? 'КОМЬЮНИТИ' : 'КЛУБ',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      // Club name
-                      Text(
-                        club.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            const SizedBox(height: 16),
+            // Logo + badge + name
+            Padding(
+              padding: const EdgeInsets.only(left: 4, right: 4, bottom: 4),
+              child: _buildLogoAndName(club, nameColor: AppTheme.textPrimary),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  /// Shared logo + badge + club name row used by both cover branches.
+  Widget _buildLogoAndName(Club club, {required Color nameColor}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        // Circular logo
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+            color: AppTheme.card,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: ClipOval(
+            child: club.logo != null
+                ? Image.network(
+                    club.logo!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (ctx, err, stack) =>
+                        _buildInitials(club.name),
+                  )
+                : _buildInitials(club.name),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Badge pill
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF22C55E), Color(0xFF166534)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  club.isCommunity ? 'КОМЬЮНИТИ' : 'КЛУБ',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              // Club name
+              Text(
+                club.name,
+                style: TextStyle(
+                  color: nameColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -754,8 +796,16 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
 class _CircleButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  /// Background color of the circle. Defaults to semi-transparent black
+  /// (suitable for use on top of a cover image). Pass [AppTheme.card] when
+  /// rendering on the plain dark background (no-cover branch).
+  final Color? backgroundColor;
 
-  const _CircleButton({required this.icon, required this.onTap});
+  const _CircleButton({
+    required this.icon,
+    required this.onTap,
+    this.backgroundColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -765,7 +815,7 @@ class _CircleButton extends StatelessWidget {
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.35),
+          color: backgroundColor ?? Colors.black.withValues(alpha: 0.35),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: Colors.white, size: 18),
