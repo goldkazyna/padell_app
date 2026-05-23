@@ -229,7 +229,7 @@ abstract class AppLocalizations {
   /// No description provided for @activeTournamentInfo.
   ///
   /// In ru, this message translates to:
-  /// **'Здесь в реальном времени (live) показывается турнир, который идёт прямо сейчас. Откройте его, чтобы следить за матчами и счётом.'**
+  /// **'Здесь показывается турнир, в котором вы участвуете и который идёт прямо сейчас. Откройте его, чтобы в реальном времени (live) следить за матчами и счётом.'**
   String get activeTournamentInfo;
 
   /// No description provided for @upcoming.
