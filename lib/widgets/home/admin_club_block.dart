@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/user.dart';
 import '../../screens/admin/admin_create_tournament_screen.dart';
+import '../../screens/admin/admin_edit_club_screen.dart';
 import '../../screens/admin/admin_tournaments_screen.dart';
 import '../../screens/admin/admin_users_screen.dart';
 import '../../theme/app_theme.dart';
@@ -108,6 +110,21 @@ class AdminClubBlock extends StatelessWidget {
                     clubId: club.id,
                     clubName: club.name,
                   ),
+                ),
+              ),
+            ),
+          ],
+          if (!isModerator) ...[
+            const SizedBox(height: 8),
+            _AdminCta(
+              icon: Icons.edit_outlined,
+              title: AppLocalizations.of(context)!.editClubCard,
+              subtitle: AppLocalizations.of(context)!.editClubCardSubtitle,
+              gradientColors: const [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminEditClubScreen(clubId: club.id),
                 ),
               ),
             ),
