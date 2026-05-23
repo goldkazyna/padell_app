@@ -7,6 +7,7 @@ class AdminClubEdit {
   final String? email;
   final String? description;
   final String? paymentUrl;
+  final String? telegramUrl;
 
   AdminClubEdit({
     required this.id,
@@ -17,6 +18,7 @@ class AdminClubEdit {
     this.email,
     this.description,
     this.paymentUrl,
+    this.telegramUrl,
   });
 
   factory AdminClubEdit.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class AdminClubEdit {
       email: json['email'] as String?,
       description: json['description'] as String?,
       paymentUrl: json['payment_url'] as String?,
+      telegramUrl: json['telegram_url'] as String?,
     );
   }
 }

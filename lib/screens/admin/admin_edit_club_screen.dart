@@ -44,6 +44,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
   final _email = TextEditingController();
   final _description = TextEditingController();
   final _paymentUrl = TextEditingController();
+  final _telegramUrl = TextEditingController();
   String? _city;
   bool _loading = true;
   bool _saving = false;
@@ -62,6 +63,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
     _email.dispose();
     _description.dispose();
     _paymentUrl.dispose();
+    _telegramUrl.dispose();
     super.dispose();
   }
 
@@ -77,6 +79,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
         _email.text = club.email ?? '';
         _description.text = club.description ?? '';
         _paymentUrl.text = club.paymentUrl ?? '';
+        _telegramUrl.text = club.telegramUrl ?? '';
         _loading = false;
       });
     } catch (e) {
@@ -120,6 +123,10 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
             _paymentUrl.text.trim().isEmpty
                 ? null
                 : _paymentUrl.text.trim(),
+        'telegram_url':
+            _telegramUrl.text.trim().isEmpty
+                ? null
+                : _telegramUrl.text.trim(),
       };
       await context.read<AdminService>().updateClub(widget.clubId, body);
       if (!mounted) return;
@@ -277,6 +284,14 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
                                 label: l10n.clubPaymentUrl,
                                 controller: _paymentUrl,
                                 hint: 'https://',
+                                keyboardType: TextInputType.url,
+                              ),
+                              _buildDivider(),
+                              _buildEditableRow(
+                                icon: Icons.telegram_outlined,
+                                label: l10n.clubTelegram,
+                                controller: _telegramUrl,
+                                hint: 'https://t.me/...',
                                 keyboardType: TextInputType.url,
                                 isLast: true,
                               ),
