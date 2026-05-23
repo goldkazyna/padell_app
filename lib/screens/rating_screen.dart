@@ -546,11 +546,17 @@ class _RatingScreenState extends State<RatingScreen> {
       child: Row(
         children: [
           SizedBox(
-            width: 28,
-            child: Text(
-              '${player.position}',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: isMe ? AppTheme.accent : rankColor, fontSize: 14, fontWeight: FontWeight.w700),
+            width: 36,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                '${player.position}',
+                maxLines: 1,
+                softWrap: false,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: isMe ? AppTheme.accent : rankColor, fontSize: 14, fontWeight: FontWeight.w700),
+              ),
             ),
           ),
           const SizedBox(width: 10),
@@ -640,8 +646,12 @@ class _RatingScreenState extends State<RatingScreen> {
       child: Row(
         children: [
           SizedBox(
-            width: 28,
-            child: Text('${card.place}', textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+            width: 36,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text('${card.place}', maxLines: 1, softWrap: false, textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.w700)),
+            ),
           ),
           const SizedBox(width: 10),
           Container(

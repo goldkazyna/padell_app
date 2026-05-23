@@ -32,7 +32,7 @@ class PlayerRatingItem extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 32,
+            width: 40,
             child: _buildRank(player.position),
           ),
           const SizedBox(width: 12),
@@ -133,12 +133,18 @@ class PlayerRatingItem extends StatelessWidget {
   }
 
   Widget _buildRank(int rank) {
-    return Text(
-      '$rank',
-      style: TextStyle(
-        color: rank <= 3 ? AppTheme.accent : AppTheme.textSecondary,
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Text(
+        '$rank',
+        maxLines: 1,
+        softWrap: false,
+        style: TextStyle(
+          color: rank <= 3 ? AppTheme.accent : AppTheme.textSecondary,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
