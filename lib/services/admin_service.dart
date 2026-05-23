@@ -135,6 +135,19 @@ class AdminService {
     );
   }
 
+  /// Перезапустить турнир (`in_progress` → `open`, сетка удаляется).
+  Future<AdminTournamentDetail> restartTournament(int id) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/tournaments/$id/restart',
+      const {},
+      token,
+    );
+    return AdminTournamentDetail.fromJson(
+      response['tournament'] as Map<String, dynamic>,
+    );
+  }
+
   /// Удалить турнир (только черновик).
   Future<void> deleteTournament(int id) async {
     final token = await _storage.getToken();

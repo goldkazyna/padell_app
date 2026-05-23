@@ -22,6 +22,7 @@ class AdminTournamentDetail {
   final List<String> courts;
   final bool canEdit;
   final bool canStart;
+  final bool canRestart;
   final bool canDelete;
   final bool baliPairsCreated;
   final bool tournamentsFullAccess;
@@ -48,6 +49,7 @@ class AdminTournamentDetail {
     required this.courts,
     required this.canEdit,
     required this.canStart,
+    required this.canRestart,
     required this.canDelete,
     this.baliPairsCreated = false,
     this.tournamentsFullAccess = true,
@@ -82,6 +84,7 @@ class AdminTournamentDetail {
           const [],
       canEdit: json['can_edit'] as bool? ?? false,
       canStart: json['can_start'] as bool? ?? false,
+      canRestart: json['can_restart'] as bool? ?? false,
       canDelete: json['can_delete'] as bool? ?? false,
       baliPairsCreated: json['bali_pairs_created'] as bool? ?? false,
       tournamentsFullAccess:
