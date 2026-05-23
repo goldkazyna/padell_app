@@ -9,6 +9,7 @@ class Club {
   final String? paymentUrl;
   final String? logo;
   final bool isCommunity;
+  final String? telegramUrl;
 
   Club({
     required this.id,
@@ -19,6 +20,7 @@ class Club {
     this.paymentUrl,
     this.logo,
     this.isCommunity = false,
+    this.telegramUrl,
   });
 
   factory Club.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class Club {
       paymentUrl: json['payment_url'] as String?,
       logo: json['logo'] as String?,
       isCommunity: json['is_community'] as bool? ?? false,
+      telegramUrl: json['telegram_url'] as String?,
     );
   }
 

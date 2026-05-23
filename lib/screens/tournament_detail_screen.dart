@@ -19,6 +19,7 @@ import '../widgets/tournaments/team_registration_sheet.dart';
 import '../widgets/tournaments/friend_registration_sheet.dart';
 import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TournamentDetailScreen extends StatefulWidget {
   final int tournamentId;
@@ -1006,6 +1007,41 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final orgName = t.club.name;
     final orgPhone = t.club.phone ?? '';
     final orgInitials = _getInitials(orgName);
+    final orgLogo = t.club.logo;
+    final orgTelegramUrl = t.club.telegramUrl ?? '';
+
+    // Виджет с инициалами (используется как основной или fallback)
+    final initialsAvatar = Container(
+      width: 44,
+      height: 44,
+      decoration: const BoxDecoration(
+        color: AppTheme.accent,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          orgInitials,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+
+    // Аватар: логотип клуба или инициалы
+    final avatarWidget = (orgLogo != null && orgLogo.isNotEmpty)
+        ? ClipOval(
+            child: Image.network(
+              orgLogo,
+              width: 44,
+              height: 44,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => initialsAvatar,
+            ),
+          )
+        : initialsAvatar;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1028,67 +1064,94 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Аватар
-              Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: AppTheme.accent,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    orgInitials,
-                    style: const TextStyle(
+              Row(
+                children: [
+                  // Аватар
+                  avatarWidget,
+                  const SizedBox(width: 12),
+
+                  // Имя + телефон
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          orgName,
+                          style: const TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (orgPhone.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            orgPhone,
+                            style: const TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  // Кнопка звонок
+                  if (orgPhone.isNotEmpty)
+                    _buildOrganizerAction(
+                      icon: Icons.phone,
                       color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                      bgColor: AppTheme.accent,
+                      onTap: () {
+                        final phone = orgPhone.replaceAll(RegExp(r'[^\d+]'), '');
+                        launchUrl(Uri.parse('tel:$phone'));
+                      },
+                    ),
+                ],
+              ),
+
+              // Кнопка Telegram-канала
+              if (orgTelegramUrl.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () async {
+                    final uri = Uri.parse(t.club.telegramUrl!);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.blue,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const FaIcon(FontAwesomeIcons.telegram, color: Colors.white, size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Канал · $orgName',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-
-              // Имя + телефон
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      orgName,
-                      style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (orgPhone.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        orgPhone,
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-
-              // Кнопка звонок
-              if (orgPhone.isNotEmpty)
-                _buildOrganizerAction(
-                  icon: Icons.phone,
-                  color: Colors.white,
-                  bgColor: AppTheme.accent,
-                  onTap: () {
-                    final phone = orgPhone.replaceAll(RegExp(r'[^\d+]'), '');
-                    launchUrl(Uri.parse('tel:$phone'));
-                  },
-                ),
+              ],
             ],
           ),
         ),
