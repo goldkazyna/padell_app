@@ -228,7 +228,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         onChanged: _onSearchChanged,
         style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         decoration: InputDecoration(
-          hintText: 'Имя или телефон',
+          hintText: 'Имя или ID',
           hintStyle: const TextStyle(color: AppTheme.textDim),
           prefixIcon:
               const Icon(Icons.search, color: AppTheme.textSecondary),
@@ -418,7 +418,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       const SizedBox(height: 2),
                       Text(
                         [
-                          if ((u.phone ?? '').isNotEmpty) u.phone!,
+                          'ID ${u.id}',
                           if (u.level != null) 'L${_fmtLevel(u.level!)}',
                           'Рейтинг ${u.rating}',
                         ].join(' · '),
@@ -627,7 +627,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               ),
               const SizedBox(height: 4),
               Text(
-                widget.initial.phone ?? '',
+                'ID ${widget.initial.id}',
                 style: const TextStyle(
                     color: AppTheme.textSecondary, fontSize: 12),
               ),
@@ -701,31 +701,44 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                     color: AppTheme.textDim, fontSize: 11),
               ),
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(
-                  color: AppTheme.accent.withOpacity(0.10),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                      color: AppTheme.accent.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.verified_outlined,
-                        color: AppTheme.accent, size: 16),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Уровень будет автоматически отмечен как верифицированный',
-                        style: TextStyle(
-                            color: AppTheme.accent,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600),
-                      ),
+              Builder(
+                builder: (_) {
+                  final hasAvatar =
+                      (widget.initial.avatarUrl ?? '').isNotEmpty;
+                  final color =
+                      hasAvatar ? AppTheme.accent : AppTheme.amber;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: color.withOpacity(0.3)),
                     ),
-                  ],
-                ),
+                    child: Row(
+                      children: [
+                        Icon(
+                            hasAvatar
+                                ? Icons.verified_outlined
+                                : Icons.warning_amber_rounded,
+                            color: color,
+                            size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            hasAvatar
+                                ? 'Уровень будет автоматически отмечен как верифицированный'
+                                : 'У игрока нет фото — уровень НЕ будет верифицирован',
+                            style: TextStyle(
+                                color: color,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
               if (_error != null) ...[
                 const SizedBox(height: 10),

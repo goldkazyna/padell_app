@@ -2,7 +2,6 @@
 class AdminClubUser {
   final int id;
   final String name;
-  final String? phone;
   final double? level;
   final int rating;
   final bool levelVerified;
@@ -11,7 +10,6 @@ class AdminClubUser {
   const AdminClubUser({
     required this.id,
     required this.name,
-    required this.phone,
     required this.level,
     required this.rating,
     required this.levelVerified,
@@ -22,7 +20,6 @@ class AdminClubUser {
     return AdminClubUser(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String? ?? '',
-      phone: json['phone'] as String?,
       level: (json['level'] as num?)?.toDouble(),
       rating: (json['rating'] as num?)?.toInt() ?? 0,
       levelVerified: json['level_verified'] as bool? ?? false,
