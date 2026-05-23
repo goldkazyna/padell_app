@@ -1834,4 +1834,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clubCardSaved => 'Club card saved';
+
+  @override
+  String get clubTelegram => 'Telegram channel';
+
+  @override
+  String get openTelegramChannel => 'Open Telegram channel';
 }

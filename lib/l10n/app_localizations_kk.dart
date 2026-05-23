@@ -1814,4 +1814,10 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get clubCardSaved => 'Клуб картасы сақталды';
+
+  @override
+  String get clubTelegram => 'Телеграм-арна';
+
+  @override
+  String get openTelegramChannel => 'Телеграм-арнаны ашу';
 }

@@ -657,5 +657,8 @@
   "clubEmail": "Email",
   "clubDescription": "Description",
   "clubPaymentUrl": "Payment link",
-  "clubCardSaved": "Club card saved"
+  "clubCardSaved": "Club card saved",
+
+  "clubTelegram": "Telegram channel",
+  "openTelegramChannel": "Open Telegram channel"
 }

@@ -3477,6 +3477,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Карточка клуба сохранена'**
   String get clubCardSaved;
+
+  /// No description provided for @clubTelegram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Телеграм-канал'**
+  String get clubTelegram;
+
+  /// No description provided for @openTelegramChannel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть телеграм-канал'**
+  String get openTelegramChannel;
 }
 
 class _AppLocalizationsDelegate

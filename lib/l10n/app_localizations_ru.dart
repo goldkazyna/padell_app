@@ -1837,4 +1837,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get clubCardSaved => 'Карточка клуба сохранена';
+
+  @override
+  String get clubTelegram => 'Телеграм-канал';
+
+  @override
+  String get openTelegramChannel => 'Открыть телеграм-канал';
 }

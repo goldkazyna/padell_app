@@ -676,5 +676,8 @@
   "clubEmail": "Email",
   "clubDescription": "Сипаттама",
   "clubPaymentUrl": "Төлем сілтемесі",
-  "clubCardSaved": "Клуб картасы сақталды"
+  "clubCardSaved": "Клуб картасы сақталды",
+
+  "clubTelegram": "Телеграм-арна",
+  "openTelegramChannel": "Телеграм-арнаны ашу"
 }

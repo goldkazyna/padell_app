@@ -676,5 +676,8 @@
   "clubEmail": "Email",
   "clubDescription": "Описание",
   "clubPaymentUrl": "Ссылка для оплаты",
-  "clubCardSaved": "Карточка клуба сохранена"
+  "clubCardSaved": "Карточка клуба сохранена",
+
+  "clubTelegram": "Телеграм-канал",
+  "openTelegramChannel": "Открыть телеграм-канал"
 }
