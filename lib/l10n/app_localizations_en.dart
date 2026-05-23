@@ -588,6 +588,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notInTournaments => 'You are not in any tournaments';
 
   @override
+  String get details => 'Details';
+
+  @override
+  String get chooseTournament => 'Choose a tournament';
+
+  @override
   String get noUpcomingTournaments => 'No upcoming tournaments';
 
   @override

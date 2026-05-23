@@ -590,6 +590,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notInTournaments => 'Вы не участвуете в турнирах';
 
   @override
+  String get details => 'Подробнее';
+
+  @override
+  String get chooseTournament => 'Выбрать турнир';
+
+  @override
   String get noUpcomingTournaments => 'Нет предстоящих турниров';
 
   @override

@@ -217,6 +217,8 @@
   "levelShort": "Lvl. {level}",
   "noAvailableTournaments": "No available tournaments",
   "notInTournaments": "You are not in any tournaments",
+  "details": "Details",
+  "chooseTournament": "Choose a tournament",
   "noUpcomingTournaments": "No upcoming tournaments",
 
   "tournaments": "Tournaments",

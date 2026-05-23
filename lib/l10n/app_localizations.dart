@@ -1186,6 +1186,18 @@ abstract class AppLocalizations {
   /// **'Вы не участвуете в турнирах'**
   String get notInTournaments;
 
+  /// No description provided for @details.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подробнее'**
+  String get details;
+
+  /// No description provided for @chooseTournament.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрать турнир'**
+  String get chooseTournament;
+
   /// No description provided for @noUpcomingTournaments.
   ///
   /// In ru, this message translates to:

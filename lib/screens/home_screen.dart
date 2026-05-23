@@ -209,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 12),
                   NearestTournamentCard(
                     tournament: home.nearestTournament,
-                    onRegister: () {
+                    onTap: () {
                       if (home.nearestTournament == null) return;
                       if (!ensureProfileComplete(context)) return;
                       Navigator.push(
@@ -221,6 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
+                    onBrowse: () => widget.onNavigateToTab?.call(1),
                   ),
                   const SizedBox(height: 12),
                   SectionTitle(title: AppLocalizations.of(context)!.activeTournament),

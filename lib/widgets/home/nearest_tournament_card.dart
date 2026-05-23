@@ -6,12 +6,14 @@ import '../tournaments/club_logo.dart';
 
 class NearestTournamentCard extends StatelessWidget {
   final Tournament? tournament;
-  final VoidCallback? onRegister;
+  final VoidCallback? onTap;
+  final VoidCallback? onBrowse;
 
   const NearestTournamentCard({
     super.key,
     this.tournament,
-    this.onRegister,
+    this.onTap,
+    this.onBrowse,
   });
 
   @override
@@ -122,7 +124,7 @@ class NearestTournamentCard extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: onRegister,
+                onTap: onTap,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
@@ -132,7 +134,7 @@ class NearestTournamentCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.register,
+                        AppLocalizations.of(context)!.details,
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -184,8 +186,37 @@ class NearestTournamentCard extends StatelessWidget {
             const Icon(Icons.event_available, color: AppTheme.textSecondary, size: 40),
             const SizedBox(height: 12),
             Text(
-              AppLocalizations.of(context)!.noAvailableTournaments,
+              AppLocalizations.of(context)!.notInTournaments,
               style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: onBrowse,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppTheme.accent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.chooseTournament,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_forward,
+                        color: Colors.white, size: 16),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

@@ -223,6 +223,8 @@
   "@levelShort": { "placeholders": { "level": { "type": "String" } } },
   "noAvailableTournaments": "Нет доступных турниров",
   "notInTournaments": "Вы не участвуете в турнирах",
+  "details": "Подробнее",
+  "chooseTournament": "Выбрать турнир",
   "noUpcomingTournaments": "Нет предстоящих турниров",
 
   "tournaments": "Турниры",

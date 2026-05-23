@@ -223,6 +223,8 @@
   "@levelShort": { "placeholders": { "level": { "type": "String" } } },
   "noAvailableTournaments": "Қол жетімді турнирлер жоқ",
   "notInTournaments": "Сіз турнирлерге қатыспайсыз",
+  "details": "Толығырақ",
+  "chooseTournament": "Турнир таңдау",
   "noUpcomingTournaments": "Алдағы турнирлер жоқ",
 
   "tournaments": "Турнирлер",

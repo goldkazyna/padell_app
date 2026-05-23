@@ -581,6 +581,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get notInTournaments => 'Сіз турнирлерге қатыспайсыз';
 
   @override
+  String get details => 'Толығырақ';
+
+  @override
+  String get chooseTournament => 'Турнир таңдау';
+
+  @override
   String get noUpcomingTournaments => 'Алдағы турнирлер жоқ';
 
   @override
