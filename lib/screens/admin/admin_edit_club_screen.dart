@@ -45,6 +45,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
   final _description = TextEditingController();
   final _paymentUrl = TextEditingController();
   final _telegramUrl = TextEditingController();
+  final _instagramUrl = TextEditingController();
   String? _city;
   bool _loading = true;
   bool _saving = false;
@@ -64,6 +65,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
     _description.dispose();
     _paymentUrl.dispose();
     _telegramUrl.dispose();
+    _instagramUrl.dispose();
     super.dispose();
   }
 
@@ -80,6 +82,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
         _description.text = club.description ?? '';
         _paymentUrl.text = club.paymentUrl ?? '';
         _telegramUrl.text = club.telegramUrl ?? '';
+        _instagramUrl.text = club.instagramUrl ?? '';
         _loading = false;
       });
     } catch (e) {
@@ -127,6 +130,10 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
             _telegramUrl.text.trim().isEmpty
                 ? null
                 : _telegramUrl.text.trim(),
+        'instagram_url':
+            _instagramUrl.text.trim().isEmpty
+                ? null
+                : _instagramUrl.text.trim(),
       };
       await context.read<AdminService>().updateClub(widget.clubId, body);
       if (!mounted) return;
@@ -292,6 +299,14 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
                                 label: l10n.clubTelegram,
                                 controller: _telegramUrl,
                                 hint: 'https://t.me/...',
+                                keyboardType: TextInputType.url,
+                              ),
+                              _buildDivider(),
+                              _buildEditableRow(
+                                icon: Icons.camera_alt_outlined,
+                                label: l10n.clubInstagram,
+                                controller: _instagramUrl,
+                                hint: 'https://instagram.com/...',
                                 keyboardType: TextInputType.url,
                                 isLast: true,
                               ),
