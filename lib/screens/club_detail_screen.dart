@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/club.dart';
 import '../providers/tournament_provider.dart';
@@ -106,15 +105,91 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     }
   }
 
-  void _share() {
-    final c = _club;
-    if (c == null) return;
-    final parts = <String>[c.name];
-    final link = (c.telegramUrl?.isNotEmpty ?? false)
-        ? c.telegramUrl!
-        : ((c.instagramUrl?.isNotEmpty ?? false) ? c.instagramUrl! : null);
-    if (link != null) parts.add(link);
-    Share.share(parts.join('\n'));
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _showShareMenu() {
+    final club = _club;
+    if (club == null) return;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Drag handle
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 4),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textSecondary.withAlpha(80),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Title
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  'Поделиться',
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const Divider(height: 0, thickness: 0.5, color: Color(0xFF2A2A2A)),
+              // Row 1: Профиль клуба — always present
+              _ShareRow(
+                icon: const Icon(Icons.link, color: AppTheme.accent, size: 20),
+                label: 'Профиль клуба',
+                url: 'https://padel-p.kz/c/${club.id}',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openUrl('https://padel-p.kz/c/${club.id}');
+                },
+              ),
+              // Row 2: Telegram — only if url is set
+              if ((club.telegramUrl ?? '').isNotEmpty)
+                _ShareRow(
+                  icon: const FaIcon(FontAwesomeIcons.telegram,
+                      color: AppTheme.accent, size: 20),
+                  label: 'Telegram',
+                  url: club.telegramUrl!,
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _openTelegram(club.telegramUrl!);
+                  },
+                ),
+              // Row 3: Instagram — only if url is set
+              if ((club.instagramUrl ?? '').isNotEmpty)
+                _ShareRow(
+                  icon: const FaIcon(FontAwesomeIcons.instagram,
+                      color: AppTheme.accent, size: 20),
+                  label: 'Instagram',
+                  url: club.instagramUrl!,
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _openInstagram(club.instagramUrl!);
+                  },
+                ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -269,7 +344,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                     right: 12,
                     child: _CircleButton(
                       icon: Icons.ios_share,
-                      onTap: _share,
+                      onTap: _showShareMenu,
                     ),
                   ),
                 ],
@@ -308,7 +383,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 ),
                 _CircleButton(
                   icon: Icons.ios_share,
-                  onTap: _share,
+                  onTap: _showShareMenu,
                   backgroundColor: AppTheme.card,
                 ),
               ],
@@ -834,4 +909,71 @@ class _SocialAction {
     required this.label,
     required this.onTap,
   });
+}
+
+class _ShareRow extends StatelessWidget {
+  final Widget icon;
+  final String label;
+  final String url;
+  final VoidCallback onTap;
+
+  const _ShareRow({
+    required this.icon,
+    required this.label,
+    required this.url,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppTheme.accentSoft,
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: icon,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    url,
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right,
+                color: AppTheme.textSecondary, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
 }
