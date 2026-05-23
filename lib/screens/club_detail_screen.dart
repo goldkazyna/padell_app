@@ -411,11 +411,12 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
             Container(
               width: 44,
               height: 44,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: AppTheme.accentSoft,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: action.icon,
+              child: Center(child: action.icon),
             ),
             const SizedBox(height: 8),
             Text(
@@ -441,8 +442,16 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) =>
-                TournamentsScreen(initialClubId: club.id),
+            builder: (_) => Scaffold(
+              backgroundColor: AppTheme.background,
+              appBar: AppBar(
+                backgroundColor: AppTheme.background,
+                foregroundColor: AppTheme.textPrimary,
+                elevation: 0,
+                leading: const BackButton(),
+              ),
+              body: TournamentsScreen(initialClubId: club.id),
+            ),
           ),
         );
       },
@@ -498,8 +507,8 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               ),
               child: Text(
                 '${club.openTournamentsCount}',
-                style: TextStyle(
-                  color: AppTheme.accent.withValues(alpha: 0.9),
+                style: const TextStyle(
+                  color: Colors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                 ),
