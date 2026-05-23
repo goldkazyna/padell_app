@@ -98,6 +98,13 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     }
   }
 
+  Future<void> _openInstagram(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,6 +200,13 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               label: AppLocalizations.of(context)!.clubTelegram,
               value: AppLocalizations.of(context)!.openTelegramChannel,
               onTap: () => _openTelegram(club.telegramUrl!),
+            ),
+          if ((club.instagramUrl ?? '').isNotEmpty)
+            _buildInfoRow(
+              icon: Icons.camera_alt_outlined,
+              label: AppLocalizations.of(context)!.clubInstagram,
+              value: AppLocalizations.of(context)!.openInstagram,
+              onTap: () => _openInstagram(club.instagramUrl!),
             ),
           if (club.description != null && club.description!.isNotEmpty) ...[
             const SizedBox(height: 12),

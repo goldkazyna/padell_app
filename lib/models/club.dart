@@ -7,6 +7,7 @@ class Club {
   final String? description;
   final String? phone;
   final String? telegramUrl;
+  final String? instagramUrl;
   final int courtsCount;
   final double? minPrice;
   final bool isHidden;
@@ -20,6 +21,7 @@ class Club {
     this.description,
     this.phone,
     this.telegramUrl,
+    this.instagramUrl,
     this.courtsCount = 0,
     this.minPrice,
     this.isHidden = false,
@@ -35,6 +37,7 @@ class Club {
       description: json['description'] as String?,
       phone: json['phone'] as String?,
       telegramUrl: json['telegram_url'] as String?,
+      instagramUrl: json['instagram_url'] as String?,
       courtsCount: json['courts_count'] as int? ?? 0,
       minPrice: (json['min_price'] as num?)?.toDouble(),
       isHidden: json['is_hidden'] as bool? ?? false,
@@ -50,6 +53,7 @@ class Club {
     description: description,
     phone: phone,
     telegramUrl: telegramUrl,
+    instagramUrl: instagramUrl,
     courtsCount: courtsCount,
     minPrice: minPrice,
     isHidden: isHidden ?? this.isHidden,
