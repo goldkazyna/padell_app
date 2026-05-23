@@ -1,5 +1,6 @@
 import '../models/user.dart';
 import '../models/tournament.dart';
+import '../models/home_banner.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
 
@@ -8,12 +9,14 @@ class HomeData {
   final Tournament? nearestTournament;
   final Tournament? activeTournament;
   final List<Tournament> upcomingTournaments;
+  final HomeBanner? banner;
 
   HomeData({
     required this.user,
     this.nearestTournament,
     this.activeTournament,
     required this.upcomingTournaments,
+    this.banner,
   });
 }
 
@@ -69,6 +72,11 @@ class HomeService {
           .map((t) => Tournament.fromJson(t as Map<String, dynamic>))
           .toList();
 
+      HomeBanner? banner;
+      if (response['banner'] != null) {
+        banner = HomeBanner.fromJson(response['banner'] as Map<String, dynamic>);
+      }
+
       return HomeResult(
         success: true,
         data: HomeData(
@@ -76,6 +84,7 @@ class HomeService {
           nearestTournament: nearestTournament,
           activeTournament: activeTournament,
           upcomingTournaments: upcomingTournaments,
+          banner: banner,
         ),
       );
     } on ApiException catch (e) {

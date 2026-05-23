@@ -10,6 +10,7 @@ import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
+import '../widgets/home/home_banner_card.dart';
 import '../widgets/pressable_card.dart';
 import '../widgets/home/admin_club_block.dart';
 import 'clubs_list_screen.dart';
@@ -287,6 +288,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
+                  if (home.banner != null) ...[
+                    HomeBannerCard(banner: home.banner!),
+                    const SizedBox(height: 12),
+                  ],
                   SectionTitle(
                     title: AppLocalizations.of(context)!.upcoming,
                     trailing: AppLocalizations.of(context)!.calendarLink,

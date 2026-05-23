@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../models/tournament.dart';
+import '../models/home_banner.dart';
 import '../services/home_service.dart';
 
 class HomeProvider extends ChangeNotifier {
@@ -14,6 +15,7 @@ class HomeProvider extends ChangeNotifier {
   Tournament? _nearestTournament;
   Tournament? _activeTournament;
   List<Tournament> _upcomingTournaments = [];
+  HomeBanner? _banner;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -21,6 +23,7 @@ class HomeProvider extends ChangeNotifier {
   Tournament? get nearestTournament => _nearestTournament;
   Tournament? get activeTournament => _activeTournament;
   List<Tournament> get upcomingTournaments => _upcomingTournaments;
+  HomeBanner? get banner => _banner;
 
   Future<void> loadHomeData() async {
     _isLoading = true;
@@ -36,6 +39,7 @@ class HomeProvider extends ChangeNotifier {
       _nearestTournament = result.data!.nearestTournament;
       _activeTournament = result.data!.activeTournament;
       _upcomingTournaments = result.data!.upcomingTournaments;
+      _banner = result.data!.banner;
       _error = null;
     } else {
       _error = result.message;
