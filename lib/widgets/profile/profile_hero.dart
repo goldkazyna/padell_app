@@ -178,6 +178,16 @@ class _TopRow extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                'ID ${user?.id ?? '—'}',
+                style: const TextStyle(
+                  color: AppTheme.textDim,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              const SizedBox(height: 2),
               Row(
                 children: [
                   Flexible(
