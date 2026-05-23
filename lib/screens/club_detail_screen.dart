@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -232,7 +233,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
           else
             Container(color: AppTheme.card),
 
-          // Bottom dark gradient
+          // Bottom dark gradient — cinematic three-stop fade
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -241,8 +242,10 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withValues(alpha: 0.7),
+                    Colors.black.withValues(alpha: 0.15),
+                    Colors.black.withValues(alpha: 0.85),
                   ],
+                  stops: const [0.0, 0.5, 1.0],
                 ),
               ),
             ),
@@ -312,7 +315,11 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: AppTheme.accent,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF22C55E), Color(0xFF166534)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -354,21 +361,23 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     final actions = <_SocialAction>[];
     if ((club.phone ?? '').isNotEmpty) {
       actions.add(_SocialAction(
-        icon: Icons.call,
+        icon: const Icon(Icons.call, color: AppTheme.accent, size: 20),
         label: 'Звонок',
         onTap: () => _callPhone(club.phone!),
       ));
     }
     if ((club.telegramUrl ?? '').isNotEmpty) {
       actions.add(_SocialAction(
-        icon: Icons.send,
+        icon: const FaIcon(FontAwesomeIcons.telegram,
+            color: AppTheme.accent, size: 20),
         label: 'Telegram',
         onTap: () => _openTelegram(club.telegramUrl!),
       ));
     }
     if ((club.instagramUrl ?? '').isNotEmpty) {
       actions.add(_SocialAction(
-        icon: Icons.camera_alt_outlined,
+        icon: const FaIcon(FontAwesomeIcons.instagram,
+            color: AppTheme.accent, size: 20),
         label: 'Instagram',
         onTap: () => _openInstagram(club.instagramUrl!),
       ));
@@ -406,7 +415,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 color: AppTheme.accentSoft,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(action.icon, color: AppTheme.accent, size: 20),
+              child: action.icon,
             ),
             const SizedBox(height: 8),
             Text(
@@ -441,8 +450,19 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.accent,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF22C55E), Color(0xFF166534)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.accent.withAlpha(40),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -746,7 +766,7 @@ class _CircleButton extends StatelessWidget {
 }
 
 class _SocialAction {
-  final IconData icon;
+  final Widget icon;
   final String label;
   final VoidCallback onTap;
 
