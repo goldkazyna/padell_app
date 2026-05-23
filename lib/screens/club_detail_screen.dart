@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/club.dart';
 import '../providers/tournament_provider.dart';
@@ -105,13 +106,6 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     }
   }
 
-  Future<void> _openUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   void _showShareMenu() {
     final club = _club;
     if (club == null) return;
@@ -157,7 +151,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 url: 'https://padel-p.kz/c/${club.id}',
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  _openUrl('https://padel-p.kz/c/${club.id}');
+                  Share.share('${club.name}\nhttps://padel-p.kz/c/${club.id}');
                 },
               ),
               // Row 2: Telegram — only if url is set
@@ -169,7 +163,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   url: club.telegramUrl!,
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    _openTelegram(club.telegramUrl!);
+                    Share.share(club.telegramUrl!);
                   },
                 ),
               // Row 3: Instagram — only if url is set
@@ -181,7 +175,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   url: club.instagramUrl!,
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    _openInstagram(club.instagramUrl!);
+                    Share.share(club.instagramUrl!);
                   },
                 ),
               const SizedBox(height: 8),
