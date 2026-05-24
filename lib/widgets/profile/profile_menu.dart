@@ -526,7 +526,7 @@ class _AppVersionLabelState extends State<_AppVersionLabel> {
     try {
       final info = await PackageInfo.fromPlatform();
       if (!mounted) return;
-      setState(() => _version = info.version);
+      setState(() => _version = '${info.version} (${info.buildNumber})');
     } catch (_) {
       // ignore — версия не отрисуется
     }
