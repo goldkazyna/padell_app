@@ -728,13 +728,27 @@ class _PaymentLogos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset('assets/images/visa.png', height: 34),
-          const SizedBox(width: 16),
-          Image.asset('assets/images/mastercard.png', height: 34),
-        ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(40),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/images/visa.png', height: 44),
+            const SizedBox(width: 22),
+            Image.asset('assets/images/mastercard.png', height: 44),
+          ],
+        ),
       ),
     );
   }
