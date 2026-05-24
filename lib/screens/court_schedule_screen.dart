@@ -17,10 +17,17 @@ class CourtScheduleScreen extends StatefulWidget {
 }
 
 class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
+  // Сколько дней вперёд показываем в ленте дат (плавный скролл по дням).
+  static const int _daysCount = 120;
+  // Ширина чипа дня (56) + горизонтальные отступы (3 + 3).
+  static const double _dayExtent = 62;
+
   late String _selectedDate;
-  List<_DayInfo>? _weekDays;
+  List<_DayInfo>? _days;
   int _selectedCourtIndex = 0;
-  Map<String, int> _occupancy = {};
+  final Map<String, int> _occupancy = {};
+  final Set<String> _loadedOccWeeks = {};
+  final ScrollController _dayScrollCtrl = ScrollController();
   bool _initialized = false;
 
   @override
@@ -28,14 +35,23 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     super.initState();
     final now = DateTime.now();
     _selectedDate = _fmt(now);
+    _dayScrollCtrl.addListener(_onDayScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
     });
   }
 
-  void _ensureWeekBuilt(AppLocalizations l10n) {
+  @override
+  void dispose() {
+    _dayScrollCtrl.removeListener(_onDayScroll);
+    _dayScrollCtrl.dispose();
+    super.dispose();
+  }
+
+  void _ensureDaysBuilt(AppLocalizations l10n) {
     if (!_initialized) {
-      _weekDays = _buildWeek(DateTime.now(), _localizedDayNames(l10n), _localizedMonthShorts(l10n));
+      _days = _buildDays(DateTime.now(), _daysCount,
+          _localizedDayNames(l10n), _localizedMonthShorts(l10n));
       _initialized = true;
     }
   }
@@ -53,18 +69,18 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     l10n.monthShortSep, l10n.monthShortOct, l10n.monthShortNov, l10n.monthShortDec,
   ];
 
-  List<_DayInfo> _buildWeek(DateTime from, [List<String>? dn, List<String>? mn]) {
-    final monday = from.subtract(Duration(days: from.weekday - 1));
+  List<_DayInfo> _buildDays(DateTime from, int count,
+      [List<String>? dn, List<String>? mn]) {
     final dayNames = dn ?? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final monthNames = mn ?? ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    return List.generate(7, (i) {
-      final d = monday.add(Duration(days: i));
+    return List.generate(count, (i) {
+      final d = today.add(Duration(days: i));
       final dayStart = DateTime(d.year, d.month, d.day);
       return _DayInfo(
         date: _fmt(d),
-        dayName: dayNames[i],
+        dayName: dayNames[d.weekday - 1],
         dayNum: d.day.toString(),
         month: monthNames[d.month],
         isToday: dayStart.isAtSameMomentAs(today),
@@ -73,53 +89,51 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     });
   }
 
-  void _loadData() {
-    context.read<CourtProvider>().loadSchedule(widget.club.id, _selectedDate);
-    _loadOccupancy();
+  // Понедельник недели, которой принадлежит дата (ключ для загруженности).
+  String _mondayOf(String date) {
+    final d = DateTime.parse(date);
+    return _fmt(d.subtract(Duration(days: d.weekday - 1)));
   }
 
-  Future<void> _loadOccupancy() async {
+  void _loadData() {
+    context.read<CourtProvider>().loadSchedule(widget.club.id, _selectedDate);
+    // Загруженность для текущей и следующей недели (видимый стартовый диапазон).
+    _ensureOccupancyForDate(_selectedDate);
+    _ensureOccupancyForDate(
+        _fmt(DateTime.parse(_selectedDate).add(const Duration(days: 7))));
+  }
+
+  // Подгружаем загруженность недели, которой принадлежит дата (если ещё не
+  // загружена). Результаты сливаем в общий _occupancy (ключ — дата).
+  Future<void> _ensureOccupancyForDate(String date) async {
+    final monday = _mondayOf(date);
+    if (_loadedOccWeeks.contains(monday)) return;
+    _loadedOccWeeks.add(monday);
     try {
       final provider = context.read<CourtProvider>();
-      final response = await provider.courtService.getWeekOccupancy(
-        widget.club.id,
-        _weekDays![0].date,
-      );
+      final response =
+          await provider.courtService.getWeekOccupancy(widget.club.id, monday);
       if (response['success'] == true && mounted) {
         final occ = response['occupancy'] as Map<String, dynamic>? ?? {};
         setState(() {
-          _occupancy = occ.map((k, v) => MapEntry(k, (v as num).toInt()));
+          _occupancy.addAll(occ.map((k, v) => MapEntry(k, (v as num).toInt())));
         });
       }
-    } catch (_) {}
+    } catch (_) {
+      _loadedOccWeeks.remove(monday); // разрешим повторную попытку
+    }
   }
 
-  void _changeWeek(int delta) {
-    final l10n = AppLocalizations.of(context)!;
-    final current = DateTime.parse(_weekDays![0].date);
-    final newStart = current.add(Duration(days: 7 * delta));
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final weekEnd = newStart.add(const Duration(days: 6));
-
-    // Нельзя листать в недели где все дни прошли
-    if (weekEnd.isBefore(today)) return;
-
-    // Если новая неделя содержит сегодняшний день — выделяем сегодня,
-    // иначе (будущая неделя) — понедельник
-    final newSelected =
-        (today.isAfter(newStart.subtract(const Duration(days: 1))) &&
-                today.isBefore(newStart.add(const Duration(days: 7))))
-            ? _fmt(today)
-            : _fmt(newStart);
-
-    setState(() {
-      _weekDays = _buildWeek(newStart, _localizedDayNames(l10n), _localizedMonthShorts(l10n));
-      _selectedDate = newSelected;
-      _selectedCourtIndex = 0;
-      _occupancy = {};
-    });
-    _loadData();
+  // При скролле ленты дат подгружаем загруженность для видимых недель.
+  void _onDayScroll() {
+    if (_days == null || !_dayScrollCtrl.hasClients) return;
+    final pos = _dayScrollCtrl.position;
+    final first = (pos.pixels / _dayExtent).floor().clamp(0, _days!.length - 1);
+    final last = ((pos.pixels + pos.viewportDimension) / _dayExtent)
+        .ceil()
+        .clamp(0, _days!.length - 1);
+    _ensureOccupancyForDate(_days![first].date);
+    _ensureOccupancyForDate(_days![last].date);
   }
 
   void _selectDate(String date) {
@@ -132,12 +146,13 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
       _selectedCourtIndex = 0;
     });
     context.read<CourtProvider>().loadSchedule(widget.club.id, date);
+    _ensureOccupancyForDate(date);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    _ensureWeekBuilt(l10n);
+    _ensureDaysBuilt(l10n);
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
@@ -203,37 +218,30 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
   }
 
   Widget _buildDayPicker() {
-    return GestureDetector(
-      onHorizontalDragEnd: (details) {
-        if (details.primaryVelocity != null) {
-          if (details.primaryVelocity! < -200) {
-            _changeWeek(1); // свайп влево → следующая неделя
-          } else if (details.primaryVelocity! > 200) {
-            _changeWeek(-1); // свайп вправо → предыдущая неделя
-          }
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-        child: SizedBox(
-          height: 76,
-          child: Row(
-            children: _weekDays!.map((day) {
-              final isSelected = day.date == _selectedDate;
-              final occ = _occupancy[day.date] ?? 0;
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  child: _DayChip(
-                    day: day,
-                    isSelected: isSelected,
-                    occupancy: occ,
-                    onTap: () => _selectDate(day.date),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(9, 8, 9, 0),
+      child: SizedBox(
+        height: 76,
+        child: ListView.builder(
+          controller: _dayScrollCtrl,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          itemExtent: _dayExtent,
+          itemCount: _days!.length,
+          itemBuilder: (context, i) {
+            final day = _days![i];
+            final isSelected = day.date == _selectedDate;
+            final occ = _occupancy[day.date] ?? 0;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: _DayChip(
+                day: day,
+                isSelected: isSelected,
+                occupancy: occ,
+                onTap: () => _selectDate(day.date),
+              ),
+            );
+          },
         ),
       ),
     );
