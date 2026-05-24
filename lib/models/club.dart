@@ -15,6 +15,10 @@ class Club {
   final bool isCommunity;
   final int openTournamentsCount;
   final bool onlinePaymentEnabled;
+  final String? offerAgreementUrl;
+  final String? privacyPolicyUrl;
+  final String? goodsDescriptionUrl;
+  final String? cardPaymentDescriptionUrl;
 
   Club({
     required this.id,
@@ -33,6 +37,10 @@ class Club {
     this.isCommunity = false,
     this.openTournamentsCount = 0,
     this.onlinePaymentEnabled = false,
+    this.offerAgreementUrl,
+    this.privacyPolicyUrl,
+    this.goodsDescriptionUrl,
+    this.cardPaymentDescriptionUrl,
   });
 
   factory Club.fromJson(Map<String, dynamic> json) {
@@ -53,6 +61,10 @@ class Club {
       isCommunity: json['is_community'] as bool? ?? false,
       openTournamentsCount: json['open_tournaments_count'] as int? ?? 0,
       onlinePaymentEnabled: json['online_payment_enabled'] as bool? ?? false,
+      offerAgreementUrl: json['offer_agreement_url'] as String?,
+      privacyPolicyUrl: json['privacy_policy_url'] as String?,
+      goodsDescriptionUrl: json['goods_description_url'] as String?,
+      cardPaymentDescriptionUrl: json['card_payment_description_url'] as String?,
     );
   }
 
@@ -78,5 +90,9 @@ class Club {
     isCommunity: isCommunity ?? this.isCommunity,
     openTournamentsCount: openTournamentsCount ?? this.openTournamentsCount,
     onlinePaymentEnabled: onlinePaymentEnabled,
+    offerAgreementUrl: offerAgreementUrl,
+    privacyPolicyUrl: privacyPolicyUrl,
+    goodsDescriptionUrl: goodsDescriptionUrl,
+    cardPaymentDescriptionUrl: cardPaymentDescriptionUrl,
   );
 }

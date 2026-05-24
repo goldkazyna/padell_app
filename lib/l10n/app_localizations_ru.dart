@@ -410,6 +410,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get onlinePaymentComingSoon => 'Онлайн-оплата скоро будет доступна';
 
   @override
+  String get agreeWithDocsPrefix => 'Я соглашаюсь с ';
+
+  @override
+  String get docOfferAgreement => 'Договором оферты';
+
+  @override
+  String get docPrivacyPolicy => 'Политикой конфиденциальности';
+
+  @override
+  String get docGoodsDescription => 'Описанием товаров и услуг';
+
+  @override
+  String get docCardPayment => 'Условиями оплаты картой';
+
+  @override
   String get bookingConfirmed => 'Бронь подтверждена!';
 
   @override

@@ -832,6 +832,36 @@ abstract class AppLocalizations {
   /// **'Онлайн-оплата скоро будет доступна'**
   String get onlinePaymentComingSoon;
 
+  /// No description provided for @agreeWithDocsPrefix.
+  ///
+  /// In ru, this message translates to:
+  /// **'Я соглашаюсь с '**
+  String get agreeWithDocsPrefix;
+
+  /// No description provided for @docOfferAgreement.
+  ///
+  /// In ru, this message translates to:
+  /// **'Договором оферты'**
+  String get docOfferAgreement;
+
+  /// No description provided for @docPrivacyPolicy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Политикой конфиденциальности'**
+  String get docPrivacyPolicy;
+
+  /// No description provided for @docGoodsDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Описанием товаров и услуг'**
+  String get docGoodsDescription;
+
+  /// No description provided for @docCardPayment.
+  ///
+  /// In ru, this message translates to:
+  /// **'Условиями оплаты картой'**
+  String get docCardPayment;
+
   /// No description provided for @bookingConfirmed.
   ///
   /// In ru, this message translates to:

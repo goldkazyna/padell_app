@@ -149,6 +149,11 @@
   "payOnlineButton": "Онлайн төлеу — {price} ₸",
   "bookWithoutPaymentButton": "Төлемсіз брондау",
   "onlinePaymentComingSoon": "Онлайн төлем жақында қолжетімді болады",
+  "agreeWithDocsPrefix": "Мен келісемін: ",
+  "docOfferAgreement": "Оферта шартымен",
+  "docPrivacyPolicy": "Құпиялылық саясатымен",
+  "docGoodsDescription": "Тауарлар мен қызметтер сипаттамасымен",
+  "docCardPayment": "Картамен төлеу шарттарымен",
 
   "bookingConfirmed": "Брон расталды!",
   "bookingConfirmedSubtitle": "Сіз кортты сәтті брондадыңыз",

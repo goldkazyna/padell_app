@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../models/club.dart';
 import '../providers/court_provider.dart';
@@ -46,6 +47,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
   final _phoneController = TextEditingController();
   bool _isBooking = false;
   bool _initialized = false;
+  bool _agreedToDocs = false;
 
   int get _maxSlots {
     int count = 0;
@@ -252,6 +254,10 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
 
             // Кнопка
             _buildBookButton(),
+            if (widget.club.onlinePaymentEnabled) ...[
+              const SizedBox(height: 14),
+              _buildDocsAgreement(),
+            ],
             const SizedBox(height: 32),
           ],
         ),
@@ -576,34 +582,43 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     // Клуб с онлайн-оплатой — две кнопки: оплатить онлайн (пока заглушка)
-    // и забронировать без оплаты (обычная бронь).
+    // и забронировать без оплаты (обычная бронь). Кнопка онлайн-оплаты
+    // неактивна, пока не отмечено согласие с документами (если они есть).
     if (widget.club.onlinePaymentEnabled) {
+      final hasDocs = _docLinks(l10n).isNotEmpty;
+      final canPayOnline = !hasDocs || _agreedToDocs;
       return Column(
         children: [
           SizedBox(
             width: double.infinity,
             child: GestureDetector(
-              onTap: _isBooking ? null : _payOnline,
+              onTap: (_isBooking || !canPayOnline) ? null : _payOnline,
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: AppTheme.accent,
+                  color: canPayOnline
+                      ? AppTheme.accent
+                      : AppTheme.accent.withAlpha(70),
                   borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.accent.withAlpha(50),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
+                  boxShadow: canPayOnline
+                      ? [
+                          BoxShadow(
+                            color: AppTheme.accent.withAlpha(50),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Center(
                   child: Text(
                     l10n.payOnlineButton(_fmtPrice(_total)),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: Colors.black,
+                      color: canPayOnline
+                          ? Colors.black
+                          : Colors.black.withAlpha(120),
                     ),
                   ),
                 ),
@@ -687,5 +702,85 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         content: Text(AppLocalizations.of(context)!.onlinePaymentComingSoon),
       ),
     );
+  }
+
+  /// Доступные документы клуба (название → URL), только загруженные.
+  List<MapEntry<String, String>> _docLinks(AppLocalizations l10n) {
+    final c = widget.club;
+    return [
+      if ((c.offerAgreementUrl ?? '').isNotEmpty)
+        MapEntry(l10n.docOfferAgreement, c.offerAgreementUrl!),
+      if ((c.privacyPolicyUrl ?? '').isNotEmpty)
+        MapEntry(l10n.docPrivacyPolicy, c.privacyPolicyUrl!),
+      if ((c.goodsDescriptionUrl ?? '').isNotEmpty)
+        MapEntry(l10n.docGoodsDescription, c.goodsDescriptionUrl!),
+      if ((c.cardPaymentDescriptionUrl ?? '').isNotEmpty)
+        MapEntry(l10n.docCardPayment, c.cardPaymentDescriptionUrl!),
+    ];
+  }
+
+  Widget _buildDocsAgreement() {
+    final l10n = AppLocalizations.of(context)!;
+    final docs = _docLinks(l10n);
+    if (docs.isEmpty) return const SizedBox.shrink();
+
+    final spans = <Widget>[
+      Text(
+        l10n.agreeWithDocsPrefix,
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+      ),
+    ];
+    for (var i = 0; i < docs.length; i++) {
+      spans.add(GestureDetector(
+        onTap: () => _openDoc(docs[i].value),
+        child: Text(
+          docs[i].key,
+          style: const TextStyle(
+            color: AppTheme.accent,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
+            decorationColor: AppTheme.accent,
+          ),
+        ),
+      ));
+      if (i < docs.length - 1) {
+        spans.add(const Text(', ',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)));
+      }
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 24,
+          height: 24,
+          child: Checkbox(
+            value: _agreedToDocs,
+            onChanged: (v) => setState(() => _agreedToDocs = v ?? false),
+            activeColor: AppTheme.accent,
+            checkColor: Colors.black,
+            side: const BorderSide(color: AppTheme.textSecondary, width: 1.5),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Wrap(runSpacing: 2, children: spans),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _openDoc(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }

@@ -402,6 +402,21 @@ class AppLocalizationsKk extends AppLocalizations {
       'Онлайн төлем жақында қолжетімді болады';
 
   @override
+  String get agreeWithDocsPrefix => 'Мен келісемін: ';
+
+  @override
+  String get docOfferAgreement => 'Оферта шартымен';
+
+  @override
+  String get docPrivacyPolicy => 'Құпиялылық саясатымен';
+
+  @override
+  String get docGoodsDescription => 'Тауарлар мен қызметтер сипаттамасымен';
+
+  @override
+  String get docCardPayment => 'Картамен төлеу шарттарымен';
+
+  @override
   String get bookingConfirmed => 'Брон расталды!';
 
   @override

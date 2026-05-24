@@ -150,6 +150,11 @@
   "@payOnlineButton": { "placeholders": { "price": { "type": "String" } } },
   "bookWithoutPaymentButton": "Забронировать без оплаты",
   "onlinePaymentComingSoon": "Онлайн-оплата скоро будет доступна",
+  "agreeWithDocsPrefix": "Я соглашаюсь с ",
+  "docOfferAgreement": "Договором оферты",
+  "docPrivacyPolicy": "Политикой конфиденциальности",
+  "docGoodsDescription": "Описанием товаров и услуг",
+  "docCardPayment": "Условиями оплаты картой",
 
   "bookingConfirmed": "Бронь подтверждена!",
   "bookingConfirmedSubtitle": "Вы успешно забронировали корт",

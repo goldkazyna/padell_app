@@ -408,6 +408,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlinePaymentComingSoon => 'Online payment is coming soon';
 
   @override
+  String get agreeWithDocsPrefix => 'I agree to ';
+
+  @override
+  String get docOfferAgreement => 'the Offer Agreement';
+
+  @override
+  String get docPrivacyPolicy => 'the Privacy Policy';
+
+  @override
+  String get docGoodsDescription => 'the Goods and Services Description';
+
+  @override
+  String get docCardPayment => 'the Card Payment Terms';
+
+  @override
   String get bookingConfirmed => 'Booking Confirmed!';
 
   @override
