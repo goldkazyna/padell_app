@@ -334,6 +334,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 12),
                   const _TelegramNewsButton(),
+                  const SizedBox(height: 16),
+                  const _PaymentLogos(),
                   const SizedBox(height: 12),
                       ],
                     ),
@@ -713,6 +715,31 @@ class _HalfBanner extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PaymentLogos extends StatelessWidget {
+  const _PaymentLogos();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/images/visa.png', height: 26),
+            const SizedBox(width: 14),
+            Image.asset('assets/images/mastercard.png', height: 26),
           ],
         ),
       ),
