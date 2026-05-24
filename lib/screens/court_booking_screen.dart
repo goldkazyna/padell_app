@@ -8,6 +8,7 @@ import '../providers/home_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/secure_payment_badge.dart';
 import 'booking_confirmation_screen.dart';
 
 class CourtBookingScreen extends StatefulWidget {
@@ -257,6 +258,8 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             if (widget.club.onlinePaymentEnabled) ...[
               const SizedBox(height: 14),
               _buildDocsAgreement(),
+              const SizedBox(height: 20),
+              const SecurePaymentBadge(),
             ],
             const SizedBox(height: 32),
           ],
