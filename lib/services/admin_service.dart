@@ -1,4 +1,5 @@
 import '../models/admin_club_edit.dart';
+import '../models/admin_club_moderator.dart';
 import '../models/admin_club_user.dart';
 import '../models/admin_matches.dart';
 import '../models/admin_participant.dart';
@@ -76,6 +77,78 @@ class AdminService {
     return AdminClubUser.fromJson(
       response['user'] as Map<String, dynamic>,
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Управление модераторами клуба (feature 'moderators')
+  // ---------------------------------------------------------------------------
+
+  Future<List<AdminClubModerator>> getClubModerators(int clubId) async {
+    final token = await _storage.getToken();
+    final response = await _api.get('/admin/clubs/$clubId/moderators', token);
+    final list = (response['moderators'] as List?) ?? const [];
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map(AdminClubModerator.fromJson)
+        .toList();
+  }
+
+  Future<List<ModeratorCandidate>> searchModeratorCandidates(
+      int clubId, String phone) async {
+    final token = await _storage.getToken();
+    final response = await _api.get(
+      '/admin/clubs/$clubId/moderators/search?phone=${Uri.encodeQueryComponent(phone)}',
+      token,
+    );
+    final list = (response['users'] as List?) ?? const [];
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map(ModeratorCandidate.fromJson)
+        .toList();
+  }
+
+  Future<AdminClubModerator> addModerator(
+    int clubId, {
+    required int userId,
+    required bool tournamentsFullAccess,
+    required bool canViewActivityLog,
+  }) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/clubs/$clubId/moderators',
+      {
+        'user_id': userId,
+        'tournaments_full_access': tournamentsFullAccess,
+        'can_view_activity_log': canViewActivityLog,
+      },
+      token,
+    );
+    return AdminClubModerator.fromJson(
+        response['moderator'] as Map<String, dynamic>);
+  }
+
+  Future<AdminClubModerator> updateModeratorPermissions(
+    int clubId,
+    int userId, {
+    required bool tournamentsFullAccess,
+    required bool canViewActivityLog,
+  }) async {
+    final token = await _storage.getToken();
+    final response = await _api.put(
+      '/admin/clubs/$clubId/moderators/$userId/permissions',
+      {
+        'tournaments_full_access': tournamentsFullAccess,
+        'can_view_activity_log': canViewActivityLog,
+      },
+      token,
+    );
+    return AdminClubModerator.fromJson(
+        response['moderator'] as Map<String, dynamic>);
+  }
+
+  Future<void> removeModerator(int clubId, int userId) async {
+    final token = await _storage.getToken();
+    await _api.delete('/admin/clubs/$clubId/moderators/$userId', null, token);
   }
 
   /// Создать турнир (Этап 4). Возвращает id нового турнира.

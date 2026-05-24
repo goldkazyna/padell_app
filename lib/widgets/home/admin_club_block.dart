@@ -3,6 +3,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/user.dart';
 import '../../screens/admin/admin_create_tournament_screen.dart';
 import '../../screens/admin/admin_edit_club_screen.dart';
+import '../../screens/admin/admin_moderators_screen.dart';
 import '../../screens/admin/admin_tournaments_screen.dart';
 import '../../screens/admin/admin_users_screen.dart';
 import '../../theme/app_theme.dart';
@@ -140,6 +141,24 @@ class AdminClubBlock extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => AdminUsersScreen(
+                    clubId: club.id,
+                    clubName: club.name,
+                  ),
+                ),
+              ),
+            ),
+          ],
+          if (!isModerator && club.hasFeature('moderators')) ...[
+            const SizedBox(height: 8),
+            _AdminCta(
+              icon: Icons.shield_outlined,
+              title: 'Модераторы',
+              subtitle: 'Управление модераторами клуба',
+              gradientColors: const [Color(0xFF14B8A6), Color(0xFF0D9488)],
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminModeratorsScreen(
                     clubId: club.id,
                     clubName: club.name,
                   ),
