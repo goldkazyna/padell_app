@@ -390,6 +390,18 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String payOnlineButton(String price) {
+    return 'Онлайн төлеу — $price ₸';
+  }
+
+  @override
+  String get bookWithoutPaymentButton => 'Төлемсіз брондау';
+
+  @override
+  String get onlinePaymentComingSoon =>
+      'Онлайн төлем жақында қолжетімді болады';
+
+  @override
   String get bookingConfirmed => 'Брон расталды!';
 
   @override

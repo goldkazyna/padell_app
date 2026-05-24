@@ -397,6 +397,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String payOnlineButton(String price) {
+    return 'Pay online — $price ₸';
+  }
+
+  @override
+  String get bookWithoutPaymentButton => 'Book without payment';
+
+  @override
+  String get onlinePaymentComingSoon => 'Online payment is coming soon';
+
+  @override
   String get bookingConfirmed => 'Booking Confirmed!';
 
   @override

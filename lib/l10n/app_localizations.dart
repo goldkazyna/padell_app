@@ -814,6 +814,24 @@ abstract class AppLocalizations {
   /// **'Забронировать — {price} ₸'**
   String bookButton(String price);
 
+  /// No description provided for @payOnlineButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплатить онлайн — {price} ₸'**
+  String payOnlineButton(String price);
+
+  /// No description provided for @bookWithoutPaymentButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Забронировать без оплаты'**
+  String get bookWithoutPaymentButton;
+
+  /// No description provided for @onlinePaymentComingSoon.
+  ///
+  /// In ru, this message translates to:
+  /// **'Онлайн-оплата скоро будет доступна'**
+  String get onlinePaymentComingSoon;
+
   /// No description provided for @bookingConfirmed.
   ///
   /// In ru, this message translates to:

@@ -141,6 +141,9 @@
   "optional": "Optional",
   "enterName": "Enter name",
   "bookButton": "Book — {price} ₸",
+  "payOnlineButton": "Pay online — {price} ₸",
+  "bookWithoutPaymentButton": "Book without payment",
+  "onlinePaymentComingSoon": "Online payment is coming soon",
 
   "bookingConfirmed": "Booking Confirmed!",
   "bookingConfirmedSubtitle": "You have successfully booked a court",

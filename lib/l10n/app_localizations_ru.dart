@@ -399,6 +399,17 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String payOnlineButton(String price) {
+    return 'Оплатить онлайн — $price ₸';
+  }
+
+  @override
+  String get bookWithoutPaymentButton => 'Забронировать без оплаты';
+
+  @override
+  String get onlinePaymentComingSoon => 'Онлайн-оплата скоро будет доступна';
+
+  @override
   String get bookingConfirmed => 'Бронь подтверждена!';
 
   @override

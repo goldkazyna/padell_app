@@ -146,6 +146,9 @@
   "enterName": "Атыңызды енгізіңіз",
   "bookButton": "Брондау — {price} ₸",
   "@bookButton": { "placeholders": { "price": { "type": "String" } } },
+  "payOnlineButton": "Онлайн төлеу — {price} ₸",
+  "bookWithoutPaymentButton": "Төлемсіз брондау",
+  "onlinePaymentComingSoon": "Онлайн төлем жақында қолжетімді болады",
 
   "bookingConfirmed": "Брон расталды!",
   "bookingConfirmedSubtitle": "Сіз кортты сәтті брондадыңыз",

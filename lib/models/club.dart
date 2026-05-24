@@ -14,6 +14,7 @@ class Club {
   final String? cover;
   final bool isCommunity;
   final int openTournamentsCount;
+  final bool onlinePaymentEnabled;
 
   Club({
     required this.id,
@@ -31,6 +32,7 @@ class Club {
     this.cover,
     this.isCommunity = false,
     this.openTournamentsCount = 0,
+    this.onlinePaymentEnabled = false,
   });
 
   factory Club.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,7 @@ class Club {
       cover: json['cover'] as String?,
       isCommunity: json['is_community'] as bool? ?? false,
       openTournamentsCount: json['open_tournaments_count'] as int? ?? 0,
+      onlinePaymentEnabled: json['online_payment_enabled'] as bool? ?? false,
     );
   }
 
@@ -74,5 +77,6 @@ class Club {
     cover: cover ?? this.cover,
     isCommunity: isCommunity ?? this.isCommunity,
     openTournamentsCount: openTournamentsCount ?? this.openTournamentsCount,
+    onlinePaymentEnabled: onlinePaymentEnabled,
   );
 }

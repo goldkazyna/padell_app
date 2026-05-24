@@ -146,6 +146,10 @@
   "enterName": "Введите имя",
   "bookButton": "Забронировать — {price} ₸",
   "@bookButton": { "placeholders": { "price": { "type": "String" } } },
+  "payOnlineButton": "Оплатить онлайн — {price} ₸",
+  "@payOnlineButton": { "placeholders": { "price": { "type": "String" } } },
+  "bookWithoutPaymentButton": "Забронировать без оплаты",
+  "onlinePaymentComingSoon": "Онлайн-оплата скоро будет доступна",
 
   "bookingConfirmed": "Бронь подтверждена!",
   "bookingConfirmedSubtitle": "Вы успешно забронировали корт",

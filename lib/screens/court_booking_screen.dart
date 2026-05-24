@@ -573,6 +573,77 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
   }
 
   Widget _buildBookButton() {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Клуб с онлайн-оплатой — две кнопки: оплатить онлайн (пока заглушка)
+    // и забронировать без оплаты (обычная бронь).
+    if (widget.club.onlinePaymentEnabled) {
+      return Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: _isBooking ? null : _payOnline,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppTheme.accent,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.accent.withAlpha(50),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    l10n.payOnlineButton(_fmtPrice(_total)),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: _isBooking ? null : _book,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppTheme.card,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppTheme.accent.withAlpha(120)),
+                ),
+                child: Center(
+                  child: _isBooking
+                      ? const SizedBox(
+                          width: 22, height: 22,
+                          child: CircularProgressIndicator(
+                              color: AppTheme.accent, strokeWidth: 2.5))
+                      : Text(
+                          l10n.bookWithoutPaymentButton,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.accent,
+                          ),
+                        ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return SizedBox(
       width: double.infinity,
       child: GestureDetector(
@@ -597,7 +668,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                     child: CircularProgressIndicator(
                         color: Colors.black, strokeWidth: 2.5))
                 : Text(
-                    AppLocalizations.of(context)!.bookButton(_fmtPrice(_total)),
+                    l10n.bookButton(_fmtPrice(_total)),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -606,6 +677,14 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                   ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _payOnline() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.onlinePaymentComingSoon),
       ),
     );
   }
