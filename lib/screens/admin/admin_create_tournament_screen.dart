@@ -554,6 +554,19 @@ class _AdminCreateTournamentScreenState
             ),
           ],
         ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            card(
+              value: 'americano_flex',
+              title: 'Americano Flex',
+              subtitle: 'Очередь, любое число игроков',
+              icon: Icons.swap_horiz_rounded,
+            ),
+            const SizedBox(width: 8),
+            const Expanded(child: SizedBox.shrink()),
+          ],
+        ),
       ],
     );
   }

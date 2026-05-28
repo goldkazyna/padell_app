@@ -422,6 +422,25 @@ class AdminService {
     );
   }
 
+  /// Сохранить счёт матча Americano Flex. POST/PUT одинаковы — service
+  /// идемпотентно переписывает счёт.
+  Future<void> saveAmericanoFlexScore(
+    int tournamentId,
+    int matchId, {
+    required int team1Score,
+    required int team2Score,
+  }) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/americano_flex/matches/$matchId/score',
+      {
+        'team1_score': team1Score,
+        'team2_score': team2Score,
+      },
+      token,
+    );
+  }
+
   /// Сохранить счёт матча Bali KOC. POST/PUT одинаковы — сервис сам откатит
   /// прежние статы если матч уже completed. Счёт — в геймах.
   Future<void> saveBaliKocScore(

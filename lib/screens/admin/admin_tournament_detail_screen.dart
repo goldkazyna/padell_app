@@ -2546,13 +2546,139 @@ class _AdminTournamentDetailScreenState
             const SizedBox(height: 10),
           ],
           if (g.leaderboard.isNotEmpty) ...[
-            _buildLeaderboard(g.leaderboard),
+            _matches?.type == 'americano_flex'
+                ? _buildFlexLeaderboard(g.leaderboard)
+                : _buildLeaderboard(g.leaderboard),
             const SizedBox(height: 12),
           ],
           ...g.rounds.map(_buildRoundBlock),
         ],
       ),
     );
+  }
+
+  Widget _buildFlexLeaderboard(List<AdminLeaderboardRow> rows) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Table(
+        columnWidths: const {
+          0: IntrinsicColumnWidth(),
+          1: IntrinsicColumnWidth(),
+          2: FlexColumnWidth(),
+          3: IntrinsicColumnWidth(),
+          4: IntrinsicColumnWidth(),
+          5: IntrinsicColumnWidth(),
+          6: IntrinsicColumnWidth(),
+        },
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: [
+          TableRow(children: [
+            _flexHdr('#',
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.fromLTRB(2, 8, 6, 8)),
+            const SizedBox(),
+            _flexHdr('ИГРОК',
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
+            _flexHdr('М'),
+            _flexHdr('ОТД'),
+            _flexHdr('СРЕД'),
+            _flexHdr('ОЧКИ',
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
+          ]),
+          for (final p in rows) _flexLeaderRow(p),
+        ],
+      ),
+    );
+  }
+
+  Widget _flexHdr(String text,
+      {AlignmentGeometry alignment = Alignment.center, EdgeInsets? padding}) {
+    return Container(
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+      alignment: alignment,
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: AppTheme.textSecondary,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        ),
+      ),
+    );
+  }
+
+  TableRow _flexLeaderRow(AdminLeaderboardRow p) {
+    final posColor = switch (p.position) {
+      1 => const Color(0xFFFACC15),
+      2 => const Color(0xFF94A3B8),
+      3 => const Color(0xFFF97316),
+      _ => const Color(0xFF52525B),
+    };
+    Widget cell(Widget child,
+        {EdgeInsets? padding,
+        AlignmentGeometry alignment = Alignment.center}) {
+      return Container(
+        padding:
+            padding ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        alignment: alignment,
+        child: child,
+      );
+    }
+
+    const numStyle = TextStyle(
+        color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600);
+    final avg = p.avgPoints?.toStringAsFixed(2) ?? '—';
+
+    return TableRow(children: [
+      cell(
+        Text('${p.position}',
+            style: TextStyle(
+                color: posColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w700)),
+        padding: const EdgeInsets.fromLTRB(2, 10, 6, 10),
+        alignment: Alignment.centerLeft,
+      ),
+      cell(
+        _AdminLeaderAvatar(url: p.avatarUrl, name: p.name, size: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      ),
+      cell(
+        Text(p.name,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600)),
+        alignment: Alignment.centerLeft,
+      ),
+      cell(Text('${p.matchesPlayed ?? 0}', style: numStyle)),
+      cell(Text('${p.byeCount ?? 0}',
+          style: const TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w500))),
+      cell(Text(avg, style: numStyle)),
+      cell(
+        Text('${p.totalPoints}',
+            style: const TextStyle(
+                color: AppTheme.accent,
+                fontSize: 13,
+                fontWeight: FontWeight.w700)),
+        padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
+        alignment: Alignment.centerRight,
+      ),
+    ]);
   }
 
   Widget _buildLeaderboard(List<AdminLeaderboardRow> rows) {
@@ -2727,6 +2853,63 @@ class _AdminTournamentDetailScreenState
             ),
           ),
           ...round.matches.map((m) => _buildMatchTile(m)),
+          if (round.byes.isNotEmpty) _buildByesBlock(round.byes),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildByesBlock(List<AdminMatchPlayer> byes) {
+    return Container(
+      margin: const EdgeInsets.only(top: 4, bottom: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.amber.withOpacity(0.08),
+        border: Border.all(color: Colors.amber.withOpacity(0.25)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.nights_stay_outlined,
+                  size: 14, color: Colors.amber),
+              const SizedBox(width: 6),
+              Text(
+                'Отдыхают в этом раунде',
+                style: TextStyle(
+                  color: Colors.amber.shade200,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: byes
+                .map((p) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        p.name,
+                        style: TextStyle(
+                          color: Colors.amber.shade100,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
         ],
       ),
     );
@@ -2918,6 +3101,7 @@ class _AdminTournamentDetailScreenState
     final isKoc = _matches?.type == 'king_of_court';
     final isBali = _matches?.type == 'bali_koc';
     final isTeam = _matches?.type == 'team';
+    final isFlex = _matches?.type == 'americano_flex';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -2996,6 +3180,13 @@ class _AdminTournamentDetailScreenState
               matchId,
               pair1Games: result.score1,
               pair2Games: result.score2,
+            );
+      } else if (isFlex) {
+        await context.read<AdminService>().saveAmericanoFlexScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
             );
       } else {
         await context.read<AdminService>().saveAmericanoScore(

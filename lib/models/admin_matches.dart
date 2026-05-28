@@ -82,11 +82,16 @@ class AdminMatchRound {
   final String status;
   final List<AdminMatch> matches;
 
+  /// Отдыхающие игроки в этом раунде (для Americano Flex).
+  /// Для других типов турниров — пустой список.
+  final List<AdminMatchPlayer> byes;
+
   const AdminMatchRound({
     required this.id,
     required this.roundNumber,
     required this.status,
     required this.matches,
+    this.byes = const [],
   });
 
   factory AdminMatchRound.fromJson(Map<String, dynamic> json) {
@@ -97,6 +102,10 @@ class AdminMatchRound {
       matches: ((json['matches'] as List?) ?? const [])
           .whereType<Map<String, dynamic>>()
           .map(AdminMatch.fromJson)
+          .toList(),
+      byes: ((json['byes'] as List?) ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(AdminMatchPlayer.fromJson)
           .toList(),
     );
   }
@@ -118,6 +127,21 @@ class AdminLeaderboardRow {
   final int pointsAgainst;
   final int rating;
 
+  /// Americano Flex: сколько матчей сыграл игрок (без bye).
+  final int? matchesPlayed;
+
+  /// Americano Flex: среднее очков за матч.
+  final double? avgPoints;
+
+  /// Americano Flex: сколько раундов отдыхал суммарно.
+  final int? byeCount;
+
+  /// Americano Flex: рейтинг на старте турнира.
+  final int? ratingBefore;
+
+  /// Americano Flex: финальный рейтинг (после завершения турнира).
+  final int? ratingAfter;
+
   const AdminLeaderboardRow({
     required this.position,
     required this.id,
@@ -133,6 +157,11 @@ class AdminLeaderboardRow {
     required this.pointsFor,
     required this.pointsAgainst,
     required this.rating,
+    this.matchesPlayed,
+    this.avgPoints,
+    this.byeCount,
+    this.ratingBefore,
+    this.ratingAfter,
   });
 
   factory AdminLeaderboardRow.fromJson(Map<String, dynamic> json) {
@@ -151,6 +180,11 @@ class AdminLeaderboardRow {
       pointsFor: (json['points_for'] as num?)?.toInt() ?? 0,
       pointsAgainst: (json['points_against'] as num?)?.toInt() ?? 0,
       rating: (json['rating'] as num?)?.toInt() ?? 0,
+      matchesPlayed: (json['matches_played'] as num?)?.toInt(),
+      avgPoints: (json['avg_points'] as num?)?.toDouble(),
+      byeCount: (json['bye_count'] as num?)?.toInt(),
+      ratingBefore: (json['rating_before'] as num?)?.toInt(),
+      ratingAfter: (json['rating_after'] as num?)?.toInt(),
     );
   }
 }
