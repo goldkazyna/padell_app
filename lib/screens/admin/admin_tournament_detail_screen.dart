@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/admin_invitation.dart';
@@ -1581,18 +1583,28 @@ class _AdminTournamentDetailScreenState
                   color: AppTheme.textSecondary),
               color: AppTheme.cardRaised,
               onSelected: (v) {
+                if (v == 'call') _callPlayer(p);
+                if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'approve') _approveOne(p);
                 if (v == 'reject') _rejectOne(p);
               },
-              itemBuilder: (_) => const [
-                PopupMenuItem(
-                    value: 'approve',
-                    child: Text('Одобрить',
-                        style: TextStyle(color: AppTheme.accent))),
-                PopupMenuItem(
-                    value: 'reject',
-                    child: Text('Отклонить',
-                        style: TextStyle(color: AppTheme.error))),
+              itemBuilder: (_) => [
+                if ((p.phone ?? '').isNotEmpty) ...[
+                  _popupItem('call',
+                      const Icon(Icons.call, size: 18, color: AppTheme.accent),
+                      'Позвонить', AppTheme.textPrimary),
+                  _popupItem('whatsapp',
+                      const FaIcon(FontAwesomeIcons.whatsapp,
+                          size: 17, color: Color(0xFF25D366)),
+                      'WhatsApp', AppTheme.textPrimary),
+                ],
+                _popupItem('approve',
+                    const Icon(Icons.check_circle,
+                        size: 18, color: AppTheme.accent),
+                    'Одобрить', AppTheme.accent),
+                _popupItem('reject',
+                    const Icon(Icons.cancel, size: 18, color: AppTheme.error),
+                    'Отклонить', AppTheme.error),
               ],
             ),
           ],
@@ -1621,18 +1633,29 @@ class _AdminTournamentDetailScreenState
                   color: AppTheme.textSecondary),
               color: AppTheme.cardRaised,
               onSelected: (v) {
+                if (v == 'call') _callPlayer(p);
+                if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'replace') _openReplacePlayer(p);
                 if (v == 'remove') _removeOne(p);
               },
-              itemBuilder: (_) => const [
-                PopupMenuItem(
-                    value: 'replace',
-                    child: Text('Заменить',
-                        style: TextStyle(color: AppTheme.textPrimary))),
-                PopupMenuItem(
-                    value: 'remove',
-                    child: Text('Удалить',
-                        style: TextStyle(color: AppTheme.error))),
+              itemBuilder: (_) => [
+                if ((p.phone ?? '').isNotEmpty) ...[
+                  _popupItem('call',
+                      const Icon(Icons.call, size: 18, color: AppTheme.accent),
+                      'Позвонить', AppTheme.textPrimary),
+                  _popupItem('whatsapp',
+                      const FaIcon(FontAwesomeIcons.whatsapp,
+                          size: 17, color: Color(0xFF25D366)),
+                      'WhatsApp', AppTheme.textPrimary),
+                ],
+                _popupItem('replace',
+                    const Icon(Icons.swap_horiz,
+                        size: 18, color: AppTheme.textSecondary),
+                    'Заменить', AppTheme.textPrimary),
+                _popupItem('remove',
+                    const Icon(Icons.delete_outline,
+                        size: 18, color: AppTheme.error),
+                    'Удалить', AppTheme.error),
               ],
             ),
         ],
@@ -1965,6 +1988,39 @@ class _AdminTournamentDetailScreenState
   }
 
   // -------------------- Действия --------------------
+
+  PopupMenuItem<String> _popupItem(
+      String value, Widget icon, String label, Color color) {
+    return PopupMenuItem<String>(
+      value: value,
+      child: Row(
+        children: [
+          icon,
+          const SizedBox(width: 10),
+          Text(label, style: TextStyle(color: color)),
+        ],
+      ),
+    );
+  }
+
+  String _digitsOnly(String phone) => phone.replaceAll(RegExp(r'[^\d]'), '');
+
+  Future<void> _callPlayer(AdminParticipant p) async {
+    final ph = p.phone;
+    if (ph == null || ph.isEmpty) return;
+    final tel = ph.startsWith('+') ? ph : '+${_digitsOnly(ph)}';
+    final uri = Uri.parse('tel:$tel');
+    if (await canLaunchUrl(uri)) await launchUrl(uri);
+  }
+
+  Future<void> _whatsappPlayer(AdminParticipant p) async {
+    final ph = p.phone;
+    if (ph == null || ph.isEmpty) return;
+    final uri = Uri.parse('https://wa.me/${_digitsOnly(ph)}');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
 
   Future<void> _approveOne(AdminParticipant p) async {
     await _runAction(
