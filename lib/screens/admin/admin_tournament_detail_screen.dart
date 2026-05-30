@@ -18,6 +18,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
+import '../../widgets/moderation_countdown.dart';
 import '../../widgets/verified_badge.dart';
 import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
@@ -1597,6 +1598,10 @@ class _AdminTournamentDetailScreenState
             _avatar(p),
             const SizedBox(width: 10),
             Expanded(child: _nameAndMeta(p)),
+            if (p.moderationDeadline != null) ...[
+              const SizedBox(width: 8),
+              ModerationCountdown(deadline: p.moderationDeadline!, compact: true),
+            ],
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert,
                   color: AppTheme.textSecondary),
