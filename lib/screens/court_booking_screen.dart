@@ -425,19 +425,24 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  /// Кнопка-тумблер «Нужен тренер». Раскрывает выбор тренеров (если они есть).
+  /// Тумблер «Нужен тренер». Включение раскрывает выбор тренеров (если есть).
   Widget _buildNeedsCoachButton() {
     final hasCoaches = _coachesWithPhoto.isNotEmpty;
-    final subtitle = hasCoaches
-        ? 'Выберите тренера из списка ниже'
-        : 'Клуб свяжется с вами и подберёт тренера';
+    final subtitle = !_needsCoach
+        ? 'Игра без тренера'
+        : (hasCoaches
+            ? 'Выберите тренера из списка'
+            : 'Клуб свяжется с вами и подберёт тренера');
+
+    void toggle(bool v) => setState(() {
+          _needsCoach = v;
+          if (!_needsCoach) _selectedCoachId = null;
+        });
+
     return GestureDetector(
-      onTap: () => setState(() {
-        _needsCoach = !_needsCoach;
-        if (!_needsCoach) _selectedCoachId = null;
-      }),
+      onTap: () => toggle(!_needsCoach),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
         decoration: BoxDecoration(
           color: _needsCoach ? AppTheme.accent.withAlpha(20) : AppTheme.card,
           borderRadius: BorderRadius.circular(12),
@@ -448,23 +453,6 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         ),
         child: Row(
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: _needsCoach ? AppTheme.accent : Colors.transparent,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: _needsCoach ? AppTheme.accent : AppTheme.textSecondary,
-                  width: 1.5,
-                ),
-              ),
-              child: _needsCoach
-                  ? const Icon(Icons.check, size: 15, color: Colors.white)
-                  : null,
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,10 +473,11 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                 ],
               ),
             ),
-            Icon(
-              _needsCoach ? Icons.expand_less : Icons.expand_more,
-              color: AppTheme.textSecondary,
-              size: 22,
+            Switch(
+              value: _needsCoach,
+              onChanged: toggle,
+              activeThumbColor: Colors.white,
+              activeTrackColor: AppTheme.accent,
             ),
           ],
         ),
