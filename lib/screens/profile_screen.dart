@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/profile/profile_hero.dart';
 import '../widgets/profile/my_tournaments_button.dart';
+import '../widgets/profile/tournament_invitations_button.dart';
 import '../widgets/profile/rating_dynamics_card.dart';
 import '../widgets/profile/tournaments_history_button.dart';
 import '../widgets/profile/profile_menu.dart';
@@ -72,6 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const RatingDynamicsCard(),
                   const TournamentsHistoryButton(),
                   const MyTournamentsButton(),
+                  const TournamentInvitationsButton(),
                   const SizedBox(height: 22),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),

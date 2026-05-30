@@ -1238,6 +1238,7 @@ class _AdminTournamentDetailScreenState
           canModify: r.canModify,
           isFull: isFull,
           onAdd: r.canModify ? _openAddPlayer : null,
+          onInvite: r.canModify ? _openInvitePlayer : null,
         ),
         if (pending.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -1622,6 +1623,7 @@ class _AdminTournamentDetailScreenState
     required bool canModify,
     required bool isFull,
     required VoidCallback? onAdd,
+    VoidCallback? onInvite,
     String subtitle = 'участников',
   }) {
     return Container(
@@ -1656,6 +1658,22 @@ class _AdminTournamentDetailScreenState
               ],
             ),
           ),
+          if (onInvite != null) ...[
+            OutlinedButton.icon(
+              onPressed: onInvite,
+              icon: const Icon(Icons.mail_outline, size: 16),
+              label: const Text('Пригласить'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.accent,
+                side: const BorderSide(color: AppTheme.accent),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           if (onAdd != null)
             ElevatedButton.icon(
               onPressed: isFull ? null : onAdd,
@@ -1884,7 +1902,7 @@ class _AdminTournamentDetailScreenState
   }
 
   Future<void> _runAction(Future<void> Function() action,
-      {String label = 'Применяем...'}) async {
+      {String label = 'Применяем...', String? successMessage}) async {
     if (_actionBusy) return;
     setState(() {
       _actionBusy = true;
@@ -1893,6 +1911,9 @@ class _AdminTournamentDetailScreenState
     try {
       await action();
       await _refreshAfterAction();
+      if (mounted && successMessage != null) {
+        await showAppAlert(context, successMessage, title: 'Готово');
+      }
     } catch (e) {
       if (!mounted) return;
       await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
@@ -1968,6 +1989,20 @@ class _AdminTournamentDetailScreenState
           .read<AdminService>()
           .addParticipant(widget.tournamentId, selected.id),
       label: 'Добавляем игрока...',
+    );
+  }
+
+  Future<void> _openInvitePlayer() async {
+    final selected = await _showPlayerSearchSheet(
+      title: 'Пригласить игрока',
+    );
+    if (selected == null) return;
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .invitePlayer(widget.tournamentId, selected.id),
+      label: 'Отправляем приглашение...',
+      successMessage: 'Приглашение отправлено',
     );
   }
 

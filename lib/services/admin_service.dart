@@ -293,6 +293,15 @@ class AdminService {
     );
   }
 
+  Future<void> invitePlayer(int tournamentId, int userId) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/invite',
+      {'user_id': userId},
+      token,
+    );
+  }
+
   Future<void> replaceParticipant(
       int tournamentId, int oldUserId, int newUserId) async {
     final token = await _storage.getToken();

@@ -25,6 +25,7 @@ import 'providers/challenge_provider.dart';
 import 'services/court_service.dart';
 import 'services/club_service.dart';
 import 'services/admin_service.dart';
+import 'services/invitation_service.dart';
 import 'providers/court_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/settings_provider.dart';
@@ -66,6 +67,7 @@ void main() async {
   final courtService = CourtService(apiService, storageService);
   final clubService = ClubService(apiService, storageService);
   final adminService = AdminService(apiService, storageService);
+  final invitationService = InvitationService(apiService, storageService);
   final pushService = PushNotificationService(apiService, storageService, navigatorKey);
   if (!kIsWeb) {
     try {
@@ -117,6 +119,7 @@ void main() async {
         Provider<PushNotificationService>.value(value: pushService),
         Provider<ClubService>.value(value: clubService),
         Provider<AdminService>.value(value: adminService),
+        Provider<InvitationService>.value(value: invitationService),
       ],
       child: const PadelApp(),
     ),
