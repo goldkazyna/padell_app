@@ -230,7 +230,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             const SizedBox(height: 20),
 
             // Тренер
-            _sectionLabel('ТРЕНЕР'),
+            _buildCoachSectionHeader(),
             const SizedBox(height: 8),
             _buildNeedsCoachButton(),
             if (_needsCoach) ...[
@@ -241,10 +241,6 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                 const SizedBox(height: 10),
                 _buildClubContactHint(),
               ],
-            ],
-            if (_coachesWithPhoto.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              _buildOurCoachesButton(),
             ],
             const SizedBox(height: 20),
 
@@ -485,55 +481,42 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  /// Кнопка «Наши тренера» — переход на вкладку тренеров клуба.
-  Widget _buildOurCoachesButton() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ClubDetailScreen(
-              clubId: widget.club.id,
-              initialShowCoaches: true,
+  /// Заголовок секции «ТРЕНЕР» + тихая ссылка «Наши тренера ›» справа.
+  Widget _buildCoachSectionHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _sectionLabel('ТРЕНЕР'),
+        if (_coachesWithPhoto.isNotEmpty)
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ClubDetailScreen(
+                    clubId: widget.club.id,
+                    initialShowCoaches: true,
+                  ),
+                ),
+              );
+            },
+            behavior: HitTestBehavior.opaque,
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Наши тренера',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: AppTheme.textSecondary, size: 16),
+              ],
             ),
           ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        decoration: BoxDecoration(
-          color: AppTheme.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppTheme.accent.withAlpha(25),
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: const Icon(Icons.groups_outlined,
-                  color: AppTheme.accent, size: 18),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'Наши тренера',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ),
-            const Icon(Icons.chevron_right,
-                color: AppTheme.textSecondary, size: 20),
-          ],
-        ),
-      ),
+      ],
     );
   }
 
@@ -561,23 +544,21 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  /// Сетка тренеров — по 3 в ряд.
+  /// Лента тренеров — горизонтальный скролл (свайп).
   Widget _buildCoachGrid() {
-    return LayoutBuilder(
-      builder: (ctx, constraints) {
-        const spacing = 10.0;
-        final itemWidth = (constraints.maxWidth - spacing * 2) / 3;
-        return Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
-          children: _coachesWithPhoto
-              .map((c) => SizedBox(
-                    width: itemWidth,
-                    child: _buildCoachGridCard(c as Map<String, dynamic>),
-                  ))
-              .toList(),
-        );
-      },
+    return SizedBox(
+      height: 150,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        physics: const BouncingScrollPhysics(),
+        itemCount: _coachesWithPhoto.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (_, i) => SizedBox(
+          width: 104,
+          child: _buildCoachGridCard(_coachesWithPhoto[i] as Map<String, dynamic>),
+        ),
+      ),
     );
   }
 
@@ -607,11 +588,12 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             ),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Аватар: фото или инициалы-заглушка
               Container(
-                width: 56,
-                height: 56,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _coachColor(id),
