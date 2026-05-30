@@ -1975,7 +1975,7 @@ class _AdminTournamentDetailScreenState
     final pieces = <String>[];
     if (p.level != null) pieces.add('L${p.level!.toStringAsFixed(2)}');
     if (p.rating != null) pieces.add('${p.rating}');
-    if ((p.phone ?? '').isNotEmpty) pieces.add(p.phone!);
+    if ((p.phone ?? '').isNotEmpty) pieces.add(_formatPhone(p.phone));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2057,6 +2057,19 @@ class _AdminTournamentDetailScreenState
   }
 
   String _digitsOnly(String phone) => phone.replaceAll(RegExp(r'[^\d]'), '');
+
+  /// Телефон в виде «+7 777 433 38 22».
+  String _formatPhone(String? phone) {
+    if (phone == null || phone.isEmpty) return '';
+    var d = _digitsOnly(phone);
+    if (d.length == 11 && d.startsWith('8')) d = '7${d.substring(1)}';
+    if (d.length == 10) d = '7$d';
+    if (d.length == 11) {
+      return '+${d[0]} ${d.substring(1, 4)} ${d.substring(4, 7)} '
+          '${d.substring(7, 9)} ${d.substring(9, 11)}';
+    }
+    return phone.trim().startsWith('+') ? phone.trim() : '+$d';
+  }
 
   Future<void> _callPlayer(AdminParticipant p) async {
     final ph = p.phone;
