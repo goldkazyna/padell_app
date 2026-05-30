@@ -1,6 +1,7 @@
 import '../models/admin_club_edit.dart';
 import '../models/admin_club_moderator.dart';
 import '../models/admin_club_user.dart';
+import '../models/admin_invitation.dart';
 import '../models/admin_matches.dart';
 import '../models/admin_participant.dart';
 import '../models/admin_participants_response.dart';
@@ -298,6 +299,27 @@ class AdminService {
     await _api.post(
       '/admin/tournaments/$tournamentId/invite',
       {'user_id': userId},
+      token,
+    );
+  }
+
+  Future<List<AdminInvitation>> getTournamentInvitations(int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.get(
+      '/admin/tournaments/$tournamentId/invitations',
+      token,
+    );
+    final list = (response['invitations'] as List?) ?? const [];
+    return list
+        .map((j) => AdminInvitation.fromJson(j as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> cancelInvitation(int tournamentId, int invitationId) async {
+    final token = await _storage.getToken();
+    await _api.delete(
+      '/admin/tournaments/$tournamentId/invitations/$invitationId',
+      null,
       token,
     );
   }

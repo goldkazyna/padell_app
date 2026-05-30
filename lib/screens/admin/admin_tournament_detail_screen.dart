@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../models/admin_invitation.dart';
 import '../../models/admin_matches.dart';
 import '../../models/admin_participant.dart';
 import '../../models/admin_participants_response.dart';
@@ -36,7 +37,7 @@ class AdminTournamentDetailScreen extends StatefulWidget {
 
 class _AdminTournamentDetailScreenState
     extends State<AdminTournamentDetailScreen> {
-  int _currentTab = 0; // 0 = Инфо, 1 = Участники, 2 = Матчи
+  int _currentTab = 0; // 0 = Инфо, 1 = Участники, 2 = Приглашения, 3 = Матчи
 
   bool _loading = true;
   String? _error;
@@ -59,6 +60,11 @@ class _AdminTournamentDetailScreenState
   AdminParticipantsResponse? _participants;
   bool _loadingParticipants = false;
   String? _participantsError;
+
+  // Приглашения
+  List<AdminInvitation>? _invitations;
+  bool _loadingInvitations = false;
+  String? _invitationsError;
 
   // Глобальный busy-оверлей для длинных экшенов (approve/reject/remove/etc).
   bool _actionBusy = false;
@@ -213,6 +219,7 @@ class _AdminTournamentDetailScreenState
         // подгрузилось свежее состояние.
         _matches = null;
         _participants = null;
+        _invitations = null;
       });
       // И сразу подгружаем матчи и участников в фоне — чтобы при переходе на
       // таб не было пустого экрана.
@@ -250,6 +257,7 @@ class _AdminTournamentDetailScreenState
         _starting = false;
         _matches = null;
         _participants = null;
+        _invitations = null;
       });
       unawaited(_loadMatches());
       unawaited(_loadParticipants());
@@ -402,6 +410,7 @@ class _AdminTournamentDetailScreenState
                               children: [
                                 _buildInfoTab(),
                                 _buildParticipantsTab(),
+                                _buildInvitationsTab(),
                                 _buildMatchesTab(),
                               ],
                             ),
@@ -521,12 +530,16 @@ class _AdminTournamentDetailScreenState
           border: Border(
               bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
         ),
-        child: Row(
-          children: [
-            _buildTab('Инфо', 0),
-            _buildTab('Участники', 1),
-            _buildTab('Матчи', 2),
-          ],
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _buildTab('Инфо', 0),
+              _buildTab('Участники', 1),
+              _buildTab('Приглашения', 2),
+              _buildTab('Матчи', 3),
+            ],
+          ),
         ),
       ),
     );
@@ -541,7 +554,10 @@ class _AdminTournamentDetailScreenState
           if (index == 1 && _participants == null && !_loadingParticipants) {
             _loadParticipants();
           }
-          if (index == 2 && _matches == null && !_loadingMatches) {
+          if (index == 2 && _invitations == null && !_loadingInvitations) {
+            _loadInvitations();
+          }
+          if (index == 3 && _matches == null && !_loadingMatches) {
             _loadMatches();
           }
         }
@@ -1160,10 +1176,34 @@ class _AdminTournamentDetailScreenState
     }
   }
 
+  Future<void> _loadInvitations() async {
+    setState(() {
+      _loadingInvitations = true;
+      _invitationsError = null;
+    });
+    try {
+      final list = await context
+          .read<AdminService>()
+          .getTournamentInvitations(widget.tournamentId);
+      if (!mounted) return;
+      setState(() {
+        _invitations = list;
+        _loadingInvitations = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _invitationsError = '$e';
+        _loadingInvitations = false;
+      });
+    }
+  }
+
   /// Перезагрузить и список участников, и инфо (для синхронизации счётчиков).
   Future<void> _refreshAfterAction() async {
     await Future.wait([
       _loadParticipants(),
+      if (_invitations != null) _loadInvitations(),
       context
           .read<AdminService>()
           .getTournamentDetail(widget.tournamentId)
@@ -1172,6 +1212,158 @@ class _AdminTournamentDetailScreenState
         setState(() => _t = t);
       }).catchError((_) {}),
     ]);
+  }
+
+  // ===========================================================================
+  // Таб «Приглашения»
+  // ===========================================================================
+
+  Widget _buildInvitationsTab() {
+    if (_loadingInvitations && _invitations == null) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+    if (_invitationsError != null && _invitations == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
+              const SizedBox(height: 12),
+              Text(_invitationsError!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: AppTheme.textSecondary)),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: _loadInvitations,
+                child: const Text('Повторить',
+                    style: TextStyle(color: AppTheme.accent)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final list = _invitations ?? const <AdminInvitation>[];
+    final canInvite = _t != null && _t!.type != 'team';
+
+    return RefreshIndicator(
+      onRefresh: _loadInvitations,
+      color: AppTheme.accent,
+      backgroundColor: AppTheme.card,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text('Приглашено: ${list.length}',
+                    style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700)),
+              ),
+              if (canInvite)
+                ElevatedButton.icon(
+                  onPressed: _openInvitePlayer,
+                  icon: const Icon(Icons.mail_outline, size: 16),
+                  label: const Text('Пригласить'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          if (list.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(top: 48),
+              child: Center(
+                child: Text('Пока никого не пригласили',
+                    style: TextStyle(
+                        color: AppTheme.textSecondary, fontSize: 14)),
+              ),
+            )
+          else
+            for (final inv in list) ...[
+              _buildInvitationCard(inv),
+              const SizedBox(height: 10),
+            ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvitationCard(AdminInvitation inv) {
+    final p = inv.player;
+    final (label, color) = switch (inv.status) {
+      'accepted' => ('Принял', AppTheme.accent),
+      'declined' => ('Отклонил', AppTheme.textSecondary),
+      _ => ('Ожидает', AppTheme.amber),
+    };
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          _avatar(p),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(p.name,
+                    style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700)),
+                const SizedBox(height: 3),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: color.withAlpha(30),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(label,
+                      style: TextStyle(
+                          color: color,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => _cancelInvitation(inv),
+            icon: const Icon(Icons.close, size: 20, color: AppTheme.error),
+            tooltip: 'Убрать из списка',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _cancelInvitation(AdminInvitation inv) async {
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .cancelInvitation(widget.tournamentId, inv.id),
+      label: 'Убираем из списка...',
+    );
   }
 
   Widget _buildParticipantsTab() {
