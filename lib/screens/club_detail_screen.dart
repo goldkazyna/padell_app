@@ -236,47 +236,153 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     }
 
     final club = _club!;
-    return RefreshIndicator(
-      onRefresh: _load,
-      color: AppTheme.accent,
-      backgroundColor: AppTheme.card,
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(child: _buildCoverHeader(club)),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: _buildSocialRow(club),
-            ),
+
+    // Без тренеров с фото — прежний одиночный скролл.
+    if (club.coaches.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _load,
+        color: AppTheme.accent,
+        backgroundColor: AppTheme.card,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          children: [
+            _buildCoverHeader(club),
+            ..._infoSections(club),
+          ],
+        ),
+      );
+    }
+
+    // С тренерами — табы «Информация» / «Тренеры».
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          _buildCoverHeader(club),
+          const TabBar(
+            labelColor: AppTheme.accent,
+            unselectedLabelColor: AppTheme.textSecondary,
+            indicatorColor: AppTheme.accent,
+            indicatorWeight: 2.5,
+            labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            tabs: [
+              Tab(text: 'Информация'),
+              Tab(text: 'Тренеры'),
+            ],
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: _buildTournamentsCard(club),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: _buildInfoCard(club),
-            ),
-          ),
-          if (club.description != null && club.description!.isNotEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                child: _buildDescription(club.description!),
-              ),
-            ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              child: _buildHideToggle(club),
+          Expanded(
+            child: TabBarView(
+              children: [
+                RefreshIndicator(
+                  onRefresh: _load,
+                  color: AppTheme.accent,
+                  backgroundColor: AppTheme.card,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(top: 4),
+                    children: _infoSections(club),
+                  ),
+                ),
+                _buildCoachesTab(club.coaches),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  /// Карточки информации клуба (без шапки) — общий список для обоих режимов.
+  List<Widget> _infoSections(Club club) {
+    return [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: _buildSocialRow(club),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: _buildTournamentsCard(club),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: _buildInfoCard(club),
+      ),
+      if (club.description != null && club.description!.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: _buildDescription(club.description!),
+        ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        child: _buildHideToggle(club),
+      ),
+    ];
+  }
+
+  // ── Вкладка «Тренеры» ───────────────────────────────────────────────────────
+
+  Widget _buildCoachesTab(List<ClubCoach> coaches) {
+    return GridView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 18,
+        childAspectRatio: 0.74,
+      ),
+      itemCount: coaches.length,
+      itemBuilder: (_, i) => _buildCoachCard(coaches[i]),
+    );
+  }
+
+  Widget _buildCoachCard(ClubCoach coach) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Фото — почти квадратное
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: Image.network(
+              coach.photo,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              errorBuilder: (ctx, err, stack) => Container(
+                color: AppTheme.card,
+                alignment: Alignment.center,
+                child: const Icon(Icons.person,
+                    color: AppTheme.textSecondary, size: 40),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          coach.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: AppTheme.textPrimary,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if ((coach.specialization ?? '').isNotEmpty) ...[
+          const SizedBox(height: 3),
+          Text(
+            coach.specialization!,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 12,
+              height: 1.25,
+            ),
+          ),
+        ],
+      ],
     );
   }
 

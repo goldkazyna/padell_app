@@ -1,3 +1,26 @@
+class ClubCoach {
+  final int id;
+  final String name;
+  final String? specialization;
+  final String photo;
+
+  ClubCoach({
+    required this.id,
+    required this.name,
+    this.specialization,
+    required this.photo,
+  });
+
+  factory ClubCoach.fromJson(Map<String, dynamic> json) {
+    return ClubCoach(
+      id: json['id'] as int,
+      name: json['name'] as String? ?? '',
+      specialization: json['specialization'] as String?,
+      photo: json['photo'] as String? ?? '',
+    );
+  }
+}
+
 class Club {
   final int id;
   final String name;
@@ -19,6 +42,7 @@ class Club {
   final String? privacyPolicyUrl;
   final String? goodsDescriptionUrl;
   final String? cardPaymentDescriptionUrl;
+  final List<ClubCoach> coaches;
 
   Club({
     required this.id,
@@ -41,6 +65,7 @@ class Club {
     this.privacyPolicyUrl,
     this.goodsDescriptionUrl,
     this.cardPaymentDescriptionUrl,
+    this.coaches = const [],
   });
 
   factory Club.fromJson(Map<String, dynamic> json) {
@@ -65,6 +90,10 @@ class Club {
       privacyPolicyUrl: json['privacy_policy_url'] as String?,
       goodsDescriptionUrl: json['goods_description_url'] as String?,
       cardPaymentDescriptionUrl: json['card_payment_description_url'] as String?,
+      coaches: (json['coaches'] as List?)
+              ?.map((e) => ClubCoach.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
   }
 
@@ -94,5 +123,6 @@ class Club {
     privacyPolicyUrl: privacyPolicyUrl,
     goodsDescriptionUrl: goodsDescriptionUrl,
     cardPaymentDescriptionUrl: cardPaymentDescriptionUrl,
+    coaches: coaches,
   );
 }
