@@ -10,6 +10,7 @@ import '../screens/tournament_detail_screen.dart';
 import '../screens/challenge_detail_screen.dart';
 import '../screens/tournament_live_kingofcourt_screen.dart';
 import '../screens/tournament_live_bali_koc_screen.dart';
+import '../screens/tournament_invitations_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -355,6 +356,12 @@ class PushNotificationService {
       String type, String tournamentId, String challengeId, String subtype) {
     _log(
         'Navigate: type=$type, subtype=$subtype, tournamentId=$tournamentId, challengeId=$challengeId');
+
+    // Приглашение на турнир → экран приглашений (принять/отклонить)
+    if (type == 'tournament_invite') {
+      _navigateWhenReady(() => const TournamentInvitationsScreen());
+      return;
+    }
 
     // Challenge types
     const challengeTypes = {

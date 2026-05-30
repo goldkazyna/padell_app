@@ -7,6 +7,7 @@ import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
 import 'tournament_detail_screen.dart';
+import 'tournament_invitations_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   final String? category;
@@ -115,6 +116,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final tournamentId = data['tournament_id'] ?? notification['tournament_id'];
 
     debugPrint('[NOTIF] Tap: type=$type, data=$data, tournament_id=$tournamentId');
+
+    if (type == 'tournament_invite') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const TournamentInvitationsScreen(),
+        ),
+      );
+      return;
+    }
 
     if (tournamentId != null) {
       final id = int.tryParse(tournamentId.toString());

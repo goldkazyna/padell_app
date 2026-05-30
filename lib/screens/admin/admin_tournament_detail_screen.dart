@@ -526,6 +526,7 @@ class _AdminTournamentDetailScreenState
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
+        width: double.infinity,
         decoration: const BoxDecoration(
           border: Border(
               bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
