@@ -139,7 +139,8 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       clientPhone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
       coachId: _selectedCoachId,
       comment: _commentController.text.isNotEmpty ? _commentController.text : null,
-      needsCoach: _needsCoach,
+      // «Нужен тренер» без конкретного выбора — клуб подберёт сам.
+      needsCoach: _needsCoach && _selectedCoachId == null,
     );
 
     setState(() => _isBooking = false);
@@ -223,17 +224,19 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             const SizedBox(height: 20),
 
             // Тренер
-            if (widget.coaches.isNotEmpty) ...[
-              _sectionLabel(AppLocalizations.of(context)!.coachOptional),
-              const SizedBox(height: 8),
-              _buildCoachChips(),
-              const SizedBox(height: 20),
-            ] else ...[
-              _sectionLabel('ТРЕНЕР'),
-              const SizedBox(height: 8),
-              _buildNeedsCoachToggle(),
-              const SizedBox(height: 20),
+            _sectionLabel('ТРЕНЕР'),
+            const SizedBox(height: 8),
+            _buildNeedsCoachButton(),
+            if (_needsCoach) ...[
+              if (widget.coaches.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _buildCoachGrid(),
+              ] else ...[
+                const SizedBox(height: 10),
+                _buildClubContactHint(),
+              ],
             ],
+            const SizedBox(height: 20),
 
             // Имя
             _sectionLabel(AppLocalizations.of(context)!.yourName),
@@ -412,20 +415,24 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  Widget _buildNeedsCoachToggle() {
+  /// Кнопка-тумблер «Нужен тренер». Раскрывает выбор тренеров (если они есть).
+  Widget _buildNeedsCoachButton() {
+    final hasCoaches = widget.coaches.isNotEmpty;
+    final subtitle = hasCoaches
+        ? 'Выберите тренера из списка ниже'
+        : 'Клуб свяжется с вами и подберёт тренера';
     return GestureDetector(
-      onTap: () => setState(() => _needsCoach = !_needsCoach),
+      onTap: () => setState(() {
+        _needsCoach = !_needsCoach;
+        if (!_needsCoach) _selectedCoachId = null;
+      }),
       child: Container(
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         decoration: BoxDecoration(
-          color: _needsCoach
-              ? AppTheme.accent.withAlpha(20)
-              : AppTheme.card,
+          color: _needsCoach ? AppTheme.accent.withAlpha(20) : AppTheme.card,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _needsCoach
-                ? AppTheme.accent.withAlpha(100)
-                : AppTheme.border,
+            color: _needsCoach ? AppTheme.accent.withAlpha(100) : AppTheme.border,
             width: _needsCoach ? 1 : 0.5,
           ),
         ),
@@ -448,11 +455,11 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                   : null,
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Нужен тренер',
                     style: TextStyle(
                       fontSize: 14,
@@ -460,13 +467,18 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                       color: AppTheme.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
-                    'Клуб свяжется с вами и подберёт тренера',
-                    style: TextStyle(fontSize: 11, color: AppTheme.textDim),
+                    subtitle,
+                    style: const TextStyle(fontSize: 11, color: AppTheme.textDim),
                   ),
                 ],
               ),
+            ),
+            Icon(
+              _needsCoach ? Icons.expand_less : Icons.expand_more,
+              color: AppTheme.textSecondary,
+              size: 22,
             ),
           ],
         ),
@@ -474,70 +486,149 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  Widget _buildCoachChips() {
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children: widget.coaches.map((coach) {
-        final id = coach['id'] as int;
-        final name = coach['name'] as String? ?? '';
-        final rate = (coach['hourly_rate'] as num?)?.toDouble() ?? 0;
-        final isSelected = _selectedCoachId == id;
-        final isAvailable = _isCoachAvailable(coach);
-
-        return GestureDetector(
-          onTap: () {
-            if (!isAvailable) return;
-            setState(() {
-              _selectedCoachId = isSelected ? null : id;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? const Color(0xFFA78BFA)
-                  : AppTheme.card,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: isSelected
-                    ? const Color(0xFFA78BFA)
-                    : const Color(0xFF2A2A2A),
-                width: 0.5,
-              ),
-            ),
-            child: Opacity(
-              opacity: isAvailable ? 1.0 : 0.3,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.black : AppTheme.textSecondary,
-                      decoration: isAvailable ? null : TextDecoration.lineThrough,
-                    ),
-                  ),
-                  if (rate > 0) ...[
-                    const SizedBox(width: 4),
-                    Text(
-                      '${_fmtPrice(rate)} ₸',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: isSelected ? Colors.black.withAlpha(180) : AppTheme.accent,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+  /// Подсказка, когда у клуба нет заведённых тренеров.
+  Widget _buildClubContactHint() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.info_outline, color: AppTheme.textSecondary, size: 18),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Клуб подберёт тренера и свяжется с вами для подтверждения.',
+              style: TextStyle(fontSize: 13, color: AppTheme.textSecondary, height: 1.3),
             ),
           ),
-        );
-      }).toList(),
+        ],
+      ),
     );
+  }
+
+  /// Сетка тренеров — по 3 в ряд.
+  Widget _buildCoachGrid() {
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        const spacing = 10.0;
+        final itemWidth = (constraints.maxWidth - spacing * 2) / 3;
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: widget.coaches
+              .map((c) => SizedBox(
+                    width: itemWidth,
+                    child: _buildCoachGridCard(c as Map<String, dynamic>),
+                  ))
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildCoachGridCard(Map<String, dynamic> coach) {
+    final id = coach['id'] as int;
+    final name = coach['name'] as String? ?? '';
+    final rate = (coach['hourly_rate'] as num?)?.toDouble() ?? 0;
+    final photo = coach['photo'] as String?;
+    final isSelected = _selectedCoachId == id;
+    final isAvailable = _isCoachAvailable(coach);
+
+    return GestureDetector(
+      onTap: () {
+        if (!isAvailable) return;
+        setState(() => _selectedCoachId = isSelected ? null : id);
+      },
+      child: Opacity(
+        opacity: isAvailable ? 1.0 : 0.35,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+          decoration: BoxDecoration(
+            color: isSelected ? AppTheme.accent.withAlpha(24) : AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
+              width: isSelected ? 1.5 : 0.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              // Аватар: фото или инициалы-заглушка
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _coachColor(id),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: (photo != null && photo.isNotEmpty)
+                    ? Image.network(
+                        photo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, err, stack) => _coachInitials(name),
+                      )
+                    : _coachInitials(name),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                name,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                  color: isSelected ? AppTheme.accent : AppTheme.textPrimary,
+                  decoration: isAvailable ? null : TextDecoration.lineThrough,
+                ),
+              ),
+              if (rate > 0) ...[
+                const SizedBox(height: 3),
+                Text(
+                  '${_fmtPrice(rate)} ₸',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _coachInitials(String name) {
+    final words = name.trim().split(RegExp(r'\s+'));
+    final initials = words.length >= 2
+        ? '${words[0][0]}${words[1][0]}'
+        : (name.length >= 2 ? name.substring(0, 2) : name);
+    return Center(
+      child: Text(
+        initials.toUpperCase(),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+
+  Color _coachColor(int id) {
+    const palette = [
+      Color(0xFF4A8BF5), Color(0xFFA89CF5), Color(0xFFEC4899),
+      Color(0xFFF59E0B), Color(0xFF22C47A), Color(0xFF06B6D4),
+    ];
+    return palette[id % palette.length];
   }
 
   Widget _buildInput(TextEditingController controller, String hint) {
