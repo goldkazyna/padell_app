@@ -29,6 +29,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   bool _isLoading = false;
   bool _isToggling = false;
   String? _error;
+  int _tabIndex = 0; // 0 = Информация, 1 = Тренеры
 
   @override
   void initState() {
@@ -254,41 +255,69 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       );
     }
 
-    // С тренерами — табы «Информация» / «Тренеры».
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          _buildCoverHeader(club),
-          const TabBar(
-            labelColor: AppTheme.accent,
-            unselectedLabelColor: AppTheme.textSecondary,
-            indicatorColor: AppTheme.accent,
-            indicatorWeight: 2.5,
-            labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-            tabs: [
-              Tab(text: 'Информация'),
-              Tab(text: 'Тренеры'),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
+    // С тренерами — табы «Информация» / «Тренеры» (стиль как в рейтинге).
+    return Column(
+      children: [
+        _buildCoverHeader(club),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Color(0xFF27272A), width: 1),
+              ),
+            ),
+            child: Row(
               children: [
-                RefreshIndicator(
+                _buildClubTab('Информация', 0),
+                _buildClubTab('Тренеры', 1),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: _tabIndex == 0
+              ? RefreshIndicator(
                   onRefresh: _load,
                   color: AppTheme.accent,
                   backgroundColor: AppTheme.card,
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: EdgeInsets.zero,
                     children: _infoSections(club),
                   ),
-                ),
-                _buildCoachesTab(club.coaches),
-              ],
+                )
+              : _buildCoachesTab(club.coaches),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildClubTab(String label, int index) {
+    final isActive = _tabIndex == index;
+    return GestureDetector(
+      onTap: () {
+        if (_tabIndex != index) setState(() => _tabIndex = index);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppTheme.accent : Colors.transparent,
+              width: 2,
             ),
           ),
-        ],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? AppTheme.accent : const Color(0xFF52525B),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
