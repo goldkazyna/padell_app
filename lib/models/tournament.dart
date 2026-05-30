@@ -301,6 +301,7 @@ class Tournament {
   final bool waitlistAvailable;
   final bool inWaitlist;
   final int? waitlistPosition;
+  final DateTime? moderationDeadline;
 
   Tournament({
     required this.id,
@@ -336,6 +337,7 @@ class Tournament {
     this.waitlistAvailable = false,
     this.inWaitlist = false,
     this.waitlistPosition,
+    this.moderationDeadline,
   });
 
   bool get isTeamTournament => type == 'team';
@@ -422,6 +424,9 @@ class Tournament {
       waitlistAvailable: json['waitlist_available'] as bool? ?? false,
       inWaitlist: json['in_waitlist'] as bool? ?? false,
       waitlistPosition: json['waitlist_position'] as int?,
+      moderationDeadline: json['moderation_deadline'] != null
+          ? DateTime.tryParse(json['moderation_deadline'] as String)
+          : null,
     );
   }
 
