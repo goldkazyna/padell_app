@@ -8,6 +8,7 @@ import '../providers/tournament_provider.dart';
 import '../services/club_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../widgets/coming_soon_badge.dart';
 import 'tournaments_screen.dart';
 
 class ClubDetailScreen extends StatefulWidget {
@@ -583,26 +584,34 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Badge pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF22C55E), Color(0xFF166534)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              // Badge pills
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF22C55E), Color(0xFF166534)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      club.isCommunity ? 'КОМЬЮНИТИ' : 'КЛУБ',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  club.isCommunity ? 'КОМЬЮНИТИ' : 'КЛУБ',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+                  if (club.comingSoon) const ComingSoonBadge(),
+                ],
               ),
               const SizedBox(height: 6),
               // Club name

@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../models/club.dart';
 import '../services/club_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/coming_soon_badge.dart';
 import '../widgets/app_back_button.dart';
 import 'club_detail_screen.dart';
 
@@ -318,6 +319,10 @@ class _ClubTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (club.comingSoon) ...[
+                    const SizedBox(height: 5),
+                    const ComingSoonBadge(fontSize: 9),
+                  ],
                   const SizedBox(height: 4),
                   if (club.city != null && club.city!.isNotEmpty)
                     Row(
