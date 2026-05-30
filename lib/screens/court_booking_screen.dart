@@ -10,6 +10,7 @@ import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/secure_payment_badge.dart';
 import 'booking_confirmation_screen.dart';
+import 'club_detail_screen.dart';
 
 class CourtBookingScreen extends StatefulWidget {
   final Club club;
@@ -240,6 +241,10 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                 const SizedBox(height: 10),
                 _buildClubContactHint(),
               ],
+            ],
+            if (_coachesWithPhoto.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              _buildOurCoachesButton(),
             ],
             const SizedBox(height: 20),
 
@@ -485,6 +490,58 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
               color: AppTheme.textSecondary,
               size: 22,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Кнопка «Наши тренера» — переход на вкладку тренеров клуба.
+  Widget _buildOurCoachesButton() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ClubDetailScreen(
+              clubId: widget.club.id,
+              initialShowCoaches: true,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppTheme.accent.withAlpha(25),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: const Icon(Icons.groups_outlined,
+                  color: AppTheme.accent, size: 18),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Наши тренера',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right,
+                color: AppTheme.textSecondary, size: 20),
           ],
         ),
       ),

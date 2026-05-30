@@ -13,11 +13,13 @@ import 'tournaments_screen.dart';
 class ClubDetailScreen extends StatefulWidget {
   final int clubId;
   final Club? initialClub;
+  final bool initialShowCoaches;
 
   const ClubDetailScreen({
     super.key,
     required this.clubId,
     this.initialClub,
+    this.initialShowCoaches = false,
   });
 
   @override
@@ -35,6 +37,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   void initState() {
     super.initState();
     _club = widget.initialClub;
+    if (widget.initialShowCoaches) _tabIndex = 1;
     _load();
   }
 
