@@ -13,6 +13,7 @@ import '../providers/settings_provider.dart';
 import '../providers/tournament_provider.dart';
 import '../providers/home_provider.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/moderation_countdown.dart';
 import '../widgets/tournaments/team_list_section.dart';
 import '../widgets/tournaments/team_info_card.dart';
 import '../widgets/tournaments/team_registration_sheet.dart';
@@ -1388,6 +1389,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               ),
             ],
           ),
+          if (t.moderationDeadline != null) ...[
+            const SizedBox(height: 10),
+            ModerationCountdown(deadline: t.moderationDeadline!),
+          ],
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,

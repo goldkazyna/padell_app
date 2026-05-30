@@ -7,6 +7,7 @@ import '../providers/tournament_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/main_tab_bar.dart';
+import '../widgets/moderation_countdown.dart';
 import '../widgets/tournaments/club_section_header.dart';
 import '../widgets/tournaments/hero_tournament_card.dart';
 import 'club_detail_screen.dart';
@@ -141,15 +142,25 @@ class _MyClubBlock extends StatelessWidget {
         for (final t in tournaments)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: HeroTournamentCard(
-              tournament: t,
-              userLevel: userLevel,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => TournamentDetailScreen(tournamentId: t.id),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                HeroTournamentCard(
+                  tournament: t,
+                  userLevel: userLevel,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TournamentDetailScreen(tournamentId: t.id),
+                    ),
+                  ),
                 ),
-              ),
+                if (t.moderationDeadline != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: ModerationCountdown(deadline: t.moderationDeadline!),
+                  ),
+              ],
             ),
           ),
       ],
