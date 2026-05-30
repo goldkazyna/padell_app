@@ -153,12 +153,22 @@ class AdminService {
   }
 
   /// Создать турнир (Этап 4). Возвращает id нового турнира.
+  ///
+  /// [moderationHours] — таймер модерации (часов). Передаётся в теле запроса
+  /// только когда не null; пусто = без таймера.
   Future<int> createTournament(
-      int clubId, Map<String, dynamic> body) async {
+    int clubId,
+    Map<String, dynamic> body, {
+    int? moderationHours,
+  }) async {
     final token = await _storage.getToken();
+    final payload = <String, dynamic>{
+      ...body,
+      'moderation_hours': ?moderationHours,
+    };
     final response = await _api.post(
       '/admin/clubs/$clubId/tournaments',
-      body,
+      payload,
       token,
     );
     return (response['tournament_id'] as num).toInt();
