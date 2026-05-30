@@ -35,7 +35,7 @@ class TournamentCard extends StatelessWidget {
     this.flat = false,
   });
 
-  factory TournamentCard.fromTournament(Tournament t) {
+  factory TournamentCard.fromTournament(Tournament t, {bool flat = false}) {
     return TournamentCard(
       day: t.dayOfMonth,
       month: t.monthShort,
@@ -49,6 +49,7 @@ class TournamentCard extends StatelessWidget {
       level: t.levelText,
       isRegistered: t.isRegistered,
       isFull: t.isFull,
+      flat: flat,
     );
   }
 

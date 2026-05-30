@@ -6,6 +6,7 @@ import '../services/invitation_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/tournaments/tournament_card.dart';
 import 'tournament_detail_screen.dart';
 
 class TournamentInvitationsScreen extends StatefulWidget {
@@ -98,18 +99,6 @@ class _TournamentInvitationsScreenState
     }
   }
 
-  String _formatDate(String? iso) {
-    if (iso == null) return '';
-    final dt = DateTime.tryParse(iso);
-    if (dt == null) return '';
-    final d = dt.toLocal();
-    final dd = d.day.toString().padLeft(2, '0');
-    final mm = d.month.toString().padLeft(2, '0');
-    final hh = d.hour.toString().padLeft(2, '0');
-    final mi = d.minute.toString().padLeft(2, '0');
-    return '$dd.$mm.${d.year} $hh:$mi';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,92 +180,88 @@ class _TournamentInvitationsScreenState
   Widget _buildCard(TournamentInvitation inv) {
     final busy = _busyId == inv.id;
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            inv.tournamentName,
-            style: const TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
+          // Карточка турнира — как во вкладке «Турниры»
+          GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) =>
+                    TournamentDetailScreen(tournamentId: inv.tournamentId),
+              ),
             ),
+            child: TournamentCard.fromTournament(inv.tournament, flat: true),
           ),
-          const SizedBox(height: 6),
-          if ((inv.clubName ?? '').isNotEmpty)
-            _metaRow(Icons.apartment_outlined, inv.clubName!),
-          if (inv.startDate != null) ...[
-            const SizedBox(height: 4),
-            _metaRow(Icons.event_outlined, _formatDate(inv.startDate)),
-          ],
-          if ((inv.invitedByName ?? '').isNotEmpty) ...[
-            const SizedBox(height: 4),
-            _metaRow(Icons.person_outline, 'Пригласил: ${inv.invitedByName}'),
-          ],
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: busy ? null : () => _decline(inv),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppTheme.textSecondary,
-                    side: const BorderSide(color: Color(0xFF3A3A3A)),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+          if ((inv.invitedByName ?? '').isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
+              child: Row(
+                children: [
+                  const Icon(Icons.person_outline,
+                      size: 15, color: AppTheme.textSecondary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Пригласил: ${inv.invitedByName}',
+                      style: const TextStyle(
+                          color: AppTheme.textSecondary, fontSize: 13),
+                    ),
                   ),
-                  child: const Text('Отклонить'),
-                ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 2,
-                child: ElevatedButton(
-                  onPressed: busy ? null : () => _accept(inv),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accent,
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: busy ? null : () => _decline(inv),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.textSecondary,
+                      side: const BorderSide(color: Color(0xFF3A3A3A)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Отклонить'),
                   ),
-                  child: busy
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                              color: Colors.black, strokeWidth: 2.2))
-                      : const Text('Принять',
-                          style: TextStyle(fontWeight: FontWeight.w800)),
                 ),
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: busy ? null : () => _accept(inv),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.accent,
+                      foregroundColor: Colors.black,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: busy
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                                color: Colors.black, strokeWidth: 2.2))
+                        : const Text('Принять',
+                            style: TextStyle(fontWeight: FontWeight.w800)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _metaRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 15, color: AppTheme.textSecondary),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
-          ),
-        ),
-      ],
     );
   }
 }
