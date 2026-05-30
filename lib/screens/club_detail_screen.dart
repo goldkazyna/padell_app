@@ -352,26 +352,33 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   // ── Вкладка «Тренеры» ───────────────────────────────────────────────────────
 
   Widget _buildCoachesTab(List<ClubCoach> coaches) {
-    return GridView.builder(
+    return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 18,
-        childAspectRatio: 0.74,
+      child: LayoutBuilder(
+        builder: (ctx, constraints) {
+          const spacing = 14.0;
+          final itemWidth = (constraints.maxWidth - spacing) / 2;
+          return Wrap(
+            spacing: spacing,
+            runSpacing: 18,
+            children: coaches
+                .map((c) => SizedBox(width: itemWidth, child: _buildCoachCard(c)))
+                .toList(),
+          );
+        },
       ),
-      itemCount: coaches.length,
-      itemBuilder: (_, i) => _buildCoachCard(coaches[i]),
     );
   }
 
   Widget _buildCoachCard(ClubCoach coach) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        // Фото — почти квадратное
-        Expanded(
+        // Фото — почти квадратное, одинаковой высоты у всех карточек
+        AspectRatio(
+          aspectRatio: 0.92,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(14),
             child: Image.network(
@@ -388,29 +395,41 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          coach.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: AppTheme.textPrimary,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
+        // Блок текста фиксированной высоты — карточки выровнены одинаково
+        SizedBox(
+          height: 52,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                coach.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if ((coach.specialization ?? '').isNotEmpty) ...[
+                const SizedBox(height: 3),
+                Flexible(
+                  child: Text(
+                    coach.specialization!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
-        if ((coach.specialization ?? '').isNotEmpty) ...[
-          const SizedBox(height: 3),
-          Text(
-            coach.specialization!,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 12,
-              height: 1.25,
-            ),
-          ),
-        ],
       ],
     );
   }
