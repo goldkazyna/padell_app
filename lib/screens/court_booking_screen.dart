@@ -50,6 +50,11 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
   bool _initialized = false;
   bool _agreedToDocs = false;
 
+  /// Тренеры с фото — только их показываем при выборе.
+  List<dynamic> get _coachesWithPhoto => widget.coaches
+      .where((c) => ((c['photo'] as String?) ?? '').isNotEmpty)
+      .toList();
+
   int get _maxSlots {
     int count = 0;
     for (int i = widget.slotIndex; i < widget.slots.length; i++) {
@@ -228,7 +233,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             const SizedBox(height: 8),
             _buildNeedsCoachButton(),
             if (_needsCoach) ...[
-              if (widget.coaches.isNotEmpty) ...[
+              if (_coachesWithPhoto.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 _buildCoachGrid(),
               ] else ...[
@@ -417,7 +422,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
 
   /// Кнопка-тумблер «Нужен тренер». Раскрывает выбор тренеров (если они есть).
   Widget _buildNeedsCoachButton() {
-    final hasCoaches = widget.coaches.isNotEmpty;
+    final hasCoaches = _coachesWithPhoto.isNotEmpty;
     final subtitle = hasCoaches
         ? 'Выберите тренера из списка ниже'
         : 'Клуб свяжется с вами и подберёт тренера';
@@ -519,7 +524,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         return Wrap(
           spacing: spacing,
           runSpacing: spacing,
-          children: widget.coaches
+          children: _coachesWithPhoto
               .map((c) => SizedBox(
                     width: itemWidth,
                     child: _buildCoachGridCard(c as Map<String, dynamic>),
