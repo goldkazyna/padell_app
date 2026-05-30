@@ -8,6 +8,7 @@ class AdminParticipant {
   final String? avatarUrl;
   final String? status; // registered / pending / cancelled — только для одиночных
   final DateTime? registeredAt;
+  final bool levelVerified;
 
   const AdminParticipant({
     required this.id,
@@ -18,6 +19,7 @@ class AdminParticipant {
     required this.avatarUrl,
     required this.status,
     required this.registeredAt,
+    this.levelVerified = false,
   });
 
   factory AdminParticipant.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class AdminParticipant {
       status: json['status'] as String?,
       registeredAt:
           DateTime.tryParse(json['registered_at'] as String? ?? ''),
+      levelVerified: json['level_verified'] as bool? ?? false,
     );
   }
 }

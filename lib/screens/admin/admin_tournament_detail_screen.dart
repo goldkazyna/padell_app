@@ -18,6 +18,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
+import '../../widgets/verified_badge.dart';
 import 'admin_bali_create_pairs_screen.dart';
 
 /// Этап 3a/3b — экран управления существующим турниром.
@@ -1951,13 +1952,25 @@ class _AdminTournamentDetailScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(p.name,
-            style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w600),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis),
+        Row(
+          children: [
+            Flexible(
+              child: Text(p.name,
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
+            ),
+            const SizedBox(width: 6),
+            if (p.levelVerified)
+              const VerifiedBadge(size: 13)
+            else
+              const Icon(Icons.shield_outlined,
+                  size: 14, color: AppTheme.textDim),
+          ],
+        ),
         if (pieces.isNotEmpty)
           Text(pieces.join(' · '),
               style: const TextStyle(
