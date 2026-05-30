@@ -1444,7 +1444,6 @@ class _AdminTournamentDetailScreenState
           canModify: r.canModify,
           isFull: isFull,
           onAdd: r.canModify ? _openAddPlayer : null,
-          onInvite: r.canModify ? _openInvitePlayer : null,
         ),
         if (pending.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -1554,21 +1553,6 @@ class _AdminTournamentDetailScreenState
                       color: AppTheme.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700)),
-              const Spacer(),
-              TextButton(
-                onPressed: () => _approveAll(pending),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: const Text('Одобрить все',
-                    style: TextStyle(
-                        color: AppTheme.accent,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700)),
-              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -1592,17 +1576,24 @@ class _AdminTournamentDetailScreenState
             _avatar(p),
             const SizedBox(width: 10),
             Expanded(child: _nameAndMeta(p)),
-            IconButton(
-              icon: const Icon(Icons.check_circle_outline,
-                  color: AppTheme.accent),
-              tooltip: 'Одобрить',
-              onPressed: () => _approveOne(p),
-            ),
-            IconButton(
-              icon: const Icon(Icons.cancel_outlined,
-                  color: AppTheme.error),
-              tooltip: 'Отклонить',
-              onPressed: () => _rejectOne(p),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert,
+                  color: AppTheme.textSecondary),
+              color: AppTheme.cardRaised,
+              onSelected: (v) {
+                if (v == 'approve') _approveOne(p);
+                if (v == 'reject') _rejectOne(p);
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                    value: 'approve',
+                    child: Text('Одобрить',
+                        style: TextStyle(color: AppTheme.accent))),
+                PopupMenuItem(
+                    value: 'reject',
+                    child: Text('Отклонить',
+                        style: TextStyle(color: AppTheme.error))),
+              ],
             ),
           ],
         ),
@@ -2014,56 +2005,6 @@ class _AdminTournamentDetailScreenState
           .removeParticipant(widget.tournamentId, p.id),
       label: 'Удаляем участника...',
     );
-  }
-
-  Future<void> _approveAll(List<AdminParticipant> pending) async {
-    final ok = await _confirm(
-      title: 'Одобрить все заявки?',
-      message: 'Будет одобрено ${pending.length} заявок (в пределах лимита).',
-      okText: 'Одобрить все',
-    );
-    if (!ok) return;
-    if (_actionBusy) return;
-
-    setState(() {
-      _actionBusy = true;
-      _actionLabel = 'Одобряем 0 / ${pending.length}...';
-    });
-
-    final svc = context.read<AdminService>();
-    int done = 0;
-    String? lastErr;
-    for (final p in pending) {
-      try {
-        await svc.approveParticipant(widget.tournamentId, p.id);
-        done++;
-        if (mounted) {
-          setState(() => _actionLabel =
-              'Одобряем $done / ${pending.length}...');
-        }
-      } catch (e) {
-        lastErr = '$e';
-        break;
-      }
-    }
-    await _refreshAfterAction();
-    if (mounted) {
-      setState(() {
-        _actionBusy = false;
-        _actionLabel = null;
-      });
-    }
-    if (!mounted) return;
-    if (lastErr != null && done == 0) {
-      await showAppAlert(context, lastErr,
-          title: 'Ошибка', isError: true);
-    } else if (lastErr != null) {
-      await showAppAlert(context,
-          'Одобрено: $done. Дальше: $lastErr',
-          title: 'Частично', isError: true);
-    } else {
-      await showAppAlert(context, 'Одобрено заявок: $done');
-    }
   }
 
   Future<void> _approveTeam(AdminTeam t) async {
