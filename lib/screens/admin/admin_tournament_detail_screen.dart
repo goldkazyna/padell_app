@@ -19,6 +19,7 @@ import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
 import '../../widgets/verified_badge.dart';
+import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
 
 /// Этап 3a/3b — экран управления существующим турниром.
@@ -1584,12 +1585,17 @@ class _AdminTournamentDetailScreenState
                   color: AppTheme.textSecondary),
               color: AppTheme.cardRaised,
               onSelected: (v) {
+                if (v == 'profile') _openProfile(p);
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'approve') _approveOne(p);
                 if (v == 'reject') _rejectOne(p);
               },
               itemBuilder: (_) => [
+                _popupItem('profile',
+                    const Icon(Icons.person_outline,
+                        size: 18, color: AppTheme.textSecondary),
+                    'Просмотреть профиль', AppTheme.textPrimary),
                 if ((p.phone ?? '').isNotEmpty) ...[
                   _popupItem('call',
                       const Icon(Icons.call, size: 18, color: AppTheme.accent),
@@ -1634,12 +1640,17 @@ class _AdminTournamentDetailScreenState
                   color: AppTheme.textSecondary),
               color: AppTheme.cardRaised,
               onSelected: (v) {
+                if (v == 'profile') _openProfile(p);
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'replace') _openReplacePlayer(p);
                 if (v == 'remove') _removeOne(p);
               },
               itemBuilder: (_) => [
+                _popupItem('profile',
+                    const Icon(Icons.person_outline,
+                        size: 18, color: AppTheme.textSecondary),
+                    'Просмотреть профиль', AppTheme.textPrimary),
                 if ((p.phone ?? '').isNotEmpty) ...[
                   _popupItem('call',
                       const Icon(Icons.call, size: 18, color: AppTheme.accent),
@@ -2012,6 +2023,18 @@ class _AdminTournamentDetailScreenState
           const SizedBox(width: 10),
           Text(label, style: TextStyle(color: color)),
         ],
+      ),
+    );
+  }
+
+  void _openProfile(AdminParticipant p) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PlayerProfileScreen(
+          playerId: p.id,
+          playerName: p.name,
+        ),
       ),
     );
   }
