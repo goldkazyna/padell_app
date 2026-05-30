@@ -547,7 +547,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
   /// Лента тренеров — горизонтальный скролл (свайп).
   Widget _buildCoachGrid() {
     return SizedBox(
-      height: 150,
+      height: 200,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
@@ -555,7 +555,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         itemCount: _coachesWithPhoto.length,
         separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (_, i) => SizedBox(
-          width: 104,
+          width: 136,
           child: _buildCoachGridCard(_coachesWithPhoto[i] as Map<String, dynamic>),
         ),
       ),
@@ -590,22 +590,25 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Аватар: фото или инициалы-заглушка
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _coachColor(id),
+              // Фото — квадратное, заглушка с инициалами при отсутствии
+              SizedBox(
+                width: 120,
+                height: 120,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    color: _coachColor(id),
+                    child: (photo != null && photo.isNotEmpty)
+                        ? Image.network(
+                            photo,
+                            fit: BoxFit.cover,
+                            width: 120,
+                            height: 120,
+                            errorBuilder: (ctx, err, stack) => _coachInitials(name),
+                          )
+                        : _coachInitials(name),
+                  ),
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: (photo != null && photo.isNotEmpty)
-                    ? Image.network(
-                        photo,
-                        fit: BoxFit.cover,
-                        errorBuilder: (ctx, err, stack) => _coachInitials(name),
-                      )
-                    : _coachInitials(name),
               ),
               const SizedBox(height: 8),
               Text(
@@ -649,7 +652,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         initials.toUpperCase(),
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 18,
+          fontSize: 34,
           fontWeight: FontWeight.w800,
         ),
       ),
