@@ -1491,46 +1491,63 @@ class _AdminTournamentDetailScreenState
             ],
           ),
           const SizedBox(height: 8),
-          ...List.generate(waiting.length, (i) {
-            final p = waiting[i];
-            return Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
-                decoration: BoxDecoration(
-                  color: AppTheme.card,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 22,
-                      child: Text(
-                        '${i + 1}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: AppTheme.blue,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+          ...waiting.map((p) => Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      _avatar(p),
+                      const SizedBox(width: 10),
+                      Expanded(child: _nameAndMeta(p)),
+                      if (canModify)
+                        PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert,
+                              color: AppTheme.textSecondary),
+                          color: AppTheme.cardRaised,
+                          onSelected: (v) {
+                            if (v == 'profile') _openProfile(p);
+                            if (v == 'call') _callPlayer(p);
+                            if (v == 'whatsapp') _whatsappPlayer(p);
+                            if (v == 'remove') _removeOne(p);
+                          },
+                          itemBuilder: (_) => [
+                            _popupItem(
+                                'profile',
+                                const Icon(Icons.person_outline,
+                                    size: 18, color: AppTheme.textSecondary),
+                                'Просмотреть профиль',
+                                AppTheme.textPrimary),
+                            if ((p.phone ?? '').isNotEmpty) ...[
+                              _popupItem(
+                                  'call',
+                                  const Icon(Icons.call,
+                                      size: 18, color: AppTheme.accent),
+                                  'Позвонить',
+                                  AppTheme.textPrimary),
+                              _popupItem(
+                                  'whatsapp',
+                                  const FaIcon(FontAwesomeIcons.whatsapp,
+                                      size: 17, color: Color(0xFF25D366)),
+                                  'WhatsApp',
+                                  AppTheme.textPrimary),
+                            ],
+                            _popupItem(
+                                'remove',
+                                const Icon(Icons.delete_outline,
+                                    size: 18, color: AppTheme.error),
+                                'Удалить',
+                                AppTheme.error),
+                          ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    _avatar(p),
-                    const SizedBox(width: 10),
-                    Expanded(child: _nameAndMeta(p)),
-                    if (canModify)
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            color: AppTheme.error),
-                        tooltip: 'Удалить из листа ожидания',
-                        onPressed: () => _removeOne(p),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }),
+              )),
         ],
       ),
     );
