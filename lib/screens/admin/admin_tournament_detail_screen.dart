@@ -1249,7 +1249,9 @@ class _AdminTournamentDetailScreenState
     }
 
     final list = _invitations ?? const <AdminInvitation>[];
-    final canInvite = _t != null && _t!.type != 'team';
+    const maxInvites = 10;
+    final atLimit = list.length >= maxInvites;
+    final canInvite = _t != null && _t!.type != 'team' && !atLimit;
 
     return RefreshIndicator(
       onRefresh: _loadInvitations,
@@ -1262,11 +1264,22 @@ class _AdminTournamentDetailScreenState
           Row(
             children: [
               Expanded(
-                child: Text('Приглашено: ${list.length}',
-                    style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Приглашено: ${list.length} / $maxInvites',
+                        style: const TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700)),
+                    if (atLimit && _t?.type != 'team') ...[
+                      const SizedBox(height: 2),
+                      const Text('Лимит приглашений достигнут',
+                          style: TextStyle(
+                              color: AppTheme.amber, fontSize: 12)),
+                    ],
+                  ],
+                ),
               ),
               if (canInvite)
                 ElevatedButton.icon(
