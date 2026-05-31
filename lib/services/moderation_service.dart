@@ -5,8 +5,14 @@ import 'storage_service.dart';
 class ModerationPending {
   final int tournamentId;
   final String name;
+  final String date; // готовая строка даты турнира, напр. «5 июня, 18:00»
   final DateTime deadline;
-  ModerationPending({required this.tournamentId, required this.name, required this.deadline});
+  ModerationPending({
+    required this.tournamentId,
+    required this.name,
+    required this.date,
+    required this.deadline,
+  });
 }
 
 class ModerationService {
@@ -26,6 +32,7 @@ class ModerationService {
     return ModerationPending(
       tournamentId: (m['tournament_id'] as num).toInt(),
       name: m['name'] as String? ?? '',
+      date: m['date'] as String? ?? '',
       deadline: dl,
     );
   }

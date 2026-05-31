@@ -86,17 +86,34 @@ class _ModerationPaymentBannerState extends State<ModerationPaymentBanner> {
                 const Icon(Icons.timer_outlined, size: 18, color: AppTheme.amber),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    left.isNegative
-                        ? 'Оплатите участие в «${p.name}»'
-                        : 'Оплатите участие — ${_fmt(left)}',
-                    style: const TextStyle(
-                      color: AppTheme.amber,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        left.isNegative
+                            ? 'Оплатите участие'
+                            : 'Оплатите участие — ${_fmt(left)}',
+                        style: const TextStyle(
+                          color: AppTheme.amber,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        p.date.isNotEmpty ? '${p.name} · ${p.date}' : p.name,
+                        style: TextStyle(
+                          color: AppTheme.amber.withAlpha(200),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
                 const Icon(Icons.chevron_right, size: 18, color: AppTheme.amber),
