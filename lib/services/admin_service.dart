@@ -299,6 +299,15 @@ class AdminService {
     );
   }
 
+  Future<void> moveToWaitlist(int tournamentId, int userId) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/participants/$userId/to-waitlist',
+      const {},
+      token,
+    );
+  }
+
   Future<void> addParticipant(int tournamentId, int userId) async {
     final token = await _storage.getToken();
     await _api.post(

@@ -1666,6 +1666,7 @@ class _AdminTournamentDetailScreenState
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'replace') _openReplacePlayer(p);
+                if (v == 'waitlist') _moveToWaitlist(p);
                 if (v == 'remove') _removeOne(p);
               },
               itemBuilder: (_) => [
@@ -1686,6 +1687,10 @@ class _AdminTournamentDetailScreenState
                     const Icon(Icons.swap_horiz,
                         size: 18, color: AppTheme.textSecondary),
                     'Заменить', AppTheme.textPrimary),
+                _popupItem('waitlist',
+                    const Icon(Icons.hourglass_bottom,
+                        size: 18, color: AppTheme.blue),
+                    'Переместить в лист ожидания', AppTheme.textPrimary),
                 _popupItem('remove',
                     const Icon(Icons.delete_outline,
                         size: 18, color: AppTheme.error),
@@ -2131,6 +2136,16 @@ class _AdminTournamentDetailScreenState
           .read<AdminService>()
           .removeParticipant(widget.tournamentId, p.id),
       label: 'Удаляем участника...',
+    );
+  }
+
+  Future<void> _moveToWaitlist(AdminParticipant p) async {
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .moveToWaitlist(widget.tournamentId, p.id),
+      label: 'Перемещаем в лист ожидания...',
+      successMessage: '${p.name} — в листе ожидания',
     );
   }
 
