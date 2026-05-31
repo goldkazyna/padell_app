@@ -299,11 +299,14 @@ class AdminService {
     );
   }
 
-  Future<void> moveToWaitlist(int tournamentId, int userId) async {
+  /// Переместить участника в лист ожидания. Если [promoteUserId] задан —
+  /// этот игрок из листа ожидания займёт освободившееся место (на модерацию).
+  Future<void> moveToWaitlist(int tournamentId, int userId,
+      {int? promoteUserId}) async {
     final token = await _storage.getToken();
     await _api.post(
       '/admin/tournaments/$tournamentId/participants/$userId/to-waitlist',
-      const {},
+      {if (promoteUserId != null) 'promote_user_id': promoteUserId},
       token,
     );
   }

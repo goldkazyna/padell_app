@@ -2140,12 +2140,117 @@ class _AdminTournamentDetailScreenState
   }
 
   Future<void> _moveToWaitlist(AdminParticipant p) async {
+    final waiting = (_participants?.participants ?? const <AdminParticipant>[])
+        .where((x) => x.status == 'waiting' && x.id != p.id)
+        .toList();
+
+    int? promoteId;
+    if (waiting.isNotEmpty) {
+      // В листе уже есть люди — админ выбирает, кто займёт освободившееся место.
+      final chosen = await _pickWaitlistPromotion(p, waiting);
+      if (chosen == null) return; // отмена
+      promoteId = chosen.id;
+    }
+
     await _runAction(
       () => context
           .read<AdminService>()
-          .moveToWaitlist(widget.tournamentId, p.id),
+          .moveToWaitlist(widget.tournamentId, p.id, promoteUserId: promoteId),
       label: 'Перемещаем в лист ожидания...',
-      successMessage: '${p.name} — в листе ожидания',
+      successMessage: promoteId != null
+          ? '${p.name} — в лист ожидания, выбранный — на модерацию'
+          : '${p.name} — в листе ожидания',
+    );
+  }
+
+  /// Лист выбора: кого из листа ожидания поднять на освободившееся место.
+  Future<AdminParticipant?> _pickWaitlistPromotion(
+      AdminParticipant moving, List<AdminParticipant> waiting) {
+    return showModalBottomSheet<AdminParticipant>(
+      context: context,
+      backgroundColor: AppTheme.background,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 14),
+                    decoration: BoxDecoration(
+                      color: AppTheme.textSecondary.withAlpha(70),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Text(
+                  'Кого поднять из листа ожидания?',
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${moving.name} уйдёт в конец листа ожидания, '
+                  'а выбранный игрок встанет на модерацию.',
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary, fontSize: 13),
+                ),
+                const SizedBox(height: 14),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: waiting.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
+                    itemBuilder: (_, i) {
+                      final w = waiting[i];
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () => Navigator.of(ctx).pop(w),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppTheme.card,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                                alignment: Alignment.center,
+                                child: Text('${i + 1}',
+                                    style: const TextStyle(
+                                        color: AppTheme.blue,
+                                        fontWeight: FontWeight.w700)),
+                              ),
+                              const SizedBox(width: 6),
+                              _avatar(w),
+                              const SizedBox(width: 10),
+                              Expanded(child: _nameAndMeta(w)),
+                              const Icon(Icons.arrow_upward,
+                                  size: 18, color: AppTheme.accent),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
