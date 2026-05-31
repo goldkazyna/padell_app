@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
@@ -25,16 +26,22 @@ class NearestTournamentCard extends StatelessWidget {
     final t = tournament!;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -149,6 +156,11 @@ class NearestTournamentCard extends StatelessWidget {
               ),
             ],
           ),
+              ],
+            ),
+          ),
+          if (t.moderationDeadline != null)
+            _PaymentTimerFooter(deadline: t.moderationDeadline!),
         ],
       ),
     );
@@ -220,6 +232,78 @@ class NearestTournamentCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Янтарная строка-футер «Оплатите участие — осталось …» на всю ширину карточки.
+/// Появляется, когда у текущего игрока неоплаченная заявка с таймером на этом турнире.
+class _PaymentTimerFooter extends StatefulWidget {
+  final DateTime deadline;
+  const _PaymentTimerFooter({required this.deadline});
+
+  @override
+  State<_PaymentTimerFooter> createState() => _PaymentTimerFooterState();
+}
+
+class _PaymentTimerFooterState extends State<_PaymentTimerFooter> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _fmt(Duration d) {
+    if (d.isNegative) return 'время вышло';
+    final days = d.inDays;
+    final h = d.inHours % 24;
+    final m = d.inMinutes % 60;
+    final s = d.inSeconds % 60;
+    if (days > 0) return '$daysд $hч $mм';
+    if (h > 0) return '$hч $mм';
+    return '$mм $sс';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final left = widget.deadline.difference(DateTime.now());
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withAlpha(26),
+        border: Border(top: BorderSide(color: AppTheme.amber.withAlpha(56))),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.schedule, size: 16, color: AppTheme.amber),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              left.isNegative
+                  ? 'Оплатите участие'
+                  : 'Оплатите участие — осталось ${_fmt(left)}',
+              style: const TextStyle(
+                color: AppTheme.amber,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
