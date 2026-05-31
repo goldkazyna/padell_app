@@ -1512,6 +1512,7 @@ class _AdminTournamentDetailScreenState
                           color: AppTheme.cardRaised,
                           onSelected: (v) {
                             if (v == 'profile') _openProfile(p);
+                            if (v == 'moderation') _moveToModeration(p);
                             if (v == 'call') _callPlayer(p);
                             if (v == 'whatsapp') _whatsappPlayer(p);
                             if (v == 'remove') _removeOne(p);
@@ -1522,6 +1523,12 @@ class _AdminTournamentDetailScreenState
                                 const Icon(Icons.person_outline,
                                     size: 18, color: AppTheme.textSecondary),
                                 'Просмотреть профиль',
+                                AppTheme.textPrimary),
+                            _popupItem(
+                                'moderation',
+                                const Icon(Icons.how_to_reg,
+                                    size: 18, color: AppTheme.accent),
+                                'Переместить в модерацию',
                                 AppTheme.textPrimary),
                             if ((p.phone ?? '').isNotEmpty) ...[
                               _popupItem(
@@ -2147,9 +2154,23 @@ class _AdminTournamentDetailScreenState
     int? promoteId;
     if (waiting.isNotEmpty) {
       // В листе уже есть люди — админ выбирает, кто займёт освободившееся место.
-      final chosen = await _pickWaitlistPromotion(p, waiting);
+      // (Сам выбор служит подтверждением.)
+      final chosen = await _pickSwap(
+        title: 'Кого поднять из листа ожидания?',
+        message: '${p.name} уйдёт в конец листа ожидания, '
+            'а выбранный игрок встанет на модерацию.',
+        options: waiting,
+      );
       if (chosen == null) return; // отмена
       promoteId = chosen.id;
+    } else {
+      // Лист пуст — простое подтверждение.
+      final ok = await _confirm(
+        title: 'Переместить в лист ожидания?',
+        message: '${p.name} уйдёт в конец листа ожидания.',
+        okText: 'Переместить',
+      );
+      if (!ok) return;
     }
 
     await _runAction(
@@ -2163,9 +2184,51 @@ class _AdminTournamentDetailScreenState
     );
   }
 
-  /// Лист выбора: кого из листа ожидания поднять на освободившееся место.
-  Future<AdminParticipant?> _pickWaitlistPromotion(
-      AdminParticipant moving, List<AdminParticipant> waiting) {
+  /// Поднять участника из листа ожидания на модерацию.
+  Future<void> _moveToModeration(AdminParticipant p) async {
+    final roster = (_participants?.participants ?? const <AdminParticipant>[])
+        .where((x) => x.status == 'registered' || x.status == 'pending')
+        .toList();
+    final max = _participants?.max ?? 0;
+    final isFull = roster.length >= max;
+
+    int? demoteId;
+    if (isFull) {
+      // Турнир полный — выбираем, кого отправить в лист вместо.
+      final chosen = await _pickSwap(
+        title: 'Вместо кого поставить на модерацию?',
+        message: 'Турнир заполнен. Выбранный участник уйдёт в лист ожидания, '
+            'а ${p.name} встанет на модерацию.',
+        options: roster,
+      );
+      if (chosen == null) return; // отмена
+      demoteId = chosen.id;
+    } else {
+      final ok = await _confirm(
+        title: 'Переместить на модерацию?',
+        message: '${p.name} встанет на модерацию.',
+        okText: 'Переместить',
+      );
+      if (!ok) return;
+    }
+
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .moveToModeration(widget.tournamentId, p.id, demoteUserId: demoteId),
+      label: 'Перемещаем на модерацию...',
+      successMessage: demoteId != null
+          ? '${p.name} — на модерации, выбранный — в листе ожидания'
+          : '${p.name} — на модерации',
+    );
+  }
+
+  /// Лист выбора игрока для обмена (поднять/отправить).
+  Future<AdminParticipant?> _pickSwap({
+    required String title,
+    required String message,
+    required List<AdminParticipant> options,
+  }) {
     return showModalBottomSheet<AdminParticipant>(
       context: context,
       backgroundColor: AppTheme.background,
@@ -2193,7 +2256,7 @@ class _AdminTournamentDetailScreenState
                   ),
                 ),
                 Text(
-                  'Кого поднять из листа ожидания?',
+                  title,
                   style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
@@ -2201,8 +2264,7 @@ class _AdminTournamentDetailScreenState
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${moving.name} уйдёт в конец листа ожидания, '
-                  'а выбранный игрок встанет на модерацию.',
+                  message,
                   style: const TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                 ),
@@ -2210,10 +2272,10 @@ class _AdminTournamentDetailScreenState
                 Flexible(
                   child: ListView.separated(
                     shrinkWrap: true,
-                    itemCount: waiting.length,
+                    itemCount: options.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 8),
                     itemBuilder: (_, i) {
-                      final w = waiting[i];
+                      final w = options[i];
                       return InkWell(
                         borderRadius: BorderRadius.circular(12),
                         onTap: () => Navigator.of(ctx).pop(w),

@@ -311,6 +311,18 @@ class AdminService {
     );
   }
 
+  /// Поднять игрока из листа ожидания на модерацию. Если турнир полный —
+  /// [demoteUserId] (кого отправить в лист ожидания вместо него) обязателен.
+  Future<void> moveToModeration(int tournamentId, int userId,
+      {int? demoteUserId}) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/participants/$userId/to-moderation',
+      {if (demoteUserId != null) 'demote_user_id': demoteUserId},
+      token,
+    );
+  }
+
   Future<void> addParticipant(int tournamentId, int userId) async {
     final token = await _storage.getToken();
     await _api.post(
