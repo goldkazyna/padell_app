@@ -5,6 +5,7 @@ import '../services/push_notification_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/profile/profile_hero.dart';
+import '../widgets/profile/moderation_payment_banner.dart';
 import '../widgets/profile/my_tournaments_button.dart';
 import '../widgets/profile/tournament_invitations_button.dart';
 import '../widgets/profile/rating_dynamics_card.dart';
@@ -53,6 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const ProfileHero(),
+                  const ModerationPaymentBanner(),
                   if (profile.user?.isProfileIncomplete == true) ...[
                     const SizedBox(height: 12),
                     Padding(
