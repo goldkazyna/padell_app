@@ -1618,6 +1618,7 @@ class _AdminTournamentDetailScreenState
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'approve') _approveOne(p);
+                if (v == 'waitlist') _moveToWaitlist(p);
                 if (v == 'reject') _rejectOne(p);
               },
               itemBuilder: (_) => [
@@ -1638,6 +1639,10 @@ class _AdminTournamentDetailScreenState
                     const Icon(Icons.check_circle,
                         size: 18, color: AppTheme.accent),
                     'Одобрить', AppTheme.accent),
+                _popupItem('waitlist',
+                    const Icon(Icons.hourglass_bottom,
+                        size: 18, color: AppTheme.blue),
+                    'Переместить в лист ожидания', AppTheme.textPrimary),
                 _popupItem('reject',
                     const Icon(Icons.cancel, size: 18, color: AppTheme.error),
                     'Отклонить', AppTheme.error),
