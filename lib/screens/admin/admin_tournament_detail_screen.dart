@@ -2186,20 +2186,31 @@ class _AdminTournamentDetailScreenState
 
   /// Поднять участника из листа ожидания на модерацию.
   Future<void> _moveToModeration(AdminParticipant p) async {
-    final roster = (_participants?.participants ?? const <AdminParticipant>[])
+    final all = _participants?.participants ?? const <AdminParticipant>[];
+    final takenCount = all
         .where((x) => x.status == 'registered' || x.status == 'pending')
-        .toList();
+        .length;
     final max = _participants?.max ?? 0;
-    final isFull = roster.length >= max;
+    final isFull = takenCount >= max;
 
     int? demoteId;
     if (isFull) {
-      // Турнир полный — выбираем, кого отправить в лист вместо.
+      // Полный турнир — заменить можно только игрока на модерации (pending).
+      final pending = all.where((x) => x.status == 'pending').toList();
+      if (pending.isEmpty) {
+        await showAppAlert(
+          context,
+          'Турнир заполнен — все места подтверждены. Поднять некого, пока кто-то не освободит место.',
+          title: 'Турнир полный',
+          isError: true,
+        );
+        return;
+      }
       final chosen = await _pickSwap(
-        title: 'Вместо кого поставить на модерацию?',
-        message: 'Турнир заполнен. Выбранный участник уйдёт в лист ожидания, '
+        title: 'Кого с модерации отправить в лист?',
+        message: 'Турнир заполнен. Выбранный (на модерации) уйдёт в лист ожидания, '
             'а ${p.name} встанет на модерацию.',
-        options: roster,
+        options: pending,
       );
       if (chosen == null) return; // отмена
       demoteId = chosen.id;
