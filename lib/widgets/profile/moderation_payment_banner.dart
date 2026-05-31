@@ -65,7 +65,7 @@ class _ModerationPaymentBannerState extends State<ModerationPaymentBanner> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
@@ -75,49 +75,84 @@ class _ModerationPaymentBannerState extends State<ModerationPaymentBanner> {
             _load(); // обновить после возврата (вдруг оплатил/отменил)
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              color: AppTheme.amber.withAlpha(28),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.amber.withAlpha(90)),
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  AppTheme.amber.withAlpha(36),
+                  AppTheme.amber.withAlpha(10),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppTheme.amber.withAlpha(56)),
             ),
-            child: Row(
-              children: [
-                const Icon(Icons.timer_outlined, size: 18, color: AppTheme.amber),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        left.isNegative
-                            ? 'Оплатите участие'
-                            : 'Оплатите участие — ${_fmt(left)}',
-                        style: const TextStyle(
-                          color: AppTheme.amber,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Акцентная полоса слева
+                  Container(width: 4, color: AppTheme.amber),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                      child: Row(
+                        children: [
+                          // Иконка в мягком янтарном квадрате
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppTheme.amber.withAlpha(46),
+                              borderRadius: BorderRadius.circular(11),
+                            ),
+                            child: const Icon(Icons.schedule,
+                                size: 20, color: AppTheme.amber),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  left.isNegative
+                                      ? 'Оплатите участие'
+                                      : 'Оплатите участие — ${_fmt(left)}',
+                                  style: const TextStyle(
+                                    color: AppTheme.amber,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  p.date.isNotEmpty
+                                      ? '${p.name} · ${p.date}'
+                                      : p.name,
+                                  style: const TextStyle(
+                                    color: AppTheme.textSecondary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(Icons.chevron_right,
+                              size: 20, color: AppTheme.amber.withAlpha(230)),
+                        ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        p.date.isNotEmpty ? '${p.name} · ${p.date}' : p.name,
-                        style: TextStyle(
-                          color: AppTheme.amber.withAlpha(200),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                const Icon(Icons.chevron_right, size: 18, color: AppTheme.amber),
-              ],
+                ],
+              ),
             ),
           ),
         ),
