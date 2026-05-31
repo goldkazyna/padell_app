@@ -37,6 +37,7 @@ class _AdminCreateTournamentScreenState
   final _reserveCount = TextEditingController(text: '0');
   final _waitlistSize = TextEditingController(text: '0');
   final _moderationHours = TextEditingController();
+  final _moderationMinutes = TextEditingController();
   final _roundsCount = TextEditingController(text: '7');
 
   String _type = 'americano'; // americano / king_of_court / bali_koc / team
@@ -105,6 +106,7 @@ class _AdminCreateTournamentScreenState
     _reserveCount.dispose();
     _waitlistSize.dispose();
     _moderationHours.dispose();
+    _moderationMinutes.dispose();
     _roundsCount.dispose();
     for (final c in _courtNames) {
       c.dispose();
@@ -243,6 +245,7 @@ class _AdminCreateTournamentScreenState
             widget.clubId,
             body,
             moderationHours: int.tryParse(_moderationHours.text.trim()),
+            moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
           );
       if (!mounted) return;
       // Сразу открываем экран управления нового турнира
@@ -420,6 +423,14 @@ class _AdminCreateTournamentScreenState
             _textField(
               _moderationHours,
               hint: 'Пусто = без таймера',
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            const SizedBox(height: 12),
+            _label('Таймер модерации, минут'),
+            _textField(
+              _moderationMinutes,
+              hint: 'Для отладки; если задано — важнее часов',
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),

@@ -156,15 +156,19 @@ class AdminService {
   ///
   /// [moderationHours] — таймер модерации (часов). Передаётся в теле запроса
   /// только когда не null; пусто = без таймера.
+  /// [moderationMinutes] — таймер модерации (минут, для отладки). Если задан,
+  /// на бэкенде важнее часов. Передаётся только когда не null.
   Future<int> createTournament(
     int clubId,
     Map<String, dynamic> body, {
     int? moderationHours,
+    int? moderationMinutes,
   }) async {
     final token = await _storage.getToken();
     final payload = <String, dynamic>{
       ...body,
       'moderation_hours': ?moderationHours,
+      'moderation_minutes': ?moderationMinutes,
     };
     final response = await _api.post(
       '/admin/clubs/$clubId/tournaments',
