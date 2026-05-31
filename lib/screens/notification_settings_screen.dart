@@ -19,6 +19,7 @@ class _NotificationSettingsScreenState
   final _storageService = StorageService();
 
   bool _notifyOnlyMyLevel = false;
+  bool _notifyReminders = true;
   List<int>? _notifyClubIds; // null = все клубы
   List<Map<String, dynamic>> _clubs = [];
   bool _isLoading = true;
@@ -42,6 +43,7 @@ class _NotificationSettingsScreenState
       final response = await _apiService.get('/notifications/settings', token);
       setState(() {
         _notifyOnlyMyLevel = response['notify_only_my_level'] == true;
+        _notifyReminders = response['notify_tournament_reminders'] != false;
         _notifyClubIds = response['notify_club_ids'] != null
             ? List<int>.from(response['notify_club_ids'])
             : null;
@@ -74,6 +76,28 @@ class _NotificationSettingsScreenState
     } catch (e) {
       setState(() {
         _notifyOnlyMyLevel = oldValue;
+        _isSaving = false;
+      });
+    }
+  }
+
+  Future<void> _updateReminders(bool value) async {
+    final old = _notifyReminders;
+    setState(() {
+      _notifyReminders = value;
+      _isSaving = true;
+    });
+    try {
+      final token = await _storageService.getToken();
+      await _apiService.post(
+        '/notifications/settings',
+        {'notify_tournament_reminders': value},
+        token,
+      );
+      setState(() => _isSaving = false);
+    } catch (e) {
+      setState(() {
+        _notifyReminders = old;
         _isSaving = false;
       });
     }
@@ -334,6 +358,63 @@ class _NotificationSettingsScreenState
                                 : Switch.adaptive(
                                     value: _notifyOnlyMyLevel,
                                     onChanged: _updateSetting,
+                                    activeColor: AppTheme.accent,
+                                  ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Напоминать о турнирах
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.card,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: const Color(0xFF2A2A2A),
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Напоминать о турнирах',
+                                    style: TextStyle(
+                                      color: AppTheme.textPrimary,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    'Пуш за день и за 2 часа до начала записанного турнира',
+                                    style: TextStyle(
+                                      color: AppTheme.textSecondary,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            _isSaving
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: AppTheme.accent,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Switch.adaptive(
+                                    value: _notifyReminders,
+                                    onChanged: _updateReminders,
                                     activeColor: AppTheme.accent,
                                   ),
                           ],
