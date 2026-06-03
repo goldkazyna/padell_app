@@ -6,6 +6,7 @@ import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 
 /// Экран «Идёт сейчас» — детализация активного турнира (только Американо).
@@ -502,18 +503,34 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         ),
-        // Name (растягивается, может перенестись)
+        // Name (растягивается, может перенестись) + галочка верификации
         cell(
-          Text(
-            playerName ?? '—',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-              fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
-              fontSize: 13,
-              height: 1.2,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  playerName ?? '—',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                    fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
+                    fontSize: 13,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+              if (p['verified'] == true) ...[
+                const SizedBox(width: 5),
+                VerifiedBadge(
+                  size: 12,
+                  userId: playerId,
+                  playerName: playerName,
+                ),
+              ],
+            ],
           ),
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
           alignment: Alignment.centerLeft,
