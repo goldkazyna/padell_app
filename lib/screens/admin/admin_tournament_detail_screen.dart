@@ -275,6 +275,31 @@ class _AdminTournamentDetailScreenState
     }
   }
 
+  Future<void> _sendPush() async {
+    final t = _t;
+    if (t == null) return;
+
+    final ok = await _confirm(
+      title: 'Отправить уведомление?',
+      message:
+          'Push о турнире получат все подходящие пользователи приложения (с учётом города и их настроек).',
+      okText: 'Отправить',
+    );
+    if (!ok) return;
+
+    setState(() => _starting = true);
+    try {
+      final msg = await context.read<AdminService>().sendTournamentPush(t.id);
+      if (!mounted) return;
+      setState(() => _starting = false);
+      await showAppAlert(context, msg);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _starting = false);
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    }
+  }
+
   Future<void> _delete() async {
     final t = _t;
     if (t == null) return;
@@ -505,6 +530,7 @@ class _AdminTournamentDetailScreenState
             onSelected: (value) {
               if (value == 'start') _start();
               if (value == 'restart') _restart();
+              if (value == 'send_push') _sendPush();
             },
             itemBuilder: (context) {
               final l10n = AppLocalizations.of(context)!;
@@ -518,6 +544,11 @@ class _AdminTournamentDetailScreenState
                   value: 'restart',
                   enabled: _t?.canRestart ?? false,
                   child: Text(l10n.restartTournament),
+                ),
+                PopupMenuItem<String>(
+                  value: 'send_push',
+                  enabled: _t?.status == 'open',
+                  child: const Text('Отправить уведомление'),
                 ),
               ];
             },
