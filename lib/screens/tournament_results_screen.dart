@@ -9,6 +9,7 @@ import '../providers/settings_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/verified_badge.dart';
 
 class TournamentResultsScreen extends StatefulWidget {
   final Tournament tournament;
@@ -412,6 +413,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
               final winPercent = p['win_percent'] as int? ?? 0;
               final totalPoints = p['total_points'] as int? ?? 0;
               final position = p['position'] as int? ?? index + 1;
+              final verified = p['verified'] == true;
               final isMe = currentUserId != null && id == currentUserId;
 
               final parts = name.trim().split(RegExp(r'\s+'));
@@ -451,8 +453,18 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
                     ),
                     const SizedBox(width: 6),
                     Expanded(
-                      child: Text(name, style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(name, style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ),
+                          if (verified) ...[
+                            const SizedBox(width: 5),
+                            VerifiedBadge(size: 12, userId: id, playerName: name),
+                          ],
+                        ],
+                      ),
                     ),
                     SizedBox(width: 28, child: Text('$wins', textAlign: TextAlign.center, style: TextStyle(color: isMe ? AppTheme.accent : const Color(0xFF22C55E), fontSize: 12))),
                     SizedBox(width: 28, child: Text('$losses', textAlign: TextAlign.center, style: TextStyle(color: isMe ? AppTheme.accent : const Color(0xFFEF4444), fontSize: 12))),
