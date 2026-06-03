@@ -41,8 +41,11 @@ void openTournamentLiveByType(
       );
       break;
     default:
-      // americano / classic / неизвестный — общий Live-экран
-      target = TournamentLiveScreen(tournamentId: tournamentId);
+      // americano / americano_flex / classic / неизвестный — общий Live-экран
+      target = TournamentLiveScreen(
+        tournamentId: tournamentId,
+        highlightPlayerId: highlightPlayerId,
+      );
   }
 
   Navigator.push(

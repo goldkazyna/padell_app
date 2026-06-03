@@ -6,6 +6,7 @@ import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import 'tournament_results_screen.dart';
+import 'tournament_live_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
 import 'tournament_live_bali_koc_screen.dart';
 import '../models/tournament.dart';
@@ -245,17 +246,30 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => tournament.type == 'king_of_court'
-                      ? TournamentLiveKingOfCourtScreen(
+                  builder: (_) {
+                    switch (tournament.type) {
+                      case 'king_of_court':
+                        return TournamentLiveKingOfCourtScreen(
                           tournamentId: tournament.id,
                           highlightPlayerId: widget.playerId,
-                        )
-                      : tournament.type == 'bali_koc'
-                          ? TournamentLiveBaliKocScreen(
-                              tournamentId: tournament.id,
-                              highlightPlayerId: widget.playerId,
-                            )
-                          : TournamentResultsScreen(tournament: tournament, playerId: widget.playerId),
+                        );
+                      case 'bali_koc':
+                        return TournamentLiveBaliKocScreen(
+                          tournamentId: tournament.id,
+                          highlightPlayerId: widget.playerId,
+                        );
+                      case 'americano':
+                      case 'americano_flex':
+                        // Показываем как Live, с подсветкой игрока профиля
+                        return TournamentLiveScreen(
+                          tournamentId: tournament.id,
+                          highlightPlayerId: widget.playerId,
+                        );
+                      default:
+                        return TournamentResultsScreen(
+                            tournament: tournament, playerId: widget.playerId);
+                    }
+                  },
                 ),
               );
             }

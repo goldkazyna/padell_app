@@ -13,7 +13,16 @@ import 'player_profile_screen.dart';
 /// Группы → таблица лидеров + раунды + матчи. Только чтение.
 class TournamentLiveScreen extends StatefulWidget {
   final int tournamentId;
-  const TournamentLiveScreen({super.key, required this.tournamentId});
+
+  /// Кого подсвечивать вместо текущего пользователя (при открытии из чужого
+  /// профиля). null → подсвечивается авторизованный пользователь.
+  final int? highlightPlayerId;
+
+  const TournamentLiveScreen({
+    super.key,
+    required this.tournamentId,
+    this.highlightPlayerId,
+  });
 
   @override
   State<TournamentLiveScreen> createState() => _TournamentLiveScreenState();
@@ -56,8 +65,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     });
     try {
       final token = await StorageService().getToken();
+      final q = widget.highlightPlayerId != null
+          ? '?player_id=${widget.highlightPlayerId}'
+          : '';
       final response = await ApiService()
-          .get('/tournaments/${widget.tournamentId}/live', token);
+          .get('/tournaments/${widget.tournamentId}/live$q', token);
       if (!mounted) return;
       if (response['success'] == true) {
         setState(() {
