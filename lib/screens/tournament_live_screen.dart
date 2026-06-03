@@ -630,6 +630,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
   Widget _buildRound(Map<String, dynamic> round) {
     final matches = (round['matches'] as List).cast<Map<String, dynamic>>();
+    final byes = (round['byes'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
     final roundId = (round['id'] as num).toInt();
     final completedCount = matches.where((m) => m['status'] == 'completed').length;
     final roundStatus = round['status'] as String? ?? 'pending';
@@ -709,9 +710,71 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               ),
             ),
           ),
-          if (expanded)
+          if (expanded) ...[
             for (var i = 0; i < matches.length; i++)
               _buildMatch(matches[i], isLast: i == matches.length - 1),
+            if (byes.isNotEmpty) _buildByes(byes),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // Блок «Отдыхают» — игроки, пропускающие раунд (Americano Flex).
+  Widget _buildByes(List<Map<String, dynamic>> byes) {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: AppTheme.divider, width: 0.5)),
+      ),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.bedtime_outlined, color: AppTheme.amber, size: 15),
+              SizedBox(width: 6),
+              Text(
+                'Отдыхают',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final b in byes)
+                GestureDetector(
+                  onTap: () => _openPlayer(
+                    (b['id'] as num?)?.toInt(),
+                    b['name'] as String?,
+                  ),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppTheme.background,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF2A2A2A)),
+                    ),
+                    child: Text(
+                      b['name'] as String? ?? '—',
+                      style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
