@@ -1378,6 +1378,12 @@ abstract class AppLocalizations {
   /// **'БЕЗ РЕЙТИНГА'**
   String get tournamentUnrated;
 
+  /// No description provided for @unratedBadge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нерейтинговый'**
+  String get unratedBadge;
+
   /// No description provided for @dateLabel.
   ///
   /// In ru, this message translates to:

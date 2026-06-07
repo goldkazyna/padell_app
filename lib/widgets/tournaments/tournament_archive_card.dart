@@ -16,6 +16,7 @@ class TournamentArchiveCard extends StatelessWidget {
   final int? placeNumber;
   final int ratingChangeRaw;
   final bool isPositive;
+  final bool isRated;
 
   const TournamentArchiveCard({
     super.key,
@@ -28,6 +29,7 @@ class TournamentArchiveCard extends StatelessWidget {
     required this.placeNumber,
     required this.ratingChangeRaw,
     required this.isPositive,
+    this.isRated = true,
   });
 
   factory TournamentArchiveCard.fromTournament(Tournament t) {
@@ -43,6 +45,7 @@ class TournamentArchiveCard extends StatelessWidget {
       placeNumber: result?.place,
       ratingChangeRaw: change,
       isPositive: change >= 0,
+      isRated: t.isRated,
     );
   }
 
@@ -145,17 +148,37 @@ class TournamentArchiveCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Builder(builder: (ctx) {
-                      final precise = ctx.watch<SettingsProvider>().preciseRating;
-                      return Text(
-                        RatingFormatter.formatRatingChange(ratingChangeRaw, precise),
-                        style: TextStyle(
-                          color: isPositive ? AppTheme.accent : AppTheme.error,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                    if (!isRated)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.orange.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(7),
                         ),
-                      );
-                    }),
+                        child: Text(
+                          l10n.unratedBadge,
+                          style: const TextStyle(
+                            color: AppTheme.orange,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    else
+                      Builder(builder: (ctx) {
+                        final precise =
+                            ctx.watch<SettingsProvider>().preciseRating;
+                        return Text(
+                          RatingFormatter.formatRatingChange(
+                              ratingChangeRaw, precise),
+                          style: TextStyle(
+                            color: isPositive ? AppTheme.accent : AppTheme.error,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }),
                   ],
                 ),
               ],

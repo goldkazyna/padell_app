@@ -165,23 +165,42 @@ class TournamentHistoryRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Builder(builder: (ctx) {
-              final precise = ctx.watch<SettingsProvider>().preciseRating;
-              return SizedBox(
-                width: precise ? 80 : 50,
+            if (!tournament.isRated)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.orange.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(7),
+                ),
                 child: Text(
-                  RatingFormatter.formatRatingChange(delta, precise, decimals: 4),
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: isPositive ? AppTheme.accent : AppTheme.error,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.3,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+                  AppLocalizations.of(context)!.unratedBadge,
+                  style: const TextStyle(
+                    color: AppTheme.orange,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              );
-            }),
+              )
+            else
+              Builder(builder: (ctx) {
+                final precise = ctx.watch<SettingsProvider>().preciseRating;
+                return SizedBox(
+                  width: precise ? 80 : 50,
+                  child: Text(
+                    RatingFormatter.formatRatingChange(delta, precise,
+                        decimals: 4),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: isPositive ? AppTheme.accent : AppTheme.error,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                );
+              }),
           ],
         ),
       ),

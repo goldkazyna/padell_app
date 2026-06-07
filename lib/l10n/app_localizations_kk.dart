@@ -691,6 +691,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get tournamentUnrated => 'РЕЙТИНГСІЗ';
 
   @override
+  String get unratedBadge => 'Рейтингсіз';
+
+  @override
   String get dateLabel => 'КҮНІ';
 
   @override

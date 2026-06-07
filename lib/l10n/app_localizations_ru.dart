@@ -706,6 +706,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tournamentUnrated => 'БЕЗ РЕЙТИНГА';
 
   @override
+  String get unratedBadge => 'Нерейтинговый';
+
+  @override
   String get dateLabel => 'ДАТА';
 
   @override

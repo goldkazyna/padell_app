@@ -704,6 +704,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tournamentUnrated => 'UNRATED';
 
   @override
+  String get unratedBadge => 'Unrated';
+
+  @override
   String get dateLabel => 'DATE';
 
   @override
