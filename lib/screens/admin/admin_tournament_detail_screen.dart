@@ -535,7 +535,7 @@ class _AdminTournamentDetailScreenState
             },
             itemBuilder: (context) {
               final l10n = AppLocalizations.of(context)!;
-              return [
+              final items = <PopupMenuEntry<String>>[
                 PopupMenuItem<String>(
                   value: 'start',
                   enabled: _t?.canStart ?? false,
@@ -546,12 +546,16 @@ class _AdminTournamentDetailScreenState
                   enabled: _t?.canRestart ?? false,
                   child: Text(l10n.restartTournament),
                 ),
-                PopupMenuItem<String>(
+              ];
+              // Личные турниры игроков не шлют пуши всем пользователям.
+              if (!(_t?.isPersonal ?? false)) {
+                items.add(PopupMenuItem<String>(
                   value: 'send_push',
                   enabled: _t?.status == 'open',
                   child: const Text('Отправить уведомление'),
-                ),
-              ];
+                ));
+              }
+              return items;
             },
           ),
         ],
