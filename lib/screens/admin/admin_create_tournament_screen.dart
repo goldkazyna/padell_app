@@ -65,6 +65,9 @@ class _AdminCreateTournamentScreenState
   int _teamsAdvance = 2;
   bool _teamHasLowerBracket = false;
   bool _teamHasBronzeMatch = false;
+  // self — пары регистрируются сами; admin — игроки записываются по одному,
+  // пары собирает админ перед стартом.
+  String _pairingMode = 'self';
 
   // Корты — кол-во вычисляется как ceil(max_participants / 4) (как в Web)
   late final List<TextEditingController> _courtNames =
@@ -246,6 +249,7 @@ class _AdminCreateTournamentScreenState
     if (_type == 'team') {
       body['groups_count'] = _teamGroupsCount;
       body['teams_advance'] = _teamsAdvance;
+      body['pairing_mode'] = _pairingMode;
       body['has_lower_bracket'] = _teamHasLowerBracket;
       body['has_bronze_match'] = _teamHasBronzeMatch;
       // has_playoff на бэке будет принудительно true для team — не передаём.
@@ -748,6 +752,17 @@ class _AdminCreateTournamentScreenState
       ]);
     } else if (_type == 'team') {
       children.addAll([
+        _label('Кто собирает пары'),
+        _pairingModeSelector(),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 12),
+          child: Text(
+            _pairingMode == 'admin'
+                ? 'Игроки записываются по одному, пары собираете вы перед стартом.'
+                : 'Пары регистрируются сами (через поиск партнёра).',
+            style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+          ),
+        ),
         const Text(
           'Фиксированные пары играют групповой этап, лучшие выходят в плей-офф (на вылет). Количество указано в парах.',
           style: TextStyle(color: AppTheme.textDim, fontSize: 11),
@@ -1477,6 +1492,45 @@ class _AdminCreateTournamentScreenState
         }),
       ],
     );
+  }
+
+  Widget _pairingModeSelector() {
+    Widget btn(String label, String value) {
+      final active = _pairingMode == value;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => setState(() => _pairingMode = value),
+          child: Container(
+            margin: EdgeInsets.only(left: value == 'self' ? 0 : 8),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: active
+                  ? AppTheme.accent.withOpacity(0.15)
+                  : AppTheme.cardRaised,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: active ? AppTheme.accent : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: active ? AppTheme.accent : AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(children: [
+      btn('Сами игроки', 'self'),
+      btn('Админ собирает', 'admin'),
+    ]);
   }
 
   Widget _ratingToggle() {
