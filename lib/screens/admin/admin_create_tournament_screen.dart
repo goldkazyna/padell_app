@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +46,10 @@ class _AdminCreateTournamentScreenState
   double _minLevel = 1.5;
   double _maxLevel = 4.0;
   String _status = 'open'; // draft / open
+  bool _isRated = true; // рейтинговый ли турнир (влияет на рейтинг игроков)
+
+  // Какие секции-аккордеоны раскрыты. По умолчанию открыта только «Основное».
+  final Set<String> _openSections = {'basic'};
 
   // Поле Американо
   int _groupsCount = 1;
@@ -121,6 +126,7 @@ class _AdminCreateTournamentScreenState
   Future<void> _submit() async {
     final name = _name.text.trim();
     if (name.isEmpty) {
+      _ensureOpen('basic');
       await showAppAlert(context, 'Укажите название турнира',
           title: 'Ошибка', isError: true);
       return;
@@ -131,17 +137,20 @@ class _AdminCreateTournamentScreenState
       return;
     }
     if (!_startDate!.isAfter(DateTime.now())) {
+      _ensureOpen('basic');
       await showAppAlert(context, 'Дата старта должна быть в будущем',
           title: 'Ошибка', isError: true);
       return;
     }
     if (_minLevel > _maxLevel) {
+      _ensureOpen('players');
       await showAppAlert(context, 'Минимальный уровень больше максимального',
           title: 'Ошибка', isError: true);
       return;
     }
     final maxP = int.tryParse(_maxParticipants.text.trim());
     if (maxP == null || maxP < 2 || maxP > 128) {
+      _ensureOpen('players');
       await showAppAlert(
         context,
         'Макс. участников: целое число от 2 до 128',
@@ -153,18 +162,21 @@ class _AdminCreateTournamentScreenState
     final priceText = _price.text.trim();
     final price = priceText.isEmpty ? null : double.tryParse(priceText);
     if (priceText.isNotEmpty && price == null) {
+      _ensureOpen('basic');
       await showAppAlert(context, 'Цена должна быть числом',
           title: 'Ошибка', isError: true);
       return;
     }
     final reserve = int.tryParse(_reserveCount.text.trim()) ?? 0;
     if (reserve < 0 || reserve > 10) {
+      _ensureOpen('players');
       await showAppAlert(context, 'Резервных игроков: 0–10',
           title: 'Ошибка', isError: true);
       return;
     }
     final waitlistSize = int.tryParse(_waitlistSize.text.trim()) ?? 0;
     if (waitlistSize < 0 || waitlistSize > 32) {
+      _ensureOpen('players');
       await showAppAlert(context, 'Лист ожидания: 0–32',
           title: 'Ошибка', isError: true);
       return;
@@ -179,6 +191,7 @@ class _AdminCreateTournamentScreenState
     if (tgUrl.isNotEmpty) {
       final ok = Uri.tryParse(tgUrl)?.hasScheme ?? false;
       if (!ok || !(tgUrl.startsWith('http://') || tgUrl.startsWith('https://'))) {
+        _ensureOpen('registration');
         await showAppAlert(context,
             'Ссылка на Telegram-чат должна начинаться с http:// или https://',
             title: 'Ошибка', isError: true);
@@ -198,6 +211,7 @@ class _AdminCreateTournamentScreenState
       'max_participants': maxP,
       'price': price,
       'status': _status,
+      'is_rated': _isRated,
       'courts': courts,
       'courts_count': _courtsCount,
       'reserve_count': reserve,
@@ -208,6 +222,7 @@ class _AdminCreateTournamentScreenState
       body['groups_count'] = _groupsCount;
       final rounds = int.tryParse(_roundsCount.text.trim()) ?? 0;
       if (rounds < 1 || rounds > 30) {
+        _ensureOpen('format');
         await showAppAlert(context,
             'Количество раундов: целое число от 1 до 30',
             title: 'Ошибка', isError: true);
@@ -328,13 +343,19 @@ class _AdminCreateTournamentScreenState
   }
 
   Widget _buildForm() {
+    final createLabel =
+        _status == 'open' ? 'Создать и открыть запись' : 'Создать черновик';
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
       children: [
+        _label('Формат турнира'),
         _typeSelector(),
         const SizedBox(height: 12),
-        _section(
+        _collapsibleSection(
+          sectionKey: 'basic',
+          icon: Icons.description_outlined,
           title: 'Основное',
+          summary: _basicSummary,
           children: [
             _label('Название'),
             _textField(_name, hint: 'Например: Турнир выходного дня'),
@@ -343,63 +364,35 @@ class _AdminCreateTournamentScreenState
             _textField(_description,
                 hint: 'Можно оставить пустым', maxLines: 3),
             const SizedBox(height: 12),
-            _label('Ссылка на чат в Telegram (для записи)'),
-            _textField(_telegramUrl,
-                hint: 'https://t.me/...',
-                keyboardType: TextInputType.url),
-            const Padding(
-              padding: EdgeInsets.only(top: 4),
-              child: Text(
-                'Если указана — кнопка «Записаться» в карточке турнира будет вести в этот чат вместо записи через приложение.',
-                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
-              ),
-            ),
-            const SizedBox(height: 12),
             _label('Дата и время старта'),
             _dateField(),
+            const SizedBox(height: 12),
+            _label('Цена за участие, ₸'),
+            _textField(
+              _price,
+              hint: '0',
+              keyboardType: const TextInputType.numberWithOptions(),
+            ),
           ],
         ),
         const SizedBox(height: 12),
-        _section(
-          title: 'Параметры',
+        _collapsibleSection(
+          sectionKey: 'players',
+          icon: Icons.groups_outlined,
+          title: 'Игроки и уровень',
+          summary: _playersSummary,
           children: [
+            _ratingToggle(),
+            const SizedBox(height: 12),
             _label('Уровень игроков'),
             _levelSliders(),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _label('Макс. участников (2–128)'),
-                      _textField(
-                        _maxParticipants,
-                        hint: '16',
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _label('Цена ₸'),
-                      _textField(
-                        _price,
-                        hint: '0',
-                        keyboardType:
-                            const TextInputType.numberWithOptions(),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            _label('Макс. участников (2–128)'),
+            _textField(
+              _maxParticipants,
+              hint: '16',
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             const SizedBox(height: 12),
             _label('Резервных игроков (0–10)'),
@@ -419,52 +412,68 @@ class _AdminCreateTournamentScreenState
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
-            const SizedBox(height: 12),
-            _label('Таймер модерации, часов'),
-            _textField(
-              _moderationHours,
-              hint: 'Пусто = без таймера',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ],
+        ),
+        const SizedBox(height: 12),
+        _collapsibleSection(
+          sectionKey: 'registration',
+          icon: Icons.schedule,
+          title: 'Запись и модерация',
+          summary: _registrationSummary,
+          children: [
+            _label('Ссылка на чат в Telegram'),
+            _textField(_telegramUrl,
+                hint: 'https://t.me/...',
+                keyboardType: TextInputType.url),
+            const Padding(
+              padding: EdgeInsets.only(top: 4),
+              child: Text(
+                'Если указана — кнопка «Записаться» в карточке турнира будет вести в этот чат вместо записи через приложение.',
+                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+              ),
             ),
             const SizedBox(height: 12),
-            _label('Таймер модерации, минут'),
-            _textField(
-              _moderationMinutes,
-              hint: 'Для отладки; если задано — важнее часов',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            _label('Таймер модерации записи'),
+            Row(
+              children: [
+                Expanded(
+                  child: _textField(
+                    _moderationHours,
+                    hint: 'часов',
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _textField(
+                    _moderationMinutes,
+                    hint: 'минут',
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  ),
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4),
+              child: Text(
+                'Пусто = без таймера. Минуты — для отладки; если заданы, важнее часов.',
+                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+              ),
             ),
             const SizedBox(height: 12),
             _label('Статус при создании'),
             _statusSelector(),
           ],
         ),
-        if (_type == 'americano') ...[
-          const SizedBox(height: 12),
-          _americanoSection(),
-        ],
-        if (_type == 'team') ...[
-          const SizedBox(height: 12),
-          _teamSection(),
-        ],
         const SizedBox(height: 12),
-        _section(
-          title: 'Корты',
-          children: [
-            Text(
-              'Кол-во кортов: $_courtsCount  '
-              '(автоматически: участников ÷ 4)',
-              style: const TextStyle(
-                  color: AppTheme.textSecondary, fontSize: 12),
-            ),
-            const SizedBox(height: 12),
-            for (int i = 0; i < _courtsCount; i++) ...[
-              _label('Корт ${i + 1}'),
-              _textField(_courtNames[i], hint: 'Корт ${i + 1}'),
-              if (i < _courtsCount - 1) const SizedBox(height: 8),
-            ],
-          ],
+        _collapsibleSection(
+          sectionKey: 'format',
+          icon: Icons.tune,
+          title: 'Настройки формата',
+          summary: _formatSummary,
+          children: _formatChildren(),
         ),
         const SizedBox(height: 24),
         SizedBox(
@@ -480,9 +489,9 @@ class _AdminCreateTournamentScreenState
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Создать турнир',
-                style:
-                    TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+            child: Text(createLabel,
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w700)),
           ),
         ),
       ],
@@ -497,53 +506,55 @@ class _AdminCreateTournamentScreenState
       required IconData icon,
     }) {
       final active = _type == value;
-      return Expanded(
-        child: GestureDetector(
-          onTap: () {
-            setState(() => _type = value);
-            _updateRoundsCount();
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: active
-                  ? AppTheme.accent.withOpacity(0.12)
-                  : AppTheme.card,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: active ? AppTheme.accent : AppTheme.border,
-                width: active ? 1.5 : 1,
-              ),
+      return GestureDetector(
+        onTap: () {
+          setState(() => _type = value);
+          _updateRoundsCount();
+        },
+        child: Container(
+          width: 152,
+          margin: const EdgeInsets.only(right: 10),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: active ? AppTheme.accent.withOpacity(0.12) : AppTheme.card,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: active ? AppTheme.accent : AppTheme.border,
+              width: active ? 1.5 : 1,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon,
-                    color: active ? AppTheme.accent : AppTheme.textSecondary,
-                    size: 20),
-                const SizedBox(height: 8),
-                Text(title,
-                    style: TextStyle(
-                      color: active ? AppTheme.accent : AppTheme.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    )),
-                const SizedBox(height: 2),
-                Text(subtitle,
-                    style: const TextStyle(
-                        color: AppTheme.textSecondary, fontSize: 11),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis),
-              ],
-            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon,
+                  color: active ? AppTheme.accent : AppTheme.textSecondary,
+                  size: 20),
+              const SizedBox(height: 8),
+              Text(title,
+                  style: TextStyle(
+                    color: active ? AppTheme.accent : AppTheme.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  )),
+              const SizedBox(height: 2),
+              Text(subtitle,
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary, fontSize: 11),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis),
+            ],
           ),
         ),
       );
     }
 
-    return Column(
-      children: [
-        Row(
+    // Горизонтальный свайп: видно край следующей карточки — намёк, что листается.
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             card(
               value: 'americano',
@@ -551,54 +562,171 @@ class _AdminCreateTournamentScreenState
               subtitle: 'Группы, ротация партнёров',
               icon: Icons.shuffle_rounded,
             ),
-            const SizedBox(width: 8),
             card(
               value: 'king_of_court',
               title: 'Король корта',
               subtitle: 'Ротация по кортам',
               icon: Icons.emoji_events_outlined,
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
             card(
               value: 'bali_koc',
               title: 'Король Корта (Bali)',
               subtitle: 'Фикс. пары, очки от корта',
               icon: Icons.groups_rounded,
             ),
-            const SizedBox(width: 8),
             card(
               value: 'team',
               title: 'Групповой + Плей-офф',
               subtitle: 'Парный, выход в плей-офф',
               icon: Icons.account_tree_outlined,
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
             card(
               value: 'americano_flex',
               title: 'Americano Flex',
               subtitle: 'Очередь, любое число игроков',
               icon: Icons.swap_horiz_rounded,
             ),
-            const SizedBox(width: 8),
-            const Expanded(child: SizedBox.shrink()),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _americanoSection() {
-    return _section(
-      title: 'Американо',
-      children: [
+  // ---------------------------------------------------------------------------
+  // Сворачиваемая секция-аккордеон
+  // ---------------------------------------------------------------------------
+
+  Widget _collapsibleSection({
+    required String sectionKey,
+    required IconData icon,
+    required String title,
+    required String summary,
+    required List<Widget> children,
+  }) {
+    final open = _openSections.contains(sectionKey);
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => setState(() {
+              if (open) {
+                _openSections.remove(sectionKey);
+              } else {
+                _openSections.add(sectionKey);
+              }
+            }),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Icon(icon, color: AppTheme.textSecondary, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title,
+                            style: const TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700)),
+                        if (!open && summary.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(summary,
+                              style: const TextStyle(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: 12),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
+                        ],
+                      ],
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: open ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 180),
+                    child: const Icon(Icons.keyboard_arrow_down,
+                        color: AppTheme.textSecondary, size: 22),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedCrossFade(
+            firstChild: const SizedBox(width: double.infinity, height: 0),
+            secondChild: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children,
+              ),
+            ),
+            crossFadeState:
+                open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 180),
+            sizeCurve: Curves.easeInOut,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Подписи свёрнутых секций
+  // ---------------------------------------------------------------------------
+
+  String get _basicSummary {
+    final name = _name.text.trim();
+    return [
+      name.isEmpty ? 'Без названия' : name,
+      _startDate == null ? 'дата не выбрана' : _fmtDateTime(_startDate!),
+    ].join(' · ');
+  }
+
+  String get _playersSummary {
+    final maxP = int.tryParse(_maxParticipants.text.trim()) ?? 16;
+    return '$maxP ${_plural(maxP, 'участник', 'участника', 'участников')} · '
+        'уровень ${_lvl(_minLevel)}–${_lvl(_maxLevel)}';
+  }
+
+  String get _registrationSummary {
+    final status = _status == 'open' ? 'Открыта запись' : 'Черновик';
+    final where = _telegramUrl.text.trim().isEmpty
+        ? 'запись в приложении'
+        : 'запись в Telegram';
+    return '$status · $where';
+  }
+
+  String get _formatSummary {
+    if (_type == 'americano') {
+      final rounds = int.tryParse(_roundsCount.text.trim()) ?? 0;
+      final g =
+          '$_groupsCount ${_plural(_groupsCount, 'группа', 'группы', 'групп')}';
+      return '$g · $rounds ${_plural(rounds, 'раунд', 'раунда', 'раундов')}';
+    }
+    if (_type == 'team') {
+      final g =
+          '$_teamGroupsCount ${_plural(_teamGroupsCount, 'группа', 'группы', 'групп')}';
+      return '$g · выходят $_teamsAdvance';
+    }
+    return '$_courtsCount ${_plural(_courtsCount, 'корт', 'корта', 'кортов')}';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Контент секции «Настройки формата» — зависит от типа турнира
+  // ---------------------------------------------------------------------------
+
+  List<Widget> _formatChildren() {
+    final children = <Widget>[];
+
+    if (_type == 'americano') {
+      children.addAll([
         _label('Количество групп'),
         _groupsSelector(),
         const SizedBox(height: 12),
@@ -616,14 +744,10 @@ class _AdminCreateTournamentScreenState
         ),
         const SizedBox(height: 12),
         _playoffSettings(),
-      ],
-    );
-  }
-
-  Widget _teamSection() {
-    return _section(
-      title: 'Групповой + Плей-офф',
-      children: [
+        const Divider(color: AppTheme.border, height: 28),
+      ]);
+    } else if (_type == 'team') {
+      children.addAll([
         const Text(
           'Фиксированные пары играют групповой этап, лучшие выходят в плей-офф (на вылет). Количество указано в парах.',
           style: TextStyle(color: AppTheme.textDim, fontSize: 11),
@@ -645,8 +769,40 @@ class _AdminCreateTournamentScreenState
           label: 'Матч за 3-е место',
           onChanged: (v) => setState(() => _teamHasBronzeMatch = v),
         ),
+        const Divider(color: AppTheme.border, height: 28),
+      ]);
+    }
+
+    // Корты — для всех типов
+    children.addAll([
+      _label('Корты'),
+      Text(
+        'Кол-во кортов: $_courtsCount  (автоматически: участников ÷ 4)',
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+      ),
+      const SizedBox(height: 12),
+      for (int i = 0; i < _courtsCount; i++) ...[
+        _label('Корт ${i + 1}'),
+        _textField(_courtNames[i], hint: 'Корт ${i + 1}'),
+        if (i < _courtsCount - 1) const SizedBox(height: 8),
       ],
-    );
+    ]);
+
+    return children;
+  }
+
+  // Плюрализация (1 группа / 2 группы / 5 групп) и компактный формат уровня.
+  String _plural(int n, String one, String few, String many) {
+    final n10 = n % 10;
+    final n100 = n % 100;
+    if (n10 == 1 && n100 != 11) return one;
+    if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return few;
+    return many;
+  }
+
+  String _lvl(double v) {
+    final s = v.toStringAsFixed(2);
+    return s.endsWith('0') ? s.substring(0, s.length - 1) : s;
   }
 
   Widget _teamGroupsSelector() {
@@ -986,29 +1142,11 @@ class _AdminCreateTournamentScreenState
     );
   }
 
-  Widget _section({
-    required String title,
-    required List<Widget> children,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700)),
-          const SizedBox(height: 12),
-          ...children,
-        ],
-      ),
-    );
+  // Раскрыть секцию (если свёрнута) — чтобы подсветить ошибку валидации.
+  void _ensureOpen(String sectionKey) {
+    if (!_openSections.contains(sectionKey)) {
+      setState(() => _openSections.add(sectionKey));
+    }
   }
 
   Widget _label(String text) => Padding(
@@ -1112,27 +1250,180 @@ class _AdminCreateTournamentScreenState
     );
     if (date == null || !mounted) return;
 
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(initial),
-      builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.dark(
-            primary: AppTheme.accent,
-            onPrimary: Colors.white,
-            surface: AppTheme.card,
-            onSurface: AppTheme.textPrimary,
-          ),
-        ),
-        child: child!,
-      ),
-    );
-    if (time == null) return;
+    final time = await _pickTime(TimeOfDay.fromDateTime(initial));
+    if (time == null || !mounted) return;
 
     setState(() {
       _startDate =
           DateTime(date.year, date.month, date.day, time.hour, time.minute);
     });
+  }
+
+  /// Выбор времени крутящимися колёсами (часы 00–23, минуты шагом 5).
+  Future<TimeOfDay?> _pickTime(TimeOfDay initial) {
+    int hour = initial.hour;
+    int minuteIndex = (initial.minute ~/ 5).clamp(0, 11); // 0..11 → 0,5,..,55
+    final hourCtrl = FixedExtentScrollController(initialItem: hour);
+    final minuteCtrl = FixedExtentScrollController(initialItem: minuteIndex);
+
+    String two(int v) => v.toString().padLeft(2, '0');
+
+    return showModalBottomSheet<TimeOfDay>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetCtx) {
+        return StatefulBuilder(
+          builder: (sheetCtx, setSheet) {
+            Widget wheel({
+              required FixedExtentScrollController controller,
+              required int count,
+              required String Function(int) label,
+              required ValueChanged<int> onChanged,
+            }) {
+              return CupertinoPicker(
+                scrollController: controller,
+                itemExtent: 44,
+                magnification: 1.1,
+                squeeze: 1.1,
+                backgroundColor: Colors.transparent,
+                selectionOverlay: Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.accent.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onSelectedItemChanged: onChanged,
+                children: [
+                  for (int i = 0; i < count; i++)
+                    Center(
+                      child: Text(
+                        label(i),
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }
+
+            return Container(
+              decoration: const BoxDecoration(
+                color: AppTheme.card,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(sheetCtx).padding.bottom + 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 8),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.border,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                    child: Row(
+                      children: [
+                        const Text('Выберите время',
+                            style: TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700)),
+                        const Spacer(),
+                        Text('${two(hour)}:${two(minuteIndex * 5)}',
+                            style: const TextStyle(
+                                color: AppTheme.accent,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800)),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 190,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: wheel(
+                            controller: hourCtrl,
+                            count: 24,
+                            label: (i) => two(i),
+                            onChanged: (i) => setSheet(() => hour = i),
+                          ),
+                        ),
+                        const Text(':',
+                            style: TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700)),
+                        Expanded(
+                          child: wheel(
+                            controller: minuteCtrl,
+                            count: 12,
+                            label: (i) => two(i * 5),
+                            onChanged: (i) => setSheet(() => minuteIndex = i),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () =>
+                                Navigator.of(sheetCtx).pop(),
+                            style: TextButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: const Text('Отмена',
+                                style: TextStyle(
+                                    color: AppTheme.textSecondary,
+                                    fontSize: 15)),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.of(sheetCtx).pop(
+                                TimeOfDay(hour: hour, minute: minuteIndex * 5)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.accent,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: const Text('Готово',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _levelSliders() {
@@ -1185,6 +1476,45 @@ class _AdminCreateTournamentScreenState
           });
         }),
       ],
+    );
+  }
+
+  Widget _ratingToggle() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Рейтинговый турнир',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 2),
+                Text(
+                  _isRated
+                      ? 'Влияет на рейтинг игроков'
+                      : 'Не повлияет на рейтинг игроков',
+                  style: const TextStyle(
+                      color: AppTheme.textDim, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _isRated,
+            onChanged: (v) => setState(() => _isRated = v),
+            activeColor: AppTheme.accent,
+          ),
+        ],
+      ),
     );
   }
 

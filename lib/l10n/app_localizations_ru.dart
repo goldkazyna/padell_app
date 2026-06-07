@@ -703,6 +703,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noSpotsLeftUpper => 'МЕСТ НЕТ';
 
   @override
+  String get tournamentUnrated => 'БЕЗ РЕЙТИНГА';
+
+  @override
   String get dateLabel => 'ДАТА';
 
   @override

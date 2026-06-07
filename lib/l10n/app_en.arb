@@ -253,6 +253,7 @@
   "shareCost": "Cost: {cost}",
   "shareAppPromo": "Padel KZ — download the app and register for tournaments!",
   "noSpotsLeftUpper": "NO SPOTS",
+  "tournamentUnrated": "UNRATED",
   "dateLabel": "DATE",
   "timeLabel": "TIME",
   "levelLabel": "LEVEL",

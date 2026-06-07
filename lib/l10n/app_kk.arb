@@ -262,6 +262,7 @@
   "@shareCost": { "placeholders": { "cost": { "type": "String" } } },
   "shareAppPromo": "Padel KZ — қосымшаны жүктеп алыңыз және турнирлерге тіркеліңіз!",
   "noSpotsLeftUpper": "ОРЫН ЖОҚ",
+  "tournamentUnrated": "РЕЙТИНГСІЗ",
   "dateLabel": "КҮНІ",
   "timeLabel": "УАҚЫТЫ",
   "levelLabel": "ДЕҢГЕЙ",

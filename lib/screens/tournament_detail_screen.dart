@@ -218,6 +218,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         _buildTag(typeLabel, t.typeColor),
         const SizedBox(width: 8),
         _buildTag(statusText, statusColor),
+        if (!t.isRated) ...[
+          const SizedBox(width: 8),
+          _buildTag(l10n.tournamentUnrated, AppTheme.orange),
+        ],
       ],
     );
   }

@@ -280,6 +280,7 @@ class Tournament {
   final String typeName;
   final String status;
   final String statusName;
+  final bool isRated;
   final double minLevel;
   final double maxLevel;
   final double price;
@@ -316,6 +317,7 @@ class Tournament {
     required this.typeName,
     required this.status,
     required this.statusName,
+    this.isRated = true,
     required this.minLevel,
     required this.maxLevel,
     required this.price,
@@ -400,6 +402,7 @@ class Tournament {
       typeName: json['type_name'] as String,
       status: json['status'] as String,
       statusName: json['status_name'] as String,
+      isRated: json['is_rated'] as bool? ?? true,
       minLevel: (json['min_level'] as num).toDouble(),
       maxLevel: (json['max_level'] as num).toDouble(),
       price: (json['price'] as num).toDouble(),

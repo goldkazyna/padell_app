@@ -1372,6 +1372,12 @@ abstract class AppLocalizations {
   /// **'МЕСТ НЕТ'**
   String get noSpotsLeftUpper;
 
+  /// No description provided for @tournamentUnrated.
+  ///
+  /// In ru, this message translates to:
+  /// **'БЕЗ РЕЙТИНГА'**
+  String get tournamentUnrated;
+
   /// No description provided for @dateLabel.
   ///
   /// In ru, this message translates to:

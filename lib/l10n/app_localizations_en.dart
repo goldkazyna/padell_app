@@ -701,6 +701,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSpotsLeftUpper => 'NO SPOTS';
 
   @override
+  String get tournamentUnrated => 'UNRATED';
+
+  @override
   String get dateLabel => 'DATE';
 
   @override

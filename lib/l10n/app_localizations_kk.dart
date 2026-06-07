@@ -688,6 +688,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get noSpotsLeftUpper => 'ОРЫН ЖОҚ';
 
   @override
+  String get tournamentUnrated => 'РЕЙТИНГСІЗ';
+
+  @override
   String get dateLabel => 'КҮНІ';
 
   @override

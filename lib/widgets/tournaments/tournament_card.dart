@@ -16,6 +16,7 @@ class TournamentCard extends StatelessWidget {
   final String level;
   final bool isRegistered;
   final bool isFull;
+  final bool isRated;
   final bool flat;
 
   const TournamentCard({
@@ -32,6 +33,7 @@ class TournamentCard extends StatelessWidget {
     required this.level,
     this.isRegistered = false,
     this.isFull = false,
+    this.isRated = true,
     this.flat = false,
   });
 
@@ -49,6 +51,7 @@ class TournamentCard extends StatelessWidget {
       level: t.levelText,
       isRegistered: t.isRegistered,
       isFull: t.isFull,
+      isRated: t.isRated,
       flat: flat,
     );
   }
@@ -163,6 +166,26 @@ class TournamentCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (!isRated) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppTheme.orange.withAlpha(25),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.tournamentUnrated,
+                          style: const TextStyle(
+                            color: AppTheme.orange,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(width: 8),
                     // Club
                     Text(
