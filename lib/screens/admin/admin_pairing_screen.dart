@@ -107,6 +107,10 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
     final maxPairs = (p?['max_pairs'] as num?)?.toInt() ?? 0;
     final pairsCount = (p?['pairs_count'] as num?)?.toInt() ?? 0;
     final canStart = p?['can_start'] == true;
+    final rosterReady = p?['roster_ready'] == true;
+    final approvedCount = (p?['approved_count'] as num?)?.toInt() ?? 0;
+    final maxParticipants = (p?['max_participants'] as num?)?.toInt() ?? 0;
+    final pendingCount = (p?['pending_count'] as num?)?.toInt() ?? 0;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -127,11 +131,13 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
                   children: [
                     _progress(pairsCount, maxPairs),
                     const SizedBox(height: 12),
-                    if (unpaired.length >= 2) ...[
+                    if (!rosterReady)
+                      _rosterBanner(approvedCount, maxParticipants, pendingCount),
+                    if (rosterReady && unpaired.length >= 2) ...[
                       _autoButton(),
                       const SizedBox(height: 16),
                     ],
-                    if (unpaired.isNotEmpty) ...[
+                    if (rosterReady && unpaired.isNotEmpty) ...[
                       _sectionLabel('Без пары · ${unpaired.length}'),
                       const SizedBox(height: 4),
                       if (_selectedPlayerId != null)
@@ -223,6 +229,36 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _rosterBanner(int approved, int max, int pending) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.orange.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.orange.withOpacity(0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Сбор пар откроется при полном составе',
+              style: TextStyle(
+                  color: AppTheme.orange,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(
+            'Подтверждено $approved из $max'
+            '${pending > 0 ? ' · $pending на модерации' : ''}.\n'
+            'Сначала подтвердите всех участников, затем собирайте пары.',
+            style:
+                const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          ),
+        ],
+      ),
     );
   }
 
