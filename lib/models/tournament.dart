@@ -281,6 +281,7 @@ class Tournament {
   final String status;
   final String statusName;
   final bool isRated;
+  final String pairingMode; // self | admin (только для type=team)
   final double minLevel;
   final double maxLevel;
   final double price;
@@ -318,6 +319,7 @@ class Tournament {
     required this.status,
     required this.statusName,
     this.isRated = true,
+    this.pairingMode = 'self',
     required this.minLevel,
     required this.maxLevel,
     required this.price,
@@ -343,6 +345,12 @@ class Tournament {
   });
 
   bool get isTeamTournament => type == 'team';
+
+  /// Групповой турнир, где пары собирает админ (регистрация одиночная).
+  bool get isAdminPairing => type == 'team' && pairingMode == 'admin';
+
+  /// Регистрация одиночная: любой тип кроме team-с-самосбором пар.
+  bool get usesSoloRegistration => type != 'team' || pairingMode == 'admin';
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
     List<TournamentParticipant> parsedParticipants = [];
@@ -403,6 +411,7 @@ class Tournament {
       status: json['status'] as String,
       statusName: json['status_name'] as String,
       isRated: json['is_rated'] as bool? ?? true,
+      pairingMode: json['pairing_mode'] as String? ?? 'self',
       minLevel: (json['min_level'] as num).toDouble(),
       maxLevel: (json['max_level'] as num).toDouble(),
       price: (json['price'] as num).toDouble(),

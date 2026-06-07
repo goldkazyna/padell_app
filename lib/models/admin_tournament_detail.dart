@@ -26,6 +26,7 @@ class AdminTournamentDetail {
   final bool canDelete;
   final bool baliPairsCreated;
   final bool tournamentsFullAccess;
+  final bool isAdminPairing;
 
   const AdminTournamentDetail({
     required this.id,
@@ -53,6 +54,7 @@ class AdminTournamentDetail {
     required this.canDelete,
     this.baliPairsCreated = false,
     this.tournamentsFullAccess = true,
+    this.isAdminPairing = false,
   });
 
   factory AdminTournamentDetail.fromJson(Map<String, dynamic> json) {
@@ -74,6 +76,7 @@ class AdminTournamentDetail {
       participantsCount: (json['participants_count'] as num?)?.toInt() ?? 0,
       pendingCount: (json['pending_count'] as num?)?.toInt() ?? 0,
       price: (json['price'] as num?)?.toDouble(),
+      isAdminPairing: json['is_admin_pairing'] as bool? ?? false,
       hasPlayoff: json['has_playoff'] as bool? ?? false,
       hasLowerBracket: json['has_lower_bracket'] as bool? ?? false,
       hasBronzeMatch: json['has_bronze_match'] as bool? ?? false,

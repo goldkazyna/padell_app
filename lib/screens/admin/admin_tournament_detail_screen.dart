@@ -22,6 +22,7 @@ import '../../widgets/moderation_countdown.dart';
 import '../../widgets/verified_badge.dart';
 import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
+import 'admin_pairing_screen.dart';
 
 /// Этап 3a/3b — экран управления существующим турниром.
 /// Таб «Матчи» — заглушка до 3c.
@@ -1075,7 +1076,42 @@ class _AdminTournamentDetailScreenState
         loading: _saving,
       ));
     }
-    if (t.canStart) {
+    // Групповой с ручным сбором пар: вместо «Запустить» ведём на экран сбора
+    // пар (там собираем пары и стартуем). Доступно пока турнир открыт.
+    if (t.isAdminPairing && t.status == 'open') {
+      if (children.isNotEmpty) children.add(const SizedBox(height: 10));
+      children.add(_primaryButton(
+        label: 'Собрать пары',
+        onTap: _starting
+            ? null
+            : () async {
+                final ok = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(
+                    builder: (_) => AdminPairingScreen(
+                      tournamentId: t.id,
+                      tournamentName: t.name,
+                    ),
+                  ),
+                );
+                if (ok == true) {
+                  try {
+                    final fresh = await context
+                        .read<AdminService>()
+                        .getTournamentDetail(t.id);
+                    if (mounted) {
+                      _applyToForm(fresh);
+                      setState(() {
+                        _t = fresh;
+                        _matches = null;
+                        _participants = null;
+                      });
+                    }
+                  } catch (_) {}
+                }
+              },
+        color: AppTheme.accent,
+      ));
+    } else if (t.canStart) {
       // Bali KOC: до создания пар нельзя стартовать — заменяем кнопку.
       final isBaliWithoutPairs =
           t.type == 'bali_koc' && !t.baliPairsCreated;

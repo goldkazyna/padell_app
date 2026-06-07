@@ -200,6 +200,46 @@ class AdminService {
     );
   }
 
+  // ===== Ручной сбор пар (групповой турнир, pairing_mode=admin) =====
+
+  Future<Map<String, dynamic>> getPairing(int tournamentId) async {
+    final token = await _storage.getToken();
+    final resp =
+        await _api.get('/admin/tournaments/$tournamentId/pairing', token);
+    return (resp['pairing'] as Map).cast<String, dynamic>();
+  }
+
+  Future<Map<String, dynamic>> createPair(
+      int tournamentId, int player1Id, int player2Id) async {
+    final token = await _storage.getToken();
+    final resp = await _api.post(
+      '/admin/tournaments/$tournamentId/pairing/teams',
+      {'player1_id': player1Id, 'player2_id': player2Id},
+      token,
+    );
+    return (resp['pairing'] as Map).cast<String, dynamic>();
+  }
+
+  Future<Map<String, dynamic>> deletePair(int tournamentId, int teamId) async {
+    final token = await _storage.getToken();
+    final resp = await _api.delete(
+      '/admin/tournaments/$tournamentId/pairing/teams/$teamId',
+      null,
+      token,
+    );
+    return (resp['pairing'] as Map).cast<String, dynamic>();
+  }
+
+  Future<Map<String, dynamic>> autoPair(int tournamentId) async {
+    final token = await _storage.getToken();
+    final resp = await _api.post(
+      '/admin/tournaments/$tournamentId/pairing/auto',
+      {},
+      token,
+    );
+    return (resp['pairing'] as Map).cast<String, dynamic>();
+  }
+
   /// Обновить редактируемые поля турнира.
   Future<AdminTournamentDetail> updateTournament(
     int id, {

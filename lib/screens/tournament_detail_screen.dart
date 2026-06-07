@@ -109,7 +109,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                           if (tournament.registrationStatus == 'pending' && tournament.club.paymentUrl != null)
                             _buildPaymentButton(tournament),
                           const SizedBox(height: 28),
-                          if (tournament.isTeamTournament) ...[
+                          if (!tournament.usesSoloRegistration) ...[
                             TeamListSection(
                               tournament: tournament,
                               currentUserId: userId,
@@ -126,7 +126,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                   ),
                 ),
                 if (_shouldShowBottomButton(tournament, provider))
-                  tournament.isTeamTournament
+                  !tournament.usesSoloRegistration
                       ? _buildTeamBottomButton(tournament, provider)
                       : _buildBottomButton(tournament, provider),
               ],
