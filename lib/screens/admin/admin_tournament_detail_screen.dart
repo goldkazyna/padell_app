@@ -1323,7 +1323,8 @@ class _AdminTournamentDetailScreenState
     final list = _invitations ?? const <AdminInvitation>[];
     const maxInvites = 10;
     final atLimit = list.length >= maxInvites;
-    final canInvite = _t != null && _t!.type != 'team' && !atLimit;
+    final canInvite =
+        _t != null && (_t!.type != 'team' || _t!.isAdminPairing) && !atLimit;
 
     return RefreshIndicator(
       onRefresh: _loadInvitations,
@@ -1344,7 +1345,7 @@ class _AdminTournamentDetailScreenState
                             color: AppTheme.textPrimary,
                             fontSize: 15,
                             fontWeight: FontWeight.w700)),
-                    if (atLimit && _t?.type != 'team') ...[
+                    if (atLimit && (_t?.type != 'team' || (_t?.isAdminPairing ?? false))) ...[
                       const SizedBox(height: 2),
                       const Text('Лимит приглашений достигнут',
                           style: TextStyle(
