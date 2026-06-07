@@ -30,6 +30,10 @@ class TournamentLiveScreen extends StatefulWidget {
 
 enum _LiveTab { rounds, table }
 
+/// Состояние матча плей-офф для отрисовки:
+/// done — сыгран, live — идёт (готов/играется), pending — ещё не сыгран.
+enum _PoState { done, live, pending }
+
 const _hdrStyle = TextStyle(
   color: AppTheme.textDim,
   fontSize: 10,
@@ -171,61 +175,426 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
   // ===== Playoff =====
   Widget _buildPlayoffSection(List<Map<String, dynamic>> playoff) {
+    // Делим стадии на основную и нижнюю сетки по суффиксу "(нижняя сетка)".
+    final upper = <Map<String, dynamic>>[];
+    final lower = <Map<String, dynamic>>[];
+    for (final stage in playoff) {
+      final name = (stage['stage'] as String?) ?? '';
+      if (name.contains('нижняя сетка')) {
+        lower.add(stage);
+      } else {
+        upper.add(stage);
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: Row(
-            children: const [
+            children: [
               Icon(Icons.emoji_events_rounded,
-                  color: AppTheme.amber, size: 18),
+                  color: AppTheme.amber, size: 20),
               SizedBox(width: 8),
               Text(
                 'Плей-офф',
                 style: TextStyle(
                   color: AppTheme.textPrimary,
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  letterSpacing: -0.2,
+                  letterSpacing: -0.3,
                 ),
               ),
             ],
           ),
         ),
-        for (final stage in playoff) _buildPlayoffStage(stage),
+        if (upper.isNotEmpty) _buildBracketCard(upper, isLower: false),
+        if (lower.isNotEmpty) _buildBracketCard(lower, isLower: true),
       ],
     );
   }
 
-  Widget _buildPlayoffStage(Map<String, dynamic> stage) {
-    final matches =
-        (stage['matches'] as List).cast<Map<String, dynamic>>();
+  /// Карточка сетки (основная/нижняя) с вертикальным таймлайном стадий.
+  Widget _buildBracketCard(List<Map<String, dynamic>> stages,
+      {required bool isLower}) {
+    int rank(Map<String, dynamic> s) {
+      final base = ((s['stage'] as String?) ?? '')
+          .replaceAll(' (нижняя сетка)', '')
+          .trim();
+      if (base == 'Полуфинал') return 1;
+      if (base == 'Финал') return 2;
+      return 3; // Матч за 3-е место / За 3-е место
+    }
+
+    final ordered = [...stages]..sort((a, b) => rank(a).compareTo(rank(b)));
+    final hasSemi = ordered
+        .any((s) => ((s['stage'] as String?) ?? '').contains('Полуфинал'));
+
+    int total = 0, played = 0;
+    for (final s in ordered) {
+      for (final m in (s['matches'] as List)) {
+        total++;
+        if ((m as Map)['status'] == 'completed') played++;
+      }
+    }
+
+    final title = isLower ? 'Нижняя сетка' : 'Основная сетка';
+    final subtitle = isLower
+        ? (hasSemi ? 'за 5–8 место' : 'за 5–6 место')
+        : (hasSemi ? 'за 1–4 место' : 'за 1–2 место');
+
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       decoration: BoxDecoration(
         color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF2A2A2A)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
-            child: Text(
-              stage['stage'] as String? ?? '—',
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 6),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: AppTheme.amber.withAlpha(36),
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.emoji_events_rounded,
+                      color: AppTheme.amber, size: 18),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title,
+                          style: const TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800)),
+                      Text(subtitle,
+                          style: const TextStyle(
+                              color: AppTheme.amber,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+                Text('$played / $total',
+                    style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700)),
+              ],
             ),
           ),
-          for (var i = 0; i < matches.length; i++)
-            _buildMatch(matches[i], isLast: i == matches.length - 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var i = 0; i < ordered.length; i++)
+                  _buildTimelineStage(ordered[i],
+                      isLower: isLower,
+                      isFirst: i == 0,
+                      isLast: i == ordered.length - 1),
+              ],
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  _PoState _playoffMatchState(Map<String, dynamic> m) {
+    if (m['status'] == 'completed') return _PoState.done;
+    final t1 = m['team1'] as Map<String, dynamic>?;
+    final t2 = m['team2'] as Map<String, dynamic>?;
+    final t1Set = t1?['player1'] != null && t1?['player2'] != null;
+    final t2Set = t2?['player1'] != null && t2?['player2'] != null;
+    if (m['status'] == 'in_progress' || (t1Set && t2Set)) return _PoState.live;
+    return _PoState.pending;
+  }
+
+  Widget _buildTimelineStage(Map<String, dynamic> stage,
+      {required bool isLower, required bool isFirst, required bool isLast}) {
+    final base = ((stage['stage'] as String?) ?? '')
+        .replaceAll(' (нижняя сетка)', '')
+        .trim();
+    final matches = (stage['matches'] as List).cast<Map<String, dynamic>>();
+
+    String label;
+    String? sub;
+    if (base == 'Полуфинал') {
+      label = 'ПОЛУФИНАЛ';
+    } else if (base == 'Финал') {
+      label = 'ФИНАЛ';
+      sub = isLower ? null : 'за 1–2 место';
+    } else {
+      label = 'МАТЧ ЗА 3 МЕСТО';
+      sub = isLower ? null : 'за 3 место';
+    }
+
+    final anyLive =
+        matches.any((m) => _playoffMatchState(m) == _PoState.live);
+    final allDone = matches.isNotEmpty &&
+        matches.every((m) => m['status'] == 'completed');
+    final Color dotColor = allDone
+        ? AppTheme.accent
+        : (anyLive ? AppTheme.amber : const Color(0xFF3F3F46));
+    final bool dotFilled = allDone || anyLive;
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 18,
+            child: Column(
+              children: [
+                Container(
+                  width: 2,
+                  height: 4,
+                  color: isFirst ? Colors.transparent : AppTheme.divider,
+                ),
+                Container(
+                  width: 13,
+                  height: 13,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: dotFilled ? dotColor : AppTheme.card,
+                    border: Border.all(color: dotColor, width: 2),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: isLast ? Colors.transparent : AppTheme.divider,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      Text(label,
+                          style: const TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5)),
+                      if (sub != null) ...[
+                        const SizedBox(width: 6),
+                        Text('· $sub',
+                            style: const TextStyle(
+                                color: AppTheme.textDim,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500)),
+                      ],
+                    ],
+                  ),
+                ),
+                for (final m in matches) _buildPlayoffMatchCard(m),
+                SizedBox(height: isLast ? 0 : 4),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlayoffMatchCard(Map<String, dynamic> m) {
+    final state = _playoffMatchState(m);
+    final t1 = m['team1'] as Map<String, dynamic>;
+    final t2 = m['team2'] as Map<String, dynamic>;
+    final score1 = t1['score'];
+    final score2 = t2['score'];
+    final hasMe = m['has_me'] == true;
+    final done = state == _PoState.done;
+    final live = state == _PoState.live;
+    final t1Win = done && (score1 ?? 0) > (score2 ?? 0);
+    final t2Win = done && (score2 ?? 0) > (score1 ?? 0);
+
+    Color cardBg;
+    Color cardBorder;
+    if (live) {
+      cardBg = AppTheme.amber.withAlpha(22);
+      cardBorder = AppTheme.amber.withAlpha(110);
+    } else {
+      cardBg = AppTheme.cardRaised.withAlpha(90);
+      cardBorder = const Color(0xFF2A2A2A);
+    }
+    if (hasMe && !live) {
+      cardBg = AppTheme.accent.withAlpha(18);
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 2),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: _playoffStatusBadge(state),
+            ),
+          ),
+          _playoffTeamRow(t1, isWinner: t1Win, state: state, score: score1),
+          _playoffTeamRow(t2, isWinner: t2Win, state: state, score: score2),
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  Widget _playoffStatusBadge(_PoState state) {
+    switch (state) {
+      case _PoState.done:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(Icons.check_rounded, color: AppTheme.accent, size: 14),
+            SizedBox(width: 3),
+            Text('Завершён',
+                style: TextStyle(
+                    color: AppTheme.accent,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700)),
+          ],
+        );
+      case _PoState.live:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(Icons.circle, color: AppTheme.amber, size: 8),
+            SizedBox(width: 4),
+            Text('ИДЁТ',
+                style: TextStyle(
+                    color: AppTheme.amber,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.3)),
+          ],
+        );
+      case _PoState.pending:
+        return const Text('Не сыгран',
+            style: TextStyle(
+                color: AppTheme.textDim,
+                fontSize: 11,
+                fontWeight: FontWeight.w600));
+    }
+  }
+
+  Widget _playoffTeamRow(Map<String, dynamic> team,
+      {required bool isWinner, required _PoState state, dynamic score}) {
+    final p1 = team['player1'] as Map<String, dynamic>?;
+    final p2 = team['player2'] as Map<String, dynamic>?;
+    final names = [p1?['name'], p2?['name']]
+        .where((e) => e != null)
+        .join(' / ');
+    final done = state == _PoState.done;
+    final isLoser = done && !isWinner;
+    final noTeam = p1 == null && p2 == null;
+
+    Color nameColor =
+        isLoser ? AppTheme.textSecondary : AppTheme.textPrimary;
+    if (noTeam) nameColor = AppTheme.textDim;
+    final nameWeight = isWinner ? FontWeight.w800 : FontWeight.w600;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+      child: Row(
+        children: [
+          if (isWinner)
+            Container(
+              width: 3,
+              height: 18,
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.accent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            )
+          else
+            const SizedBox(width: 11),
+          Expanded(
+            child: Text(
+              names.isEmpty ? 'Ожидание…' : names,
+              style: TextStyle(
+                  color: nameColor, fontSize: 14, fontWeight: nameWeight),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _playoffScoreBox(score, isWinner: isWinner, state: state),
+        ],
+      ),
+    );
+  }
+
+  Widget _playoffScoreBox(dynamic score,
+      {required bool isWinner, required _PoState state}) {
+    final done = state == _PoState.done;
+    final live = state == _PoState.live;
+    final hasScore = score != null;
+
+    Color bg;
+    Color fg;
+    Border border;
+    String text = hasScore ? '$score' : '—';
+
+    if (done && isWinner) {
+      bg = AppTheme.accent.withAlpha(40);
+      fg = AppTheme.accent;
+      border = Border.all(color: AppTheme.accent.withAlpha(130));
+    } else if (done) {
+      bg = Colors.transparent;
+      fg = AppTheme.textSecondary;
+      border = Border.all(color: const Color(0xFF3F3F46));
+    } else if (live) {
+      bg = AppTheme.amber.withAlpha(40);
+      fg = AppTheme.amber;
+      border = Border.all(color: AppTheme.amber.withAlpha(130));
+    } else {
+      bg = Colors.transparent;
+      fg = AppTheme.textDim;
+      border = Border.all(color: const Color(0xFF3F3F46));
+      text = '—';
+    }
+
+    return Container(
+      width: 46,
+      height: 40,
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+        border: border,
+      ),
+      alignment: Alignment.center,
+      child: Text(text,
+          style: TextStyle(color: fg, fontSize: 18, fontWeight: FontWeight.w800)),
     );
   }
 
