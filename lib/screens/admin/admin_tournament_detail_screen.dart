@@ -3544,6 +3544,11 @@ class _AdminTournamentDetailScreenState
   }
 
   Widget _buildPlayoffSection(AdminPlayoff p) {
+    final upper =
+        p.matches.where((m) => !m.stage.contains('нижняя сетка')).toList();
+    final lower =
+        p.matches.where((m) => m.stage.contains('нижняя сетка')).toList();
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -3566,60 +3571,372 @@ class _AdminTournamentDetailScreenState
                       fontWeight: FontWeight.w700)),
             ],
           ),
-          const SizedBox(height: 10),
-          ...p.matches.map((m) => _buildPlayoffMatchTile(m)),
+          const SizedBox(height: 12),
+          if (upper.isNotEmpty) _buildAdminBracket(upper, isLower: false),
+          if (lower.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _buildAdminBracket(lower, isLower: true),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildPlayoffMatchTile(AdminPlayoffMatch m) {
-    final hasPlayers =
-        m.team1.players.isNotEmpty && m.team2.players.isNotEmpty;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: GestureDetector(
-        onTap: hasPlayers ? () => _openScoreSheet(playoffMatch: m) : null,
-        child: Opacity(
-          opacity: hasPlayers ? 1.0 : 0.5,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppTheme.cardRaised,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
+  Widget _buildAdminBracket(List<AdminPlayoffMatch> matches,
+      {required bool isLower}) {
+    String baseStage(String s) =>
+        s.replaceAll(' (нижняя сетка)', '').trim();
+    int rank(String s) {
+      final b = baseStage(s);
+      if (b == 'Полуфинал') return 1;
+      if (b == 'Финал') return 2;
+      return 3;
+    }
+
+    final byStage = <String, List<AdminPlayoffMatch>>{};
+    for (final m in matches) {
+      byStage.putIfAbsent(baseStage(m.stage), () => []).add(m);
+    }
+    final stageKeys = byStage.keys.toList()
+      ..sort((a, b) => rank(a).compareTo(rank(b)));
+
+    final hasSemi = stageKeys.contains('Полуфинал');
+    final total = matches.length;
+    final played = matches.where((m) => m.isCompleted).length;
+    final title = isLower ? 'Нижняя сетка' : 'Основная сетка';
+    final subtitle = isLower
+        ? (hasSemi ? 'за 5–8 место' : 'за 5–6 место')
+        : (hasSemi ? 'за 1–4 место' : 'за 1–2 место');
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised.withAlpha(70),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF2A2A2A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppTheme.amber.withAlpha(36),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.emoji_events_rounded,
+                    color: AppTheme.amber, size: 17),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(m.stage,
+                    Text(title,
+                        style: const TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800)),
+                    Text(subtitle,
                         style: const TextStyle(
                             color: AppTheme.amber,
                             fontSize: 11,
-                            fontWeight: FontWeight.w700)),
-                    const Spacer(),
-                    if (m.courtNumber != null)
-                      Text('Корт ${m.courtNumber}',
-                          style: const TextStyle(
-                              color: AppTheme.textDim, fontSize: 11)),
+                            fontWeight: FontWeight.w600)),
                   ],
                 ),
-                const SizedBox(height: 6),
-                if (hasPlayers) ...[
-                  _matchTeamRow(m.team1,
-                      isWinner: m.winner == 1, isCompleted: m.isCompleted),
-                  const SizedBox(height: 4),
-                  _matchTeamRow(m.team2,
-                      isWinner: m.winner == 2, isCompleted: m.isCompleted),
-                ] else
-                  const Text('Ожидаем результаты полуфиналов',
-                      style: TextStyle(
-                          color: AppTheme.textSecondary, fontSize: 12)),
+              ),
+              Text('$played / $total',
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          for (var i = 0; i < stageKeys.length; i++)
+            _buildAdminTimelineStage(
+              stageKeys[i],
+              byStage[stageKeys[i]]!,
+              isLower: isLower,
+              isFirst: i == 0,
+              isLast: i == stageKeys.length - 1,
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// 0 — сыгран, 1 — идёт (готов/играется), 2 — ещё не сыгран.
+  int _adminPoState(AdminPlayoffMatch m) {
+    if (m.isCompleted) return 0;
+    final hasPlayers =
+        m.team1.players.isNotEmpty && m.team2.players.isNotEmpty;
+    if (m.status == 'in_progress' || hasPlayers) return 1;
+    return 2;
+  }
+
+  Widget _buildAdminTimelineStage(String base, List<AdminPlayoffMatch> matches,
+      {required bool isLower, required bool isFirst, required bool isLast}) {
+    String label;
+    String? sub;
+    if (base == 'Полуфинал') {
+      label = 'ПОЛУФИНАЛ';
+    } else if (base == 'Финал') {
+      label = 'ФИНАЛ';
+      sub = isLower ? null : 'за 1–2 место';
+    } else {
+      label = 'МАТЧ ЗА 3 МЕСТО';
+      sub = isLower ? null : 'за 3 место';
+    }
+
+    final anyLive = matches.any((m) => _adminPoState(m) == 1);
+    final allDone =
+        matches.isNotEmpty && matches.every((m) => m.isCompleted);
+    final Color dotColor = allDone
+        ? AppTheme.accent
+        : (anyLive ? AppTheme.amber : const Color(0xFF3F3F46));
+    final bool dotFilled = allDone || anyLive;
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 18,
+            child: Column(
+              children: [
+                Container(
+                  width: 2,
+                  height: 4,
+                  color: isFirst ? Colors.transparent : AppTheme.divider,
+                ),
+                Container(
+                  width: 13,
+                  height: 13,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: dotFilled ? dotColor : AppTheme.card,
+                    border: Border.all(color: dotColor, width: 2),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: isLast ? Colors.transparent : AppTheme.divider,
+                  ),
+                ),
               ],
             ),
           ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      Text(label,
+                          style: const TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5)),
+                      if (sub != null) ...[
+                        const SizedBox(width: 6),
+                        Text('· $sub',
+                            style: const TextStyle(
+                                color: AppTheme.textDim,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500)),
+                      ],
+                    ],
+                  ),
+                ),
+                for (final m in matches) _buildAdminPlayoffMatchCard(m),
+                SizedBox(height: isLast ? 0 : 4),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdminPlayoffMatchCard(AdminPlayoffMatch m) {
+    final st = _adminPoState(m);
+    final live = st == 1;
+    final hasPlayers =
+        m.team1.players.isNotEmpty && m.team2.players.isNotEmpty;
+
+    Color cardBg;
+    Color cardBorder;
+    if (live) {
+      cardBg = AppTheme.amber.withAlpha(22);
+      cardBorder = AppTheme.amber.withAlpha(110);
+    } else {
+      cardBg = AppTheme.cardRaised;
+      cardBorder = const Color(0xFF2A2A2A);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: GestureDetector(
+        onTap: hasPlayers ? () => _openScoreSheet(playoffMatch: m) : null,
+        child: Container(
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: cardBorder),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 2),
+                child: Row(
+                  children: [
+                    if (m.courtNumber != null)
+                      Text('Корт ${m.courtNumber}',
+                          style: const TextStyle(
+                              color: AppTheme.textDim,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600)),
+                    const Spacer(),
+                    _adminPlayoffStatusBadge(st),
+                  ],
+                ),
+              ),
+              _adminPlayoffTeamRow(m.team1, isWinner: m.winner == 1, state: st),
+              _adminPlayoffTeamRow(m.team2, isWinner: m.winner == 2, state: st),
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _adminPlayoffStatusBadge(int state) {
+    if (state == 0) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.check_rounded, color: AppTheme.accent, size: 14),
+          SizedBox(width: 3),
+          Text('Завершён',
+              style: TextStyle(
+                  color: AppTheme.accent,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700)),
+        ],
+      );
+    }
+    if (state == 1) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.circle, color: AppTheme.amber, size: 8),
+          SizedBox(width: 4),
+          Text('ИДЁТ',
+              style: TextStyle(
+                  color: AppTheme.amber,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3)),
+        ],
+      );
+    }
+    return const Text('Не сыгран',
+        style: TextStyle(
+            color: AppTheme.textDim,
+            fontSize: 11,
+            fontWeight: FontWeight.w600));
+  }
+
+  Widget _adminPlayoffTeamRow(AdminMatchTeam team,
+      {required bool isWinner, required int state}) {
+    final done = state == 0;
+    final live = state == 1;
+    final isLoser = done && !isWinner;
+    final noTeam = team.players.isEmpty;
+    final names = noTeam ? 'Ожидание…' : team.title;
+
+    Color nameColor =
+        isLoser ? AppTheme.textSecondary : AppTheme.textPrimary;
+    if (noTeam) nameColor = AppTheme.textDim;
+    final nameWeight = isWinner ? FontWeight.w800 : FontWeight.w600;
+
+    // Стиль бокса счёта
+    final hasScore = team.score != null;
+    Color bg;
+    Color fg;
+    Border border;
+    String text = hasScore ? '${team.score}' : '—';
+    if (done && isWinner) {
+      bg = AppTheme.accent.withAlpha(40);
+      fg = AppTheme.accent;
+      border = Border.all(color: AppTheme.accent.withAlpha(130));
+    } else if (done) {
+      bg = Colors.transparent;
+      fg = AppTheme.textSecondary;
+      border = Border.all(color: const Color(0xFF3F3F46));
+    } else if (live) {
+      bg = AppTheme.amber.withAlpha(40);
+      fg = AppTheme.amber;
+      border = Border.all(color: AppTheme.amber.withAlpha(130));
+    } else {
+      bg = Colors.transparent;
+      fg = AppTheme.textDim;
+      border = Border.all(color: const Color(0xFF3F3F46));
+      text = '—';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+      child: Row(
+        children: [
+          if (isWinner)
+            Container(
+              width: 3,
+              height: 18,
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.accent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            )
+          else
+            const SizedBox(width: 11),
+          Expanded(
+            child: Text(
+              names,
+              style: TextStyle(
+                  color: nameColor, fontSize: 14, fontWeight: nameWeight),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 46,
+            height: 40,
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(8),
+              border: border,
+            ),
+            alignment: Alignment.center,
+            child: Text(text,
+                style: TextStyle(
+                    color: fg, fontSize: 18, fontWeight: FontWeight.w800)),
+          ),
+        ],
       ),
     );
   }
