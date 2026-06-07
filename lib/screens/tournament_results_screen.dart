@@ -27,6 +27,28 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
   Map<String, dynamic>? _data;
   int _currentTab = 0;
 
+  bool get _isRated =>
+      (_data?['tournament'] as Map<String, dynamic>?)?['is_rated'] as bool? ??
+      true;
+
+  Widget _unratedPill(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppTheme.orange.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: Text(
+        AppLocalizations.of(context)!.unratedBadge,
+        style: const TextStyle(
+          color: AppTheme.orange,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -539,13 +561,16 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
           _buildSummaryCard('$matchesCount', l10n.matchesLabel),
           const SizedBox(width: 10),
           _buildSummaryCard('$wins / $losses', l10n.winsLabel),
-          const SizedBox(width: 10),
-          _buildSummaryCard(
-            RatingFormatter.formatRatingChange(ratingChange, precise, decimals: 4),
-            l10n.ratingLabel,
-            valueColor:
-                ratingChange >= 0 ? AppTheme.accent : const Color(0xFFEF4444),
-          ),
+          if (_isRated) ...[
+            const SizedBox(width: 10),
+            _buildSummaryCard(
+              RatingFormatter.formatRatingChange(ratingChange, precise,
+                  decimals: 4),
+              l10n.ratingLabel,
+              valueColor:
+                  ratingChange >= 0 ? AppTheme.accent : const Color(0xFFEF4444),
+            ),
+          ],
         ],
       ),
     );
@@ -668,33 +693,36 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
                   letterSpacing: 0.5,
                 ),
               ),
-              Row(
-                children: [
-                  Icon(
-                    ratingChange >= 0
-                        ? Icons.arrow_drop_up
-                        : Icons.arrow_drop_down,
-                    color: ratingChange >= 0
-                        ? AppTheme.accent
-                        : const Color(0xFFEF4444),
-                    size: 20,
-                  ),
-                  Text(
-                    RatingFormatter.formatRatingChange(
-                      ratingChange,
-                      context.watch<SettingsProvider>().preciseRating,
-                      decimals: 4,
-                    ),
-                    style: TextStyle(
+              if (_isRated)
+                Row(
+                  children: [
+                    Icon(
+                      ratingChange >= 0
+                          ? Icons.arrow_drop_up
+                          : Icons.arrow_drop_down,
                       color: ratingChange >= 0
                           ? AppTheme.accent
                           : const Color(0xFFEF4444),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      size: 20,
                     ),
-                  ),
-                ],
-              ),
+                    Text(
+                      RatingFormatter.formatRatingChange(
+                        ratingChange,
+                        context.watch<SettingsProvider>().preciseRating,
+                        decimals: 4,
+                      ),
+                      style: TextStyle(
+                        color: ratingChange >= 0
+                            ? AppTheme.accent
+                            : const Color(0xFFEF4444),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                _unratedPill(context),
             ],
           ),
           const SizedBox(height: 14),
