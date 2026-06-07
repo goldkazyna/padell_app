@@ -217,9 +217,10 @@ class _AdminCreateTournamentScreenState
       body['has_playoff'] = _hasPlayoff;
       if (_hasPlayoff) {
         body['playoff_type'] = _playoffType;
-        // Формат нужен: при 1 группе и final_only, либо при ≥2 групп и semifinal_final
+        // Формат нужен: при 1 группе (и final_only, и semifinal_final),
+        // либо при ≥2 групп и semifinal_final
         final needFormat =
-            (_groupsCount == 1 && _playoffType == 'final_only') ||
+            (_groupsCount == 1) ||
                 (_groupsCount >= 2 && _playoffType == 'semifinal_final');
         if (needFormat) body['playoff_format'] = _playoffFormat;
         body['has_lower_bracket'] = _hasLowerBracket;
@@ -726,11 +727,8 @@ class _AdminCreateTournamentScreenState
           onTap: () {
             setState(() {
               _groupsCount = n;
-              // 1 группа → только final_only
-              if (n == 1 && _playoffType == 'semifinal_final') {
-                _playoffType = 'final_only';
-                _playoffFormat = 'cross';
-              }
+              // Полуфинал доступен и для 1, и для 2 групп.
+              // Формат пересчитается в _playoffFormatSelector под новый набор.
             });
             _updateRoundsCount();
           },
@@ -809,7 +807,7 @@ class _AdminCreateTournamentScreenState
   }
 
   bool _needsPlayoffFormat() {
-    if (_groupsCount == 1 && _playoffType == 'final_only') return true;
+    if (_groupsCount == 1) return true; // и final_only, и semifinal_final
     if (_groupsCount >= 2 && _playoffType == 'semifinal_final') return true;
     return false;
   }
@@ -817,27 +815,23 @@ class _AdminCreateTournamentScreenState
   Widget _playoffTypeSelector() {
     Widget btn(String value, String label) {
       final active = _playoffType == value;
-      final allowed =
-          value == 'final_only' || (value == 'semifinal_final' && _groupsCount >= 2);
+      // Оба типа (final_only / semifinal_final) доступны и для 1, и для 2 групп.
       return Expanded(
         child: GestureDetector(
-          onTap: !allowed
-              ? null
-              : () {
-                  setState(() {
-                    _playoffType = value;
-                    // переинициализируем формат под новый набор
-                    if (_groupsCount == 1 && value == 'final_only') {
-                      _playoffFormat = 'cross';
-                    } else if (_groupsCount >= 2 &&
-                        value == 'semifinal_final') {
-                      _playoffFormat = 'mix';
-                    }
-                  });
-                },
-          child: Opacity(
-            opacity: allowed ? 1 : 0.4,
-            child: Container(
+          onTap: () {
+            setState(() {
+              _playoffType = value;
+              // переинициализируем формат под новый набор
+              if (_groupsCount == 1 && value == 'final_only') {
+                _playoffFormat = 'cross';
+              } else if (_groupsCount == 1 && value == 'semifinal_final') {
+                _playoffFormat = 'mix';
+              } else if (_groupsCount >= 2 && value == 'semifinal_final') {
+                _playoffFormat = 'mix';
+              }
+            });
+          },
+          child: Container(
               margin: EdgeInsets.only(left: value == 'final_only' ? 0 : 6),
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
@@ -862,8 +856,7 @@ class _AdminCreateTournamentScreenState
               ),
             ),
           ),
-        ),
-      );
+        );
     }
 
     return Row(children: [
@@ -880,6 +873,12 @@ class _AdminCreateTournamentScreenState
         ('cross', '1+4 vs 2+3 (крест)'),
         ('tops', '1+2 vs 3+4 (топы вместе)'),
         ('mix', '1+3 vs 2+4 (микс)'),
+      ]);
+    } else if (_groupsCount == 1 && _playoffType == 'semifinal_final') {
+      options.addAll(const [
+        ('mix', 'Микс (1+8 vs 4+5, 2+7 vs 3+6)'),
+        ('tops', 'Топы вместе (1+2 vs 7+8, 3+4 vs 5+6)'),
+        ('balanced', 'Сбалансированный (1+4 vs 5+8, 2+3 vs 6+7)'),
       ]);
     } else if (_groupsCount >= 2 && _playoffType == 'semifinal_final') {
       options.addAll(const [
