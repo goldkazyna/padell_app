@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/rating_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/rating_service.dart';
@@ -301,20 +302,40 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             ),
             if (h.tournamentId != null)
               const Icon(Icons.chevron_right, size: 16, color: Color(0xFF3F3F46)),
-            Builder(builder: (ctx) {
-              final precise = ctx.watch<SettingsProvider>().preciseRating;
-              return SizedBox(
-                width: precise ? 80 : 50,
-                child: Text(
-                  RatingFormatter.formatRatingChange(h.change, precise, decimals: 4),
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w800,
-                    color: isPositive ? AppTheme.accent : const Color(0xFFEF4444),
+            if (!h.isRated)
+              Builder(builder: (ctx) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.orange.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(7),
                   ),
-                ),
-              );
-            }),
+                  child: Text(
+                    AppLocalizations.of(ctx)!.unratedBadge,
+                    style: const TextStyle(
+                      color: AppTheme.orange,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              })
+            else
+              Builder(builder: (ctx) {
+                final precise = ctx.watch<SettingsProvider>().preciseRating;
+                return SizedBox(
+                  width: precise ? 80 : 50,
+                  child: Text(
+                    RatingFormatter.formatRatingChange(h.change, precise, decimals: 4),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w800,
+                      color: isPositive ? AppTheme.accent : const Color(0xFFEF4444),
+                    ),
+                  ),
+                );
+              }),
           ],
         ),
       ),

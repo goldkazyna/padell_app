@@ -502,6 +502,7 @@ class RatingHistoryItem {
   final int change;
   final int ratingAfter;
   final int? place;
+  final bool isRated;
 
   RatingHistoryItem({
     this.tournamentId,
@@ -511,6 +512,7 @@ class RatingHistoryItem {
     required this.change,
     required this.ratingAfter,
     this.place,
+    this.isRated = true,
   });
 
   factory RatingHistoryItem.fromJson(Map<String, dynamic> json) {
@@ -522,6 +524,7 @@ class RatingHistoryItem {
       change: json['change'] as int? ?? 0,
       ratingAfter: json['rating_after'] as int? ?? 0,
       place: json['place'] as int?,
+      isRated: json['is_rated'] as bool? ?? true,
     );
   }
 }
