@@ -764,7 +764,10 @@ class _AdminTournamentDetailScreenState
             title: 'Сводка',
             children: [
               _readOnlyRow('Тип турнира', t.typeName),
-              _readOnlyRow('Клуб', t.club?.name ?? '—'),
+              if (t.isPersonal)
+                _readOnlyRow('Организатор', t.creatorName ?? '—')
+              else
+                _readOnlyRow('Клуб', t.club?.name ?? '—'),
               _readOnlyRow('Участников',
                   '${t.participantsCount} / ${t.maxParticipants}'),
               if (t.pendingCount > 0)

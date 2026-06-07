@@ -27,6 +27,8 @@ class AdminTournamentDetail {
   final bool baliPairsCreated;
   final bool tournamentsFullAccess;
   final bool isAdminPairing;
+  final bool isPersonal; // личный турнир игрока (без клуба)
+  final String? creatorName; // организатор личного турнира
 
   const AdminTournamentDetail({
     required this.id,
@@ -55,6 +57,8 @@ class AdminTournamentDetail {
     this.baliPairsCreated = false,
     this.tournamentsFullAccess = true,
     this.isAdminPairing = false,
+    this.isPersonal = false,
+    this.creatorName,
   });
 
   factory AdminTournamentDetail.fromJson(Map<String, dynamic> json) {
@@ -77,6 +81,8 @@ class AdminTournamentDetail {
       pendingCount: (json['pending_count'] as num?)?.toInt() ?? 0,
       price: (json['price'] as num?)?.toDouble(),
       isAdminPairing: json['is_admin_pairing'] as bool? ?? false,
+      isPersonal: json['is_personal'] as bool? ?? false,
+      creatorName: (json['creator'] as Map<String, dynamic>?)?['name'] as String?,
       hasPlayoff: json['has_playoff'] as bool? ?? false,
       hasLowerBracket: json['has_lower_bracket'] as bool? ?? false,
       hasBronzeMatch: json['has_bronze_match'] as bool? ?? false,
