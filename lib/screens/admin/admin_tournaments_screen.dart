@@ -8,7 +8,7 @@ import '../../widgets/main_tab_bar.dart';
 import 'admin_tournament_detail_screen.dart';
 
 class AdminTournamentsScreen extends StatefulWidget {
-  final int clubId;
+  final int? clubId; // null = личные турниры игрока
   final String clubName;
 
   const AdminTournamentsScreen({
@@ -39,8 +39,10 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
       _error = null;
     });
     try {
-      final list =
-          await context.read<AdminService>().getClubTournaments(widget.clubId);
+      final admin = context.read<AdminService>();
+      final list = widget.clubId == null
+          ? await admin.getPersonalTournaments()
+          : await admin.getClubTournaments(widget.clubId!);
       if (!mounted) return;
       setState(() {
         _all = list;

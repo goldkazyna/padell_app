@@ -191,6 +191,32 @@ class AdminService {
         .toList();
   }
 
+  // ===== Личные (приватные) турниры обычного игрока с грантом =====
+
+  Future<int> createPersonalTournament(
+    Map<String, dynamic> body, {
+    int? moderationHours,
+    int? moderationMinutes,
+  }) async {
+    final token = await _storage.getToken();
+    final payload = <String, dynamic>{
+      ...body,
+      'moderation_hours': ?moderationHours,
+      'moderation_minutes': ?moderationMinutes,
+    };
+    final response = await _api.post('/personal/tournaments', payload, token);
+    return (response['tournament_id'] as num).toInt();
+  }
+
+  Future<List<AdminTournamentSummary>> getPersonalTournaments() async {
+    final token = await _storage.getToken();
+    final response = await _api.get('/personal/tournaments', token);
+    final list = (response['tournaments'] as List?) ?? const [];
+    return list
+        .map((j) => AdminTournamentSummary.fromJson(j as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Полные детали турнира для админа.
   Future<AdminTournamentDetail> getTournamentDetail(int id) async {
     final token = await _storage.getToken();

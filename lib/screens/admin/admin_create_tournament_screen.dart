@@ -14,7 +14,7 @@ import 'admin_tournament_detail_screen.dart';
 /// Король корта. Когда понадобятся другие типы — добавляем визуальный
 /// выбор типа и расширяем форму.
 class AdminCreateTournamentScreen extends StatefulWidget {
-  final int clubId;
+  final int? clubId; // null = личный (приватный) турнир обычного игрока
   final String clubName;
 
   const AdminCreateTournamentScreen({
@@ -261,12 +261,21 @@ class _AdminCreateTournamentScreenState
     });
 
     try {
-      final id = await context.read<AdminService>().createTournament(
-            widget.clubId,
-            body,
-            moderationHours: int.tryParse(_moderationHours.text.trim()),
-            moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
-          );
+      final admin = context.read<AdminService>();
+      final modHours = int.tryParse(_moderationHours.text.trim());
+      final modMinutes = int.tryParse(_moderationMinutes.text.trim());
+      final id = widget.clubId == null
+          ? await admin.createPersonalTournament(
+              body,
+              moderationHours: modHours,
+              moderationMinutes: modMinutes,
+            )
+          : await admin.createTournament(
+              widget.clubId!,
+              body,
+              moderationHours: modHours,
+              moderationMinutes: modMinutes,
+            );
       if (!mounted) return;
       // Сразу открываем экран управления нового турнира
       Navigator.of(context).pushReplacement(
@@ -386,8 +395,11 @@ class _AdminCreateTournamentScreenState
           title: 'Игроки и уровень',
           summary: _playersSummary,
           children: [
-            _ratingToggle(),
-            const SizedBox(height: 12),
+            // Личные турниры всегда нерейтинговые — свитч не показываем.
+            if (widget.clubId != null) ...[
+              _ratingToggle(),
+              const SizedBox(height: 12),
+            ],
             _label('Уровень игроков'),
             _levelSliders(),
             const SizedBox(height: 12),

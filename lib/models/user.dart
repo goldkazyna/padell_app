@@ -60,6 +60,7 @@ class User {
   final List<AdminClubRef> adminClubs;
   final bool isClubModerator;
   final List<AdminClubRef> moderatorClubs;
+  final bool canCreateTournaments; // грант на создание личных турниров
 
   const User({
     required this.id,
@@ -83,6 +84,7 @@ class User {
     this.adminClubs = const [],
     this.isClubModerator = false,
     this.moderatorClubs = const [],
+    this.canCreateTournaments = false,
   });
 
   /// Все клубы где у user есть админский интерфейс — admin или moderator.
@@ -182,6 +184,7 @@ class User {
       adminClubs: adminClubs,
       isClubModerator: json['is_club_moderator'] as bool? ?? false,
       moderatorClubs: moderatorClubs,
+      canCreateTournaments: json['can_create_tournaments'] as bool? ?? false,
     );
   }
 

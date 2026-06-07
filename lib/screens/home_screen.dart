@@ -12,6 +12,7 @@ import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
 import '../widgets/home/court_booking_banner.dart';
 import '../widgets/home/home_banner_card.dart';
+import '../widgets/home/personal_creator_block.dart';
 import '../widgets/pressable_card.dart';
 import '../widgets/home/admin_club_block.dart';
 import 'clubs_list_screen.dart';
@@ -199,6 +200,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             isModerator: true,
                           ),
                         );
+                      }
+                      if (user != null && user.canCreateTournaments) {
+                        return const PersonalCreatorBlock();
                       }
                       return _CreateTournamentBanner(
                         onTap: () => _showAccreditationDialog(context),
