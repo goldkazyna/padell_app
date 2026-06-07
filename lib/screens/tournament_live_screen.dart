@@ -356,6 +356,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final score1 = t1['score'];
     final score2 = t2['score'];
     final hasMe = m['has_me'] == true;
+    final myDelta = (m['my_rating_change'] as num?)?.toInt();
     final t1Win = completed && (score1 ?? 0) > (score2 ?? 0);
     final t2Win = completed && (score2 ?? 0) > (score1 ?? 0);
 
@@ -374,23 +375,24 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (completed)
-            const Padding(
-              padding: EdgeInsets.fromLTRB(12, 8, 12, 2),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.check_rounded,
-                        color: AppTheme.accent, size: 14),
-                    SizedBox(width: 3),
-                    Text('Завершён',
-                        style: TextStyle(
-                            color: AppTheme.accent,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (hasMe && myDelta != null) ...[
+                    _MatchRatingPill(delta: myDelta),
+                    const SizedBox(width: 8),
                   ],
-                ),
+                  const Icon(Icons.check_rounded,
+                      color: AppTheme.accent, size: 14),
+                  const SizedBox(width: 3),
+                  const Text('Завершён',
+                      style: TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700)),
+                ],
               ),
             )
           else
