@@ -1483,6 +1483,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       return GestureDetector(
         onTap: () => _onRefresh(t.id),
         child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(minHeight: 52),
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: c.withValues(alpha: 0.13),
             borderRadius: BorderRadius.circular(14),
@@ -1869,6 +1872,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       return GestureDetector(
         onTap: () => _onRefresh(t.id),
         child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(minHeight: 52),
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: c.withValues(alpha: 0.13),
             borderRadius: BorderRadius.circular(14),
