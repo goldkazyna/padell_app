@@ -3932,6 +3932,7 @@ class _AdminTournamentDetailScreenState
     final isBali = _matches?.type == 'bali_koc';
     final isTeam = _matches?.type == 'team';
     final isFlex = _matches?.type == 'americano_flex';
+    final isRoundRobin = _matches?.type == 'round_robin';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -3955,9 +3956,9 @@ class _AdminTournamentDetailScreenState
         team2Title: team2Title,
         initialScore1: initial1,
         initialScore2: initial2,
-        // У плей-офф, KOC и Bali ничья запрещена. У team — в плей-офф нельзя,
-        // в групповом этапе можно (ничья считается как одинаковые геймы).
-        requireDifferent: isPlayoff || isKoc || isBali,
+        // У плей-офф, KOC, Bali и Round Robin ничья запрещена. У team — в плей-офф
+        // нельзя, в групповом этапе можно (ничья считается как одинаковые геймы).
+        requireDifferent: isPlayoff || isKoc || isBali || isRoundRobin,
       ),
     );
 
@@ -4013,6 +4014,13 @@ class _AdminTournamentDetailScreenState
             );
       } else if (isFlex) {
         await context.read<AdminService>().saveAmericanoFlexScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+            );
+      } else if (isRoundRobin) {
+        await context.read<AdminService>().saveRoundRobinScore(
               tournamentId,
               matchId,
               team1Score: result.score1,
