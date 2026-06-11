@@ -1478,20 +1478,35 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     }
 
     if (t.blockReason != null) {
+      final bool verifiedBlock = t.verifiedOnly && !t.isRegistered;
+      final Color c = verifiedBlock ? AppTheme.accent : AppTheme.orange;
       return GestureDetector(
         onTap: () => _onRefresh(t.id),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2A2A),
+            color: c.withValues(alpha: 0.13),
             borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: c.withValues(alpha: 0.45)),
           ),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                t.blockReason!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14, fontWeight: FontWeight.w600),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(verifiedBlock ? Icons.verified_user : Icons.info_outline,
+                      color: c, size: 19),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      t.blockReason!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: c, fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -1847,22 +1862,37 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       return _buildSubscribeButton(t);
     }
 
-    // Block reason
+    // Block reason — делаем заметным (иконка + цветная подложка + жирный текст)
     if (t.blockReason != null) {
+      final bool verifiedBlock = t.verifiedOnly && !t.isRegistered;
+      final Color c = verifiedBlock ? AppTheme.accent : AppTheme.orange;
       return GestureDetector(
         onTap: () => _onRefresh(t.id),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2A2A),
+            color: c.withValues(alpha: 0.13),
             borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: c.withValues(alpha: 0.45)),
           ),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                t.blockReason!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14, fontWeight: FontWeight.w600),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(verifiedBlock ? Icons.verified_user : Icons.info_outline,
+                      color: c, size: 19),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      t.blockReason!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: c, fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
