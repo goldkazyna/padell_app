@@ -276,6 +276,7 @@ class AdminService {
     required double maxLevel,
     required int maxParticipants,
     double? price,
+    bool? verifiedOnly,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -286,6 +287,7 @@ class AdminService {
       'max_level': maxLevel,
       'max_participants': maxParticipants,
       'price': price,
+      if (verifiedOnly != null) 'verified_only': verifiedOnly,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(

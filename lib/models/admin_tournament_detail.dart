@@ -16,6 +16,7 @@ class AdminTournamentDetail {
   final int participantsCount;
   final int pendingCount;
   final double? price;
+  final bool verifiedOnly;
   final bool hasPlayoff;
   final bool hasLowerBracket;
   final bool hasBronzeMatch;
@@ -46,6 +47,7 @@ class AdminTournamentDetail {
     required this.participantsCount,
     required this.pendingCount,
     required this.price,
+    this.verifiedOnly = false,
     required this.hasPlayoff,
     required this.hasLowerBracket,
     required this.hasBronzeMatch,
@@ -80,6 +82,7 @@ class AdminTournamentDetail {
       participantsCount: (json['participants_count'] as num?)?.toInt() ?? 0,
       pendingCount: (json['pending_count'] as num?)?.toInt() ?? 0,
       price: (json['price'] as num?)?.toDouble(),
+      verifiedOnly: json['verified_only'] as bool? ?? false,
       isAdminPairing: json['is_admin_pairing'] as bool? ?? false,
       isPersonal: json['is_personal'] as bool? ?? false,
       creatorName: (json['creator'] as Map<String, dynamic>?)?['name'] as String?,

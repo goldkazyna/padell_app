@@ -57,6 +57,7 @@ class _AdminTournamentDetailScreenState
   DateTime? _startDate;
   double _minLevel = 1.0;
   double _maxLevel = 5.0;
+  bool _verifiedOnly = false;
 
   bool _saving = false;
   bool _starting = false;
@@ -131,6 +132,7 @@ class _AdminTournamentDetailScreenState
     _startDate = t.startDate;
     _minLevel = t.minLevel <= 0 ? 1.0 : t.minLevel;
     _maxLevel = t.maxLevel <= 0 ? 5.0 : t.maxLevel;
+    _verifiedOnly = t.verifiedOnly;
   }
 
   // ---------------------------------------------------------------------------
@@ -184,6 +186,7 @@ class _AdminTournamentDetailScreenState
             maxLevel: _maxLevel,
             maxParticipants: maxP,
             price: price,
+            verifiedOnly: _verifiedOnly,
           );
       if (!mounted) return;
       _applyToForm(updated);
@@ -760,6 +763,45 @@ class _AdminTournamentDetailScreenState
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardRaised,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Только для верифицированных',
+                              style: TextStyle(
+                                  color: AppTheme.textPrimary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 2),
+                          Text(
+                            _verifiedOnly
+                                ? 'Заявки только от верифицированных игроков'
+                                : 'Заявки от любых игроков',
+                            style: const TextStyle(
+                                color: AppTheme.textDim, fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Switch(
+                      value: _verifiedOnly,
+                      onChanged: disabled
+                          ? null
+                          : (v) => setState(() => _verifiedOnly = v),
+                      activeColor: AppTheme.accent,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
