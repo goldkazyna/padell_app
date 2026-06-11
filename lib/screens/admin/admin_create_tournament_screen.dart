@@ -41,7 +41,7 @@ class _AdminCreateTournamentScreenState
   final _moderationMinutes = TextEditingController();
   final _roundsCount = TextEditingController(text: '7');
 
-  String _type = 'americano'; // americano / king_of_court / bali_koc / team
+  String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex
   DateTime? _startDate;
   double _minLevel = 1.5;
   double _maxLevel = 4.0;
@@ -587,6 +587,12 @@ class _AdminCreateTournamentScreenState
               title: 'Король корта',
               subtitle: 'Ротация по кортам',
               icon: Icons.emoji_events_outlined,
+            ),
+            card(
+              value: 'round_robin',
+              title: 'Round Robin',
+              subtitle: 'Каждый с каждым, зачёт по победам',
+              icon: Icons.sync_alt_rounded,
             ),
             card(
               value: 'bali_koc',
