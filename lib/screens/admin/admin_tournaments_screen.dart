@@ -321,19 +321,23 @@ class _TournamentCard extends StatelessWidget {
               Row(
                 children: [
                   // Тип
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppTheme.accent.withAlpha(30),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      summary.typeName,
-                      style: const TextStyle(
-                        color: AppTheme.accent,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accent.withAlpha(30),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        summary.typeName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                   ),
