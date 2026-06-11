@@ -264,6 +264,8 @@
   "shareAppPromo": "Padel KZ — скачай приложение и записывайся на турниры!",
   "noSpotsLeftUpper": "МЕСТ НЕТ",
   "tournamentUnrated": "БЕЗ РЕЙТИНГА",
+  "tournamentVerifiedBadge": "ВЕРИФ.",
+  "tournamentVerifiedOnly": "Только для верифицированных",
   "unratedBadge": "Нерейтинговый",
   "dateLabel": "ДАТА",
   "timeLabel": "ВРЕМЯ",

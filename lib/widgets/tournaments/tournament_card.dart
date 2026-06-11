@@ -17,6 +17,7 @@ class TournamentCard extends StatelessWidget {
   final bool isRegistered;
   final bool isFull;
   final bool isRated;
+  final bool verifiedOnly;
   final bool flat;
 
   const TournamentCard({
@@ -34,6 +35,7 @@ class TournamentCard extends StatelessWidget {
     this.isRegistered = false,
     this.isFull = false,
     this.isRated = true,
+    this.verifiedOnly = false,
     this.flat = false,
   });
 
@@ -52,6 +54,7 @@ class TournamentCard extends StatelessWidget {
       isRegistered: t.isRegistered,
       isFull: t.isFull,
       isRated: t.isRated,
+      verifiedOnly: t.verifiedOnly,
       flat: flat,
     );
   }
@@ -183,6 +186,35 @@ class TournamentCard extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
                           ),
+                        ),
+                      ),
+                    ],
+                    if (verifiedOnly) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accent.withAlpha(25),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.verified,
+                                color: AppTheme.accent, size: 11),
+                            const SizedBox(width: 3),
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .tournamentVerifiedBadge,
+                              style: const TextStyle(
+                                color: AppTheme.accent,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

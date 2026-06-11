@@ -281,6 +281,7 @@ class Tournament {
   final String status;
   final String statusName;
   final bool isRated;
+  final bool verifiedOnly; // турнир только для верифицированных игроков
   final String pairingMode; // self | admin (только для type=team)
   final double minLevel;
   final double maxLevel;
@@ -319,6 +320,7 @@ class Tournament {
     required this.status,
     required this.statusName,
     this.isRated = true,
+    this.verifiedOnly = false,
     this.pairingMode = 'self',
     required this.minLevel,
     required this.maxLevel,
@@ -411,6 +413,7 @@ class Tournament {
       status: json['status'] as String,
       statusName: json['status_name'] as String,
       isRated: json['is_rated'] as bool? ?? true,
+      verifiedOnly: json['verified_only'] as bool? ?? false,
       pairingMode: json['pairing_mode'] as String? ?? 'self',
       minLevel: (json['min_level'] as num).toDouble(),
       maxLevel: (json['max_level'] as num).toDouble(),

@@ -213,15 +213,15 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final typeLabel = localizeTournamentType(context, t.type, fallback: t.typeName)
         .toUpperCase();
 
-    return Row(
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
       children: [
         _buildTag(typeLabel, t.typeColor),
-        const SizedBox(width: 8),
         _buildTag(statusText, statusColor),
-        if (!t.isRated) ...[
-          const SizedBox(width: 8),
-          _buildTag(l10n.tournamentUnrated, AppTheme.orange),
-        ],
+        if (!t.isRated) _buildTag(l10n.tournamentUnrated, AppTheme.orange),
+        if (t.verifiedOnly)
+          _buildTag(l10n.tournamentVerifiedOnly, AppTheme.accent),
       ],
     );
   }

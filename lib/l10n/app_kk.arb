@@ -263,6 +263,8 @@
   "shareAppPromo": "Padel KZ — қосымшаны жүктеп алыңыз және турнирлерге тіркеліңіз!",
   "noSpotsLeftUpper": "ОРЫН ЖОҚ",
   "tournamentUnrated": "РЕЙТИНГСІЗ",
+  "tournamentVerifiedBadge": "ВЕРИФ.",
+  "tournamentVerifiedOnly": "Тек верификацияланғандар",
   "unratedBadge": "Рейтингсіз",
   "dateLabel": "КҮНІ",
   "timeLabel": "УАҚЫТЫ",

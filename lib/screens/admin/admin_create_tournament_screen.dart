@@ -47,6 +47,7 @@ class _AdminCreateTournamentScreenState
   double _maxLevel = 4.0;
   String _status = 'open'; // draft / open
   bool _isRated = true; // рейтинговый ли турнир (влияет на рейтинг игроков)
+  bool _verifiedOnly = false; // только для верифицированных игроков
 
   // Какие секции-аккордеоны раскрыты. По умолчанию открыта только «Основное».
   final Set<String> _openSections = {'basic'};
@@ -215,6 +216,7 @@ class _AdminCreateTournamentScreenState
       'price': price,
       'status': _status,
       'is_rated': _isRated,
+      'verified_only': _verifiedOnly,
       'courts': courts,
       'courts_count': _courtsCount,
       'reserve_count': reserve,
@@ -400,6 +402,8 @@ class _AdminCreateTournamentScreenState
               _ratingToggle(),
               const SizedBox(height: 12),
             ],
+            _verifiedToggle(),
+            const SizedBox(height: 12),
             _label('Уровень игроков'),
             _levelSliders(),
             const SizedBox(height: 12),
@@ -1577,6 +1581,45 @@ class _AdminCreateTournamentScreenState
           Switch(
             value: _isRated,
             onChanged: (v) => setState(() => _isRated = v),
+            activeColor: AppTheme.accent,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _verifiedToggle() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Только для верифицированных',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 2),
+                Text(
+                  _verifiedOnly
+                      ? 'Заявки только от верифицированных игроков'
+                      : 'Заявки от любых игроков',
+                  style: const TextStyle(
+                      color: AppTheme.textDim, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _verifiedOnly,
+            onChanged: (v) => setState(() => _verifiedOnly = v),
             activeColor: AppTheme.accent,
           ),
         ],

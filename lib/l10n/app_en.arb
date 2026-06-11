@@ -254,6 +254,8 @@
   "shareAppPromo": "Padel KZ — download the app and register for tournaments!",
   "noSpotsLeftUpper": "NO SPOTS",
   "tournamentUnrated": "UNRATED",
+  "tournamentVerifiedBadge": "VERIFIED",
+  "tournamentVerifiedOnly": "Verified players only",
   "unratedBadge": "Unrated",
   "dateLabel": "DATE",
   "timeLabel": "TIME",
