@@ -29,6 +29,9 @@ void openTournamentLiveByType(
       target = TournamentLiveTeamScreen(tournamentId: tournamentId);
       break;
     case 'king_of_court':
+    case 'round_robin':
+      // Round Robin по структуре live идентичен Король корта (один лидерборд +
+      // раунды), поэтому переиспользуем тот же экран.
       target = TournamentLiveKingOfCourtScreen(
         tournamentId: tournamentId,
         highlightPlayerId: highlightPlayerId,
