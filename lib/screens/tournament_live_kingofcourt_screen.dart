@@ -316,7 +316,22 @@ class _TournamentLiveKingOfCourtScreenState
   }
 
   // ===== Leaderboard =====
+  /// Round Robin переиспользует этот экран, но таблицу показываем по веб-/админ-
+  /// параметрам: вместо РП/%/Очки — З (забито геймов) · ПР (пропущено) · ± (разница).
+  bool get _isRoundRobin => _data?['tournament']?['format'] == 'round_robin';
+
   Widget _buildLeaderboard(List<Map<String, dynamic>> leaderboard) {
+    const hdrStyle = TextStyle(
+        color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700);
+    Widget hdr(String text, double width,
+        {TextAlign align = TextAlign.center}) {
+      return SizedBox(
+        width: width,
+        child: Text(text, textAlign: align, style: hdrStyle),
+      );
+    }
+
+    final isRR = _isRoundRobin;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -324,68 +339,15 @@ class _TournamentLiveKingOfCourtScreenState
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
-            children: const [
-              SizedBox(
-                width: 28,
-                child: Text('#',
-                    style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700)),
-              ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text('ИГРОК',
-                    style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700)),
-              ),
-              SizedBox(
-                width: 28,
-                child: Text('В',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700)),
-              ),
-              SizedBox(
-                width: 28,
-                child: Text('П',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700)),
-              ),
-              SizedBox(
-                width: 36,
-                child: Text('РП',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700)),
-              ),
-              SizedBox(
-                width: 36,
-                child: Text('%',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700)),
-              ),
-              SizedBox(
-                width: 40,
-                child: Text('ОЧКИ',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700)),
-              ),
+            children: [
+              hdr('#', 28, align: TextAlign.left),
+              const SizedBox(width: 8),
+              const Expanded(child: Text('ИГРОК', style: hdrStyle)),
+              hdr('В', 28),
+              hdr('П', 28),
+              hdr(isRR ? 'З' : 'РП', 36),
+              hdr(isRR ? 'ПР' : '%', 36),
+              hdr(isRR ? '±' : 'ОЧКИ', 40, align: TextAlign.right),
             ],
           ),
         ),
@@ -403,6 +365,9 @@ class _TournamentLiveKingOfCourtScreenState
     final pointDiff = (p['point_diff'] as num?)?.toInt() ?? 0;
     final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
     final totalPoints = (p['total_points'] as num?)?.toInt() ?? 0;
+    final pointsFor = (p['points_for'] as num?)?.toInt() ?? 0;
+    final pointsAgainst = (p['points_against'] as num?)?.toInt() ?? 0;
+    final isRR = _isRoundRobin;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
     final avatarUrl = p['avatar'] as String?;
@@ -484,42 +449,82 @@ class _TournamentLiveKingOfCourtScreenState
                 ),
               ),
             ),
-            SizedBox(
-              width: 36,
-              child: Text(
-                diffStr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isMe ? AppTheme.accent : diffColor,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
+            // Round Robin: З · ПР · ±   |   Король корта: РП · % · ОЧКИ
+            if (isRR) ...[
+              SizedBox(
+                width: 36,
+                child: Text(
+                  '$pointsFor',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : AppTheme.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 36,
-              child: Text(
-                '$ballPercent%',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isMe ? AppTheme.accent : AppTheme.textSecondary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
+              SizedBox(
+                width: 36,
+                child: Text(
+                  '$pointsAgainst',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : AppTheme.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 40,
-              child: Text(
-                '$totalPoints',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
+              SizedBox(
+                width: 40,
+                child: Text(
+                  diffStr,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : diffColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
-            ),
+            ] else ...[
+              SizedBox(
+                width: 36,
+                child: Text(
+                  diffStr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : diffColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 36,
+                child: Text(
+                  '$ballPercent%',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : AppTheme.textSecondary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 40,
+                child: Text(
+                  '$totalPoints',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
