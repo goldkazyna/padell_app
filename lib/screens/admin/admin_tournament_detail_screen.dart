@@ -82,6 +82,8 @@ class _AdminTournamentDetailScreenState
   bool _loadingMatches = false;
   String? _matchesError;
   int _selectedGroupIdx = 0;
+  // Round Robin: какие раунды раскрыты (override). По умолчанию раскрыт «идёт».
+  final Map<int, bool> _rrRoundExpanded = {};
 
   @override
   void initState() {
@@ -3614,27 +3616,54 @@ class _AdminTournamentDetailScreenState
   }
 
   Widget _buildRoundBlock(AdminMatchRound round) {
+    // В Round Robin раундов много (целый круг) — сворачиваем завершённые, чтобы
+    // не листать «газету». Активный («идёт») раскрыт по умолчанию. Остальные
+    // типы рендерятся как раньше (всегда раскрыты).
+    final collapsible = _matches?.type == 'round_robin';
+    final expanded = !collapsible
+        ? true
+        : (_rrRoundExpanded[round.id] ?? (round.status == 'in_progress'));
+
+    final header = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text('Раунд ${round.roundNumber}',
+              style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          const SizedBox(width: 8),
+          _roundStatusBadge(round.status),
+          if (collapsible) ...[
+            const Spacer(),
+            Icon(
+              expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+              size: 20,
+              color: AppTheme.textSecondary,
+            ),
+          ],
+        ],
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              children: [
-                Text('Раунд ${round.roundNumber}',
-                    style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700)),
-                const SizedBox(width: 8),
-                _roundStatusBadge(round.status),
-              ],
-            ),
-          ),
-          ...round.matches.map((m) => _buildMatchTile(m)),
-          if (round.byes.isNotEmpty) _buildByesBlock(round.byes),
+          collapsible
+              ? GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => setState(
+                      () => _rrRoundExpanded[round.id] = !expanded),
+                  child: header,
+                )
+              : header,
+          if (expanded) ...[
+            ...round.matches.map((m) => _buildMatchTile(m)),
+            if (round.byes.isNotEmpty) _buildByesBlock(round.byes),
+          ],
         ],
       ),
     );
