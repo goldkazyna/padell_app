@@ -72,7 +72,8 @@ class Club {
 
   factory Club.fromJson(Map<String, dynamic> json) {
     return Club(
-      id: json['id'] as int,
+      // null id у личного турнира (club_id null) — не роняем парсинг.
+      id: json['id'] as int? ?? 0,
       name: json['name'] as String? ?? '',
       address: json['address'] as String?,
       city: json['city'] as String?,
