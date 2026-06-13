@@ -257,7 +257,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
               ),
             ),
-            child: BottomNavigationBar(
+            // Фиксируем масштаб подписей нав-бара: при крупном системном шрифте
+            // длинные подписи («Бронирование») обрезались. Иконки + короткий
+            // текст не должны расти — иначе не влезают.
+            child: MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.0,
+              child: BottomNavigationBar(
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (incomplete && _lockedTabs.contains(index)) {
@@ -303,6 +308,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                   label: AppLocalizations.of(context)!.navProfile,
                 ),
               ],
+            ),
             ),
           ),
         );
