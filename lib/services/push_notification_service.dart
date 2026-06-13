@@ -410,6 +410,14 @@ class PushNotificationService {
         return;
       }
 
+      // Round Robin — генерация раунда → live-экран (переиспользует Король корта)
+      if (subtype == 'round_robin_round_generated') {
+        _navigateWhenReady(
+          () => TournamentLiveKingOfCourtScreen(tournamentId: id),
+        );
+        return;
+      }
+
       // Записали с другом → деталка турнира (где юзер увидит свою pending-заявку)
       if (subtype == 'registered_by_friend') {
         _navigateWhenReady(
