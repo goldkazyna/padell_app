@@ -56,6 +56,10 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
     await showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.card,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -136,6 +140,10 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
     await showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.card,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1057,7 +1065,17 @@ class _FilterSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            ...children,
+            // Список скроллится — кнопки ниже остаются видимыми при любом
+            // размере шрифта / масштабе (раньше контент уезжал за край шита).
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: children,
+                ),
+              ),
+            ),
             if (onApply != null || onReset != null) ...[
               const SizedBox(height: 8),
               Padding(
