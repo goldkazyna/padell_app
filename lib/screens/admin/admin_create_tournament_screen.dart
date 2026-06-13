@@ -64,6 +64,7 @@ class _AdminCreateTournamentScreenState
   // Американо. По умолчанию 2 группы, выходят 2 пары.
   int _teamGroupsCount = 2;
   int _teamsAdvance = 2;
+  bool _teamHasPlayoff = true; // по умолчанию с плей-офф (как было)
   bool _teamHasLowerBracket = false;
   bool _teamHasBronzeMatch = false;
   // self — пары регистрируются сами; admin — игроки записываются по одному,
@@ -252,9 +253,10 @@ class _AdminCreateTournamentScreenState
       body['groups_count'] = _teamGroupsCount;
       body['teams_advance'] = _teamsAdvance;
       body['pairing_mode'] = _pairingMode;
-      body['has_lower_bracket'] = _teamHasLowerBracket;
-      body['has_bronze_match'] = _teamHasBronzeMatch;
-      // has_playoff на бэке будет принудительно true для team — не передаём.
+      body['has_playoff'] = _teamHasPlayoff;
+      // Нижняя сетка / бронза — только при включённом плей-офф.
+      body['has_lower_bracket'] = _teamHasPlayoff && _teamHasLowerBracket;
+      body['has_bronze_match'] = _teamHasPlayoff && _teamHasBronzeMatch;
     }
 
     setState(() {
@@ -786,26 +788,41 @@ class _AdminCreateTournamentScreenState
           ),
         ),
         const Text(
-          'Фиксированные пары играют групповой этап, лучшие выходят в плей-офф (на вылет). Количество указано в парах.',
+          'Фиксированные пары играют групповой этап. Можно добавить плей-офф на вылет или оставить только группы. Количество указано в парах.',
           style: TextStyle(color: AppTheme.textDim, fontSize: 11),
         ),
         const SizedBox(height: 12),
         _label('Количество групп'),
         _teamGroupsSelector(),
         const SizedBox(height: 12),
-        _label('Выходят из группы'),
-        _teamsAdvanceSelector(),
-        const SizedBox(height: 12),
         _checkboxTile(
-          value: _teamHasLowerBracket,
-          label: 'Нижняя сетка (для проигравших в QF)',
-          onChanged: (v) => setState(() => _teamHasLowerBracket = v),
+          value: _teamHasPlayoff,
+          label: 'С плей-офф (на вылет после групп)',
+          onChanged: (v) => setState(() => _teamHasPlayoff = v),
         ),
-        _checkboxTile(
-          value: _teamHasBronzeMatch,
-          label: 'Матч за 3-е место',
-          onChanged: (v) => setState(() => _teamHasBronzeMatch = v),
-        ),
+        if (_teamHasPlayoff) ...[
+          const SizedBox(height: 12),
+          _label('Выходят из группы'),
+          _teamsAdvanceSelector(),
+          const SizedBox(height: 12),
+          _checkboxTile(
+            value: _teamHasLowerBracket,
+            label: 'Нижняя сетка (для проигравших в QF)',
+            onChanged: (v) => setState(() => _teamHasLowerBracket = v),
+          ),
+          _checkboxTile(
+            value: _teamHasBronzeMatch,
+            label: 'Матч за 3-е место',
+            onChanged: (v) => setState(() => _teamHasBronzeMatch = v),
+          ),
+        ] else
+          const Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Text(
+              'Без плей-офф: турнир завершится после группового этапа, итоговое место — по таблице групп.',
+              style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+            ),
+          ),
         const Divider(color: AppTheme.border, height: 28),
       ]);
     }
