@@ -226,6 +226,58 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     showProfileIncompleteDialog(context);
   }
 
+  /// Один таб кастомного нав-бара. Подпись в FittedBox(scaleDown) — авто-
+  /// ужимается под ширину таба, поэтому влезает целиком при любом системном
+  /// шрифте / масштабе экрана (Material BottomNavigationBar её обрезал).
+  Widget _navItem(
+      int idx, IconData inactive, IconData active, String label, bool incomplete) {
+    final selected = _currentIndex == idx;
+    final locked = incomplete && _lockedTabs.contains(idx);
+    final color = selected ? AppTheme.accent : AppTheme.textSecondary;
+
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          if (locked) {
+            _showProfileIncompleteDialog();
+            return;
+          }
+          setState(() => _currentIndex = idx);
+          mainTabNotifier.value = idx;
+          // Проверка версии при переключении вкладки (throttle внутри).
+          _checkForUpdate();
+        },
+        child: Opacity(
+          opacity: locked ? 0.35 : 1.0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(selected ? active : inactive, color: color, size: 24),
+                const SizedBox(height: 4),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screens = [
@@ -240,14 +292,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       builder: (_, home, __) {
         final incomplete = home.user?.isProfileIncomplete ?? false;
 
-        Widget icon(IconData data, int idx) {
-          final iconWidget = Icon(data);
-          if (incomplete && _lockedTabs.contains(idx)) {
-            return Opacity(opacity: 0.35, child: iconWidget);
-          }
-          return iconWidget;
-        }
-
         return Scaffold(
           body: screens[_currentIndex],
           bottomNavigationBar: Container(
@@ -257,58 +301,32 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
               ),
             ),
-            // Фиксируем масштаб подписей нав-бара: при крупном системном шрифте
-            // длинные подписи («Бронирование») обрезались. Иконки + короткий
-            // текст не должны расти — иначе не влезают.
+            // Кастомный нав-бар: подпись авто-ужимается (FittedBox), поэтому
+            // всегда влезает целиком — даже при крупном системном шрифте/масштабе.
             child: MediaQuery.withClampedTextScaling(
               maxScaleFactor: 1.0,
-              child: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                if (incomplete && _lockedTabs.contains(index)) {
-                  _showProfileIncompleteDialog();
-                  return;
-                }
-                setState(() => _currentIndex = index);
-                mainTabNotifier.value = index;
-                // Проверяем версию при каждом переключении вкладки
-                // (throttle 30s внутри _checkForUpdate)
-                _checkForUpdate();
-              },
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: AppTheme.card,
-              selectedItemColor: AppTheme.accent,
-              unselectedItemColor: AppTheme.textSecondary,
-              selectedFontSize: 12,
-              unselectedFontSize: 12,
-              items: [
-                BottomNavigationBarItem(
-                  icon: icon(Icons.home_outlined, 0),
-                  activeIcon: icon(Icons.home, 0),
-                  label: AppLocalizations.of(context)!.navHome,
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  height: 58,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _navItem(0, Icons.home_outlined, Icons.home,
+                          AppLocalizations.of(context)!.navHome, incomplete),
+                      _navItem(1, Icons.emoji_events_outlined, Icons.emoji_events,
+                          AppLocalizations.of(context)!.navTournaments, incomplete),
+                      _navItem(2, Icons.calendar_month_outlined,
+                          Icons.calendar_month,
+                          AppLocalizations.of(context)!.navBooking, incomplete),
+                      _navItem(3, Icons.leaderboard_outlined, Icons.leaderboard,
+                          AppLocalizations.of(context)!.navRating, incomplete),
+                      _navItem(4, Icons.person_outline, Icons.person,
+                          AppLocalizations.of(context)!.navProfile, incomplete),
+                    ],
+                  ),
                 ),
-                BottomNavigationBarItem(
-                  icon: icon(Icons.emoji_events_outlined, 1),
-                  activeIcon: icon(Icons.emoji_events, 1),
-                  label: AppLocalizations.of(context)!.navTournaments,
-                ),
-                BottomNavigationBarItem(
-                  icon: icon(Icons.calendar_month_outlined, 2),
-                  activeIcon: icon(Icons.calendar_month, 2),
-                  label: AppLocalizations.of(context)!.navBooking,
-                ),
-                BottomNavigationBarItem(
-                  icon: icon(Icons.leaderboard_outlined, 3),
-                  activeIcon: icon(Icons.leaderboard, 3),
-                  label: AppLocalizations.of(context)!.navRating,
-                ),
-                BottomNavigationBarItem(
-                  icon: icon(Icons.person_outline, 4),
-                  activeIcon: icon(Icons.person, 4),
-                  label: AppLocalizations.of(context)!.navProfile,
-                ),
-              ],
-            ),
+              ),
             ),
           ),
         );
