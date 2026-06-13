@@ -704,6 +704,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tournamentUnrated => 'UNRATED';
 
   @override
+  String get tournamentVerifiedBadge => 'VERIFIED';
+
+  @override
+  String get tournamentVerifiedOnly => 'Verified players only';
+
+  @override
   String get unratedBadge => 'Unrated';
 
   @override
@@ -1892,4 +1898,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openInstagram => 'Open Instagram';
+
+  @override
+  String get tournamentInfoTitle => 'About tournaments';
+
+  @override
+  String get tournamentInfoMenuSubtitle => 'Rules and formats';
+
+  @override
+  String get tournamentInfoHeader =>
+      'The formats and how each is played. Level and final place are counted differently in each.';
+
+  @override
+  String get tournamentInfoAmericanoName => 'Americano';
+
+  @override
+  String get tournamentInfoAmericanoBody =>
+      'The most popular format. Partners change every round — you play with different people each time. Scoring is individual: your points are the games you win. The player with the most games across the tournament wins. Your partner changes each round, so the result is all about you.';
+
+  @override
+  String get tournamentInfoMexicanoName => 'Mexicano';
+
+  @override
+  String get tournamentInfoMexicanoBody =>
+      'Like Americano, but each round\'s pairings are based on the standings: strong play with strong, weak with weak (1st with 4th, 2nd with 3rd), so matches stay balanced. Individual scoring by games won.';
+
+  @override
+  String get tournamentInfoRoundRobinName => 'Round Robin';
+
+  @override
+  String get tournamentInfoRoundRobinBody =>
+      'Everyone plays against everyone. What matters is the number of matches won (not games). Ties are broken by game difference, then head-to-head. Over a full circle (7 rounds for 8 players) you partner each player once and face each twice. Partners change every round.';
+
+  @override
+  String get tournamentInfoKingOfCourtName => 'King of the Court';
+
+  @override
+  String get tournamentInfoKingOfCourtBody =>
+      'Courts are levels. Winners move up a court, losers move down. The goal is to reach court one and hold it. Pairs are reshuffled every round; scoring is by points and wins, and place comes from the leaderboard.';
+
+  @override
+  String get tournamentInfoBaliKocName => 'King of the Court (Bali Format)';
+
+  @override
+  String get tournamentInfoBaliKocBody =>
+      'A King of the Court variant with fixed pairs: you play with the same partner the whole tournament. Pairs move up and down the courts. Points depend on the court, and the final table ranks pairs.';
+
+  @override
+  String get tournamentInfoTeamName => 'Groups + Playoff';
+
+  @override
+  String get tournamentInfoTeamBody =>
+      'Team format: fixed pairs play a group stage, the best advance to a knockout playoff. Classic bracket — winners advance, losers are out. There can be a lower bracket for losers and a third-place match.';
+
+  @override
+  String get tournamentInfoFlexName => 'Americano Flex';
+
+  @override
+  String get tournamentInfoFlexBody =>
+      'Americano for any number of players with a queue: while some play, others rest and join in later rounds. Handy when the player count isn\'t a multiple of four. Individual scoring; place is by average per match.';
 }

@@ -8,6 +8,7 @@ import '../../screens/notification_settings_screen.dart';
 import '../../screens/my_bookings_screen.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../screens/settings_screen.dart';
+import '../../screens/tournament_types_info_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -74,6 +75,24 @@ class ProfileMenu extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+            isLast: true,
+          ),
+        ]),
+
+        // === ИНФОРМАЦИЯ ===
+        const SizedBox(height: 16),
+        const _SectionLabel('ИНФОРМАЦИЯ'),
+        _Card(children: [
+          _SettingsRow(
+            icon: Icons.info_outline,
+            tint: AppTheme.accent,
+            title: l.tournamentInfoTitle,
+            subtitle: l.tournamentInfoMenuSubtitle,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const TournamentTypesInfoScreen()),
             ),
             isLast: true,
           ),

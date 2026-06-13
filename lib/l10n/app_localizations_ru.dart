@@ -706,6 +706,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tournamentUnrated => 'БЕЗ РЕЙТИНГА';
 
   @override
+  String get tournamentVerifiedBadge => 'ВЕРИФ.';
+
+  @override
+  String get tournamentVerifiedOnly => 'Только для верифицированных';
+
+  @override
   String get unratedBadge => 'Нерейтинговый';
 
   @override
@@ -1895,4 +1901,63 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get openInstagram => 'Открыть инстаграм';
+
+  @override
+  String get tournamentInfoTitle => 'О турнирах';
+
+  @override
+  String get tournamentInfoMenuSubtitle => 'Правила и форматы';
+
+  @override
+  String get tournamentInfoHeader =>
+      'Какие бывают форматы и как в них играют. Уровень и место в каждом считаются по-своему.';
+
+  @override
+  String get tournamentInfoAmericanoName => 'Американо';
+
+  @override
+  String get tournamentInfoAmericanoBody =>
+      'Самый популярный формат. Каждый раунд партнёры меняются — вы играете с разными людьми. Зачёт индивидуальный: очки — это набранные геймы. Побеждает тот, кто за турнир набрал больше всего геймов. Партнёр у вас каждый раунд новый, поэтому результат зависит только от вас.';
+
+  @override
+  String get tournamentInfoMexicanoName => 'Мексикано';
+
+  @override
+  String get tournamentInfoMexicanoBody =>
+      'Как Американо, но пары на каждый раунд подбираются по таблице: сильные играют с сильными, слабые со слабыми (1-й с 4-м, 2-й с 3-м). Так матчи получаются ровными и интересными. Зачёт индивидуальный по набранным геймам.';
+
+  @override
+  String get tournamentInfoRoundRobinName => 'Round Robin';
+
+  @override
+  String get tournamentInfoRoundRobinBody =>
+      'Каждый играет с каждым. Главное — число выигранных матчей (а не геймов). При равенстве побед смотрят разницу геймов, затем личную встречу. За полный круг (для 8 игроков — 7 раундов) вы сыграете в паре с каждым по разу и против каждого по два раза. Партнёры меняются каждый раунд.';
+
+  @override
+  String get tournamentInfoKingOfCourtName => 'Король корта';
+
+  @override
+  String get tournamentInfoKingOfCourtBody =>
+      'Корты — это уровни. Победители поднимаются на корт выше, проигравшие опускаются. Цель — добраться до первого корта и удержаться на нём. Пары перемешиваются каждый раунд, зачёт по очкам и победам, место — по таблице лидеров.';
+
+  @override
+  String get tournamentInfoBaliKocName => 'Король Корта (Bali Format)';
+
+  @override
+  String get tournamentInfoBaliKocBody =>
+      'Версия «Короля корта» с фиксированными парами: весь турнир вы играете с одним партнёром. Пары двигаются по кортам вверх и вниз. Очки начисляются в зависимости от корта, итоговая таблица — по парам.';
+
+  @override
+  String get tournamentInfoTeamName => 'Групповой + Плей-офф';
+
+  @override
+  String get tournamentInfoTeamBody =>
+      'Командный формат: фиксированные пары играют групповой этап, лучшие выходят в плей-офф на вылет. Классическая сетка — кто побеждает, проходит дальше, проигравшие выбывают. Бывают нижняя сетка для проигравших и матч за 3-е место.';
+
+  @override
+  String get tournamentInfoFlexName => 'Americano Flex';
+
+  @override
+  String get tournamentInfoFlexBody =>
+      'Американо для любого числа игроков с очередью: пока одни играют, другие отдыхают и заходят в следующих раундах. Удобно, когда игроков не кратно четырём. Зачёт индивидуальный, место — по среднему за матч.';
 }

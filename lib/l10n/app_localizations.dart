@@ -1378,6 +1378,18 @@ abstract class AppLocalizations {
   /// **'БЕЗ РЕЙТИНГА'**
   String get tournamentUnrated;
 
+  /// No description provided for @tournamentVerifiedBadge.
+  ///
+  /// In ru, this message translates to:
+  /// **'ВЕРИФ.'**
+  String get tournamentVerifiedBadge;
+
+  /// No description provided for @tournamentVerifiedOnly.
+  ///
+  /// In ru, this message translates to:
+  /// **'Только для верифицированных'**
+  String get tournamentVerifiedOnly;
+
   /// No description provided for @unratedBadge.
   ///
   /// In ru, this message translates to:
@@ -3585,6 +3597,108 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Открыть инстаграм'**
   String get openInstagram;
+
+  /// No description provided for @tournamentInfoTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'О турнирах'**
+  String get tournamentInfoTitle;
+
+  /// No description provided for @tournamentInfoMenuSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Правила и форматы'**
+  String get tournamentInfoMenuSubtitle;
+
+  /// No description provided for @tournamentInfoHeader.
+  ///
+  /// In ru, this message translates to:
+  /// **'Какие бывают форматы и как в них играют. Уровень и место в каждом считаются по-своему.'**
+  String get tournamentInfoHeader;
+
+  /// No description provided for @tournamentInfoAmericanoName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Американо'**
+  String get tournamentInfoAmericanoName;
+
+  /// No description provided for @tournamentInfoAmericanoBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Самый популярный формат. Каждый раунд партнёры меняются — вы играете с разными людьми. Зачёт индивидуальный: очки — это набранные геймы. Побеждает тот, кто за турнир набрал больше всего геймов. Партнёр у вас каждый раунд новый, поэтому результат зависит только от вас.'**
+  String get tournamentInfoAmericanoBody;
+
+  /// No description provided for @tournamentInfoMexicanoName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мексикано'**
+  String get tournamentInfoMexicanoName;
+
+  /// No description provided for @tournamentInfoMexicanoBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Как Американо, но пары на каждый раунд подбираются по таблице: сильные играют с сильными, слабые со слабыми (1-й с 4-м, 2-й с 3-м). Так матчи получаются ровными и интересными. Зачёт индивидуальный по набранным геймам.'**
+  String get tournamentInfoMexicanoBody;
+
+  /// No description provided for @tournamentInfoRoundRobinName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Round Robin'**
+  String get tournamentInfoRoundRobinName;
+
+  /// No description provided for @tournamentInfoRoundRobinBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Каждый играет с каждым. Главное — число выигранных матчей (а не геймов). При равенстве побед смотрят разницу геймов, затем личную встречу. За полный круг (для 8 игроков — 7 раундов) вы сыграете в паре с каждым по разу и против каждого по два раза. Партнёры меняются каждый раунд.'**
+  String get tournamentInfoRoundRobinBody;
+
+  /// No description provided for @tournamentInfoKingOfCourtName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Король корта'**
+  String get tournamentInfoKingOfCourtName;
+
+  /// No description provided for @tournamentInfoKingOfCourtBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Корты — это уровни. Победители поднимаются на корт выше, проигравшие опускаются. Цель — добраться до первого корта и удержаться на нём. Пары перемешиваются каждый раунд, зачёт по очкам и победам, место — по таблице лидеров.'**
+  String get tournamentInfoKingOfCourtBody;
+
+  /// No description provided for @tournamentInfoBaliKocName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Король Корта (Bali Format)'**
+  String get tournamentInfoBaliKocName;
+
+  /// No description provided for @tournamentInfoBaliKocBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Версия «Короля корта» с фиксированными парами: весь турнир вы играете с одним партнёром. Пары двигаются по кортам вверх и вниз. Очки начисляются в зависимости от корта, итоговая таблица — по парам.'**
+  String get tournamentInfoBaliKocBody;
+
+  /// No description provided for @tournamentInfoTeamName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Групповой + Плей-офф'**
+  String get tournamentInfoTeamName;
+
+  /// No description provided for @tournamentInfoTeamBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Командный формат: фиксированные пары играют групповой этап, лучшие выходят в плей-офф на вылет. Классическая сетка — кто побеждает, проходит дальше, проигравшие выбывают. Бывают нижняя сетка для проигравших и матч за 3-е место.'**
+  String get tournamentInfoTeamBody;
+
+  /// No description provided for @tournamentInfoFlexName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Americano Flex'**
+  String get tournamentInfoFlexName;
+
+  /// No description provided for @tournamentInfoFlexBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Американо для любого числа игроков с очередью: пока одни играют, другие отдыхают и заходят в следующих раундах. Удобно, когда игроков не кратно четырём. Зачёт индивидуальный, место — по среднему за матч.'**
+  String get tournamentInfoFlexBody;
 }
 
 class _AppLocalizationsDelegate
