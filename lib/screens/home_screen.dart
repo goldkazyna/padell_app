@@ -262,6 +262,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       } else if (isLive && t.type == 'king_of_court') {
                         target =
                             TournamentLiveKingOfCourtScreen(tournamentId: t.id);
+                      } else if (isLive && t.type == 'round_robin') {
+                        // RR переиспользует live-экран Король корта (та же структура)
+                        target =
+                            TournamentLiveKingOfCourtScreen(tournamentId: t.id);
                       } else if (isLive && t.type == 'bali_koc') {
                         target =
                             TournamentLiveBaliKocScreen(tournamentId: t.id);
