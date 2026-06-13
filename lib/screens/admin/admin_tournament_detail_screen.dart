@@ -3172,7 +3172,9 @@ class _AdminTournamentDetailScreenState
           if (g.leaderboard.isNotEmpty) ...[
             _matches?.type == 'americano_flex'
                 ? _buildFlexLeaderboard(g.leaderboard)
-                : _buildLeaderboard(g.leaderboard),
+                : (_matches?.type == 'round_robin'
+                    ? _buildRoundRobinLeaderboard(g.leaderboard)
+                    : _buildLeaderboard(g.leaderboard)),
             const SizedBox(height: 12),
           ],
           ...g.rounds.map(_buildRoundBlock),
@@ -3447,6 +3449,161 @@ class _AdminTournamentDetailScreenState
           Text('${p.totalPoints}',
               style: const TextStyle(
                   color: Color(0xFF22C55E),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800)),
+          padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
+          alignment: Alignment.centerRight,
+        ),
+      ],
+    );
+  }
+
+  // Таблица Round Robin — колонки как в вебе: # · Игрок · В · П · З · ПР · ±
+  // (З = выигранные геймы, ПР = пропущенные, ± = разница). Без % и «Очков».
+  // Дизайн (карточка, аватар, цвета мест) — как у обычной таблицы.
+  Widget _buildRoundRobinLeaderboard(List<AdminLeaderboardRow> rows) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Table(
+        columnWidths: const {
+          0: IntrinsicColumnWidth(), // #
+          1: IntrinsicColumnWidth(), // avatar
+          2: FlexColumnWidth(),      // name
+          3: IntrinsicColumnWidth(), // В
+          4: IntrinsicColumnWidth(), // П
+          5: IntrinsicColumnWidth(), // З
+          6: IntrinsicColumnWidth(), // ПР
+          7: IntrinsicColumnWidth(), // ±
+        },
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: [
+          _roundRobinHeaderRow(),
+          for (final p in rows) _roundRobinRow(p),
+        ],
+      ),
+    );
+  }
+
+  TableRow _roundRobinHeaderRow() {
+    const hdrStyle = TextStyle(
+      color: AppTheme.textSecondary,
+      fontSize: 10,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0.3,
+    );
+    Widget hdr(String text,
+        {AlignmentGeometry alignment = Alignment.center,
+        EdgeInsets? padding}) {
+      return Container(
+        padding: padding ??
+            const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        alignment: alignment,
+        child: Text(text,
+            style: hdrStyle,
+            textAlign: alignment == Alignment.centerLeft
+                ? TextAlign.left
+                : (alignment == Alignment.centerRight
+                    ? TextAlign.right
+                    : TextAlign.center)),
+      );
+    }
+
+    return TableRow(
+      children: [
+        hdr('#',
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(2, 8, 6, 8)),
+        const SizedBox(),
+        hdr('ИГРОК',
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
+        hdr('В'),
+        hdr('П'),
+        hdr('З'),
+        hdr('ПР'),
+        hdr('±',
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
+      ],
+    );
+  }
+
+  TableRow _roundRobinRow(AdminLeaderboardRow p) {
+    final posColor = switch (p.position) {
+      1 => const Color(0xFFFACC15),
+      2 => const Color(0xFF94A3B8),
+      3 => const Color(0xFFF97316),
+      _ => const Color(0xFF52525B),
+    };
+
+    Widget cell(Widget child,
+        {EdgeInsets? padding,
+        AlignmentGeometry alignment = Alignment.center}) {
+      return Container(
+        padding: padding ??
+            const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        alignment: alignment,
+        child: child,
+      );
+    }
+
+    final diff = p.pointDiff;
+    final diffText = diff > 0 ? '+$diff' : '$diff';
+    final diffColor = diff > 0
+        ? const Color(0xFF22C55E)
+        : (diff < 0 ? const Color(0xFFEF4444) : AppTheme.textSecondary);
+
+    const statSecondary = TextStyle(
+        color: AppTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600);
+
+    return TableRow(
+      children: [
+        cell(
+          Text('${p.position}',
+              style: TextStyle(
+                  color: posColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          padding: const EdgeInsets.fromLTRB(2, 10, 6, 10),
+          alignment: Alignment.centerLeft,
+        ),
+        cell(
+          _AdminLeaderAvatar(url: p.avatarUrl, name: p.name, size: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        ),
+        cell(
+          Text(p.name,
+              softWrap: true,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2)),
+          padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
+          alignment: Alignment.centerLeft,
+        ),
+        cell(Text('${p.wins}',
+            style: const TextStyle(
+                color: Color(0xFF22C55E),
+                fontSize: 13,
+                fontWeight: FontWeight.w800))),
+        cell(Text('${p.losses}',
+            style: const TextStyle(
+                color: Color(0xFFEF4444),
+                fontSize: 12,
+                fontWeight: FontWeight.w700))),
+        cell(Text('${p.pointsFor}', style: statSecondary)),
+        cell(Text('${p.pointsAgainst}', style: statSecondary)),
+        cell(
+          Text(diffText,
+              style: TextStyle(
+                  color: diffColor,
                   fontSize: 13,
                   fontWeight: FontWeight.w800)),
           padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
