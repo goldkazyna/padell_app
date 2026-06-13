@@ -250,6 +250,8 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                   builder: (_) {
                     switch (tournament.type) {
                       case 'king_of_court':
+                      case 'round_robin':
+                        // RR переиспользует live-экран Король корта
                         return TournamentLiveKingOfCourtScreen(
                           tournamentId: tournament.id,
                           highlightPlayerId: widget.playerId,
