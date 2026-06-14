@@ -39,6 +39,7 @@ class Club {
   final bool comingSoon;
   final int openTournamentsCount;
   final bool onlinePaymentEnabled;
+  final bool allowBookingWithoutPayment;
   final String? offerAgreementUrl;
   final String? privacyPolicyUrl;
   final String? goodsDescriptionUrl;
@@ -63,6 +64,7 @@ class Club {
     this.comingSoon = false,
     this.openTournamentsCount = 0,
     this.onlinePaymentEnabled = false,
+    this.allowBookingWithoutPayment = true,
     this.offerAgreementUrl,
     this.privacyPolicyUrl,
     this.goodsDescriptionUrl,
@@ -90,6 +92,8 @@ class Club {
       comingSoon: json['coming_soon'] as bool? ?? false,
       openTournamentsCount: json['open_tournaments_count'] as int? ?? 0,
       onlinePaymentEnabled: json['online_payment_enabled'] as bool? ?? false,
+      allowBookingWithoutPayment:
+          json['allow_booking_without_payment'] as bool? ?? true,
       offerAgreementUrl: json['offer_agreement_url'] as String?,
       privacyPolicyUrl: json['privacy_policy_url'] as String?,
       goodsDescriptionUrl: json['goods_description_url'] as String?,
@@ -124,6 +128,7 @@ class Club {
     comingSoon: comingSoon,
     openTournamentsCount: openTournamentsCount ?? this.openTournamentsCount,
     onlinePaymentEnabled: onlinePaymentEnabled,
+    allowBookingWithoutPayment: allowBookingWithoutPayment,
     offerAgreementUrl: offerAgreementUrl,
     privacyPolicyUrl: privacyPolicyUrl,
     goodsDescriptionUrl: goodsDescriptionUrl,

@@ -756,6 +756,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
               ),
             ),
           ),
+          if (widget.club.allowBookingWithoutPayment) ...[
           const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
@@ -786,6 +787,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
               ),
             ),
           ),
+          ],
         ],
       );
     }
