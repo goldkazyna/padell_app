@@ -1960,4 +1960,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get tournamentInfoFlexBody =>
       'Американо для любого числа игроков с очередью: пока одни играют, другие отдыхают и заходят в следующих раундах. Удобно, когда игроков не кратно четырём. Зачёт индивидуальный, место — по среднему за матч.';
+
+  @override
+  String get filterDateCustom => 'Выбрать даты';
 }

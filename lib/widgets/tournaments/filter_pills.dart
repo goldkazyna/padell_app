@@ -7,6 +7,8 @@ class TournamentsFilter {
   final bool onlyMyLevel;
   final Set<String> formats;
   final String? dateFilter; // 'today' | 'tomorrow' | 'week' | null
+  final DateTime? dateFrom; // свой диапазон (начало), взаимоисключим с dateFilter
+  final DateTime? dateTo; // свой диапазон (конец)
   final Set<int> clubIds;
   final bool onlyCommunity;
 
@@ -14,6 +16,8 @@ class TournamentsFilter {
     this.onlyMyLevel = false,
     this.formats = const {},
     this.dateFilter,
+    this.dateFrom,
+    this.dateTo,
     this.clubIds = const {},
     this.onlyCommunity = false,
   });
@@ -22,13 +26,18 @@ class TournamentsFilter {
       !onlyMyLevel &&
       formats.isEmpty &&
       dateFilter == null &&
+      dateFrom == null &&
       clubIds.isEmpty &&
       !onlyCommunity;
+
+  bool get hasDateRange => dateFrom != null && dateTo != null;
 
   TournamentsFilter copyWith({
     bool? onlyMyLevel,
     Set<String>? formats,
     Object? dateFilter = _unset,
+    Object? dateFrom = _unset,
+    Object? dateTo = _unset,
     Set<int>? clubIds,
     bool? onlyCommunity,
   }) {
@@ -37,6 +46,8 @@ class TournamentsFilter {
       formats: formats ?? this.formats,
       dateFilter:
           dateFilter == _unset ? this.dateFilter : dateFilter as String?,
+      dateFrom: dateFrom == _unset ? this.dateFrom : dateFrom as DateTime?,
+      dateTo: dateTo == _unset ? this.dateTo : dateTo as DateTime?,
       clubIds: clubIds ?? this.clubIds,
       onlyCommunity: onlyCommunity ?? this.onlyCommunity,
     );
@@ -96,10 +107,12 @@ class FilterPills extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           _pill(
-            filter.dateFilter == null
-                ? l.filterDate
-                : _dateLabel(l, filter.dateFilter!),
-            active: filter.dateFilter != null,
+            filter.hasDateRange
+                ? _rangeLabel(filter.dateFrom!, filter.dateTo!)
+                : (filter.dateFilter == null
+                    ? l.filterDate
+                    : _dateLabel(l, filter.dateFilter!)),
+            active: filter.dateFilter != null || filter.hasDateRange,
             onTap: onDateTap,
           ),
           const SizedBox(width: 6),
@@ -143,6 +156,12 @@ class FilterPills extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _rangeLabel(DateTime from, DateTime to) {
+    String f(DateTime d) =>
+        '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}';
+    return '${f(from)} – ${f(to)}';
   }
 
   String _dateLabel(AppLocalizations l, String key) {

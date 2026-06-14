@@ -106,6 +106,8 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
       _DateOption('tomorrow', l.filterDateTomorrow),
       _DateOption('week', l.dateThisWeek),
     ];
+    String fmt(DateTime d) =>
+        '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
     await showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.card,
@@ -114,19 +116,64 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
       ),
       builder: (ctx) => _FilterSheet(
         title: l.filterDate,
-        children: options.map((o) {
-          final selected = _filter.dateFilter == o.value;
-          return _RadioRow(
-            label: o.label,
-            selected: selected,
-            onTap: () {
-              setState(() => _filter = _filter.copyWith(dateFilter: o.value));
+        children: [
+          ...options.map((o) {
+            final selected = !_filter.hasDateRange && _filter.dateFilter == o.value;
+            return _RadioRow(
+              label: o.label,
+              selected: selected,
+              onTap: () {
+                setState(() => _filter = _filter.copyWith(
+                    dateFilter: o.value, dateFrom: null, dateTo: null));
+                Navigator.pop(ctx);
+              },
+            );
+          }),
+          // Свой диапазон дат — открывает календарь-пикер.
+          _RadioRow(
+            label: _filter.hasDateRange
+                ? '${fmt(_filter.dateFrom!)} – ${fmt(_filter.dateTo!)}'
+                : l.filterDateCustom,
+            selected: _filter.hasDateRange,
+            onTap: () async {
               Navigator.pop(ctx);
+              await _pickDateRange();
             },
-          );
-        }).toList(),
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _pickDateRange() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: 365)),
+      initialDateRange: _filter.hasDateRange
+          ? DateTimeRange(start: _filter.dateFrom!, end: _filter.dateTo!)
+          : null,
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.dark(
+            primary: AppTheme.accent,
+            surface: AppTheme.card,
+            onSurface: AppTheme.textPrimary,
+          ),
+          dialogTheme: const DialogThemeData(backgroundColor: AppTheme.background),
+        ),
+        child: child!,
+      ),
+    );
+    if (range != null && mounted) {
+      setState(() => _filter = _filter.copyWith(
+            dateFrom: DateTime(range.start.year, range.start.month, range.start.day),
+            dateTo: DateTime(range.end.year, range.end.month, range.end.day),
+            dateFilter: null,
+          ));
+    }
   }
 
   Future<void> _openClubFilter(List<Tournament> allTournaments) async {
@@ -338,6 +385,15 @@ List<Tournament> _applyFilter(
         }).toList();
         break;
     }
+  }
+  // Свой диапазон дат (от-до, включительно).
+  if (filter.hasDateRange) {
+    final from = filter.dateFrom!;
+    final to = filter.dateTo!;
+    list = list.where((t) {
+      final d = DateTime(t.datetime.year, t.datetime.month, t.datetime.day);
+      return !d.isBefore(from) && !d.isAfter(to);
+    }).toList();
   }
   if (filter.clubIds.isNotEmpty) {
     list = list.where((t) => filter.clubIds.contains(t.club.id)).toList();

@@ -696,5 +696,6 @@
   "tournamentInfoTeamName": "Groups + Playoff",
   "tournamentInfoTeamBody": "Team format: fixed pairs play a group stage, the best advance to a knockout playoff. Classic bracket — winners advance, losers are out. There can be a lower bracket for losers and a third-place match.",
   "tournamentInfoFlexName": "Americano Flex",
-  "tournamentInfoFlexBody": "Americano for any number of players with a queue: while some play, others rest and join in later rounds. Handy when the player count isn't a multiple of four. Individual scoring; place is by average per match."
+  "tournamentInfoFlexBody": "Americano for any number of players with a queue: while some play, others rest and join in later rounds. Handy when the player count isn't a multiple of four. Individual scoring; place is by average per match.",
+  "filterDateCustom": "Pick dates"
 }

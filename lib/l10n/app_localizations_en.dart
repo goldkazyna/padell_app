@@ -1957,4 +1957,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tournamentInfoFlexBody =>
       'Americano for any number of players with a queue: while some play, others rest and join in later rounds. Handy when the player count isn\'t a multiple of four. Individual scoring; place is by average per match.';
+
+  @override
+  String get filterDateCustom => 'Pick dates';
 }

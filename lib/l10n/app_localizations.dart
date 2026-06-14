@@ -3699,6 +3699,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Американо для любого числа игроков с очередью: пока одни играют, другие отдыхают и заходят в следующих раундах. Удобно, когда игроков не кратно четырём. Зачёт индивидуальный, место — по среднему за матч.'**
   String get tournamentInfoFlexBody;
+
+  /// No description provided for @filterDateCustom.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрать даты'**
+  String get filterDateCustom;
 }
 
 class _AppLocalizationsDelegate
