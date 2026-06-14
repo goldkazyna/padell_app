@@ -137,6 +137,17 @@ class CourtProvider extends ChangeNotifier {
     }
   }
 
+  /// Создать онлайн-платёж (Plexy) для брони. Возвращает {success, payment_url}.
+  Future<Map<String, dynamic>> createPayment(int bookingId) async {
+    try {
+      return await _courtService.createPayment(bookingId);
+    } on ApiException catch (e) {
+      return {'success': false, 'message': e.message};
+    } catch (e) {
+      return {'success': false, 'message': 'Не удалось создать платёж'};
+    }
+  }
+
   Future<void> loadMyBookings() async {
     _isBookingsLoading = true;
     notifyListeners();

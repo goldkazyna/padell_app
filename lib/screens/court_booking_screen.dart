@@ -826,12 +826,80 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  void _payOnline() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.onlinePaymentComingSoon),
-      ),
+  Future<void> _payOnline() async {
+    setState(() => _isBooking = true);
+    final provider = context.read<CourtProvider>();
+
+    // 1. Создаём бронь (та же логика, что при «Записаться без оплаты»).
+    final result = await provider.book(
+      clubId: widget.club.id,
+      courtId: widget.courtId,
+      date: widget.date,
+      startTime: widget.startTime,
+      slots: _selectedSlots,
+      clientName: _nameController.text.isNotEmpty ? _nameController.text : null,
+      clientPhone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+      coachId: _selectedCoachId,
+      comment: _commentController.text.isNotEmpty ? _commentController.text : null,
+      needsCoach: _needsCoach && _selectedCoachId == null,
     );
+
+    if (!mounted) return;
+    if (result['success'] != true) {
+      setState(() => _isBooking = false);
+      showAppAlert(
+        context,
+        result['message'] as String? ?? AppLocalizations.of(context)!.bookingError,
+        title: 'Ошибка',
+        isError: true,
+      );
+      return;
+    }
+
+    final booking = result['booking'] as Map<String, dynamic>? ?? {};
+    final bookingId = booking['id'] is num ? (booking['id'] as num).toInt() : null;
+
+    // 2. Создаём платёж в Plexy и открываем ссылку оплаты.
+    final pay = bookingId != null
+        ? await provider.createPayment(bookingId)
+        : {'success': false, 'message': 'Не удалось определить бронь'};
+
+    if (!mounted) return;
+    setState(() => _isBooking = false);
+
+    final url = pay['payment_url'] as String?;
+    if (pay['success'] == true && url != null && url.isNotEmpty) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BookingConfirmationScreen(
+            booking: booking,
+            clubName: widget.club.name,
+          ),
+        ),
+      );
+    } else {
+      // Бронь создана, но оплату открыть не удалось — показываем бронь
+      // и сообщение (оплатить можно на месте / повторить позже).
+      showAppAlert(
+        context,
+        pay['message'] as String? ??
+            'Бронь создана, но не удалось открыть оплату. Оплатите на месте или попробуйте позже.',
+        title: 'Оплата',
+        isError: true,
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BookingConfirmationScreen(
+            booking: booking,
+            clubName: widget.club.name,
+          ),
+        ),
+      );
+    }
   }
 
   /// Доступные документы клуба (название → URL), только загруженные.

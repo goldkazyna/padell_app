@@ -60,6 +60,14 @@ class CourtService {
     return response;
   }
 
+  /// Создать онлайн-платёж (Plexy) для брони. Возвращает payment_url.
+  Future<Map<String, dynamic>> createPayment(int bookingId) async {
+    final token = await _getToken();
+    final response =
+        await _api.post('/courts/bookings/$bookingId/create-payment', {}, token);
+    return response;
+  }
+
   /// Мои бронирования
   Future<Map<String, dynamic>> getMyBookings() async {
     final token = await _getToken();
