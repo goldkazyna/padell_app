@@ -148,6 +148,15 @@ class CourtProvider extends ChangeNotifier {
     }
   }
 
+  /// Статус оплаты брони {success, is_paid, payment_status}.
+  Future<Map<String, dynamic>> getPaymentStatus(int bookingId) async {
+    try {
+      return await _courtService.getPaymentStatus(bookingId);
+    } catch (_) {
+      return {'success': false};
+    }
+  }
+
   Future<void> loadMyBookings() async {
     _isBookingsLoading = true;
     notifyListeners();

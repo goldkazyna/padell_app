@@ -68,6 +68,12 @@ class CourtService {
     return response;
   }
 
+  /// Статус оплаты брони (для опроса из экрана оплаты).
+  Future<Map<String, dynamic>> getPaymentStatus(int bookingId) async {
+    final token = await _getToken();
+    return await _api.get('/courts/bookings/$bookingId/payment-status', token);
+  }
+
   /// Мои бронирования
   Future<Map<String, dynamic>> getMyBookings() async {
     final token = await _getToken();

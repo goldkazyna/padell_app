@@ -11,6 +11,7 @@ import '../widgets/app_back_button.dart';
 import '../widgets/secure_payment_badge.dart';
 import 'booking_confirmation_screen.dart';
 import 'club_detail_screen.dart';
+import 'payment_webview_screen.dart';
 
 class CourtBookingScreen extends StatefulWidget {
   final Club club;
@@ -868,8 +869,15 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     setState(() => _isBooking = false);
 
     final url = pay['payment_url'] as String?;
-    if (pay['success'] == true && url != null && url.isNotEmpty) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    if (pay['success'] == true && url != null && url.isNotEmpty && bookingId != null) {
+      // Открываем оплату внутри приложения (WebView). Экран сам закроется,
+      // когда вебхук пометит бронь оплаченной (опрос статуса).
+      await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PaymentWebViewScreen(url: url, bookingId: bookingId),
+        ),
+      );
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
