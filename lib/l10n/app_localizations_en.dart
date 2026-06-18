@@ -1956,7 +1956,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tournamentInfoFlexBody =>
-      'Americano for any number of players with a queue: while some play, others rest and join in later rounds. Handy when the player count isn\'t a multiple of four. Individual scoring; place is by average per match.';
+      'Americano for any number of players with a rest queue. Each round some players take the courts while the rest sit out — rest rotates evenly so nobody waits more than others.\n\nPartners and opponents come from ready-made schedules so you play with as many different partners as possible without repeats, and opponent matchups stay even. Scoring is individual; final place is by average per match.\n\nHow to set up a good session:\n• Use roughly \"players ÷ 4\" courts so fewer people rest. E.g. 8 players — 2 courts, 12 — 3 courts.\n• 9–11 players on 2 courts, or 13–15 on 3, works fine — just 1–3 players rest each round.\n• Rounds: to partner everyone once, play about \"unique pairs ÷ pairs per round\". For 10 players on 2 courts that\'s 11 rounds; for 12, up to 16.\n• Don\'t chase extra rounds — once fresh pairs run out, partners start repeating.\n\nWorks best with 8–18 players on 2–3 courts — that\'s where the schedule pairs everyone perfectly: you play with and against everyone.';
 
   @override
   String get filterDateCustom => 'Pick dates';

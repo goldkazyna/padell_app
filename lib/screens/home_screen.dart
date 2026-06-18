@@ -22,11 +22,7 @@ import '../theme/app_theme.dart';
 import '../utils/profile_incomplete_guard.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
-import 'tournament_live_screen.dart';
-import 'tournament_live_mexicano_screen.dart';
-import 'tournament_live_team_screen.dart';
-import 'tournament_live_kingofcourt_screen.dart';
-import 'tournament_live_bali_koc_screen.dart';
+import '../utils/tournament_navigation.dart';
 import 'club_select_screen.dart';
 import 'create_challenge_screen.dart';
 import 'challenges_screen.dart';
@@ -252,30 +248,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (t == null) return;
                       if (!ensureProfileComplete(context)) return;
                       final isLive = t.status == 'in_progress';
-                      Widget target;
-                      if (isLive && t.type == 'americano') {
-                        target = TournamentLiveScreen(tournamentId: t.id);
-                      } else if (isLive && t.type == 'mexicano') {
-                        target = TournamentLiveMexicanoScreen(tournamentId: t.id);
-                      } else if (isLive && t.type == 'team') {
-                        target = TournamentLiveTeamScreen(tournamentId: t.id);
-                      } else if (isLive && t.type == 'king_of_court') {
-                        target =
-                            TournamentLiveKingOfCourtScreen(tournamentId: t.id);
-                      } else if (isLive && t.type == 'round_robin') {
-                        // RR переиспользует live-экран Король корта (та же структура)
-                        target =
-                            TournamentLiveKingOfCourtScreen(tournamentId: t.id);
-                      } else if (isLive && t.type == 'bali_koc') {
-                        target =
-                            TournamentLiveBaliKocScreen(tournamentId: t.id);
+                      if (isLive) {
+                        // Идущий турнир любого типа (включая americano_flex,
+                        // round_robin и т.д.) открываем как Live с таблицей.
+                        openTournamentLiveByType(
+                          context,
+                          tournamentId: t.id,
+                          tournamentType: t.type,
+                        );
                       } else {
-                        target = TournamentDetailScreen(tournamentId: t.id);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                TournamentDetailScreen(tournamentId: t.id),
+                          ),
+                        );
                       }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => target),
-                      );
                     },
                   ),
                   const SizedBox(height: 12),

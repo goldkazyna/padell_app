@@ -6,6 +6,7 @@ import '../services/club_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coming_soon_badge.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/main_tab_bar.dart';
 import 'club_detail_screen.dart';
 
 class ClubsListScreen extends StatefulWidget {
@@ -92,6 +93,7 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const MainTabBar(),
     );
   }
 

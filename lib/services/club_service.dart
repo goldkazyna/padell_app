@@ -1,4 +1,5 @@
 import '../models/club.dart';
+import '../models/club_stats.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
 
@@ -39,6 +40,25 @@ class ClubService {
     return (list as List)
         .map((e) => Club.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  /// Статистика клуба за период (по умолчанию текущий месяц — без параметров).
+  Future<ClubStatsResult> getClubStats(
+    int clubId, {
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    final token = await _storage.getToken();
+    var endpoint = '/clubs/$clubId/stats';
+    final params = <String>[];
+    String fmt(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    if (from != null) params.add('from=${fmt(from)}');
+    if (to != null) params.add('to=${fmt(to)}');
+    if (params.isNotEmpty) endpoint += '?${params.join('&')}';
+
+    final response = await _api.get(endpoint, token);
+    return ClubStatsResult.fromJson(response);
   }
 
   Future<bool> toggleHide(int clubId) async {

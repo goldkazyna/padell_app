@@ -9,6 +9,8 @@ import '../services/club_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
 import '../widgets/coming_soon_badge.dart';
+import '../widgets/main_tab_bar.dart';
+import 'club_stats_screen.dart';
 import 'tournaments_screen.dart';
 
 class ClubDetailScreen extends StatefulWidget {
@@ -196,6 +198,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: _buildBody(),
+      bottomNavigationBar: const MainTabBar(),
     );
   }
 
@@ -336,6 +339,10 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         child: _buildTournamentsCard(club),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: _buildStatsCard(club),
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -792,6 +799,73 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               ),
             ),
             const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, color: Colors.white, size: 22),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsCard(Club club) {
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              ClubStatsScreen(clubId: club.id, clubName: club.name),
+        ),
+      ),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF22C55E), Color(0xFF166534)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.accent.withAlpha(40),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.leaderboard_rounded,
+                  color: Colors.white, size: 22),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Статистика клуба',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Кто сколько сыграл и заработал рейтинга',
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
             const Icon(Icons.chevron_right, color: Colors.white, size: 22),
           ],
         ),

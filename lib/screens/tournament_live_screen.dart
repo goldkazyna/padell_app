@@ -640,6 +640,13 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
   // ===== Leaderboard =====
   Widget _buildLeaderboard(Map<String, dynamic> group) {
+    // Для Americano Flex ранжирование идёт по среднему за матч (очки ÷ игры),
+    // т.к. у игроков разное число игр из-за отдыхов. Поэтому показываем
+    // таблицу как в админке: Матчи / Отдыхи / Среднее / Очки.
+    final format = (_data?['tournament'] as Map?)?['format'] as String?;
+    if (format == 'americano_flex') {
+      return _buildFlexLeaderboard(group);
+    }
     final lb = (group['leaderboard'] as List).cast<Map<String, dynamic>>();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -855,6 +862,216 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             fontWeight: FontWeight.w800,
           ),
         )),
+      ],
+    );
+  }
+
+  // ===== Flex leaderboard (как в админке: М / ОТД / СРЕД / Очки) =====
+  Widget _buildFlexLeaderboard(Map<String, dynamic> group) {
+    final lb = (group['leaderboard'] as List).cast<Map<String, dynamic>>();
+    final totalRounds = (group['rounds'] as List?)?.length ?? 0;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF2A2A2A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+            child: Row(
+              children: const [
+                Icon(Icons.emoji_events_outlined,
+                    color: AppTheme.amber, size: 16),
+                SizedBox(width: 8),
+                Text(
+                  'Таблица лидеров',
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
+            child: Table(
+              columnWidths: const {
+                0: IntrinsicColumnWidth(), // #
+                1: IntrinsicColumnWidth(), // avatar
+                2: FlexColumnWidth(),       // name
+                3: IntrinsicColumnWidth(), // М (матчи)
+                4: IntrinsicColumnWidth(), // ОТД (отдыхи)
+                5: IntrinsicColumnWidth(), // СРЕД (среднее)
+                6: IntrinsicColumnWidth(), // Очки
+              },
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                _buildFlexHeaderRow(),
+                for (final p in lb)
+                  _buildFlexLeaderboardTableRow(p, totalRounds),
+              ],
+            ),
+          ),
+          const SizedBox(height: 6),
+        ],
+      ),
+    );
+  }
+
+  TableRow _buildFlexHeaderRow() {
+    Widget hdr(String text,
+            {AlignmentGeometry alignment = Alignment.center,
+            EdgeInsets? padding}) =>
+        Padding(
+          padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 6),
+          child: Align(
+            alignment: alignment,
+            child: Text(text, style: _hdrStyle),
+          ),
+        );
+    return TableRow(
+      children: [
+        hdr('#',
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(2, 8, 6, 6)),
+        const SizedBox(),
+        hdr('Игрок', alignment: Alignment.centerLeft),
+        hdr('М'),
+        hdr('ОТД'),
+        hdr('СРЕД'),
+        hdr('Очки'),
+      ],
+    );
+  }
+
+  TableRow _buildFlexLeaderboardTableRow(
+      Map<String, dynamic> p, int totalRounds) {
+    final position = (p['position'] as num).toInt();
+    final isMe = p['is_me'] == true;
+    Color rankColor = AppTheme.textDim;
+    if (position == 1) rankColor = const Color(0xFFFFD700);
+    if (position == 2) rankColor = const Color(0xFFC0C0C0);
+    if (position == 3) rankColor = const Color(0xFFCD7F32);
+
+    final games = (p['games_played'] as num?)?.toInt() ?? 0;
+    final byes = (totalRounds - games).clamp(0, totalRounds);
+    final totalPoints = (p['total_points'] as num?)?.toInt() ?? 0;
+    final avg = games > 0 ? (totalPoints / games).toStringAsFixed(2) : '—';
+    final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
+    final playerName = p['name'] as String?;
+
+    Widget cell(Widget child,
+        {EdgeInsets? padding,
+        AlignmentGeometry alignment = Alignment.center}) {
+      return InkWell(
+        onTap: () => _openPlayer(playerId, playerName),
+        child: Container(
+          padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 8),
+          alignment: alignment,
+          child: child,
+        ),
+      );
+    }
+
+    return TableRow(
+      decoration: BoxDecoration(
+        color: isMe ? AppTheme.accent.withAlpha(20) : null,
+        border: const Border(
+          top: BorderSide(color: AppTheme.divider, width: 0.5),
+        ),
+      ),
+      children: [
+        // #
+        cell(
+          Text(
+            '$position',
+            style: TextStyle(
+              color: rankColor,
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(2, 8, 6, 8),
+          alignment: Alignment.centerLeft,
+        ),
+        // Avatar
+        cell(
+          _Avatar(
+            url: p['avatar'] as String?,
+            name: p['name'] as String? ?? '',
+            size: 24,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+        ),
+        // Name + verified
+        cell(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  playerName ?? '—',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                    fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
+                    fontSize: 13,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+              if (p['verified'] == true) ...[
+                const SizedBox(width: 5),
+                VerifiedBadge(
+                  size: 12,
+                  userId: playerId,
+                  playerName: playerName,
+                ),
+              ],
+            ],
+          ),
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
+          alignment: Alignment.centerLeft,
+        ),
+        // М (матчи)
+        cell(Text('$games',
+            style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600))),
+        // ОТД (отдыхи)
+        cell(Text('$byes',
+            style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w500))),
+        // СРЕД (среднее за матч) — ключевая метрика ранжирования
+        cell(Text(avg,
+            style: const TextStyle(
+                color: AppTheme.accent,
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
+        // Очки
+        cell(
+          Text(
+            '$totalPoints',
+            style: const TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(6, 8, 4, 8),
+          alignment: Alignment.centerRight,
+        ),
       ],
     );
   }

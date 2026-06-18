@@ -1631,7 +1631,8 @@ class _AdminTournamentDetailScreenState
                           color: AppTheme.cardRaised,
                           onSelected: (v) {
                             if (v == 'profile') _openProfile(p);
-                            if (v == 'moderation') _moveToModeration(p);
+                            if (v == 'to_main') _moveParticipant(p, 'registered');
+                            if (v == 'moderation') _moveParticipant(p, 'pending');
                             if (v == 'call') _callPlayer(p);
                             if (v == 'whatsapp') _whatsappPlayer(p);
                             if (v == 'remove') _removeOne(p);
@@ -1643,6 +1644,12 @@ class _AdminTournamentDetailScreenState
                                     size: 18, color: AppTheme.textSecondary),
                                 'Просмотреть профиль',
                                 AppTheme.textPrimary),
+                            _popupItem(
+                                'to_main',
+                                const Icon(Icons.check_circle,
+                                    size: 18, color: AppTheme.accent),
+                                'Переместить в основной список',
+                                AppTheme.accent),
                             _popupItem(
                                 'moderation',
                                 const Icon(Icons.how_to_reg,
@@ -1737,7 +1744,7 @@ class _AdminTournamentDetailScreenState
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'approve') _approveOne(p);
-                if (v == 'waitlist') _moveToWaitlist(p);
+                if (v == 'waitlist') _moveParticipant(p, 'waiting');
                 if (v == 'reject') _rejectOne(p);
               },
               itemBuilder: (_) => [
@@ -1797,7 +1804,8 @@ class _AdminTournamentDetailScreenState
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'replace') _openReplacePlayer(p);
-                if (v == 'waitlist') _moveToWaitlist(p);
+                if (v == 'to_moderation') _moveParticipant(p, 'pending');
+                if (v == 'waitlist') _moveParticipant(p, 'waiting');
                 if (v == 'remove') _removeOne(p);
               },
               itemBuilder: (_) => [
@@ -1818,6 +1826,10 @@ class _AdminTournamentDetailScreenState
                     const Icon(Icons.swap_horiz,
                         size: 18, color: AppTheme.textSecondary),
                     'Заменить', AppTheme.textPrimary),
+                _popupItem('to_moderation',
+                    const Icon(Icons.how_to_reg,
+                        size: 18, color: AppTheme.accent),
+                    'Переместить в модерацию', AppTheme.textPrimary),
                 _popupItem('waitlist',
                     const Icon(Icons.hourglass_bottom,
                         size: 18, color: AppTheme.blue),
@@ -2270,184 +2282,13 @@ class _AdminTournamentDetailScreenState
     );
   }
 
-  Future<void> _moveToWaitlist(AdminParticipant p) async {
-    final waiting = (_participants?.participants ?? const <AdminParticipant>[])
-        .where((x) => x.status == 'waiting' && x.id != p.id)
-        .toList();
-
-    int? promoteId;
-    if (waiting.isNotEmpty) {
-      // В листе уже есть люди — админ выбирает, кто займёт освободившееся место.
-      // (Сам выбор служит подтверждением.)
-      final chosen = await _pickSwap(
-        title: 'Кого поднять из листа ожидания?',
-        message: '${p.name} уйдёт в конец листа ожидания, '
-            'а выбранный игрок встанет на модерацию.',
-        options: waiting,
-      );
-      if (chosen == null) return; // отмена
-      promoteId = chosen.id;
-    } else {
-      // Лист пуст — простое подтверждение.
-      final ok = await _confirm(
-        title: 'Переместить в лист ожидания?',
-        message: '${p.name} уйдёт в конец листа ожидания.',
-        okText: 'Переместить',
-      );
-      if (!ok) return;
-    }
-
+  // Универсальное перемещение: 'registered' / 'pending' / 'waiting'.
+  Future<void> _moveParticipant(AdminParticipant p, String to) async {
     await _runAction(
       () => context
           .read<AdminService>()
-          .moveToWaitlist(widget.tournamentId, p.id, promoteUserId: promoteId),
-      label: 'Перемещаем в лист ожидания...',
-      successMessage: promoteId != null
-          ? '${p.name} — в лист ожидания, выбранный — на модерацию'
-          : '${p.name} — в листе ожидания',
-    );
-  }
-
-  /// Поднять участника из листа ожидания на модерацию.
-  Future<void> _moveToModeration(AdminParticipant p) async {
-    final all = _participants?.participants ?? const <AdminParticipant>[];
-    final takenCount = all
-        .where((x) => x.status == 'registered' || x.status == 'pending')
-        .length;
-    final max = _participants?.max ?? 0;
-    final isFull = takenCount >= max;
-
-    int? demoteId;
-    if (isFull) {
-      // Полный турнир — заменить можно только игрока на модерации (pending).
-      final pending = all.where((x) => x.status == 'pending').toList();
-      if (pending.isEmpty) {
-        await showAppAlert(
-          context,
-          'Турнир заполнен — все места подтверждены. Поднять некого, пока кто-то не освободит место.',
-          title: 'Турнир полный',
-          isError: true,
-        );
-        return;
-      }
-      final chosen = await _pickSwap(
-        title: 'Кого с модерации отправить в лист?',
-        message: 'Турнир заполнен. Выбранный (на модерации) уйдёт в лист ожидания, '
-            'а ${p.name} встанет на модерацию.',
-        options: pending,
-      );
-      if (chosen == null) return; // отмена
-      demoteId = chosen.id;
-    } else {
-      final ok = await _confirm(
-        title: 'Переместить на модерацию?',
-        message: '${p.name} встанет на модерацию.',
-        okText: 'Переместить',
-      );
-      if (!ok) return;
-    }
-
-    await _runAction(
-      () => context
-          .read<AdminService>()
-          .moveToModeration(widget.tournamentId, p.id, demoteUserId: demoteId),
-      label: 'Перемещаем на модерацию...',
-      successMessage: demoteId != null
-          ? '${p.name} — на модерации, выбранный — в листе ожидания'
-          : '${p.name} — на модерации',
-    );
-  }
-
-  /// Лист выбора игрока для обмена (поднять/отправить).
-  Future<AdminParticipant?> _pickSwap({
-    required String title,
-    required String message,
-    required List<AdminParticipant> options,
-  }) {
-    return showModalBottomSheet<AdminParticipant>(
-      context: context,
-      backgroundColor: AppTheme.background,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 14),
-                    decoration: BoxDecoration(
-                      color: AppTheme.textSecondary.withAlpha(70),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                Text(
-                  title,
-                  style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  message,
-                  style: const TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 13),
-                ),
-                const SizedBox(height: 14),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: options.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 8),
-                    itemBuilder: (_, i) {
-                      final w = options[i];
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () => Navigator.of(ctx).pop(w),
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppTheme.card,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 24,
-                                alignment: Alignment.center,
-                                child: Text('${i + 1}',
-                                    style: const TextStyle(
-                                        color: AppTheme.blue,
-                                        fontWeight: FontWeight.w700)),
-                              ),
-                              const SizedBox(width: 6),
-                              _avatar(w),
-                              const SizedBox(width: 10),
-                              Expanded(child: _nameAndMeta(w)),
-                              const Icon(Icons.arrow_upward,
-                                  size: 18, color: AppTheme.accent),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+          .moveParticipant(widget.tournamentId, p.id, to),
+      label: 'Перемещаем...',
     );
   }
 

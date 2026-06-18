@@ -403,6 +403,17 @@ class AdminService {
     );
   }
 
+  /// Универсальное перемещение участника между статусами:
+  /// 'registered' (основной список) / 'pending' (модерация) / 'waiting' (лист ожидания).
+  Future<void> moveParticipant(int tournamentId, int userId, String to) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/participants/$userId/move',
+      {'to': to},
+      token,
+    );
+  }
+
   Future<void> addParticipant(int tournamentId, int userId) async {
     final token = await _storage.getToken();
     await _api.post(

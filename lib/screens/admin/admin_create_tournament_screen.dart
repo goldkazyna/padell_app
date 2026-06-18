@@ -8,6 +8,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
+import '../tournament_types_info_screen.dart';
 import 'admin_tournament_detail_screen.dart';
 
 /// Этап 4 — создание турнира. На этом этапе поддерживается только
@@ -40,12 +41,15 @@ class _AdminCreateTournamentScreenState
   final _moderationHours = TextEditingController();
   final _moderationMinutes = TextEditingController();
   final _roundsCount = TextEditingController(text: '7');
+  // Кол-во кортов вручную для Americano Flex (пусто = авто floor(игроки/4)).
+  final _flexCourts = TextEditingController();
 
   String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex
   DateTime? _startDate;
   double _minLevel = 1.5;
   double _maxLevel = 4.0;
   String _status = 'open'; // draft / open
+  int? _durationHours; // длительность турнира в часах (необязательно)
   bool _isRated = true; // рейтинговый ли турнир (влияет на рейтинг игроков)
   bool _verifiedOnly = false; // только для верифицированных игроков
 
@@ -78,7 +82,19 @@ class _AdminCreateTournamentScreenState
   bool _saving = false;
   String? _saveLabel;
 
+  // Максимум кортов для Flex — по числу игроков (каждому корту нужно 4).
+  int get _flexMaxCourts {
+    final maxP = int.tryParse(_maxParticipants.text.trim()) ?? 16;
+    return (maxP / 4).floor().clamp(1, 32);
+  }
+
   int get _courtsCount {
+    if (_type == 'americano_flex') {
+      // Flex: ручной ввод, иначе авто floor(игроки/4). Корт = 4 игрока.
+      final manual = int.tryParse(_flexCourts.text.trim());
+      if (manual != null && manual >= 1) return manual.clamp(1, _flexMaxCourts);
+      return _flexMaxCourts;
+    }
     final maxP = int.tryParse(_maxParticipants.text.trim()) ?? 16;
     final n = (maxP / 4).ceil();
     return n.clamp(1, 32);
@@ -88,6 +104,9 @@ class _AdminCreateTournamentScreenState
   void initState() {
     super.initState();
     _maxParticipants.addListener(_onMaxOrGroupsChanged);
+    _flexCourts.addListener(() {
+      if (mounted) setState(() {}); // пересчитать поля кортов
+    });
     _updateRoundsCount();
   }
 
@@ -118,6 +137,7 @@ class _AdminCreateTournamentScreenState
     _moderationHours.dispose();
     _moderationMinutes.dispose();
     _roundsCount.dispose();
+    _flexCourts.dispose();
     for (final c in _courtNames) {
       c.dispose();
     }
@@ -211,6 +231,7 @@ class _AdminCreateTournamentScreenState
           _description.text.trim().isEmpty ? null : _description.text.trim(),
       'telegram_registration_url': tgUrl.isEmpty ? null : tgUrl,
       'start_date': _startDate!.toIso8601String(),
+      if (_durationHours != null) 'duration_hours': _durationHours,
       'min_level': _minLevel,
       'max_level': _maxLevel,
       'max_participants': maxP,
@@ -367,6 +388,8 @@ class _AdminCreateTournamentScreenState
       children: [
         _label('Формат турнира'),
         _typeSelector(),
+        const SizedBox(height: 10),
+        _aboutFormatButton(),
         const SizedBox(height: 12),
         _collapsibleSection(
           sectionKey: 'basic',
@@ -383,6 +406,9 @@ class _AdminCreateTournamentScreenState
             const SizedBox(height: 12),
             _label('Дата и время старта'),
             _dateField(),
+            const SizedBox(height: 12),
+            _label('Длительность (необязательно)'),
+            _durationSelector(),
             const SizedBox(height: 12),
             _label('Цена за участие, ₸'),
             _textField(
@@ -517,6 +543,45 @@ class _AdminCreateTournamentScreenState
           ),
         ),
       ],
+    );
+  }
+
+  // Кнопка «Подробнее об этом формате» — открывает описание выбранного типа.
+  Widget _aboutFormatButton() {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => TournamentTypesInfoScreen(initialType: _type),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppTheme.accent.withAlpha(20),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.accent.withAlpha(70), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.info_outline_rounded,
+                color: AppTheme.accent, size: 18),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'Подробнее об этом формате',
+                style: TextStyle(
+                  color: AppTheme.accent,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                color: AppTheme.accent, size: 20),
+          ],
+        ),
+      ),
     );
   }
 
@@ -827,14 +892,35 @@ class _AdminCreateTournamentScreenState
       ]);
     }
 
-    // Корты — для всех типов
+    // Корты
+    children.add(_label('Корты'));
+    if (_type == 'americano_flex') {
+      // Flex — кол-во кортов вручную (влияет на расписание пар).
+      children.addAll([
+        _textField(
+          _flexCourts,
+          hint: '$_flexMaxCourts',
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Сколько кортов играет одновременно (1 корт = 4 игрока). '
+          'Максимум — $_flexMaxCourts. Пусто = $_flexMaxCourts.',
+          style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+        ),
+        const SizedBox(height: 12),
+      ]);
+    } else {
+      children.addAll([
+        Text(
+          'Кол-во кортов: $_courtsCount  (автоматически: участников ÷ 4)',
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        ),
+        const SizedBox(height: 12),
+      ]);
+    }
     children.addAll([
-      _label('Корты'),
-      Text(
-        'Кол-во кортов: $_courtsCount  (автоматически: участников ÷ 4)',
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
-      ),
-      const SizedBox(height: 12),
       for (int i = 0; i < _courtsCount; i++) ...[
         _label('Корт ${i + 1}'),
         _textField(_courtNames[i], hint: 'Корт ${i + 1}'),
@@ -1245,6 +1331,42 @@ class _AdminCreateTournamentScreenState
           borderSide: const BorderSide(color: AppTheme.accent, width: 1.2),
         ),
       ),
+    );
+  }
+
+  // Выбор длительности турнира (необязательно): «Не указана» + 1..8 часов.
+  Widget _durationSelector() {
+    const options = <int?>[null, 1, 2, 3, 4, 5, 6, 7, 8];
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: options.map((h) {
+        final selected = _durationHours == h;
+        final label =
+            h == null ? 'Не указана' : '$h ${_plural(h, 'час', 'часа', 'часов')}';
+        return GestureDetector(
+          onTap: () => setState(() => _durationHours = h),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            decoration: BoxDecoration(
+              color: selected ? AppTheme.accent.withAlpha(30) : AppTheme.card,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: selected ? AppTheme.accent : AppTheme.border,
+                width: selected ? 1 : 0.5,
+              ),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selected ? AppTheme.accent : AppTheme.textSecondary,
+                fontSize: 13,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
