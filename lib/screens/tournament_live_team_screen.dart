@@ -14,7 +14,18 @@ import 'player_profile_screen.dart';
 /// Внизу плей-офф если has_playoff.
 class TournamentLiveTeamScreen extends StatefulWidget {
   final int tournamentId;
-  const TournamentLiveTeamScreen({super.key, required this.tournamentId});
+
+  /// Кого подсвечивать вместо текущего пользователя (при открытии из чужого
+  /// профиля). Если задан — подсветка строк/матчей считается по id игроков,
+  /// а не по has_me авторизованного зрителя. «Вы играете» и личная дельта
+  /// рейтинга при этом не показываются (они про «меня»).
+  final int? highlightPlayerId;
+
+  const TournamentLiveTeamScreen({
+    super.key,
+    required this.tournamentId,
+    this.highlightPlayerId,
+  });
 
   @override
   State<TournamentLiveTeamScreen> createState() =>
@@ -91,6 +102,15 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
 
   int? _playerId(Map<String, dynamic>? p) =>
       p != null && p['id'] is num ? (p['id'] as num).toInt() : null;
+
+  /// Подсвечивать ли команду этих игроков. В режиме чужого профиля
+  /// (highlightPlayerId задан) — по id игроков; иначе вернёт false, и
+  /// подсветка берётся из has_me бэкенда.
+  bool _isHighlightTeam(Map<String, dynamic>? p1, Map<String, dynamic>? p2) {
+    final hid = widget.highlightPlayerId;
+    if (hid == null) return false;
+    return _playerId(p1) == hid || _playerId(p2) == hid;
+  }
 
   /// Имя игрока в таблице команд + бейдж верификации (без тапа на профиль).
   Widget _standingName(String name, Map<String, dynamic>? p, TextStyle style) {
@@ -442,15 +462,19 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
 
   TableRow _stRow(Map<String, dynamic> s) {
     final position = (s['position'] as num).toInt();
-    final hasMe = s['has_me'] == true;
+    final p1 = s['player1'] as Map<String, dynamic>?;
+    final p2 = s['player2'] as Map<String, dynamic>?;
+    // В режиме чужого профиля подсвечиваем команду просматриваемого игрока,
+    // иначе — свою (has_me с бэкенда).
+    final hasMe = widget.highlightPlayerId != null
+        ? _isHighlightTeam(p1, p2)
+        : s['has_me'] == true;
     Color rankColor = AppTheme.textDim;
     if (position == 1) rankColor = const Color(0xFFFFD700);
     if (position == 2) rankColor = const Color(0xFFC0C0C0);
     if (position == 3) rankColor = const Color(0xFFCD7F32);
     final pointDiff = (s['point_diff'] as num).toInt();
     final ballPercent = (s['ball_percent'] as num?)?.toInt() ?? 0;
-    final p1 = s['player1'] as Map<String, dynamic>?;
-    final p2 = s['player2'] as Map<String, dynamic>?;
     final n1 = p1?['name'] as String? ?? '—';
     final n2 = p2?['name'] as String? ?? '—';
 
@@ -690,16 +714,29 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
     final score1 = t1['score'];
     final score2 = t2['score'];
     final completed = m['status'] == 'completed';
-    final hasMe = m['has_me'] == true;
     final court = m['court_number'];
     final myDelta = (m['my_rating_change'] as num?)?.toInt();
+
+    // highlight — подсвечивать ли матч (тинт фона), isMe — это лично «я»
+    // (показывать «Вы играете» и личную дельту рейтинга). В чужом профиле
+    // подсветка по просматриваемому игроку, но isMe = false.
+    final bool highlight;
+    final bool isMe;
+    if (widget.highlightPlayerId != null) {
+      highlight = _isHighlightTeam(t1['player1'], t1['player2']) ||
+          _isHighlightTeam(t2['player1'], t2['player2']);
+      isMe = false;
+    } else {
+      highlight = m['has_me'] == true;
+      isMe = highlight;
+    }
 
     final t1Win = completed && (score1 ?? 0) > (score2 ?? 0);
     final t2Win = completed && (score2 ?? 0) > (score1 ?? 0);
 
     return Container(
       decoration: BoxDecoration(
-        color: hasMe ? AppTheme.accent.withAlpha(20) : null,
+        color: highlight ? AppTheme.accent.withAlpha(20) : null,
         border: const Border(
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
@@ -708,7 +745,7 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (court != null || hasMe)
+          if (court != null || isMe)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
@@ -730,7 +767,7 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
                             fontWeight: FontWeight.w600),
                       ),
                     ),
-                  if (hasMe) ...[
+                  if (isMe) ...[
                     if (court != null) const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -748,7 +785,7 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
                       ),
                     ),
                   ],
-                  if (hasMe && completed && myDelta != null) ...[
+                  if (isMe && completed && myDelta != null) ...[
                     const SizedBox(width: 6),
                     _MatchRatingPill(delta: myDelta),
                   ],

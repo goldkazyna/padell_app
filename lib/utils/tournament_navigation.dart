@@ -26,7 +26,10 @@ void openTournamentLiveByType(
       target = TournamentLiveMexicanoScreen(tournamentId: tournamentId);
       break;
     case 'team':
-      target = TournamentLiveTeamScreen(tournamentId: tournamentId);
+      target = TournamentLiveTeamScreen(
+        tournamentId: tournamentId,
+        highlightPlayerId: highlightPlayerId,
+      );
       break;
     case 'king_of_court':
     case 'round_robin':
