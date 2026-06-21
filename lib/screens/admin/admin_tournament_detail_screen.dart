@@ -11,6 +11,7 @@ import '../../models/admin_invitation.dart';
 import '../../models/admin_matches.dart';
 import '../../models/admin_participant.dart';
 import '../../models/admin_participants_response.dart';
+import '../../models/registration_log_entry.dart';
 import '../../models/admin_team.dart';
 import '../../models/admin_tournament_detail.dart';
 import '../../services/admin_service.dart';
@@ -72,6 +73,13 @@ class _AdminTournamentDetailScreenState
   List<AdminInvitation>? _invitations;
   bool _loadingInvitations = false;
   String? _invitationsError;
+
+  // Журнал записей (записались / отписались)
+  List<RegistrationLogEntry>? _journalRegistered;
+  List<RegistrationLogEntry>? _journalUnregistered;
+  bool _loadingJournal = false;
+  String? _journalError;
+  int _journalSubTab = 0; // 0 = записались, 1 = отписались
 
   // Глобальный busy-оверлей для длинных экшенов (approve/reject/remove/etc).
   bool _actionBusy = false;
@@ -448,6 +456,7 @@ class _AdminTournamentDetailScreenState
                                 _buildParticipantsTab(),
                                 _buildInvitationsTab(),
                                 _buildMatchesTab(),
+                                _buildJournalTab(),
                               ],
                             ),
                 ),
@@ -585,6 +594,7 @@ class _AdminTournamentDetailScreenState
               _buildTab('Участники', 1),
               _buildTab('Приглашения', 2),
               _buildTab('Матчи', 3),
+              _buildTab('Журнал', 4),
             ],
           ),
         ),
@@ -606,6 +616,9 @@ class _AdminTournamentDetailScreenState
           }
           if (index == 3 && _matches == null && !_loadingMatches) {
             _loadMatches();
+          }
+          if (index == 4 && _journalRegistered == null && !_loadingJournal) {
+            _loadJournal();
           }
         }
       },
@@ -2096,6 +2109,186 @@ class _AdminTournamentDetailScreenState
         ],
       ),
     );
+  }
+
+  // ===========================================================================
+  // Таб «Журнал записей» (записались / отписались)
+  // ===========================================================================
+
+  Future<void> _loadJournal() async {
+    setState(() {
+      _loadingJournal = true;
+      _journalError = null;
+    });
+    try {
+      final r = await context
+          .read<AdminService>()
+          .getRegistrationJournal(widget.tournamentId);
+      if (!mounted) return;
+      setState(() {
+        _journalRegistered = r['registered'] ?? [];
+        _journalUnregistered = r['unregistered'] ?? [];
+        _loadingJournal = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _journalError = '$e';
+        _loadingJournal = false;
+      });
+    }
+  }
+
+  Widget _buildJournalTab() {
+    if (_loadingJournal && _journalRegistered == null) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+    if (_journalError != null && _journalRegistered == null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Ошибка: $_journalError',
+                style: const TextStyle(color: AppTheme.textSecondary)),
+            const SizedBox(height: 12),
+            ElevatedButton(
+                onPressed: _loadJournal, child: const Text('Повторить')),
+          ],
+        ),
+      );
+    }
+
+    final reg = _journalRegistered ?? const [];
+    final unreg = _journalUnregistered ?? const [];
+    final entries = _journalSubTab == 0 ? reg : unreg;
+
+    return Column(
+      children: [
+        // Под-вкладки (сегмент-контрол)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                _journalSegment('Записались', reg.length, 0),
+                _journalSegment('Отписались', unreg.length, 1),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _loadJournal,
+            color: AppTheme.accent,
+            child: entries.isEmpty
+                ? ListView(
+                    children: [
+                      const SizedBox(height: 60),
+                      _buildEmptyHint(_journalSubTab == 0
+                          ? 'Пока никто не записывался'
+                          : 'Пока никто не отписывался'),
+                    ],
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                    itemCount: entries.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (_, i) => _journalRow(entries[i]),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _journalSegment(String label, int count, int index) {
+    final active = _journalSubTab == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _journalSubTab = index),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: active ? AppTheme.accent : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            '$label ($count)',
+            style: TextStyle(
+              color: active ? Colors.black : AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _journalRow(RegistrationLogEntry e) {
+    final isReg = e.action == 'registered';
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2A2A2A)),
+      ),
+      child: Row(
+        children: [
+          _avatar(e.user),
+          const SizedBox(width: 12),
+          Expanded(child: _nameAndMeta(e.user)),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: (isReg ? AppTheme.accent : AppTheme.error)
+                      .withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  isReg ? 'записался' : 'отписался',
+                  style: TextStyle(
+                    color: isReg ? AppTheme.accent : AppTheme.error,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (e.createdAt != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  _journalTime(e.createdAt!),
+                  style: const TextStyle(
+                      color: AppTheme.textDim, fontSize: 11),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _journalTime(DateTime utc) {
+    final d = utc.toLocal();
+    final dd = d.day.toString().padLeft(2, '0');
+    final mm = d.month.toString().padLeft(2, '0');
+    final hh = d.hour.toString().padLeft(2, '0');
+    final mi = d.minute.toString().padLeft(2, '0');
+    return '$dd.$mm $hh:$mi';
   }
 
   Widget _avatar(AdminParticipant p) {

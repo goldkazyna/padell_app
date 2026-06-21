@@ -6,6 +6,7 @@ import '../models/admin_matches.dart';
 import '../models/admin_participant.dart';
 import '../models/admin_participants_response.dart';
 import '../models/admin_tournament_detail.dart';
+import '../models/registration_log_entry.dart';
 import '../models/admin_tournament_summary.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
@@ -350,6 +351,29 @@ class AdminService {
       token,
     );
     return AdminParticipantsResponse.fromJson(response);
+  }
+
+  /// Журнал записей турнира: {registered: [...], unregistered: [...]}
+  /// с временем события. Возвращаем как список (entry = игрок + время).
+  Future<Map<String, List<RegistrationLogEntry>>> getRegistrationJournal(
+      int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.get(
+      '/admin/tournaments/$tournamentId/registration-journal',
+      token,
+    );
+    List<RegistrationLogEntry> parse(String key) {
+      final list = (response[key] as List?) ?? const [];
+      return list
+          .map((e) =>
+              RegistrationLogEntry.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+
+    return {
+      'registered': parse('registered'),
+      'unregistered': parse('unregistered'),
+    };
   }
 
   Future<void> approveParticipant(int tournamentId, int userId) async {
