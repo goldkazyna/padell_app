@@ -6,6 +6,7 @@ import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 
 /// Live-экран идущего «Группового + Плей-офф» (type=team).
@@ -85,6 +86,55 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
           playerName: name ?? '',
         ),
       ),
+    );
+  }
+
+  int? _playerId(Map<String, dynamic>? p) =>
+      p != null && p['id'] is num ? (p['id'] as num).toInt() : null;
+
+  /// Имя игрока в таблице команд + бейдж верификации (без тапа на профиль).
+  Widget _standingName(String name, Map<String, dynamic>? p, TextStyle style) {
+    final verified = p?['verified'] == true;
+    final id = _playerId(p);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Text(name,
+              maxLines: 1, overflow: TextOverflow.ellipsis, style: style),
+        ),
+        if (verified) ...[
+          const SizedBox(width: 4),
+          VerifiedBadge(size: 11, userId: id, playerName: name),
+        ],
+      ],
+    );
+  }
+
+  /// Имя игрока в матче (раунды/плей-офф): тап по имени — профиль,
+  /// тап по бейджу — кто верифицировал.
+  Widget _matchName(Map<String, dynamic>? p, TextStyle style) {
+    final name = p?['name'] as String? ?? '—';
+    final verified = p?['verified'] == true;
+    final id = _playerId(p);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          child: GestureDetector(
+            onTap: () => _openPlayer(id, name),
+            behavior: HitTestBehavior.opaque,
+            child: Text(name,
+                maxLines: 1, overflow: TextOverflow.ellipsis, style: style),
+          ),
+        ),
+        if (verified) ...[
+          const SizedBox(width: 4),
+          VerifiedBadge(size: 11, userId: id, playerName: name),
+        ],
+      ],
     );
   }
 
@@ -437,32 +487,22 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
         ),
         // Команда: 2 имени друг под другом
         cell(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(n1,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: hasMe ? AppTheme.accent : AppTheme.textPrimary,
-                    fontWeight:
-                        hasMe ? FontWeight.w800 : FontWeight.w600,
-                    fontSize: 12,
-                    height: 1.2,
-                  )),
-              const SizedBox(height: 1),
-              Text(n2,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: hasMe ? AppTheme.accent : AppTheme.textPrimary,
-                    fontWeight:
-                        hasMe ? FontWeight.w800 : FontWeight.w600,
-                    fontSize: 12,
-                    height: 1.2,
-                  )),
-            ],
-          ),
+          Builder(builder: (_) {
+            final nameStyle = TextStyle(
+              color: hasMe ? AppTheme.accent : AppTheme.textPrimary,
+              fontWeight: hasMe ? FontWeight.w800 : FontWeight.w600,
+              fontSize: 12,
+              height: 1.2,
+            );
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _standingName(n1, p1, nameStyle),
+                const SizedBox(height: 1),
+                _standingName(n2, p2, nameStyle),
+              ],
+            );
+          }),
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
           alignment: Alignment.centerLeft,
         ),
@@ -794,54 +834,23 @@ class _TournamentLiveTeamScreenState extends State<TournamentLiveTeamScreen> {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: () => _openPlayer(
-                    p1 != null && p1['id'] is num
-                        ? (p1['id'] as num).toInt()
-                        : null,
-                    p1?['name'] as String?,
-                  ),
-                  behavior: HitTestBehavior.opaque,
-                  child: Text(
-                    p1?['name'] as String? ?? '—',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: nameColor,
-                      fontWeight: nameWeight,
-                      fontSize: 13,
-                      letterSpacing: -0.1,
-                      height: 1.25,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 1),
-                GestureDetector(
-                  onTap: () => _openPlayer(
-                    p2 != null && p2['id'] is num
-                        ? (p2['id'] as num).toInt()
-                        : null,
-                    p2?['name'] as String?,
-                  ),
-                  behavior: HitTestBehavior.opaque,
-                  child: Text(
-                    p2?['name'] as String? ?? '—',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: nameColor,
-                      fontWeight: nameWeight,
-                      fontSize: 13,
-                      letterSpacing: -0.1,
-                      height: 1.25,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: Builder(builder: (_) {
+              final nameStyle = TextStyle(
+                color: nameColor,
+                fontWeight: nameWeight,
+                fontSize: 13,
+                letterSpacing: -0.1,
+                height: 1.25,
+              );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _matchName(p1, nameStyle),
+                  const SizedBox(height: 1),
+                  _matchName(p2, nameStyle),
+                ],
+              );
+            }),
           ),
           const SizedBox(width: 10),
           Container(
