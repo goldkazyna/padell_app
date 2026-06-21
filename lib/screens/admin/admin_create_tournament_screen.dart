@@ -43,6 +43,8 @@ class _AdminCreateTournamentScreenState
   final _roundsCount = TextEditingController(text: '7');
   // Кол-во кортов вручную для Americano Flex (пусто = авто floor(игроки/4)).
   final _flexCourts = TextEditingController();
+  // Парный Americano Flex (фиксированные пары, собирает админ).
+  bool _flexIsPaired = false;
 
   String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex
   DateTime? _startDate;
@@ -278,6 +280,17 @@ class _AdminCreateTournamentScreenState
       // Нижняя сетка / бронза — только при включённом плей-офф.
       body['has_lower_bracket'] = _teamHasPlayoff && _teamHasLowerBracket;
       body['has_bronze_match'] = _teamHasPlayoff && _teamHasBronzeMatch;
+    }
+
+    if (_type == 'americano_flex' && _flexIsPaired) {
+      // Парный флекс: число игроков должно быть чётным (пары закреплены).
+      if (maxP % 2 != 0) {
+        await showAppAlert(context,
+            'Для парного турнира число игроков должно быть чётным',
+            title: 'Ошибка', isError: true);
+        return;
+      }
+      body['is_paired'] = true;
     }
 
     setState(() {
@@ -908,6 +921,52 @@ class _AdminCreateTournamentScreenState
           'Сколько кортов играет одновременно (1 корт = 4 игрока). '
           'Максимум — $_flexMaxCourts. Пусто = $_flexMaxCourts.',
           style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+        ),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: () => setState(() => _flexIsPaired = !_flexIsPaired),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _flexIsPaired ? AppTheme.accent : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  _flexIsPaired
+                      ? Icons.check_box
+                      : Icons.check_box_outline_blank,
+                  color: _flexIsPaired ? AppTheme.accent : AppTheme.textDim,
+                  size: 22,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('Парный',
+                          style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700)),
+                      SizedBox(height: 2),
+                      Text(
+                        'Фиксированные пары. Игроки записываются по одному, '
+                        'пары собирает админ. Число игроков — чётное.',
+                        style: TextStyle(
+                            color: AppTheme.textDim, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 12),
       ]);
