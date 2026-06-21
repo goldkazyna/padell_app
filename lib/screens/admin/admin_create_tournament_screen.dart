@@ -334,6 +334,60 @@ class _AdminCreateTournamentScreenState
     }
   }
 
+  /// Описание парного Americano Flex (по тапу на «?»).
+  void _showPairedInfo() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF3A3A3A),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Парный Americano Flex',
+                  style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800)),
+              const SizedBox(height: 12),
+              const Text(
+                'Пары фиксированные — партнёр не меняется весь турнир. '
+                'Меняются только соперники и отдых.\n\n'
+                '• Игроки записываются по одному, пары собирает админ перед стартом.\n'
+                '• Число игроков — чётное (пары закреплены).\n'
+                '• Каждый раунд часть пар играет, остальные отдыхают по очереди — '
+                'никто не сидит на лавке дольше других.\n'
+                '• Пары встречаются с разными соперниками без лишних повторов.\n\n'
+                'Пример: 10 игроков (5 пар) на 2 кортах → 2 пары играют, 1 отдыхает. '
+                'Итог — по среднему за матч у пары.',
+                style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                    height: 1.5),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // Build
   // ---------------------------------------------------------------------------
@@ -923,49 +977,48 @@ class _AdminCreateTournamentScreenState
           style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
         ),
         const SizedBox(height: 12),
-        GestureDetector(
-          onTap: () => setState(() => _flexIsPaired = !_flexIsPaired),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppTheme.card,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: _flexIsPaired ? AppTheme.accent : Colors.transparent,
-                width: 1.5,
+        Container(
+          padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+          decoration: BoxDecoration(
+            color: AppTheme.cardRaised,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Text('Парный',
+                            style: TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600)),
+                        const SizedBox(width: 6),
+                        GestureDetector(
+                          onTap: _showPairedInfo,
+                          child: const Icon(Icons.help_outline,
+                              size: 16, color: AppTheme.textSecondary),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'Фиксированные пары, ротация соперников',
+                      style: TextStyle(
+                          color: AppTheme.textDim, fontSize: 11),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  _flexIsPaired
-                      ? Icons.check_box
-                      : Icons.check_box_outline_blank,
-                  color: _flexIsPaired ? AppTheme.accent : AppTheme.textDim,
-                  size: 22,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('Парный',
-                          style: TextStyle(
-                              color: AppTheme.textPrimary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700)),
-                      SizedBox(height: 2),
-                      Text(
-                        'Фиксированные пары. Игроки записываются по одному, '
-                        'пары собирает админ. Число игроков — чётное.',
-                        style: TextStyle(
-                            color: AppTheme.textDim, fontSize: 11),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              Switch(
+                value: _flexIsPaired,
+                onChanged: (v) => setState(() => _flexIsPaired = v),
+                activeColor: AppTheme.accent,
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 12),
