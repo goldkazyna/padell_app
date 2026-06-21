@@ -6,11 +6,12 @@ import '../providers/settings_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
-import 'tournament_results_screen.dart';
-import 'tournament_live_screen.dart';
-import 'tournament_live_kingofcourt_screen.dart';
-import 'tournament_live_bali_koc_screen.dart';
 import '../models/tournament.dart';
+import '../utils/tournament_navigation.dart';
+import '../services/invitation_service.dart';
+import '../services/api_service.dart';
+import '../services/storage_service.dart';
+import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/main_tab_bar.dart';
 import '../widgets/profile/medal.dart';
@@ -35,6 +36,9 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
   PlayerProfile? _profile;
   bool _loading = true;
   String? _error;
+  bool _inviting = false;
+
+  final _invitationService = InvitationService(ApiService(), StorageService());
 
   @override
   void initState() {
@@ -56,6 +60,104 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           _error = 'Не удалось загрузить профиль';
         }
       });
+    }
+  }
+
+  Future<void> _openInvite() async {
+    setState(() => _inviting = true);
+    List<Tournament> tournaments;
+    try {
+      tournaments =
+          await _invitationService.getInvitableTournaments(widget.playerId);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _inviting = false);
+        showAppAlert(context, 'Не удалось загрузить турниры',
+            title: 'Ошибка', isError: true);
+      }
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _inviting = false);
+    if (tournaments.isEmpty) {
+      showAppAlert(context,
+          'Нет подходящих активных турниров для этого игрока по его уровню',
+          title: 'Турниров нет');
+      return;
+    }
+    _showInviteSheet(tournaments);
+  }
+
+  void _showInviteSheet(List<Tournament> tournaments) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        builder: (_, scrollController) => Column(
+          children: [
+            const SizedBox(height: 10),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFF3A3A3A),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Выберите турнир',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ),
+            Expanded(
+              child: ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                itemCount: tournaments.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (_, i) => _InviteTournamentTile(
+                  tournament: tournaments[i],
+                  onTap: () => _doInvite(tournaments[i].id),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _doInvite(int tournamentId) async {
+    try {
+      await _invitationService.invitePlayer(tournamentId, widget.playerId);
+      if (mounted) {
+        Navigator.pop(context);
+        showAppAlert(context, 'Приглашение отправлено игроку', title: 'Готово');
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        showAppAlert(context, e.message, title: 'Ошибка', isError: true);
+      }
+    } catch (_) {
+      if (mounted) {
+        Navigator.pop(context);
+        showAppAlert(context, 'Не удалось отправить приглашение',
+            title: 'Ошибка', isError: true);
+      }
     }
   }
 
@@ -123,6 +225,72 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             winrate: p.winrate,
             tournamentsCount: p.tournamentsCount,
           ),
+
+          // Кнопка «Позвать на турнир» — зелёный градиент как «История турниров»
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: _inviting ? null : _openInvite,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF22C55E), Color(0xFF166534)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF22C55E).withAlpha(80),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withAlpha(50),
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: _inviting
+                            ? const Padding(
+                                padding: EdgeInsets.all(7),
+                                child: CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2),
+                              )
+                            : const Icon(Icons.emoji_events_rounded,
+                                color: Colors.white, size: 19),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Позвать на турнир',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right_rounded,
+                          color: Colors.white, size: 22),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
           if (p.levelVerification != null)
             _buildVerificationCard(p.levelVerification!),
           const SizedBox(height: 8),
@@ -212,70 +380,15 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
 
     return GestureDetector(
       onTap: h.tournamentId != null
-          ? () {
-              // Минимальный Tournament для экрана результатов
-              final dateParts = h.date.split('.');
-              DateTime parsedDate;
-              try {
-                parsedDate = DateTime(
-                  int.parse(dateParts[2]),
-                  int.parse(dateParts[1]),
-                  int.parse(dateParts[0]),
-                );
-              } catch (_) {
-                parsedDate = DateTime.now();
-              }
-
-              final tournament = Tournament(
-                id: h.tournamentId!,
-                name: h.tournamentName,
-                club: Club(id: 0, name: ''),
-                date: h.date,
-                time: '',
-                datetime: parsedDate,
-                type: h.tournamentType ?? 'americano',
-                typeName: '',
-                status: 'completed',
-                statusName: '',
-                minLevel: 0,
-                maxLevel: 0,
-                price: 0,
-                maxParticipants: 0,
-                participantsCount: 0,
-              );
-
-              Navigator.push(
+          // Открываем тем же роутером, что и в своём профиле, чтобы парный
+          // (командный) турнир открывался в нормальном Team-Live экране,
+          // а не в старом TournamentResultsScreen.
+          ? () => openTournamentLiveByType(
                 context,
-                MaterialPageRoute(
-                  builder: (_) {
-                    switch (tournament.type) {
-                      case 'king_of_court':
-                      case 'round_robin':
-                        // RR переиспользует live-экран Король корта
-                        return TournamentLiveKingOfCourtScreen(
-                          tournamentId: tournament.id,
-                          highlightPlayerId: widget.playerId,
-                        );
-                      case 'bali_koc':
-                        return TournamentLiveBaliKocScreen(
-                          tournamentId: tournament.id,
-                          highlightPlayerId: widget.playerId,
-                        );
-                      case 'americano':
-                      case 'americano_flex':
-                        // Показываем как Live, с подсветкой игрока профиля
-                        return TournamentLiveScreen(
-                          tournamentId: tournament.id,
-                          highlightPlayerId: widget.playerId,
-                        );
-                      default:
-                        return TournamentResultsScreen(
-                            tournament: tournament, playerId: widget.playerId);
-                    }
-                  },
-                ),
-              );
-            }
+                tournamentId: h.tournamentId!,
+                tournamentType: h.tournamentType ?? 'americano',
+                highlightPlayerId: widget.playerId,
+              )
           : null,
       child: Container(
         decoration: const BoxDecoration(
@@ -404,5 +517,70 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
     final hh = local.hour.toString().padLeft(2, '0');
     final mi = local.minute.toString().padLeft(2, '0');
     return '${local.day} ${months[local.month - 1]} ${local.year}, $hh:$mi';
+  }
+}
+
+/// Плитка турнира в листе «Позвать на турнир».
+class _InviteTournamentTile extends StatelessWidget {
+  final Tournament tournament;
+  final VoidCallback onTap;
+  const _InviteTournamentTile({required this.tournament, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tournament;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppTheme.background,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF2A2A2A)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(t.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 4),
+                  Text('${t.club.name} · ${t.dateShort}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: AppTheme.textSecondary, fontSize: 13)),
+                  const SizedBox(height: 2),
+                  Text('Уровень ${t.levelText}',
+                      style: const TextStyle(
+                          color: AppTheme.textDim, fontSize: 12)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: AppTheme.accent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text('Позвать',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
