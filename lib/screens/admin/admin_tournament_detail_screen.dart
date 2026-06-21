@@ -3650,10 +3650,11 @@ class _AdminTournamentDetailScreenState
   }
 
   Widget _buildRoundBlock(AdminMatchRound round) {
-    // В Round Robin раундов много (целый круг) — сворачиваем завершённые, чтобы
-    // не листать «газету». Активный («идёт») раскрыт по умолчанию. Остальные
-    // типы рендерятся как раньше (всегда раскрыты).
-    final collapsible = _matches?.type == 'round_robin';
+    // Round Robin и Americano Flex (вкл. парный) — раундов много, сворачиваем
+    // завершённые, чтобы не листать «газету». Активный («идёт») раскрыт по
+    // умолчанию. Остальные типы рендерятся как раньше (всегда раскрыты).
+    final collapsible = _matches?.type == 'round_robin'
+        || _matches?.type == 'americano_flex';
     final expanded = !collapsible
         ? true
         : (_rrRoundExpanded[round.id] ?? (round.status == 'in_progress'));
