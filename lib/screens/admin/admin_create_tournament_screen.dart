@@ -483,6 +483,10 @@ class _AdminCreateTournamentScreenState
               hint: '0',
               keyboardType: const TextInputType.numberWithOptions(),
             ),
+            if (_type == 'americano_flex') ...[
+              const SizedBox(height: 12),
+              _pairedToggle(),
+            ],
           ],
         ),
         const SizedBox(height: 12),
@@ -975,51 +979,6 @@ class _AdminCreateTournamentScreenState
           'Сколько кортов играет одновременно (1 корт = 4 игрока). '
           'Максимум — $_flexMaxCourts. Пусто = $_flexMaxCourts.',
           style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-          decoration: BoxDecoration(
-            color: AppTheme.cardRaised,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('Парный',
-                            style: TextStyle(
-                                color: AppTheme.textPrimary,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600)),
-                        const SizedBox(width: 6),
-                        GestureDetector(
-                          onTap: _showPairedInfo,
-                          child: const Icon(Icons.help_outline,
-                              size: 16, color: AppTheme.textSecondary),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    const Text(
-                      'Фиксированные пары, ротация соперников',
-                      style: TextStyle(
-                          color: AppTheme.textDim, fontSize: 11),
-                    ),
-                  ],
-                ),
-              ),
-              Switch(
-                value: _flexIsPaired,
-                onChanged: (v) => setState(() => _flexIsPaired = v),
-                activeColor: AppTheme.accent,
-              ),
-            ],
-          ),
         ),
         const SizedBox(height: 12),
       ]);
@@ -1838,6 +1797,50 @@ class _AdminCreateTournamentScreenState
           Switch(
             value: _isRated,
             onChanged: (v) => setState(() => _isRated = v),
+            activeColor: AppTheme.accent,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pairedToggle() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text('Парный',
+                        style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: _showPairedInfo,
+                      child: const Icon(Icons.help_outline,
+                          size: 16, color: AppTheme.textSecondary),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                const Text('Фиксированные пары, ротация соперников',
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11)),
+              ],
+            ),
+          ),
+          Switch(
+            value: _flexIsPaired,
+            onChanged: (v) => setState(() => _flexIsPaired = v),
             activeColor: AppTheme.accent,
           ),
         ],
