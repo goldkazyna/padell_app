@@ -11,8 +11,9 @@ import 'telegram_waiting_screen.dart';
 import 'email_login_screen.dart';
 import 'legal_document_screen.dart';
 import 'verify_code_screen.dart';
+import 'phone_login_screen.dart';
 
-enum _Provider { telegram, whatsapp, google, apple }
+enum _Provider { telegram, sms, google, apple }
 
 class _ProviderTint {
   final Color bg;
@@ -25,7 +26,7 @@ const _tints = {
     Color(0x0F229ED9), // rgba(34,158,217,0.06)
     Color(0x2E229ED9), // rgba(34,158,217,0.18)
   ),
-  _Provider.whatsapp: _ProviderTint(
+  _Provider.sms: _ProviderTint(
     Color(0x0F25D366), // rgba(37,211,102,0.06)
     Color(0x2E25D366), // rgba(37,211,102,0.18)
   ),
@@ -125,15 +126,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _sendCode() async {
     if (!_phoneFormKey.currentState!.validate()) return;
-    final auth = context.read<AuthProvider>();
-    final success = await auth.sendCode(_fullPhone);
-    if (!mounted) return;
-    if (success) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => VerifyCodeScreen(phone: _fullPhone)),
-      );
-    }
+    // Секретный вход админа (5 тапов + 05070507): SMS НЕ отправляем —
+    // сразу открываем ввод кода, админ вводит тестовый код 1111.
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => VerifyCodeScreen(phone: _fullPhone)),
+    );
   }
 
   void _onProvider(_Provider p) {
@@ -158,8 +156,11 @@ class _LoginScreenState extends State<LoginScreen> {
           _showComingSoon();
         }
         break;
-      case _Provider.whatsapp:
-        _showComingSoon();
+      case _Provider.sms:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PhoneLoginScreen()),
+        );
         break;
     }
   }
@@ -374,11 +375,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   _ProviderButton(
-                    label: 'WhatsApp',
-                    tint: _tints[_Provider.whatsapp]!,
-                    icon: const _BrandWhatsApp(),
-                    onTap: () => _onProvider(_Provider.whatsapp),
-                    disabled: true,
+                    label: AppLocalizations.of(context)!.smsLoginButton,
+                    tint: _tints[_Provider.sms]!,
+                    icon: const _BrandSms(),
+                    onTap: () => _onProvider(_Provider.sms),
                   ),
                   const SizedBox(height: 8),
                   Consumer<AuthProvider>(
@@ -708,10 +708,13 @@ const _telegramSvg = '''
 </svg>
 ''';
 
-const _whatsappSvg = '''
+const _smsSvg = '''
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
   <circle cx="12" cy="12" r="12" fill="#25D366"/>
-  <path d="M16.7 14.3c-.3-.1-1.6-.8-1.8-.9-.2-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1 0 1.2.9 2.4 1 2.6.1.2 1.8 2.7 4.4 3.8.6.3 1.1.4 1.5.5.6.2 1.2.2 1.7.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.2.2-1.3-.1-.2-.3-.2-.6-.3z" fill="#fff"/>
+  <path d="M6 8.5C6 7.7 6.7 7 7.5 7h9c.8 0 1.5.7 1.5 1.5v5c0 .8-.7 1.5-1.5 1.5H10l-3 2.5V15H7.5C6.7 15 6 14.3 6 13.5v-5z" fill="#fff"/>
+  <circle cx="9.5" cy="11" r="1" fill="#25D366"/>
+  <circle cx="12" cy="11" r="1" fill="#25D366"/>
+  <circle cx="14.5" cy="11" r="1" fill="#25D366"/>
 </svg>
 ''';
 
@@ -748,11 +751,12 @@ class _BrandTelegram extends StatelessWidget {
   Widget build(BuildContext context) => SvgPicture.string(_telegramSvg);
 }
 
-class _BrandWhatsApp extends StatelessWidget {
-  const _BrandWhatsApp();
+class _BrandSms extends StatelessWidget {
+  const _BrandSms();
   @override
-  Widget build(BuildContext context) => SvgPicture.string(_whatsappSvg);
+  Widget build(BuildContext context) => SvgPicture.string(_smsSvg);
 }
+
 
 class _BrandGoogle extends StatelessWidget {
   const _BrandGoogle();
