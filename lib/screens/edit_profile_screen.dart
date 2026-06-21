@@ -13,6 +13,7 @@ import '../utils/app_alert.dart';
 import '../utils/city_l10n.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import 'auth/change_phone_screen.dart';
 
 // Local utility aliases mapped to global AppTheme
 class _T {
@@ -271,6 +272,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _openChangePhone() async {
+    final changed = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangePhoneScreen(currentPhone: _phone),
+      ),
+    );
+    if (changed != null && changed.isNotEmpty && mounted) {
+      setState(() {
+        _phone = changed;
+        _phoneController.text = changed;
+      });
+      context.read<ProfileProvider>().loadProfile();
+    }
+  }
+
   Future<void> _pickBirthDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -383,7 +400,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     icon: Icons.phone_outlined,
                                     label: AppLocalizations.of(context)!.fieldPhone,
                                     value: _formatPhone(_phone),
-                                    trailing: const Icon(Icons.lock_outline, size: 15, color: _T.dim),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context)!.changePhoneButton,
+                                          style: const TextStyle(
+                                              color: _T.green,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        const Icon(Icons.chevron_right,
+                                            size: 16, color: _T.dim),
+                                      ],
+                                    ),
+                                    onTap: _openChangePhone,
                                   ),
                             _divider(),
                             _buildInfoRow(

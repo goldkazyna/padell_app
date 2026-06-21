@@ -1,3 +1,4 @@
+import '../models/tournament.dart';
 import '../models/tournament_invitation.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
@@ -33,5 +34,22 @@ class InvitationService {
   Future<void> decline(int id) async {
     final token = await _storage.getToken();
     await _api.post('/tournaments/invitations/$id/decline', {}, token);
+  }
+
+  /// Турниры, на которые можно позвать игрока (открытые, по его уровню).
+  Future<List<Tournament>> getInvitableTournaments(int playerId) async {
+    final token = await _storage.getToken();
+    final r = await _api.get('/tournaments/invitable?user_id=$playerId', token);
+    final list = (r['tournaments'] as List?) ?? const [];
+    return list
+        .map((j) => Tournament.fromJson(j as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Позвать игрока на турнир. Бросает ApiException с текстом при ошибке.
+  Future<void> invitePlayer(int tournamentId, int playerId) async {
+    final token = await _storage.getToken();
+    await _api.post(
+        '/tournaments/$tournamentId/invite-player', {'user_id': playerId}, token);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
@@ -18,6 +20,7 @@ class RatingScreen extends StatefulWidget {
 
 class _RatingScreenState extends State<RatingScreen> {
   final _searchController = TextEditingController();
+  Timer? _searchDebounce;
   bool _showSearch = false;
   int _currentTab = 0; // 0 = Rating, 1 = Growth
 
@@ -76,7 +79,33 @@ class _RatingScreenState extends State<RatingScreen> {
     _tournamentsScrollController.removeListener(_onTournamentsScroll);
     _tournamentsScrollController.dispose();
     _searchController.dispose();
+    _searchDebounce?.cancel();
     super.dispose();
+  }
+
+  /// Применить поиск к активной вкладке. Поиск активен от 3 символов;
+  /// меньше 3 (включая пусто) — показываем дефолтный список.
+  void _applySearch(String value) {
+    if (!mounted) return;
+    final q = value.trim();
+    final effective = q.length >= 3 ? q : '';
+    if (_currentTab == 0) {
+      context.read<RatingProvider>().setSearchQuery(effective);
+    } else if (_currentTab == 1) {
+      setState(() => _growthSearch = effective);
+      _loadGrowth();
+    } else if (_currentTab == 2) {
+      setState(() => _tournamentsSearch = effective);
+      _loadTournaments();
+    }
+  }
+
+  /// Динамический поиск с дебаунсом — пока пользователь печатает.
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () {
+      _applySearch(value);
+    });
   }
 
   /// Подгрузка следующих 50 пользователей, когда долистали почти до низа.
@@ -239,6 +268,7 @@ class _RatingScreenState extends State<RatingScreen> {
                     setState(() {
                       _showSearch = !_showSearch;
                       if (!_showSearch) {
+                        _searchDebounce?.cancel();
                         _searchController.clear();
                         if (_currentTab == 0) {
                           context.read<RatingProvider>().setSearchQuery('');
@@ -310,16 +340,10 @@ class _RatingScreenState extends State<RatingScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
                 ),
+                onChanged: _onSearchChanged,
                 onSubmitted: (value) {
-                  if (_currentTab == 0) {
-                    context.read<RatingProvider>().setSearchQuery(value);
-                  } else if (_currentTab == 1) {
-                    setState(() => _growthSearch = value);
-                    _loadGrowth();
-                  } else if (_currentTab == 2) {
-                    setState(() => _tournamentsSearch = value);
-                    _loadTournaments();
-                  }
+                  _searchDebounce?.cancel();
+                  _applySearch(value);
                 },
               ),
             ),

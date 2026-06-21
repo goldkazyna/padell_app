@@ -1963,4 +1963,56 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get filterDateCustom => 'Выбрать даты';
+
+  @override
+  String get smsLoginButton => 'Войти по SMS';
+
+  @override
+  String get phoneLoginTitle => 'Вход по номеру';
+
+  @override
+  String get phoneLoginSubtitle =>
+      'Введите номер телефона — отправим код подтверждения';
+
+  @override
+  String get getCodeButton => 'Получить код';
+
+  @override
+  String get registrationSubtitle => 'Заполните профиль, чтобы продолжить';
+
+  @override
+  String get fieldBirthDate => 'Дата рождения';
+
+  @override
+  String get selectBirthDate => 'Выберите дату';
+
+  @override
+  String get registrationFillAll => 'Заполните все поля';
+
+  @override
+  String get deleteAccountCodeHint =>
+      'Введите код из SMS, чтобы подтвердить удаление. Это действие необратимо.';
+
+  @override
+  String resendCodeIn(int seconds) {
+    return 'Отправить повторно через $seconds сек';
+  }
+
+  @override
+  String get changePhoneButton => 'Изменить номер';
+
+  @override
+  String get changePhoneTitle => 'Смена номера';
+
+  @override
+  String get changePhoneOldHint => 'Введите код, отправленный на текущий номер';
+
+  @override
+  String get changePhoneEnterNew => 'Введите новый номер телефона';
+
+  @override
+  String get changePhoneNewHint => 'Введите код, отправленный на новый номер';
+
+  @override
+  String get changePhoneSuccess => 'Номер изменён';
 }

@@ -9,8 +9,10 @@ import '../../screens/my_bookings_screen.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../screens/settings_screen.dart';
 import '../../screens/tournament_types_info_screen.dart';
+import '../../screens/auth/delete_account_code_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/app_alert.dart';
 
 class ProfileMenu extends StatelessWidget {
   const ProfileMenu({super.key});
@@ -208,46 +210,36 @@ class ProfileMenu extends StatelessWidget {
 
   void _showDeleteAccountDialog(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final passwordController = TextEditingController();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(l.deleteAccountTitle, style: const TextStyle(color: AppTheme.textPrimary)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l.deleteAccountWarning, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
-            const SizedBox(height: 16),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              style: const TextStyle(color: AppTheme.textPrimary),
-              decoration: InputDecoration(
-                hintText: l.deleteAccountPassword,
-                hintStyle: TextStyle(color: AppTheme.textSecondary.withAlpha(128)),
-                filled: true,
-                fillColor: AppTheme.background,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ],
-        ),
+        content: Text(l.deleteAccountWarning, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              final password = passwordController.text.isNotEmpty ? passwordController.text : null;
-              context.read<AuthProvider>().deleteAccount(password);
+              final auth = context.read<AuthProvider>();
+              // Отправляем SMS-код, затем экран ввода кода — удаление только
+              // после подтверждения кодом.
+              final sent = await auth.sendDeleteCode();
+              if (!context.mounted) return;
+              if (sent) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const DeleteAccountCodeScreen()),
+                );
+              } else {
+                showAppAlert(context, auth.error ?? l.error,
+                    title: l.error, isError: true);
+              }
             },
             child: Text(l.deleteButton, style: const TextStyle(color: AppTheme.error)),
           ),

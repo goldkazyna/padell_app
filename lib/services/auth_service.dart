@@ -7,12 +7,15 @@ class AuthResult {
   final String? message;
   final User? user;
   final String? token;
+  // true — пользователь только что создан по номеру (нужен экран регистрации).
+  final bool isNew;
 
   AuthResult({
     required this.success,
     this.message,
     this.user,
     this.token,
+    this.isNew = false,
   });
 }
 
@@ -56,6 +59,7 @@ class AuthService {
           success: true,
           token: token,
           user: user,
+          isNew: response['is_new'] == true,
         );
       }
 
@@ -305,7 +309,25 @@ class AuthService {
     }
   }
 
-  Future<AuthResult> deleteAccount([String? password]) async {
+  /// Отправить SMS-код для подтверждения удаления аккаунта.
+  Future<AuthResult> sendDeleteCode() async {
+    final token = await _storage.getToken();
+    if (token == null) {
+      return AuthResult(success: false, message: 'Не авторизован');
+    }
+    try {
+      final response =
+          await _api.post('/auth/account/send-delete-code', {}, token);
+      return AuthResult(
+        success: response['success'] == true,
+        message: response['message'] as String?,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> deleteAccount({String? code, String? password}) async {
     final token = await _storage.getToken();
     if (token == null) {
       return AuthResult(success: false, message: 'Не авторизован');
@@ -313,6 +335,9 @@ class AuthService {
 
     try {
       final body = <String, dynamic>{};
+      if (code != null && code.isNotEmpty) {
+        body['code'] = code;
+      }
       if (password != null && password.isNotEmpty) {
         body['password'] = password;
       }

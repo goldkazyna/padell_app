@@ -3705,6 +3705,102 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Выбрать даты'**
   String get filterDateCustom;
+
+  /// No description provided for @smsLoginButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти по SMS'**
+  String get smsLoginButton;
+
+  /// No description provided for @phoneLoginTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вход по номеру'**
+  String get phoneLoginTitle;
+
+  /// No description provided for @phoneLoginSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите номер телефона — отправим код подтверждения'**
+  String get phoneLoginSubtitle;
+
+  /// No description provided for @getCodeButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Получить код'**
+  String get getCodeButton;
+
+  /// No description provided for @registrationSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заполните профиль, чтобы продолжить'**
+  String get registrationSubtitle;
+
+  /// No description provided for @fieldBirthDate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата рождения'**
+  String get fieldBirthDate;
+
+  /// No description provided for @selectBirthDate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите дату'**
+  String get selectBirthDate;
+
+  /// No description provided for @registrationFillAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заполните все поля'**
+  String get registrationFillAll;
+
+  /// No description provided for @deleteAccountCodeHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите код из SMS, чтобы подтвердить удаление. Это действие необратимо.'**
+  String get deleteAccountCodeHint;
+
+  /// No description provided for @resendCodeIn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отправить повторно через {seconds} сек'**
+  String resendCodeIn(int seconds);
+
+  /// No description provided for @changePhoneButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Изменить номер'**
+  String get changePhoneButton;
+
+  /// No description provided for @changePhoneTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Смена номера'**
+  String get changePhoneTitle;
+
+  /// No description provided for @changePhoneOldHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите код, отправленный на текущий номер'**
+  String get changePhoneOldHint;
+
+  /// No description provided for @changePhoneEnterNew.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите новый номер телефона'**
+  String get changePhoneEnterNew;
+
+  /// No description provided for @changePhoneNewHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите код, отправленный на новый номер'**
+  String get changePhoneNewHint;
+
+  /// No description provided for @changePhoneSuccess.
+  ///
+  /// In ru, this message translates to:
+  /// **'Номер изменён'**
+  String get changePhoneSuccess;
 }
 
 class _AppLocalizationsDelegate

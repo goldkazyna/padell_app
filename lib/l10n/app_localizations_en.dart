@@ -1595,7 +1595,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailOrPhonePlaceholder => 'example@mail.com or +7 777 123 45 67';
 
   @override
-  String get registrationTitle => 'Registration';
+  String get registrationTitle => 'Sign up';
 
   @override
   String get createAccountToContinue => 'Create an account to continue';
@@ -1960,4 +1960,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterDateCustom => 'Pick dates';
+
+  @override
+  String get smsLoginButton => 'Sign in with SMS';
+
+  @override
+  String get phoneLoginTitle => 'Phone sign-in';
+
+  @override
+  String get phoneLoginSubtitle =>
+      'Enter your phone number — we\'ll send a verification code';
+
+  @override
+  String get getCodeButton => 'Get code';
+
+  @override
+  String get registrationSubtitle => 'Fill in your profile to continue';
+
+  @override
+  String get fieldBirthDate => 'Date of birth';
+
+  @override
+  String get selectBirthDate => 'Select date';
+
+  @override
+  String get registrationFillAll => 'Fill in all fields';
+
+  @override
+  String get deleteAccountCodeHint =>
+      'Enter the code from SMS to confirm deletion. This action is irreversible.';
+
+  @override
+  String resendCodeIn(int seconds) {
+    return 'Resend in $seconds s';
+  }
+
+  @override
+  String get changePhoneButton => 'Change number';
+
+  @override
+  String get changePhoneTitle => 'Change phone number';
+
+  @override
+  String get changePhoneOldHint => 'Enter the code sent to your current number';
+
+  @override
+  String get changePhoneEnterNew => 'Enter your new phone number';
+
+  @override
+  String get changePhoneNewHint => 'Enter the code sent to the new number';
+
+  @override
+  String get changePhoneSuccess => 'Phone number changed';
 }

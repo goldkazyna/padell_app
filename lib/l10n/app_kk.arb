@@ -697,5 +697,25 @@
   "clubTelegram": "Телеграм-арна",
   "openTelegramChannel": "Телеграм-арнаны ашу",
   "clubInstagram": "Instagram",
-  "openInstagram": "Instagram-ды ашу"
+  "openInstagram": "Instagram-ды ашу",
+  "smsLoginButton": "SMS арқылы кіру",
+  "phoneLoginTitle": "Нөмір арқылы кіру",
+  "phoneLoginSubtitle": "Телефон нөміріңізді енгізіңіз — растау кодын жібереміз",
+  "getCodeButton": "Код алу",
+  "registrationTitle": "Тіркелу",
+  "registrationSubtitle": "Жалғастыру үшін профильді толтырыңыз",
+  "fieldBirthDate": "Туған күні",
+  "selectBirthDate": "Күнді таңдаңыз",
+  "registrationFillAll": "Барлық өрістерді толтырыңыз",
+  "deleteAccountCodeHint": "Жоюды растау үшін SMS кодын енгізіңіз. Бұл әрекетті қайтару мүмкін емес.",
+  "resendCodeIn": "{seconds} сек кейін қайта жіберу",
+  "@resendCodeIn": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "changePhoneButton": "Нөмірді өзгерту",
+  "changePhoneTitle": "Нөмірді өзгерту",
+  "changePhoneOldHint": "Ағымдағы нөмірге жіберілген кодты енгізіңіз",
+  "changePhoneEnterNew": "Жаңа телефон нөмірін енгізіңіз",
+  "changePhoneNewHint": "Жаңа нөмірге жіберілген кодты енгізіңіз",
+  "changePhoneSuccess": "Нөмір өзгертілді"
 }

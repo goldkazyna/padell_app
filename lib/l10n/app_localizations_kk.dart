@@ -1941,4 +1941,57 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get filterDateCustom => 'Выбрать даты';
+
+  @override
+  String get smsLoginButton => 'SMS арқылы кіру';
+
+  @override
+  String get phoneLoginTitle => 'Нөмір арқылы кіру';
+
+  @override
+  String get phoneLoginSubtitle =>
+      'Телефон нөміріңізді енгізіңіз — растау кодын жібереміз';
+
+  @override
+  String get getCodeButton => 'Код алу';
+
+  @override
+  String get registrationSubtitle => 'Жалғастыру үшін профильді толтырыңыз';
+
+  @override
+  String get fieldBirthDate => 'Туған күні';
+
+  @override
+  String get selectBirthDate => 'Күнді таңдаңыз';
+
+  @override
+  String get registrationFillAll => 'Барлық өрістерді толтырыңыз';
+
+  @override
+  String get deleteAccountCodeHint =>
+      'Жоюды растау үшін SMS кодын енгізіңіз. Бұл әрекетті қайтару мүмкін емес.';
+
+  @override
+  String resendCodeIn(int seconds) {
+    return '$seconds сек кейін қайта жіберу';
+  }
+
+  @override
+  String get changePhoneButton => 'Нөмірді өзгерту';
+
+  @override
+  String get changePhoneTitle => 'Нөмірді өзгерту';
+
+  @override
+  String get changePhoneOldHint =>
+      'Ағымдағы нөмірге жіберілген кодты енгізіңіз';
+
+  @override
+  String get changePhoneEnterNew => 'Жаңа телефон нөмірін енгізіңіз';
+
+  @override
+  String get changePhoneNewHint => 'Жаңа нөмірге жіберілген кодты енгізіңіз';
+
+  @override
+  String get changePhoneSuccess => 'Нөмір өзгертілді';
 }

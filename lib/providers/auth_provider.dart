@@ -82,6 +82,10 @@ class AuthProvider extends ChangeNotifier {
     return result.success;
   }
 
+  // true, если последний успешный verifyCode создал нового пользователя
+  // (нужно показать экран регистрации перед входом).
+  bool lastVerifyIsNew = false;
+
   Future<bool> verifyCode(String phone, String code) async {
     _isLoading = true;
     _error = null;
@@ -96,6 +100,7 @@ class AuthProvider extends ChangeNotifier {
         _user = result.user;
         _status = AuthStatus.authenticated;
         _error = null;
+        lastVerifyIsNew = result.isNew;
       } else {
         _error = result.message;
       }
@@ -347,13 +352,29 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> deleteAccount([String? password]) async {
+  /// Отправить SMS-код для подтверждения удаления аккаунта.
+  Future<bool> sendDeleteCode() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _authService.sendDeleteCode();
+
+    _isLoading = false;
+    _error = result.success ? null : result.message;
+    notifyListeners();
+
+    return result.success;
+  }
+
+  Future<bool> deleteAccount({String? code, String? password}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final result = await _authService.deleteAccount(password);
+      final result =
+          await _authService.deleteAccount(code: code, password: password);
 
       _isLoading = false;
 
