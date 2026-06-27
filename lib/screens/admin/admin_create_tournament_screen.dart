@@ -293,6 +293,11 @@ class _AdminCreateTournamentScreenState
       body['is_paired'] = true;
     }
 
+    if (_type == 'king_of_court' && _flexIsPaired) {
+      // Король корта с фиксированными парами: пары админ создаёт после набора.
+      body['is_paired'] = true;
+    }
+
     setState(() {
       _saving = true;
       _saveLabel = 'Создаём турнир...';
@@ -483,7 +488,7 @@ class _AdminCreateTournamentScreenState
               hint: '0',
               keyboardType: const TextInputType.numberWithOptions(),
             ),
-            if (_type == 'americano_flex') ...[
+            if (_type == 'americano_flex' || _type == 'king_of_court') ...[
               const SizedBox(height: 12),
               _pairedToggle(),
             ],

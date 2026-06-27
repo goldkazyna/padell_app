@@ -687,6 +687,29 @@ class AdminService {
     );
   }
 
+  /// Получить участников + уже созданные пары для фикс-парного Короля корта.
+  Future<Map<String, dynamic>> getKocPairs(int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.get(
+      '/admin/tournaments/$tournamentId/kingofcourt/pairs',
+      token,
+    );
+    return response;
+  }
+
+  /// Сохранить пары Короля корта. pairs — массив [[player1_id, player2_id], ...].
+  Future<void> saveKocPairs(
+    int tournamentId,
+    List<List<int>> pairs,
+  ) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/kingofcourt/pairs',
+      {'pairs': pairs},
+      token,
+    );
+  }
+
   /// Сгенерировать следующий раунд (KOC). Возвращает свежий /matches.
   Future<AdminMatchesResponse> generateNextRound(int tournamentId) async {
     final token = await _storage.getToken();

@@ -26,6 +26,8 @@ class AdminTournamentDetail {
   final bool canRestart;
   final bool canDelete;
   final bool baliPairsCreated;
+  final bool kocPairsCreated;
+  final bool isPaired;
   final bool tournamentsFullAccess;
   final bool isAdminPairing;
   final bool isPersonal; // личный турнир игрока (без клуба)
@@ -57,6 +59,8 @@ class AdminTournamentDetail {
     required this.canRestart,
     required this.canDelete,
     this.baliPairsCreated = false,
+    this.kocPairsCreated = false,
+    this.isPaired = false,
     this.tournamentsFullAccess = true,
     this.isAdminPairing = false,
     this.isPersonal = false,
@@ -99,6 +103,8 @@ class AdminTournamentDetail {
       canRestart: json['can_restart'] as bool? ?? false,
       canDelete: json['can_delete'] as bool? ?? false,
       baliPairsCreated: json['bali_pairs_created'] as bool? ?? false,
+      kocPairsCreated: json['koc_pairs_created'] as bool? ?? false,
+      isPaired: json['is_paired'] as bool? ?? false,
       tournamentsFullAccess:
           json['tournaments_full_access'] as bool? ?? true,
     );

@@ -479,6 +479,13 @@ class Tournament {
         return const Color(0xFFA855F7);
       case 'classic':
         return const Color(0xFF06B6D4);
+      case 'king_of_court':
+      case 'bali_koc':
+        return const Color(0xFF7C3AED);
+      case 'round_robin':
+        return const Color(0xFF14B8A6);
+      case 'americano_flex':
+        return const Color(0xFF3B82F6);
       default:
         return const Color(0xFF3B82F6);
     }

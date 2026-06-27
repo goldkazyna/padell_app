@@ -23,6 +23,7 @@ import '../../widgets/moderation_countdown.dart';
 import '../../widgets/verified_badge.dart';
 import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
+import 'admin_koc_create_pairs_screen.dart';
 import 'admin_pairing_screen.dart';
 
 /// Этап 3a/3b — экран управления существующим турниром.
@@ -1176,11 +1177,14 @@ class _AdminTournamentDetailScreenState
         color: AppTheme.accent,
       ));
     } else if (t.canStart) {
-      // Bali KOC: до создания пар нельзя стартовать — заменяем кнопку.
+      // Bali KOC / фикс-парный Король корта: до создания пар нельзя стартовать.
       final isBaliWithoutPairs =
           t.type == 'bali_koc' && !t.baliPairsCreated;
+      final isKocWithoutPairs =
+          t.type == 'king_of_court' && t.isPaired && !t.kocPairsCreated;
+      final needPairs = isBaliWithoutPairs || isKocWithoutPairs;
       if (children.isNotEmpty) children.add(const SizedBox(height: 10));
-      if (isBaliWithoutPairs) {
+      if (needPairs) {
         children.add(_primaryButton(
           label: 'Создать пары',
           onTap: _starting
@@ -1188,10 +1192,15 @@ class _AdminTournamentDetailScreenState
               : () async {
                   final ok = await Navigator.of(context).push<bool>(
                     MaterialPageRoute(
-                      builder: (_) => AdminBaliCreatePairsScreen(
-                        tournamentId: t.id,
-                        tournamentName: t.name,
-                      ),
+                      builder: (_) => isKocWithoutPairs
+                          ? AdminKocCreatePairsScreen(
+                              tournamentId: t.id,
+                              tournamentName: t.name,
+                            )
+                          : AdminBaliCreatePairsScreen(
+                              tournamentId: t.id,
+                              tournamentName: t.name,
+                            ),
                     ),
                   );
                   if (ok == true) {

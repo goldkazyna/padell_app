@@ -320,6 +320,9 @@ class _TournamentLiveKingOfCourtScreenState
   /// параметрам: вместо РП/%/Очки — З (забито геймов) · ПР (пропущено) · ± (разница).
   bool get _isRoundRobin => _data?['tournament']?['format'] == 'round_robin';
 
+  /// Король корта с фиксированными парами — таблица показывается по парам.
+  bool get _isPaired => _data?['tournament']?['is_paired'] == true;
+
   Widget _buildLeaderboard(List<Map<String, dynamic>> leaderboard) {
     const hdrStyle = TextStyle(
         color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700);
@@ -342,7 +345,7 @@ class _TournamentLiveKingOfCourtScreenState
             children: [
               hdr('#', 28, align: TextAlign.left),
               const SizedBox(width: 8),
-              const Expanded(child: Text('ИГРОК', style: hdrStyle)),
+              Expanded(child: Text(_isPaired ? 'ПАРА' : 'ИГРОК', style: hdrStyle)),
               hdr('В', 28),
               hdr('П', 28),
               hdr(isRR ? 'З' : 'РП', 36),
@@ -352,7 +355,8 @@ class _TournamentLiveKingOfCourtScreenState
           ),
         ),
         // Строки
-        for (final p in leaderboard) _buildLeaderboardRow(p),
+        for (final p in leaderboard)
+          _isPaired ? _buildPairLeaderboardRow(p) : _buildLeaderboardRow(p),
       ],
     );
   }
@@ -525,6 +529,128 @@ class _TournamentLiveKingOfCourtScreenState
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Строка таблицы для парного Короля корта: пара (2 игрока) + статы по КК.
+  Widget _buildPairLeaderboardRow(Map<String, dynamic> p) {
+    final position = (p['position'] as num).toInt();
+    final isMe = p['is_me'] == true;
+    final wins = (p['wins'] as num?)?.toInt() ?? 0;
+    final losses = (p['losses'] as num?)?.toInt() ?? 0;
+    final pointDiff = (p['point_diff'] as num?)?.toInt() ?? 0;
+    final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
+    final totalPoints = (p['total_points'] as num?)?.toInt() ?? 0;
+    final p1 = p['player1'] as Map<String, dynamic>?;
+    final p2 = p['player2'] as Map<String, dynamic>?;
+    final p1Name = p1?['name'] as String?;
+    final p2Name = p2?['name'] as String?;
+
+    Color posColor = const Color(0xFF52525B);
+    if (position == 1) posColor = const Color(0xFFFACC15);
+    if (position == 2) posColor = const Color(0xFF94A3B8);
+    if (position == 3) posColor = const Color(0xFFF97316);
+
+    final diffStr = pointDiff > 0 ? '+$pointDiff' : '$pointDiff';
+    final diffColor = pointDiff > 0
+        ? const Color(0xFF22C55E)
+        : (pointDiff < 0 ? const Color(0xFFEF4444) : AppTheme.textSecondary);
+
+    final nameStyle = TextStyle(
+      color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+    );
+
+    return InkWell(
+      onTap: () => _openPlayer(
+        p1?['id'] is num ? (p1!['id'] as num).toInt() : null,
+        p1Name,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isMe ? AppTheme.accent.withAlpha(15) : Colors.transparent,
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1A1A1E), width: 0.5),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 28,
+              child: Text(
+                '$position',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isMe ? AppTheme.accent : posColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Два аватара пары (с наложением)
+            SizedBox(
+              width: 38,
+              height: 30,
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: 0,
+                    child: _Avatar(url: p1?['avatar'] as String?, name: p1Name ?? '', size: 22),
+                  ),
+                  Positioned(
+                    left: 14,
+                    child: _Avatar(url: p2?['avatar'] as String?, name: p2Name ?? '', size: 22),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(p1Name ?? '—', maxLines: 1, overflow: TextOverflow.ellipsis, style: nameStyle),
+                  Text(p2Name ?? '—', maxLines: 1, overflow: TextOverflow.ellipsis, style: nameStyle),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 28,
+              child: Text('$wins',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: isMe ? AppTheme.accent : const Color(0xFF22C55E), fontSize: 12)),
+            ),
+            SizedBox(
+              width: 28,
+              child: Text('$losses',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: isMe ? AppTheme.accent : const Color(0xFFEF4444), fontSize: 12)),
+            ),
+            SizedBox(
+              width: 36,
+              child: Text(diffStr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: isMe ? AppTheme.accent : diffColor, fontSize: 11, fontWeight: FontWeight.w700)),
+            ),
+            SizedBox(
+              width: 36,
+              child: Text('$ballPercent%',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w600)),
+            ),
+            SizedBox(
+              width: 40,
+              child: Text('$totalPoints',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(color: isMe ? AppTheme.accent : const Color(0xFF22C55E), fontSize: 13, fontWeight: FontWeight.w800)),
+            ),
           ],
         ),
       ),
