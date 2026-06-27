@@ -1660,7 +1660,9 @@ class _AdminTournamentDetailScreenState
                             if (v == 'profile') _openProfile(p);
                             if (v == 'to_main') _moveParticipant(p, 'registered');
                             if (v == 'moderation') _moveParticipant(p, 'pending');
-                            if (v == 'call') _callPlayer(p);
+                            if (v == 'copy_phone') _copyPhone(p);
+                            if (v == 'copy_phone') _copyPhone(p);
+                if (v == 'call') _callPlayer(p);
                             if (v == 'whatsapp') _whatsappPlayer(p);
                             if (v == 'remove') _removeOne(p);
                           },
@@ -1683,20 +1685,7 @@ class _AdminTournamentDetailScreenState
                                     size: 18, color: AppTheme.accent),
                                 'Переместить в модерацию',
                                 AppTheme.textPrimary),
-                            if ((p.phone ?? '').isNotEmpty) ...[
-                              _popupItem(
-                                  'call',
-                                  const Icon(Icons.call,
-                                      size: 18, color: AppTheme.accent),
-                                  'Позвонить',
-                                  AppTheme.textPrimary),
-                              _popupItem(
-                                  'whatsapp',
-                                  const FaIcon(FontAwesomeIcons.whatsapp,
-                                      size: 17, color: Color(0xFF25D366)),
-                                  'WhatsApp',
-                                  AppTheme.textPrimary),
-                            ],
+                            ..._phoneMenuItems(p),
                             _popupItem(
                                 'remove',
                                 const Icon(Icons.delete_outline,
@@ -1768,6 +1757,7 @@ class _AdminTournamentDetailScreenState
               color: AppTheme.cardRaised,
               onSelected: (v) {
                 if (v == 'profile') _openProfile(p);
+                if (v == 'copy_phone') _copyPhone(p);
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'approve') _approveOne(p);
@@ -1779,15 +1769,7 @@ class _AdminTournamentDetailScreenState
                     const Icon(Icons.person_outline,
                         size: 18, color: AppTheme.textSecondary),
                     'Просмотреть профиль', AppTheme.textPrimary),
-                if ((p.phone ?? '').isNotEmpty) ...[
-                  _popupItem('call',
-                      const Icon(Icons.call, size: 18, color: AppTheme.accent),
-                      'Позвонить', AppTheme.textPrimary),
-                  _popupItem('whatsapp',
-                      const FaIcon(FontAwesomeIcons.whatsapp,
-                          size: 17, color: Color(0xFF25D366)),
-                      'WhatsApp', AppTheme.textPrimary),
-                ],
+                ..._phoneMenuItems(p),
                 _popupItem('approve',
                     const Icon(Icons.check_circle,
                         size: 18, color: AppTheme.accent),
@@ -1828,6 +1810,7 @@ class _AdminTournamentDetailScreenState
               color: AppTheme.cardRaised,
               onSelected: (v) {
                 if (v == 'profile') _openProfile(p);
+                if (v == 'copy_phone') _copyPhone(p);
                 if (v == 'call') _callPlayer(p);
                 if (v == 'whatsapp') _whatsappPlayer(p);
                 if (v == 'replace') _openReplacePlayer(p);
@@ -1840,15 +1823,7 @@ class _AdminTournamentDetailScreenState
                     const Icon(Icons.person_outline,
                         size: 18, color: AppTheme.textSecondary),
                     'Просмотреть профиль', AppTheme.textPrimary),
-                if ((p.phone ?? '').isNotEmpty) ...[
-                  _popupItem('call',
-                      const Icon(Icons.call, size: 18, color: AppTheme.accent),
-                      'Позвонить', AppTheme.textPrimary),
-                  _popupItem('whatsapp',
-                      const FaIcon(FontAwesomeIcons.whatsapp,
-                          size: 17, color: Color(0xFF25D366)),
-                      'WhatsApp', AppTheme.textPrimary),
-                ],
+                ..._phoneMenuItems(p),
                 _popupItem('replace',
                     const Icon(Icons.swap_horiz,
                         size: 18, color: AppTheme.textSecondary),
@@ -2335,7 +2310,8 @@ class _AdminTournamentDetailScreenState
     final pieces = <String>[];
     if (p.level != null) pieces.add('L${p.level!.toStringAsFixed(2)}');
     if (p.rating != null) pieces.add('${p.rating}');
-    if ((p.phone ?? '').isNotEmpty) pieces.add(_formatPhone(p.phone));
+    // Телефон убран из строки (не влезал на широких экранах) — перенесён в
+    // меню «три точки» (см. _phoneMenuItems).
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2402,6 +2378,34 @@ class _AdminTournamentDetailScreenState
         ],
       ),
     );
+  }
+
+  /// Пункты меню для телефона: сам номер (тап = копировать) + Позвонить + WhatsApp.
+  /// Используется во всех меню участников. Пусто, если телефона нет.
+  List<PopupMenuItem<String>> _phoneMenuItems(AdminParticipant p) {
+    if ((p.phone ?? '').isEmpty) return [];
+    return [
+      _popupItem(
+        'copy_phone',
+        const Icon(Icons.phone_outlined, size: 18, color: AppTheme.textSecondary),
+        _formatPhone(p.phone),
+        AppTheme.textSecondary),
+      _popupItem(
+        'call',
+        const Icon(Icons.call, size: 18, color: AppTheme.accent),
+        'Позвонить', AppTheme.textPrimary),
+      _popupItem(
+        'whatsapp',
+        const FaIcon(FontAwesomeIcons.whatsapp, size: 17, color: Color(0xFF25D366)),
+        'WhatsApp', AppTheme.textPrimary),
+    ];
+  }
+
+  Future<void> _copyPhone(AdminParticipant p) async {
+    final phone = _formatPhone(p.phone);
+    if (phone.isEmpty) return;
+    await Clipboard.setData(ClipboardData(text: phone));
+    if (mounted) await showAppAlert(context, 'Номер скопирован: $phone');
   }
 
   void _openProfile(AdminParticipant p) {
