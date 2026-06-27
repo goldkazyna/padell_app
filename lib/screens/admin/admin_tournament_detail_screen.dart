@@ -213,6 +213,35 @@ class _AdminTournamentDetailScreenState
     }
   }
 
+  /// Нужно ли сначала создать пары (Bali или фикс-парный Король корта без пар).
+  bool get _needPairs {
+    final t = _t;
+    if (t == null) return false;
+    if (t.type == 'bali_koc' && !t.baliPairsCreated) return true;
+    if (t.type == 'king_of_court' && t.isPaired && !t.kocPairsCreated) return true;
+    return false;
+  }
+
+  /// Открыть экран создания пар (KOC или Bali) и обновить карточку после.
+  Future<void> _openCreatePairs() async {
+    final t = _t;
+    if (t == null) return;
+    final isKoc = t.type == 'king_of_court';
+    final ok = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => isKoc
+            ? AdminKocCreatePairsScreen(tournamentId: t.id, tournamentName: t.name)
+            : AdminBaliCreatePairsScreen(tournamentId: t.id, tournamentName: t.name),
+      ),
+    );
+    if (ok == true) {
+      try {
+        final fresh = await context.read<AdminService>().getTournamentDetail(t.id);
+        if (mounted) setState(() => _t = fresh);
+      } catch (_) {}
+    }
+  }
+
   Future<void> _start() async {
     final t = _t;
     if (t == null) return;
@@ -544,7 +573,13 @@ class _AdminTournamentDetailScreenState
             icon: const Icon(Icons.more_vert, color: AppTheme.textPrimary),
             color: AppTheme.card,
             onSelected: (value) {
-              if (value == 'start') _start();
+              if (value == 'start') {
+                if (_needPairs) {
+                  _openCreatePairs();
+                } else {
+                  _start();
+                }
+              }
               if (value == 'restart') _restart();
               if (value == 'send_push') _sendPush();
             },
@@ -554,7 +589,7 @@ class _AdminTournamentDetailScreenState
                 PopupMenuItem<String>(
                   value: 'start',
                   enabled: _t?.canStart ?? false,
-                  child: Text(l10n.startTournamentMenu),
+                  child: Text(_needPairs ? 'Создать пары' : l10n.startTournamentMenu),
                 ),
                 PopupMenuItem<String>(
                   value: 'restart',
@@ -1178,41 +1213,11 @@ class _AdminTournamentDetailScreenState
       ));
     } else if (t.canStart) {
       // Bali KOC / фикс-парный Король корта: до создания пар нельзя стартовать.
-      final isBaliWithoutPairs =
-          t.type == 'bali_koc' && !t.baliPairsCreated;
-      final isKocWithoutPairs =
-          t.type == 'king_of_court' && t.isPaired && !t.kocPairsCreated;
-      final needPairs = isBaliWithoutPairs || isKocWithoutPairs;
       if (children.isNotEmpty) children.add(const SizedBox(height: 10));
-      if (needPairs) {
+      if (_needPairs) {
         children.add(_primaryButton(
           label: 'Создать пары',
-          onTap: _starting
-              ? null
-              : () async {
-                  final ok = await Navigator.of(context).push<bool>(
-                    MaterialPageRoute(
-                      builder: (_) => isKocWithoutPairs
-                          ? AdminKocCreatePairsScreen(
-                              tournamentId: t.id,
-                              tournamentName: t.name,
-                            )
-                          : AdminBaliCreatePairsScreen(
-                              tournamentId: t.id,
-                              tournamentName: t.name,
-                            ),
-                    ),
-                  );
-                  if (ok == true) {
-                    // Перезагружаем карточку чтобы появилась кнопка «Запустить турнир»
-                    try {
-                      final fresh = await context
-                          .read<AdminService>()
-                          .getTournamentDetail(t.id);
-                      if (mounted) setState(() => _t = fresh);
-                    } catch (_) {}
-                  }
-                },
+          onTap: _starting ? null : _openCreatePairs,
           color: AppTheme.accent,
         ));
       } else {
