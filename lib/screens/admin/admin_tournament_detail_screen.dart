@@ -1651,28 +1651,28 @@ class _AdminTournamentDetailScreenState
                       _avatar(p),
                       const SizedBox(width: 10),
                       Expanded(child: _nameAndMeta(p)),
-                      if (canModify)
-                        PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert,
-                              color: AppTheme.textSecondary),
-                          color: AppTheme.cardRaised,
-                          onSelected: (v) {
-                            if (v == 'profile') _openProfile(p);
-                            if (v == 'to_main') _moveParticipant(p, 'registered');
-                            if (v == 'moderation') _moveParticipant(p, 'pending');
-                            if (v == 'copy_phone') _copyPhone(p);
-                            if (v == 'copy_phone') _copyPhone(p);
-                if (v == 'call') _callPlayer(p);
-                            if (v == 'whatsapp') _whatsappPlayer(p);
-                            if (v == 'remove') _removeOne(p);
-                          },
-                          itemBuilder: (_) => [
-                            _popupItem(
-                                'profile',
-                                const Icon(Icons.person_outline,
-                                    size: 18, color: AppTheme.textSecondary),
-                                'Просмотреть профиль',
-                                AppTheme.textPrimary),
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert,
+                            color: AppTheme.textSecondary),
+                        color: AppTheme.cardRaised,
+                        onSelected: (v) {
+                          if (v == 'profile') _openProfile(p);
+                          if (v == 'copy_phone') _copyPhone(p);
+                          if (v == 'call') _callPlayer(p);
+                          if (v == 'whatsapp') _whatsappPlayer(p);
+                          if (v == 'to_main') _moveParticipant(p, 'registered');
+                          if (v == 'moderation') _moveParticipant(p, 'pending');
+                          if (v == 'remove') _removeOne(p);
+                        },
+                        itemBuilder: (_) => [
+                          _popupItem(
+                              'profile',
+                              const Icon(Icons.person_outline,
+                                  size: 18, color: AppTheme.textSecondary),
+                              'Просмотреть профиль',
+                              AppTheme.textPrimary),
+                          ..._phoneMenuItems(p),
+                          if (canModify) ...[
                             _popupItem(
                                 'to_main',
                                 const Icon(Icons.check_circle,
@@ -1685,7 +1685,6 @@ class _AdminTournamentDetailScreenState
                                     size: 18, color: AppTheme.accent),
                                 'Переместить в модерацию',
                                 AppTheme.textPrimary),
-                            ..._phoneMenuItems(p),
                             _popupItem(
                                 'remove',
                                 const Icon(Icons.delete_outline,
@@ -1693,7 +1692,8 @@ class _AdminTournamentDetailScreenState
                                 'Удалить',
                                 AppTheme.error),
                           ],
-                        ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -1803,27 +1803,28 @@ class _AdminTournamentDetailScreenState
           _avatar(p),
           const SizedBox(width: 10),
           Expanded(child: _nameAndMeta(p)),
-          if (canModify)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert,
-                  color: AppTheme.textSecondary),
-              color: AppTheme.cardRaised,
-              onSelected: (v) {
-                if (v == 'profile') _openProfile(p);
-                if (v == 'copy_phone') _copyPhone(p);
-                if (v == 'call') _callPlayer(p);
-                if (v == 'whatsapp') _whatsappPlayer(p);
-                if (v == 'replace') _openReplacePlayer(p);
-                if (v == 'to_moderation') _moveParticipant(p, 'pending');
-                if (v == 'waitlist') _moveParticipant(p, 'waiting');
-                if (v == 'remove') _removeOne(p);
-              },
-              itemBuilder: (_) => [
-                _popupItem('profile',
-                    const Icon(Icons.person_outline,
-                        size: 18, color: AppTheme.textSecondary),
-                    'Просмотреть профиль', AppTheme.textPrimary),
-                ..._phoneMenuItems(p),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert,
+                color: AppTheme.textSecondary),
+            color: AppTheme.cardRaised,
+            onSelected: (v) {
+              if (v == 'profile') _openProfile(p);
+              if (v == 'copy_phone') _copyPhone(p);
+              if (v == 'call') _callPlayer(p);
+              if (v == 'whatsapp') _whatsappPlayer(p);
+              if (v == 'replace') _openReplacePlayer(p);
+              if (v == 'to_moderation') _moveParticipant(p, 'pending');
+              if (v == 'waitlist') _moveParticipant(p, 'waiting');
+              if (v == 'remove') _removeOne(p);
+            },
+            itemBuilder: (_) => [
+              _popupItem('profile',
+                  const Icon(Icons.person_outline,
+                      size: 18, color: AppTheme.textSecondary),
+                  'Просмотреть профиль', AppTheme.textPrimary),
+              ..._phoneMenuItems(p),
+              // Действия изменения состава — только когда это разрешено.
+              if (canModify) ...[
                 _popupItem('replace',
                     const Icon(Icons.swap_horiz,
                         size: 18, color: AppTheme.textSecondary),
@@ -1841,7 +1842,8 @@ class _AdminTournamentDetailScreenState
                         size: 18, color: AppTheme.error),
                     'Удалить', AppTheme.error),
               ],
-            ),
+            ],
+          ),
         ],
       ),
     );
