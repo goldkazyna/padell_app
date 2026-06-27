@@ -898,24 +898,34 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               ],
             ),
           ),
+          // Горизонтальный скролл: на узких/крупномасштабных экранах таблица
+          // не сжимается, а скроллится вбок. Имя — фикс. ширина.
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
-            child: Table(
-              columnWidths: const {
-                0: IntrinsicColumnWidth(), // #
-                1: IntrinsicColumnWidth(), // avatar
-                2: FlexColumnWidth(),       // name
-                3: IntrinsicColumnWidth(), // М (матчи)
-                4: IntrinsicColumnWidth(), // ОТД (отдыхи)
-                5: IntrinsicColumnWidth(), // СРЕД (среднее)
-                6: IntrinsicColumnWidth(), // Очки
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                _buildFlexHeaderRow(),
-                for (final p in lb)
-                  _buildFlexLeaderboardTableRow(p, totalRounds),
-              ],
+            child: LayoutBuilder(
+              builder: (context, c) => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: c.maxWidth),
+                  child: Table(
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(), // #
+                      1: IntrinsicColumnWidth(), // avatar
+                      2: IntrinsicColumnWidth(), // name (фикс. по содержимому)
+                      3: IntrinsicColumnWidth(), // В
+                      4: IntrinsicColumnWidth(), // П
+                      5: IntrinsicColumnWidth(), // З
+                      6: IntrinsicColumnWidth(), // Пр
+                    },
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      _buildFlexHeaderRow(),
+                      for (final p in lb)
+                        _buildFlexLeaderboardTableRow(p, totalRounds),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 6),
@@ -942,10 +952,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             padding: const EdgeInsets.fromLTRB(2, 8, 6, 6)),
         const SizedBox(),
         hdr('Игрок', alignment: Alignment.centerLeft),
-        hdr('М'),
-        hdr('ОТД'),
-        hdr('СРЕД'),
-        hdr('Очки'),
+        hdr('В'),
+        hdr('П'),
+        hdr('З'),
+        hdr('Пр'),
       ],
     );
   }
@@ -959,10 +969,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     if (position == 2) rankColor = const Color(0xFFC0C0C0);
     if (position == 3) rankColor = const Color(0xFFCD7F32);
 
-    final games = (p['games_played'] as num?)?.toInt() ?? 0;
-    final byes = (totalRounds - games).clamp(0, totalRounds);
-    final totalPoints = (p['total_points'] as num?)?.toInt() ?? 0;
-    final avg = games > 0 ? (totalPoints / games).toStringAsFixed(2) : '—';
+    final wins = (p['wins'] as num?)?.toInt() ?? 0;
+    final losses = (p['losses'] as num?)?.toInt() ?? 0;
+    final pointsFor = (p['points_for'] as num?)?.toInt() ?? 0;
+    final pointsAgainst = (p['points_against'] as num?)?.toInt() ?? 0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
 
@@ -1015,7 +1025,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 150),
                 child: Text(
                   playerName ?? '—',
                   maxLines: 2,
@@ -1041,32 +1052,32 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
           alignment: Alignment.centerLeft,
         ),
-        // М (матчи)
-        cell(Text('$games',
+        // В (победы)
+        cell(Text('$wins',
+            style: const TextStyle(
+                color: Color(0xFF22C55E),
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
+        // П (поражения)
+        cell(Text('$losses',
+            style: const TextStyle(
+                color: Color(0xFFEF4444),
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
+        // З (забитые мячи)
+        cell(Text('$pointsFor',
             style: const TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
-        // ОТД (отдыхи)
-        cell(Text('$byes',
-            style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500))),
-        // СРЕД (среднее за матч) — ключевая метрика ранжирования
-        cell(Text(avg,
-            style: const TextStyle(
-                color: AppTheme.accent,
-                fontSize: 13,
-                fontWeight: FontWeight.w700))),
-        // Очки
+        // Пр (пропущенные мячи)
         cell(
           Text(
-            '$totalPoints',
+            '$pointsAgainst',
             style: const TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
+              color: AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
           ),
           padding: const EdgeInsets.fromLTRB(6, 8, 4, 8),

@@ -3246,35 +3246,44 @@ class _AdminTournamentDetailScreenState
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Table(
-        columnWidths: const {
-          0: IntrinsicColumnWidth(),
-          1: IntrinsicColumnWidth(),
-          2: FlexColumnWidth(),
-          3: IntrinsicColumnWidth(),
-          4: IntrinsicColumnWidth(),
-          5: IntrinsicColumnWidth(),
-          6: IntrinsicColumnWidth(),
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: [
-          TableRow(children: [
-            _flexHdr('#',
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.fromLTRB(2, 8, 6, 8)),
-            const SizedBox(),
-            _flexHdr('ИГРОК',
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
-            _flexHdr('М'),
-            _flexHdr('ОТД'),
-            _flexHdr('СРЕД'),
-            _flexHdr('ОЧКИ',
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
-          ]),
-          for (final p in rows) _flexLeaderRow(p),
-        ],
+      // Горизонтальный скролл при нехватке ширины / крупном шрифте.
+      child: LayoutBuilder(
+        builder: (context, c) => SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: c.maxWidth),
+            child: Table(
+              columnWidths: const {
+                0: IntrinsicColumnWidth(),
+                1: IntrinsicColumnWidth(),
+                2: IntrinsicColumnWidth(),
+                3: IntrinsicColumnWidth(),
+                4: IntrinsicColumnWidth(),
+                5: IntrinsicColumnWidth(),
+                6: IntrinsicColumnWidth(),
+              },
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                TableRow(children: [
+                  _flexHdr('#',
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.fromLTRB(2, 8, 6, 8)),
+                  const SizedBox(),
+                  _flexHdr('ИГРОК',
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
+                  _flexHdr('В'),
+                  _flexHdr('П'),
+                  _flexHdr('З'),
+                  _flexHdr('Пр',
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
+                ]),
+                for (final p in rows) _flexLeaderRow(p),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -3317,7 +3326,6 @@ class _AdminTournamentDetailScreenState
 
     const numStyle = TextStyle(
         color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600);
-    final avg = p.avgPoints?.toStringAsFixed(2) ?? '—';
 
     return TableRow(children: [
       cell(
@@ -3334,29 +3342,32 @@ class _AdminTournamentDetailScreenState
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       ),
       cell(
-        Text(p.name,
-            softWrap: true,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600)),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 150),
+          child: Text(p.name,
+              softWrap: true,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600)),
+        ),
         alignment: Alignment.centerLeft,
       ),
-      cell(Text('${p.matchesPlayed ?? 0}', style: numStyle)),
-      cell(Text('${p.byeCount ?? 0}',
+      cell(Text('${p.wins}',
           style: const TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w500))),
-      cell(Text(avg, style: numStyle)),
+              color: Color(0xFF22C55E), fontSize: 13, fontWeight: FontWeight.w700))),
+      cell(Text('${p.losses}',
+          style: const TextStyle(
+              color: Color(0xFFEF4444), fontSize: 13, fontWeight: FontWeight.w700))),
+      cell(Text('${p.pointsFor}', style: numStyle)),
       cell(
-        Text('${p.totalPoints}',
+        Text('${p.pointsAgainst}',
             style: const TextStyle(
-                color: AppTheme.accent,
+                color: AppTheme.textSecondary,
                 fontSize: 13,
-                fontWeight: FontWeight.w700)),
+                fontWeight: FontWeight.w600)),
         padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
         alignment: Alignment.centerRight,
       ),
