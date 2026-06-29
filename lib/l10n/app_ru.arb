@@ -642,7 +642,7 @@
   "verificationNoAvatarTitle": "Поставьте аватарку",
   "verificationNoAvatarDesc": "Зайдите в «Настройки профиля» и добавьте фото.",
   "verificationNoTournamentsTitle": "Сыграйте хотя бы один турнир",
-  "verificationNoTournamentsDesc": "После завершения первого турнира рейтинг подтвердится автоматически.",
+  "verificationNoTournamentsDesc": "Рейтинг подтвердится автоматически после турнира в клубе, который может подтверждать уровни.",
 
   "verificationSheetTitle": "Верификация уровня",
   "verificationLatestEntry": "ПОСЛЕДНЕЕ ПОДТВЕРЖДЕНИЕ",

@@ -641,7 +641,7 @@
   "verificationNoAvatarTitle": "Аватар қойыңыз",
   "verificationNoAvatarDesc": "«Профиль баптауларына» кіріп, фотоны қосыңыз.",
   "verificationNoTournamentsTitle": "Кем дегенде бір турнир ойнаңыз",
-  "verificationNoTournamentsDesc": "Бірінші турнир аяқталғаннан кейін рейтинг автоматты расталады.",
+  "verificationNoTournamentsDesc": "Рейтинг деңгейлерді растай алатын клубтағы турнирден кейін автоматты түрде расталады.",
 
   "verificationSheetTitle": "Деңгейді растау",
   "verificationLatestEntry": "СОҢҒЫ РАСТАУ",

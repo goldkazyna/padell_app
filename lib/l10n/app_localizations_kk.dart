@@ -1731,7 +1731,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get verificationNoTournamentsDesc =>
-      'Бірінші турнир аяқталғаннан кейін рейтинг автоматты расталады.';
+      'Рейтинг деңгейлерді растай алатын клубтағы турнирден кейін автоматты түрде расталады.';
 
   @override
   String get verificationSheetTitle => 'Деңгейді растау';

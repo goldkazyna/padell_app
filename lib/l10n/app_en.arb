@@ -622,7 +622,7 @@
   "verificationNoAvatarTitle": "Add a profile photo",
   "verificationNoAvatarDesc": "Go to Profile Settings and add a photo.",
   "verificationNoTournamentsTitle": "Play at least one tournament",
-  "verificationNoTournamentsDesc": "Your rating confirms automatically after the first tournament finishes.",
+  "verificationNoTournamentsDesc": "Your rating confirms automatically after a tournament at a club that can confirm levels.",
 
   "verificationSheetTitle": "Level verification",
   "verificationLatestEntry": "LATEST CONFIRMATION",

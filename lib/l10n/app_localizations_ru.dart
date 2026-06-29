@@ -1753,7 +1753,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get verificationNoTournamentsDesc =>
-      'После завершения первого турнира рейтинг подтвердится автоматически.';
+      'Рейтинг подтвердится автоматически после турнира в клубе, который может подтверждать уровни.';
 
   @override
   String get verificationSheetTitle => 'Верификация уровня';

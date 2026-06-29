@@ -1750,7 +1750,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verificationNoTournamentsDesc =>
-      'Your rating confirms automatically after the first tournament finishes.';
+      'Your rating confirms automatically after a tournament at a club that can confirm levels.';
 
   @override
   String get verificationSheetTitle => 'Level verification';

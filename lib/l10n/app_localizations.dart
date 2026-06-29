@@ -3313,7 +3313,7 @@ abstract class AppLocalizations {
   /// No description provided for @verificationNoTournamentsDesc.
   ///
   /// In ru, this message translates to:
-  /// **'После завершения первого турнира рейтинг подтвердится автоматически.'**
+  /// **'Рейтинг подтвердится автоматически после турнира в клубе, который может подтверждать уровни.'**
   String get verificationNoTournamentsDesc;
 
   /// No description provided for @verificationSheetTitle.
