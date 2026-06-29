@@ -56,6 +56,8 @@ class _AdminTournamentDetailScreenState
   final _description = TextEditingController();
   final _maxParticipants = TextEditingController();
   final _price = TextEditingController();
+  final _moderationHours = TextEditingController();
+  final _moderationMinutes = TextEditingController();
   DateTime? _startDate;
   double _minLevel = 1.0;
   double _maxLevel = 5.0;
@@ -106,6 +108,8 @@ class _AdminTournamentDetailScreenState
     _description.dispose();
     _maxParticipants.dispose();
     _price.dispose();
+    _moderationHours.dispose();
+    _moderationMinutes.dispose();
     super.dispose();
   }
 
@@ -144,6 +148,8 @@ class _AdminTournamentDetailScreenState
     _minLevel = t.minLevel <= 0 ? 1.0 : t.minLevel;
     _maxLevel = t.maxLevel <= 0 ? 5.0 : t.maxLevel;
     _verifiedOnly = t.verifiedOnly;
+    _moderationHours.text = (t.moderationHours ?? 0) > 0 ? '${t.moderationHours}' : '';
+    _moderationMinutes.text = (t.moderationMinutes ?? 0) > 0 ? '${t.moderationMinutes}' : '';
   }
 
   // ---------------------------------------------------------------------------
@@ -198,6 +204,8 @@ class _AdminTournamentDetailScreenState
             maxParticipants: maxP,
             price: price,
             verifiedOnly: _verifiedOnly,
+            moderationHours: int.tryParse(_moderationHours.text.trim()),
+            moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
           );
       if (!mounted) return;
       _applyToForm(updated);
@@ -814,6 +822,46 @@ class _AdminTournamentDetailScreenState
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 14),
+              _label('Таймер модерации'),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Часов',
+                            style: TextStyle(color: AppTheme.textDim, fontSize: 11)),
+                        const SizedBox(height: 4),
+                        _textField(_moderationHours,
+                            hint: 'Пусто = без таймера',
+                            keyboardType: TextInputType.number,
+                            enabled: !disabled),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Минут (для отладки)',
+                            style: TextStyle(color: AppTheme.textDim, fontSize: 11)),
+                        const SizedBox(height: 4),
+                        _textField(_moderationMinutes,
+                            hint: 'Важнее часов',
+                            keyboardType: TextInputType.number,
+                            enabled: !disabled),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Меняет только новые заявки — у уже поданных дедлайн остаётся прежним.',
+                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
               ),
               const SizedBox(height: 14),
               Container(

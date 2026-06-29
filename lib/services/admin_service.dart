@@ -278,6 +278,8 @@ class AdminService {
     required int maxParticipants,
     double? price,
     bool? verifiedOnly,
+    int? moderationHours,
+    int? moderationMinutes,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -289,6 +291,10 @@ class AdminService {
       'max_participants': maxParticipants,
       'price': price,
       if (verifiedOnly != null) 'verified_only': verifiedOnly,
+      // Таймер модерации (часы/минуты). Меняет только будущие заявки —
+      // у уже поданных дедлайн зафиксирован при подаче.
+      'moderation_hours': moderationHours,
+      'moderation_minutes': moderationMinutes,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(

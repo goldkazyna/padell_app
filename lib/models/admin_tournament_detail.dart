@@ -28,6 +28,8 @@ class AdminTournamentDetail {
   final bool baliPairsCreated;
   final bool kocPairsCreated;
   final bool isPaired;
+  final int? moderationHours;
+  final int? moderationMinutes;
   final bool tournamentsFullAccess;
   final bool isAdminPairing;
   final bool isPersonal; // личный турнир игрока (без клуба)
@@ -61,6 +63,8 @@ class AdminTournamentDetail {
     this.baliPairsCreated = false,
     this.kocPairsCreated = false,
     this.isPaired = false,
+    this.moderationHours,
+    this.moderationMinutes,
     this.tournamentsFullAccess = true,
     this.isAdminPairing = false,
     this.isPersonal = false,
@@ -105,6 +109,8 @@ class AdminTournamentDetail {
       baliPairsCreated: json['bali_pairs_created'] as bool? ?? false,
       kocPairsCreated: json['koc_pairs_created'] as bool? ?? false,
       isPaired: json['is_paired'] as bool? ?? false,
+      moderationHours: (json['moderation_hours'] as num?)?.toInt(),
+      moderationMinutes: (json['moderation_minutes'] as num?)?.toInt(),
       tournamentsFullAccess:
           json['tournaments_full_access'] as bool? ?? true,
     );
