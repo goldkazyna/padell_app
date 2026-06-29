@@ -270,6 +270,7 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
         itemBuilder: (_, i) => _TournamentCard(
           summary: list[i],
           onTap: () => _openDetail(list[i]),
+          onDuplicate: () => _duplicate(list[i]),
         ),
       ),
     );
@@ -289,13 +290,62 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
       _load();
     }
   }
+
+  Future<void> _duplicate(AdminTournamentSummary t) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        title: const Text('Дублировать турнир?',
+            style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text(
+          'Создастся копия «${t.name}» со всеми настройками как черновик. '
+          'Участники не переносятся — на дубль можно записываться заново.',
+          style: const TextStyle(color: AppTheme.textDim),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Отмена',
+                style: TextStyle(color: AppTheme.textDim)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Дублировать',
+                style: TextStyle(color: AppTheme.accent)),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+
+    try {
+      final admin = context.read<AdminService>();
+      await admin.duplicateTournament(t.id);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Создан дубликат (черновик)')),
+      );
+      _load();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось дублировать: $e')),
+      );
+    }
+  }
 }
 
 class _TournamentCard extends StatelessWidget {
   final AdminTournamentSummary summary;
   final VoidCallback onTap;
+  final VoidCallback onDuplicate;
 
-  const _TournamentCard({required this.summary, required this.onTap});
+  const _TournamentCard({
+    required this.summary,
+    required this.onTap,
+    required this.onDuplicate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -360,13 +410,44 @@ class _TournamentCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  // Дата + время
+                  // Дата + время (у черновика-дубля даты может не быть)
                   Text(
-                    '${summary.date} · ${summary.time}',
+                    summary.date.isEmpty
+                        ? 'Дата не задана'
+                        : '${summary.date} · ${summary.time}',
                     style: const TextStyle(
                       color: AppTheme.textDim,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  // Меню действий по турниру
+                  SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert,
+                          color: AppTheme.textDim, size: 20),
+                      padding: EdgeInsets.zero,
+                      color: AppTheme.card,
+                      onSelected: (value) {
+                        if (value == 'duplicate') onDuplicate();
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'duplicate',
+                          child: Row(
+                            children: const [
+                              Icon(Icons.copy_rounded,
+                                  color: AppTheme.textPrimary, size: 18),
+                              SizedBox(width: 10),
+                              Text('Дублировать',
+                                  style:
+                                      TextStyle(color: AppTheme.textPrimary)),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

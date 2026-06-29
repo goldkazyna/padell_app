@@ -227,6 +227,17 @@ class AdminService {
     );
   }
 
+  /// Дублировать турнир: создаётся копия-черновик с теми же настройками,
+  /// но без участников. Возвращает детали нового турнира.
+  Future<AdminTournamentDetail> duplicateTournament(int id) async {
+    final token = await _storage.getToken();
+    final response =
+        await _api.post('/admin/tournaments/$id/duplicate', {}, token);
+    return AdminTournamentDetail.fromJson(
+      response['tournament'] as Map<String, dynamic>,
+    );
+  }
+
   // ===== Ручной сбор пар (групповой турнир, pairing_mode=admin) =====
 
   Future<Map<String, dynamic>> getPairing(int tournamentId) async {
