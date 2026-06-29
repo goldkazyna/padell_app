@@ -62,6 +62,7 @@ class _AdminTournamentDetailScreenState
   double _minLevel = 1.0;
   double _maxLevel = 5.0;
   bool _verifiedOnly = false;
+  String _status = 'open'; // draft / open — редактируемый статус
 
   bool _saving = false;
   bool _starting = false;
@@ -148,6 +149,8 @@ class _AdminTournamentDetailScreenState
     _minLevel = t.minLevel <= 0 ? 1.0 : t.minLevel;
     _maxLevel = t.maxLevel <= 0 ? 5.0 : t.maxLevel;
     _verifiedOnly = t.verifiedOnly;
+    // Тоггл статуса работает только для черновик/открыт; иные статусы оставляем как есть.
+    _status = (t.status == 'draft' || t.status == 'open') ? t.status : _status;
     _moderationHours.text = (t.moderationHours ?? 0) > 0 ? '${t.moderationHours}' : '';
     _moderationMinutes.text = (t.moderationMinutes ?? 0) > 0 ? '${t.moderationMinutes}' : '';
   }
@@ -206,6 +209,7 @@ class _AdminTournamentDetailScreenState
             verifiedOnly: _verifiedOnly,
             moderationHours: int.tryParse(_moderationHours.text.trim()),
             moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
+            status: _status,
           );
       if (!mounted) return;
       _applyToForm(updated);
@@ -897,6 +901,47 @@ class _AdminTournamentDetailScreenState
                       onChanged: disabled
                           ? null
                           : (v) => setState(() => _verifiedOnly = v),
+                      activeColor: AppTheme.accent,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Перевод черновик ⇄ открыта регистрация
+              Container(
+                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardRaised,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Открыта регистрация',
+                              style: TextStyle(
+                                  color: AppTheme.textPrimary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 2),
+                          Text(
+                            _status == 'open'
+                                ? 'Турнир виден игрокам, идёт онлайн-запись'
+                                : 'Черновик — игроки не видят турнир',
+                            style: const TextStyle(
+                                color: AppTheme.textDim, fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Switch(
+                      value: _status == 'open',
+                      onChanged: disabled
+                          ? null
+                          : (v) =>
+                              setState(() => _status = v ? 'open' : 'draft'),
                       activeColor: AppTheme.accent,
                     ),
                   ],

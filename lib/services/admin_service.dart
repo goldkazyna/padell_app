@@ -291,6 +291,7 @@ class AdminService {
     bool? verifiedOnly,
     int? moderationHours,
     int? moderationMinutes,
+    String? status,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -306,6 +307,8 @@ class AdminService {
       // у уже поданных дедлайн зафиксирован при подаче.
       'moderation_hours': moderationHours,
       'moderation_minutes': moderationMinutes,
+      // Перевод черновик ⇄ открыта регистрация.
+      if (status != null) 'status': status,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(
