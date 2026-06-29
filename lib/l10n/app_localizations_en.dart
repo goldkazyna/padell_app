@@ -1914,7 +1914,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tournamentInfoAmericanoBody =>
-      'The most popular format. Partners change every round — you play with different people each time. Scoring is individual: your points are the games you win. The player with the most games across the tournament wins. Your partner changes each round, so the result is all about you.';
+      'The most popular and friendly format. Great when a mixed-level group wants to play with everyone instead of staying in one fixed pair.\n\nHow it works. The tournament runs in rounds. Each round players are split into pairs on 2×2 courts. After the round the pairs are reshuffled — your next game is with a new partner against new opponents.\n\nIndividual scoring. Points are the games you win: whatever your pair scores in a round goes to you personally. Your partner changes every round, so the result depends mostly on your own play.\n\nWho wins. The champion is the player with the most points across the whole tournament. The standings are individual — everyone for themselves.\n\nGroups and playoff. At the organizer\'s discretion players can be split into several groups — then scoring is within your group. A playoff can also be added: after the group stage the top players contest the prizes in knockout matches.\n\nExample. 8 players, rounds to 21. Round 1: you and Denis win 21:14 → +21 for you. Round 2: you and Aigul lose 16:21 → +16 for you. At the end all your points are summed — the highest total wins.\n\nGood for. Mixed groups, beginners and experienced together, corporate events, «play with everyone and meet people».';
 
   @override
   String get tournamentInfoMexicanoName => 'Mexicano';
