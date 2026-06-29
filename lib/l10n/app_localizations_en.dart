@@ -1949,7 +1949,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tournamentInfoTeamBody =>
-      'Team format: fixed pairs play a group stage, the best advance to a knockout playoff. Classic bracket — winners advance, losers are out. There can be a lower bracket for losers and a third-place match.';
+      'A team format with fixed pairs: you register as a pair (or the organizer assembles the pairs), and that pair plays the whole tournament together. Two stages — group and playoff.\n\nHow it works.\n1) Group stage. Teams are spread into groups «snake»-style by rating (so the groups are roughly equal). Within a group it\'s a round-robin: every pair plays every other. A win is +1 point, a loss is 0, no draws.\n2) Playoff. The best teams from the groups advance to a knockout bracket (semifinals → final, and if needed a third-place match). Lose and you\'re out.\n\nGroup table. Place by: 1) points (wins); 2) game difference (scored − conceded); 3) more games scored.\n\nLineup. Registration in pairs, one partner for the whole tournament. The organizer sets the bracket configuration (number of groups, lower bracket, bronze match).\n\nWho wins. The champion is the winner of the playoff final. The group stage decides who reaches the bracket and from which seed.\n\nExample. 8 pairs → 2 groups of 4. In the group everyone plays everyone (3 matches each), the top two pairs from each group go to crossed semifinals, and the winners reach the final.\n\nGood for. Those who want to play with a constant partner and enjoy classic tournament drama: first the group qualifying, then a knockout playoff.';
 
   @override
   String get tournamentInfoFlexName => 'Americano Flex';
