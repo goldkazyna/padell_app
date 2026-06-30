@@ -120,20 +120,27 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                 children: [
-                  _label('Тема'),
-                  _field(_subject, hint: 'Например: Не проходит оплата'),
-                  const SizedBox(height: 16),
                   _label('Категория'),
                   const SizedBox(height: 8),
                   _categoryChips(),
                   const SizedBox(height: 16),
+                  _label('Тема'),
+                  _field(_subject, hint: 'Например: Не проходит оплата'),
+                  const SizedBox(height: 16),
                   _label('Сообщение'),
                   _field(_body,
-                      hint: 'Опишите проблему подробно', maxLines: 6),
+                      hint: 'Опишите проблему подробно — что произошло, '
+                          'когда, на каком экране…',
+                      maxLines: 6),
                   const SizedBox(height: 16),
                   _label('Фото (до $_maxPhotos)'),
                   const SizedBox(height: 8),
                   _photosRow(),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Фото помогут быстрее разобраться. Сжимаются автоматически.',
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -154,13 +161,21 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.black),
+                              strokeWidth: 2, color: Color(0xFF06251A)),
                         )
-                      : const Text('Отправить',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15)),
+                      : const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.send_rounded,
+                                color: Color(0xFF06251A), size: 18),
+                            SizedBox(width: 8),
+                            Text('Отправить обращение',
+                                style: TextStyle(
+                                    color: Color(0xFF06251A),
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16)),
+                          ],
+                        ),
                 ),
               ),
             ),
@@ -219,6 +234,21 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
     );
   }
 
+  IconData? _catIcon(String c) {
+    switch (c) {
+      case 'Аккаунт':
+        return Icons.person_outline;
+      case 'Оплата':
+        return Icons.credit_card;
+      case 'Турнир':
+        return Icons.emoji_events_outlined;
+      case 'Бронь':
+        return Icons.calendar_today_outlined;
+      default:
+        return null; // «Другое» — без иконки
+    }
+  }
+
   Widget _categoryChips() {
     return Wrap(
       spacing: 8,
@@ -228,7 +258,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
           GestureDetector(
             onTap: () => setState(() => _category = _category == c ? null : c),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
               decoration: BoxDecoration(
                 color: _category == c ? AppTheme.accentSoft : AppTheme.card,
                 borderRadius: BorderRadius.circular(20),
@@ -238,13 +268,28 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                       : const Color(0xFF2A2A2A),
                 ),
               ),
-              child: Text(
-                c,
-                style: TextStyle(
-                  color: _category == c ? AppTheme.accent : AppTheme.textSecondary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_catIcon(c) != null) ...[
+                    Icon(_catIcon(c),
+                        size: 15,
+                        color: _category == c
+                            ? AppTheme.accent
+                            : AppTheme.textSecondary),
+                    const SizedBox(width: 6),
+                  ],
+                  Text(
+                    c,
+                    style: TextStyle(
+                      color: _category == c
+                          ? AppTheme.accent
+                          : AppTheme.textSecondary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
