@@ -2,6 +2,8 @@ class SupportTicket {
   final int id;
   final String subject;
   final String status; // open / answered / closed
+  final bool isUrgent;
+  final String? category;
   final DateTime? lastMessageAt;
   final int unreadCount;
   final List<SupportMessage> messages;
@@ -10,6 +12,8 @@ class SupportTicket {
     required this.id,
     required this.subject,
     required this.status,
+    this.isUrgent = false,
+    this.category,
     this.lastMessageAt,
     this.unreadCount = 0,
     this.messages = const [],
@@ -20,6 +24,8 @@ class SupportTicket {
       id: json['id'] as int,
       subject: json['subject'] as String? ?? '',
       status: json['status'] as String? ?? 'open',
+      isUrgent: json['is_urgent'] as bool? ?? false,
+      category: json['category'] as String?,
       lastMessageAt:
           DateTime.tryParse(json['last_message_at'] as String? ?? ''),
       unreadCount: (json['unread_count'] as num?)?.toInt() ?? 0,
@@ -29,6 +35,8 @@ class SupportTicket {
           const [],
     );
   }
+
+  bool get isClosed => status == 'closed';
 
   String get statusLabel {
     switch (status) {

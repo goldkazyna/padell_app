@@ -29,12 +29,17 @@ class SupportService {
   Future<SupportTicket> createTicket({
     required String subject,
     required String body,
+    String? category,
     List<String> photoPaths = const [],
   }) async {
     final token = await _storage.getToken();
     final r = await _api.multipartPostMulti(
       '/support/tickets',
-      {'subject': subject, 'body': body},
+      {
+        'subject': subject,
+        'body': body,
+        'category': ?category,
+      },
       photoPaths,
       'photos[]',
       token,

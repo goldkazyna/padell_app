@@ -19,6 +19,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   bool _loading = true;
   String? _error;
   List<SupportTicket> _tickets = [];
+  String _tab = 'active'; // active / closed
 
   @override
   void initState() {
@@ -63,31 +64,29 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
     _load();
   }
 
+  List<SupportTicket> get _active =>
+      _tickets.where((t) => !t.isClosed).toList();
+  List<SupportTicket> get _closed =>
+      _tickets.where((t) => t.isClosed).toList();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _create,
-        backgroundColor: AppTheme.accent,
-        icon: const Icon(Icons.add, color: Colors.black),
-        label: const Text('Новое обращение',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700)),
-      ),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(8, 8, 16, 4),
               child: Row(
                 children: const [
                   AppBackButton(),
                   SizedBox(width: 4),
                   Text(
-                    'Служба поддержки',
+                    'Поддержка',
                     style: TextStyle(
                       color: AppTheme.textPrimary,
-                      fontSize: 20,
+                      fontSize: 21,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -117,38 +116,175 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
         ),
       );
     }
-    if (_tickets.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.support_agent, size: 56, color: AppTheme.textDim),
-              SizedBox(height: 12),
-              Text(
-                'Обращений пока нет.\nНажмите «Новое обращение», чтобы написать нам.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.textDim),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+
+    final list = _tab == 'active' ? _active : _closed;
+
     return RefreshIndicator(
       color: AppTheme.accent,
       backgroundColor: AppTheme.card,
       onRefresh: _load,
-      child: ListView.separated(
+      child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
-        itemCount: _tickets.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
-        itemBuilder: (_, i) => _TicketCard(
-          ticket: _tickets[i],
-          onTap: () => _open(_tickets[i]),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        children: [
+          _hero(),
+          const SizedBox(height: 16),
+          _tabs(),
+          const SizedBox(height: 4),
+          if (list.isEmpty)
+            _empty()
+          else
+            ...list.map((t) => Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: _TicketCard(ticket: t, onTap: () => _open(t)),
+                )),
+        ],
+      ),
+    );
+  }
+
+  Widget _hero() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('assets/images/support_hero.png',
+                fit: BoxFit.cover),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0xE0131317), Color(0x80131317), Color(0x33131317)],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Чем помочь?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                const SizedBox(
+                  width: 220,
+                  child: Text(
+                    'Опишите проблему — ответим в течение дня.',
+                    style: TextStyle(color: Color(0xFFD6D6DE), fontSize: 13),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: _create,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppTheme.accent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, color: Color(0xFF06251A), size: 20),
+                        SizedBox(width: 6),
+                        Text('Создать обращение',
+                            style: TextStyle(
+                                color: Color(0xFF06251A),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tabs() {
+    Widget seg(String key, String label, int n) {
+      final on = _tab == key;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => setState(() => _tab = key),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 9),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: on ? AppTheme.cardRaised : Colors.transparent,
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Text.rich(TextSpan(children: [
+              TextSpan(
+                text: label,
+                style: TextStyle(
+                  color: on ? Colors.white : AppTheme.textSecondary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+              TextSpan(
+                text: '  $n',
+                style: const TextStyle(
+                    color: AppTheme.accent,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14),
+              ),
+            ])),
+          ),
         ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(children: [
+        seg('active', 'Активные', _active.length),
+        seg('closed', 'Закрытые', _closed.length),
+      ]),
+    );
+  }
+
+  Widget _empty() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 48),
+      child: Column(
+        children: [
+          Icon(
+            _tab == 'active'
+                ? Icons.support_agent
+                : Icons.check_circle_outline,
+            size: 52,
+            color: AppTheme.textDim,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _tab == 'active'
+                ? 'Активных обращений нет.\nНажмите «Создать обращение».'
+                : 'Закрытых обращений нет.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppTheme.textDim),
+          ),
+        ],
       ),
     );
   }
@@ -160,19 +296,37 @@ class _TicketCard extends StatelessWidget {
 
   const _TicketCard({required this.ticket, required this.onTap});
 
-  Color get _statusColor {
-    switch (ticket.status) {
+  static (String, Color) _status(String s) {
+    switch (s) {
       case 'answered':
-        return const Color(0xFF3B82F6);
+        return ('Ждём ответа', AppTheme.blue);
       case 'closed':
-        return AppTheme.textDim;
+        return ('Закрыт', AppTheme.textSecondary);
       default:
-        return const Color(0xFFF59E0B);
+        return ('Открыт', AppTheme.amber);
+    }
+  }
+
+  static IconData _catIcon(String? c) {
+    switch (c) {
+      case 'Аккаунт':
+        return Icons.person_outline;
+      case 'Оплата':
+        return Icons.credit_card;
+      case 'Турнир':
+        return Icons.emoji_events_outlined;
+      case 'Бронь':
+        return Icons.calendar_today_outlined;
+      default:
+        return Icons.chat_bubble_outline;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final (label, color) = _status(ticket.status);
+    final stripe = ticket.isUrgent ? AppTheme.error : color;
+
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(14),
@@ -180,87 +334,123 @@ class _TicketCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: Container(
-          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: AppTheme.card,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF2A2A2A)),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: _statusColor.withAlpha(30),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      ticket.statusLabel,
-                      style: TextStyle(
-                        color: _statusColor,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                      ),
+          clipBehavior: Clip.antiAlias,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 4, color: stripe),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(13),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardRaised,
+                            borderRadius: BorderRadius.circular(11),
+                          ),
+                          child: Icon(_catIcon(ticket.category),
+                              color: const Color(0xFFC9C9D2), size: 21),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                ticket.subject,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 3),
+                              Text.rich(TextSpan(children: [
+                                if (ticket.isUrgent)
+                                  const TextSpan(
+                                    text: 'Срочный',
+                                    style: TextStyle(
+                                        color: AppTheme.error,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                if (ticket.isUrgent && ticket.category != null)
+                                  const TextSpan(text: ' · '),
+                                if (ticket.category != null)
+                                  TextSpan(text: ticket.category!),
+                                if (!ticket.isUrgent && ticket.category == null)
+                                  const TextSpan(text: 'Обращение'),
+                              ], style: const TextStyle(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: 12.5))),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 9, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: color.withAlpha(40),
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                              child: Text(label,
+                                  style: TextStyle(
+                                      color: color,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800)),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _fmt(ticket.lastMessageAt),
+                                  style: const TextStyle(
+                                      color: AppTheme.textDim, fontSize: 12),
+                                ),
+                                if (ticket.unreadCount > 0) ...[
+                                  const SizedBox(width: 7),
+                                  Container(
+                                    width: 9,
+                                    height: 9,
+                                    decoration: const BoxDecoration(
+                                      color: AppTheme.accent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const Spacer(),
-                  if (ticket.lastMessageAt != null)
-                    Text(
-                      _fmt(ticket.lastMessageAt!),
-                      style: const TextStyle(
-                        color: AppTheme.textDim,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  if (ticket.unreadCount > 0) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      constraints: const BoxConstraints(minWidth: 18),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEF4444),
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      child: Text(
-                        '${ticket.unreadCount}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                ticket.subject,
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  static String _fmt(DateTime d) {
+  static String _fmt(DateTime? d) {
+    if (d == null) return '';
     final dl = d.toLocal();
     String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(dl.day)}.${two(dl.month)}.${dl.year} ${two(dl.hour)}:${two(dl.minute)}';
+    return '${two(dl.day)}.${two(dl.month)} ${two(dl.hour)}:${two(dl.minute)}';
   }
 }

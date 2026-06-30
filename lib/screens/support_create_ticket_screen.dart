@@ -22,9 +22,11 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
   final _subject = TextEditingController();
   final _body = TextEditingController();
   final List<File> _photos = [];
+  String? _category;
   bool _sending = false;
 
   static const _maxPhotos = 5;
+  static const _categories = ['Аккаунт', 'Оплата', 'Турнир', 'Бронь', 'Другое'];
 
   @override
   void dispose() {
@@ -76,6 +78,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
       await context.read<SupportService>().createTicket(
             subject: subject,
             body: body,
+            category: _category,
             photoPaths: _photos.map((f) => f.path).toList(),
           );
       if (!mounted) return;
@@ -119,6 +122,10 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                 children: [
                   _label('Тема'),
                   _field(_subject, hint: 'Например: Не проходит оплата'),
+                  const SizedBox(height: 16),
+                  _label('Категория'),
+                  const SizedBox(height: 8),
+                  _categoryChips(),
                   const SizedBox(height: 16),
                   _label('Сообщение'),
                   _field(_body,
@@ -206,6 +213,39 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
               ),
               child: const Icon(Icons.add_a_photo_outlined,
                   color: AppTheme.textDim),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _categoryChips() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final c in _categories)
+          GestureDetector(
+            onTap: () => setState(() => _category = _category == c ? null : c),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: _category == c ? AppTheme.accentSoft : AppTheme.card,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _category == c
+                      ? AppTheme.accent
+                      : const Color(0xFF2A2A2A),
+                ),
+              ),
+              child: Text(
+                c,
+                style: TextStyle(
+                  color: _category == c ? AppTheme.accent : AppTheme.textSecondary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
+              ),
             ),
           ),
       ],
