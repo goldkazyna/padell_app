@@ -50,12 +50,34 @@ class SupportTicket {
   }
 }
 
+class SupportAttachment {
+  final String url;
+  final String type; // image / pdf
+  final String name;
+
+  const SupportAttachment({
+    required this.url,
+    required this.type,
+    required this.name,
+  });
+
+  bool get isPdf => type == 'pdf';
+
+  factory SupportAttachment.fromJson(Map<String, dynamic> json) {
+    return SupportAttachment(
+      url: json['url'] as String? ?? '',
+      type: json['type'] as String? ?? 'image',
+      name: json['name'] as String? ?? '',
+    );
+  }
+}
+
 class SupportMessage {
   final int id;
   final String authorType; // player / support
   final String body;
   final DateTime? createdAt;
-  final List<String> attachments; // URLs
+  final List<SupportAttachment> attachments;
 
   const SupportMessage({
     required this.id,
@@ -74,8 +96,9 @@ class SupportMessage {
       body: json['body'] as String? ?? '',
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? ''),
       attachments: (json['attachments'] as List?)
-              ?.map((a) => (a as Map<String, dynamic>)['url'] as String? ?? '')
-              .where((u) => u.isNotEmpty)
+              ?.map((a) =>
+                  SupportAttachment.fromJson(a as Map<String, dynamic>))
+              .where((a) => a.url.isNotEmpty)
               .toList() ??
           const [],
     );

@@ -170,6 +170,8 @@ class ApiService {
           contentType = MediaType('image', 'jpeg');
         } else if (lower.endsWith('.png')) {
           contentType = MediaType('image', 'png');
+        } else if (lower.endsWith('.pdf')) {
+          contentType = MediaType('application', 'pdf');
         }
         request.files.add(await http.MultipartFile.fromPath(
           fileField,

@@ -1,14 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../services/support_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/support/attachment_picker.dart';
 
 class SupportCreateTicketScreen extends StatefulWidget {
   const SupportCreateTicketScreen({super.key});
@@ -35,33 +33,11 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
     super.dispose();
   }
 
-  Future<void> _pickPhoto() async {
+  Future<void> _addAttachment() async {
     if (_photos.length >= _maxPhotos) return;
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1600,
-      maxHeight: 1600,
-      imageQuality: 85,
-    );
-    if (picked == null) return;
-    try {
-      final dir = await getTemporaryDirectory();
-      final target =
-          '${dir.path}/sup_${DateTime.now().millisecondsSinceEpoch}.webp';
-      final compressed = await FlutterImageCompress.compressAndGetFile(
-        picked.path,
-        target,
-        format: CompressFormat.webp,
-        quality: 80,
-        minWidth: 1600,
-        minHeight: 1600,
-      );
-      if (!mounted) return;
-      setState(() => _photos.add(File(compressed?.path ?? picked.path)));
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _photos.add(File(picked.path)));
-    }
+    final file = await pickSupportAttachment(context);
+    if (file == null || !mounted) return;
+    setState(() => _photos.add(file));
   }
 
   Future<void> _submit() async {
@@ -133,12 +109,12 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                           'когда, на каком экране…',
                       maxLines: 6),
                   const SizedBox(height: 16),
-                  _label('Фото (до $_maxPhotos)'),
+                  _label('Вложения (до $_maxPhotos)'),
                   const SizedBox(height: 8),
                   _photosRow(),
                   const SizedBox(height: 8),
                   const Text(
-                    'Фото помогут быстрее разобраться. Сжимаются автоматически.',
+                    'Фото или PDF. Изображения сжимаются автоматически.',
                     style: TextStyle(color: AppTheme.textDim, fontSize: 12),
                   ),
                 ],
@@ -194,11 +170,38 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.file(_photos[i],
-                    width: 78, height: 78, fit: BoxFit.cover),
-              ),
+              if (isPdfPath(_photos[i].path))
+                Container(
+                  width: 78,
+                  height: 78,
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xFF2A2A2A)),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.picture_as_pdf,
+                          color: AppTheme.error, size: 26),
+                      const SizedBox(height: 4),
+                      Text(
+                        _photos[i].path.split(Platform.pathSeparator).last,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: AppTheme.textDim, fontSize: 9),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(_photos[i],
+                      width: 78, height: 78, fit: BoxFit.cover),
+                ),
               Positioned(
                 top: -6,
                 right: -6,
@@ -206,7 +209,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                   onTap: () => setState(() => _photos.removeAt(i)),
                   child: Container(
                     decoration: const BoxDecoration(
-                        color: Color(0xFFEF4444), shape: BoxShape.circle),
+                        color: AppTheme.error, shape: BoxShape.circle),
                     padding: const EdgeInsets.all(2),
                     child: const Icon(Icons.close,
                         size: 16, color: Colors.white),
@@ -217,7 +220,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
           ),
         if (_photos.length < _maxPhotos)
           GestureDetector(
-            onTap: _pickPhoto,
+            onTap: _addAttachment,
             child: Container(
               width: 78,
               height: 78,
@@ -226,8 +229,15 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: const Color(0xFF2A2A2A)),
               ),
-              child: const Icon(Icons.add_a_photo_outlined,
-                  color: AppTheme.textDim),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, color: AppTheme.textDim, size: 22),
+                  SizedBox(height: 2),
+                  Text('Добавить',
+                      style: TextStyle(color: AppTheme.textDim, fontSize: 10)),
+                ],
+              ),
             ),
           ),
       ],

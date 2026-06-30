@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/support_ticket.dart';
 import '../services/support_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/support/attachment_picker.dart';
 
 class SupportTicketThreadScreen extends StatefulWidget {
   final int ticketId;
@@ -63,30 +62,11 @@ class _SupportTicketThreadScreenState
     }
   }
 
-  Future<void> _pickPhoto() async {
+  Future<void> _addAttachment() async {
     if (_photos.length >= 5) return;
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1600,
-      maxHeight: 1600,
-      imageQuality: 85,
-    );
-    if (picked == null) return;
-    try {
-      final dir = await getTemporaryDirectory();
-      final target =
-          '${dir.path}/sup_${DateTime.now().millisecondsSinceEpoch}.webp';
-      final compressed = await FlutterImageCompress.compressAndGetFile(
-        picked.path, target,
-        format: CompressFormat.webp, quality: 80,
-        minWidth: 1600, minHeight: 1600,
-      );
-      if (!mounted) return;
-      setState(() => _photos.add(File(compressed?.path ?? picked.path)));
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _photos.add(File(picked.path)));
-    }
+    final file = await pickSupportAttachment(context);
+    if (file == null || !mounted) return;
+    setState(() => _photos.add(file));
   }
 
   Future<void> _send() async {
@@ -212,11 +192,23 @@ class _SupportTicketThreadScreenState
                       Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(_photos[i],
-                                width: 54, height: 54, fit: BoxFit.cover),
-                          ),
+                          if (isPdfPath(_photos[i].path))
+                            Container(
+                              width: 54,
+                              height: 54,
+                              decoration: BoxDecoration(
+                                color: AppTheme.cardRaised,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.picture_as_pdf,
+                                  color: AppTheme.error, size: 24),
+                            )
+                          else
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(_photos[i],
+                                  width: 54, height: 54, fit: BoxFit.cover),
+                            ),
                           Positioned(
                             top: -6,
                             right: -6,
@@ -242,8 +234,8 @@ class _SupportTicketThreadScreenState
           Row(
             children: [
               IconButton(
-                onPressed: _sending ? null : _pickPhoto,
-                icon: const Icon(Icons.add_a_photo_outlined,
+                onPressed: _sending ? null : _addAttachment,
+                icon: const Icon(Icons.attach_file,
                     color: AppTheme.textDim),
               ),
               Expanded(
@@ -319,15 +311,48 @@ class _MessageBubble extends StatelessWidget {
                 spacing: 6,
                 runSpacing: 6,
                 children: [
-                  for (final url in message.attachments)
-                    GestureDetector(
-                      onTap: () => _openImage(context, url),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(url,
-                            width: 92, height: 92, fit: BoxFit.cover),
+                  for (final a in message.attachments)
+                    if (a.isPdf)
+                      GestureDetector(
+                        onTap: () => _openUrl(a.url),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardRaised,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.picture_as_pdf,
+                                  color: AppTheme.error, size: 20),
+                              const SizedBox(width: 6),
+                              ConstrainedBox(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 140),
+                                child: Text(
+                                  a.name.isEmpty ? 'Документ.pdf' : a.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      color: AppTheme.textPrimary,
+                                      fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () => _openImage(context, a.url),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(a.url,
+                              width: 92, height: 92, fit: BoxFit.cover),
+                        ),
                       ),
-                    ),
                 ],
               ),
             ],
@@ -354,6 +379,13 @@ class _MessageBubble extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri != null) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   static String _fmt(DateTime d) {
