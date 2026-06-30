@@ -143,6 +143,50 @@ class ApiService {
     }
   }
 
+  /// Multipart POST с несколькими файлами под одним полем (`photos[]`).
+  Future<Map<String, dynamic>> multipartPostMulti(
+    String endpoint,
+    Map<String, String> fields,
+    List<String> filePaths,
+    String fileField, [
+    String? token,
+  ]) async {
+    try {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl$endpoint'),
+      );
+      request.headers.addAll({
+        'Accept': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      });
+      request.fields.addAll(fields);
+      for (final path in filePaths) {
+        MediaType? contentType;
+        final lower = path.toLowerCase();
+        if (lower.endsWith('.webp')) {
+          contentType = MediaType('image', 'webp');
+        } else if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+          contentType = MediaType('image', 'jpeg');
+        } else if (lower.endsWith('.png')) {
+          contentType = MediaType('image', 'png');
+        }
+        request.files.add(await http.MultipartFile.fromPath(
+          fileField,
+          path,
+          contentType: contentType,
+        ));
+      }
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 60));
+      final response = await http.Response.fromStream(streamedResponse);
+      return _handleResponse(response);
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Ошибка сети. Проверьте подключение к интернету.');
+    }
+  }
+
   Map<String, dynamic> _handleResponse(http.Response response) {
     final body = jsonDecode(response.body) as Map<String, dynamic>;
 
