@@ -19,8 +19,7 @@ class SupportTicketThreadScreen extends StatefulWidget {
       _SupportTicketThreadScreenState();
 }
 
-class _SupportTicketThreadScreenState
-    extends State<SupportTicketThreadScreen> {
+class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
   bool _loading = true;
   String? _error;
   SupportTicket? _ticket;
@@ -76,7 +75,7 @@ class _SupportTicketThreadScreenState
     try {
       final t = await context.read<SupportService>().addMessage(
             ticketId: widget.ticketId,
-            body: body.isEmpty ? '(фото)' : body,
+            body: body.isEmpty ? '(вложение)' : body,
             photoPaths: _photos.map((f) => f.path).toList(),
           );
       if (!mounted) return;
@@ -95,38 +94,90 @@ class _SupportTicketThreadScreenState
     }
   }
 
+  static (String, Color) _status(String s) {
+    switch (s) {
+      case 'answered':
+        return ('Ждём ответа', AppTheme.blue);
+      case 'closed':
+        return ('Закрыт', AppTheme.textSecondary);
+      default:
+        return ('Открыт', AppTheme.amber);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final t = _ticket;
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
-              child: Row(
-                children: [
-                  const AppBackButton(),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      _ticket?.subject ?? 'Обращение',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _header(t),
             Expanded(child: _buildBody()),
-            if (_ticket != null) _buildComposer(),
+            if (t != null) _composer(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _header(SupportTicket? t) {
+    final meta = t == null
+        ? ''
+        : '${t.category ?? 'Обращение'} · #${t.id}';
+    return Container(
+      padding: const EdgeInsets.fromLTRB(6, 4, 14, 12),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFF2A2A33))),
+      ),
+      child: Row(
+        children: [
+          const AppBackButton(),
+          const SizedBox(width: 2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t?.subject ?? 'Обращение',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800),
+                ),
+                if (meta.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(meta,
+                        style: const TextStyle(
+                            color: AppTheme.textSecondary, fontSize: 12)),
+                  ),
+              ],
+            ),
+          ),
+          if (t != null) ...[
+            const SizedBox(width: 8),
+            Builder(builder: (_) {
+              final (label, color) = _status(t.status);
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                decoration: BoxDecoration(
+                  color: color.withAlpha(40),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Text(label,
+                    style: TextStyle(
+                        color: color,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800)),
+              );
+            }),
+          ],
+        ],
       ),
     );
   }
@@ -152,23 +203,53 @@ class _SupportTicketThreadScreenState
       color: AppTheme.accent,
       backgroundColor: AppTheme.card,
       onRefresh: _load,
-      child: ListView.builder(
+      child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-        itemCount: messages.length,
-        itemBuilder: (_, i) => _MessageBubble(message: messages[i]),
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+        children: _threadItems(messages),
       ),
     );
   }
 
-  Widget _buildComposer() {
+  List<Widget> _threadItems(List<SupportMessage> messages) {
+    final items = <Widget>[];
+    String? lastDay;
+    for (final m in messages) {
+      final day = _dayLabel(m.createdAt);
+      if (day != lastDay) {
+        items.add(_daySeparator(day));
+        lastDay = day;
+      }
+      items.add(_MessageBubble(message: m, onOpenUrl: _openUrl, onOpenImage: _openImage));
+    }
+    return items;
+  }
+
+  Widget _daySeparator(String label) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(label,
+            style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w700)),
+      ),
+    );
+  }
+
+  Widget _composer() {
     final closed = _ticket?.status == 'closed';
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
       decoration: const BoxDecoration(
-        color: AppTheme.card,
-        border: Border(top: BorderSide(color: Color(0xFF2A2A2A))),
+        border: Border(top: BorderSide(color: Color(0xFF2A2A33))),
       ),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -213,11 +294,10 @@ class _SupportTicketThreadScreenState
                             top: -6,
                             right: -6,
                             child: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _photos.removeAt(i)),
+                              onTap: () => setState(() => _photos.removeAt(i)),
                               child: Container(
                                 decoration: const BoxDecoration(
-                                    color: Color(0xFFEF4444),
+                                    color: AppTheme.error,
                                     shape: BoxShape.circle),
                                 padding: const EdgeInsets.all(1),
                                 child: const Icon(Icons.close,
@@ -232,139 +312,63 @@ class _SupportTicketThreadScreenState
               ),
             ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              IconButton(
-                onPressed: _sending ? null : _addAttachment,
-                icon: const Icon(Icons.attach_file,
-                    color: AppTheme.textDim),
+              GestureDetector(
+                onTap: _sending ? null : _addAttachment,
+                child: const SizedBox(
+                  width: 42,
+                  height: 44,
+                  child: Icon(Icons.attach_file, color: AppTheme.textSecondary),
+                ),
               ),
               Expanded(
-                child: TextField(
-                  controller: _reply,
-                  minLines: 1,
-                  maxLines: 4,
-                  style: const TextStyle(color: AppTheme.textPrimary),
-                  decoration: const InputDecoration(
-                    hintText: 'Сообщение…',
-                    hintStyle: TextStyle(color: AppTheme.textDim),
-                    border: InputBorder.none,
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: const Color(0xFF2A2A33)),
+                  ),
+                  child: TextField(
+                    controller: _reply,
+                    minLines: 1,
+                    maxLines: 4,
+                    style: const TextStyle(color: AppTheme.textPrimary),
+                    decoration: const InputDecoration(
+                      hintText: 'Сообщение…',
+                      hintStyle: TextStyle(color: AppTheme.textDim),
+                      border: InputBorder.none,
+                      isCollapsed: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
               ),
-              IconButton(
-                onPressed: _sending ? null : _send,
-                icon: _sending
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: AppTheme.accent),
-                      )
-                    : const Icon(Icons.send_rounded, color: AppTheme.accent),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: _sending ? null : _send,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.accent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: _sending
+                      ? const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Color(0xFF06251A)),
+                        )
+                      : const Icon(Icons.send_rounded,
+                          color: Color(0xFF06251A), size: 20),
+                ),
               ),
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _MessageBubble extends StatelessWidget {
-  final SupportMessage message;
-  const _MessageBubble({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final isSupport = message.isSupport;
-    return Align(
-      alignment: isSupport ? Alignment.centerLeft : Alignment.centerRight,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.78),
-        decoration: BoxDecoration(
-          color: isSupport ? AppTheme.card : AppTheme.accent.withAlpha(40),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-              color: isSupport ? const Color(0xFF2A2A2A) : AppTheme.accent),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isSupport ? 'Поддержка' : 'Вы',
-              style: TextStyle(
-                color: isSupport ? const Color(0xFF3B82F6) : AppTheme.accent,
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 3),
-            Text(message.body,
-                style: const TextStyle(
-                    color: AppTheme.textPrimary, fontSize: 14)),
-            if (message.attachments.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (final a in message.attachments)
-                    if (a.isPdf)
-                      GestureDetector(
-                        onTap: () => _openUrl(a.url),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: AppTheme.cardRaised,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.picture_as_pdf,
-                                  color: AppTheme.error, size: 20),
-                              const SizedBox(width: 6),
-                              ConstrainedBox(
-                                constraints:
-                                    const BoxConstraints(maxWidth: 140),
-                                child: Text(
-                                  a.name.isEmpty ? 'Документ.pdf' : a.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      color: AppTheme.textPrimary,
-                                      fontSize: 12),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    else
-                      GestureDetector(
-                        onTap: () => _openImage(context, a.url),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(a.url,
-                              width: 92, height: 92, fit: BoxFit.cover),
-                        ),
-                      ),
-                ],
-              ),
-            ],
-            if (message.createdAt != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                _fmt(message.createdAt!),
-                style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
-              ),
-            ],
-          ],
-        ),
       ),
     );
   }
@@ -374,9 +378,7 @@ class _MessageBubble extends StatelessWidget {
       context: context,
       builder: (_) => Dialog(
         backgroundColor: Colors.black,
-        child: InteractiveViewer(
-          child: Image.network(url, fit: BoxFit.contain),
-        ),
+        child: InteractiveViewer(child: Image.network(url, fit: BoxFit.contain)),
       ),
     );
   }
@@ -388,9 +390,149 @@ class _MessageBubble extends StatelessWidget {
     }
   }
 
-  static String _fmt(DateTime d) {
+  String _dayLabel(DateTime? d) {
+    if (d == null) return '';
+    final dl = d.toLocal();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final that = DateTime(dl.year, dl.month, dl.day);
+    final diff = today.difference(that).inDays;
+    if (diff == 0) return 'Сегодня';
+    if (diff == 1) return 'Вчера';
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${two(dl.day)}.${two(dl.month)}.${dl.year}';
+  }
+}
+
+class _MessageBubble extends StatelessWidget {
+  final SupportMessage message;
+  final void Function(BuildContext, String) onOpenImage;
+  final Future<void> Function(String) onOpenUrl;
+
+  const _MessageBubble({
+    required this.message,
+    required this.onOpenImage,
+    required this.onOpenUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isSupport = message.isSupport;
+    return Align(
+      alignment: isSupport ? Alignment.centerLeft : Alignment.centerRight,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+        decoration: BoxDecoration(
+          color: isSupport ? AppTheme.card : const Color(0xFF15412E),
+          border: Border.all(
+              color: isSupport
+                  ? const Color(0xFF2A2A33)
+                  : const Color(0xFF1E5A3F)),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: Radius.circular(isSupport ? 5 : 16),
+            bottomRight: Radius.circular(isSupport ? 16 : 5),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isSupport ? 'Поддержка' : 'Вы',
+              style: TextStyle(
+                color: isSupport ? AppTheme.blue : AppTheme.accent,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              message.body,
+              style: TextStyle(
+                  color: isSupport ? AppTheme.textPrimary : const Color(0xFFEAFBF2),
+                  fontSize: 14,
+                  height: 1.35),
+            ),
+            if (message.attachments.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final a in message.attachments)
+                    if (a.isPdf)
+                      GestureDetector(
+                        onTap: () => onOpenUrl(a.url),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 11, vertical: 9),
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardRaised,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.picture_as_pdf,
+                                  color: AppTheme.error, size: 22),
+                              const SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ConstrainedBox(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 150),
+                                    child: Text(
+                                      a.name.isEmpty ? 'Документ.pdf' : a.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: AppTheme.textPrimary,
+                                          fontSize: 12.5),
+                                    ),
+                                  ),
+                                  if (a.sizeLabel.isNotEmpty)
+                                    Text(a.sizeLabel,
+                                        style: const TextStyle(
+                                            color: AppTheme.textDim,
+                                            fontSize: 11)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () => onOpenImage(context, a.url),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(a.url,
+                              width: 120, height: 120, fit: BoxFit.cover),
+                        ),
+                      ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 4),
+            Text(
+              _fmt(message.createdAt),
+              style: const TextStyle(color: AppTheme.textDim, fontSize: 10.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static String _fmt(DateTime? d) {
+    if (d == null) return '';
     final dl = d.toLocal();
     String two(int n) => n.toString().padLeft(2, '0');
-    return '${two(dl.day)}.${two(dl.month)} ${two(dl.hour)}:${two(dl.minute)}';
+    return '${two(dl.hour)}:${two(dl.minute)}';
   }
 }

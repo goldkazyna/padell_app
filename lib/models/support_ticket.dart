@@ -54,20 +54,30 @@ class SupportAttachment {
   final String url;
   final String type; // image / pdf
   final String name;
+  final int size; // bytes
 
   const SupportAttachment({
     required this.url,
     required this.type,
     required this.name,
+    this.size = 0,
   });
 
   bool get isPdf => type == 'pdf';
+
+  String get sizeLabel {
+    if (size <= 0) return '';
+    if (size < 1024) return '$size Б';
+    if (size < 1024 * 1024) return '${(size / 1024).round()} КБ';
+    return '${(size / 1024 / 1024).toStringAsFixed(1)} МБ';
+  }
 
   factory SupportAttachment.fromJson(Map<String, dynamic> json) {
     return SupportAttachment(
       url: json['url'] as String? ?? '',
       type: json['type'] as String? ?? 'image',
       name: json['name'] as String? ?? '',
+      size: (json['size'] as num?)?.toInt() ?? 0,
     );
   }
 }
