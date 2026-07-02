@@ -1994,4 +1994,40 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get changePhoneSuccess => 'Нөмір өзгертілді';
+
+  @override
+  String get chatTitle => 'Турнир чаты';
+
+  @override
+  String get chatModeAdmin => 'Тек ұйымдастырушы';
+
+  @override
+  String get chatModeParticipants => 'Қатысушылар';
+
+  @override
+  String get chatModeEveryone => 'Ашық чат';
+
+  @override
+  String get chatInputHint => 'Хабарлама…';
+
+  @override
+  String get chatLockedOnlyAdmin => 'Тек ұйымдастырушы жаза алады';
+
+  @override
+  String get chatReadOnlyFinished => 'Чат жабылды — тек оқу';
+
+  @override
+  String get chatEmpty => 'Әзірге хабарлама жоқ';
+
+  @override
+  String get chatDelete => 'Жою';
+
+  @override
+  String get chatOrganizerBadge => 'Ұйымдастырушы';
+
+  @override
+  String get chatSendFailed => 'Хабарлама жіберілмеді';
+
+  @override
+  String get chatRetry => 'Қайталау';
 }

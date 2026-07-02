@@ -2015,4 +2015,40 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get changePhoneSuccess => 'Номер изменён';
+
+  @override
+  String get chatTitle => 'Чат турнира';
+
+  @override
+  String get chatModeAdmin => 'Только организатор';
+
+  @override
+  String get chatModeParticipants => 'Участники';
+
+  @override
+  String get chatModeEveryone => 'Открытый чат';
+
+  @override
+  String get chatInputHint => 'Сообщение…';
+
+  @override
+  String get chatLockedOnlyAdmin => 'Писать может только организатор';
+
+  @override
+  String get chatReadOnlyFinished => 'Чат завершён — только чтение';
+
+  @override
+  String get chatEmpty => 'Сообщений пока нет';
+
+  @override
+  String get chatDelete => 'Удалить';
+
+  @override
+  String get chatOrganizerBadge => 'Организатор';
+
+  @override
+  String get chatSendFailed => 'Не удалось отправить сообщение';
+
+  @override
+  String get chatRetry => 'Повторить';
 }

@@ -2012,4 +2012,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changePhoneSuccess => 'Phone number changed';
+
+  @override
+  String get chatTitle => 'Tournament chat';
+
+  @override
+  String get chatModeAdmin => 'Organizer only';
+
+  @override
+  String get chatModeParticipants => 'Participants';
+
+  @override
+  String get chatModeEveryone => 'Open chat';
+
+  @override
+  String get chatInputHint => 'Message…';
+
+  @override
+  String get chatLockedOnlyAdmin => 'Only the organizer can post';
+
+  @override
+  String get chatReadOnlyFinished => 'Chat closed — read only';
+
+  @override
+  String get chatEmpty => 'No messages yet';
+
+  @override
+  String get chatDelete => 'Delete';
+
+  @override
+  String get chatOrganizerBadge => 'Organizer';
+
+  @override
+  String get chatSendFailed => 'Failed to send message';
+
+  @override
+  String get chatRetry => 'Retry';
 }

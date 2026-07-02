@@ -717,5 +717,17 @@
   "changePhoneOldHint": "Enter the code sent to your current number",
   "changePhoneEnterNew": "Enter your new phone number",
   "changePhoneNewHint": "Enter the code sent to the new number",
-  "changePhoneSuccess": "Phone number changed"
+  "changePhoneSuccess": "Phone number changed",
+  "chatTitle": "Tournament chat",
+  "chatModeAdmin": "Organizer only",
+  "chatModeParticipants": "Participants",
+  "chatModeEveryone": "Open chat",
+  "chatInputHint": "Message…",
+  "chatLockedOnlyAdmin": "Only the organizer can post",
+  "chatReadOnlyFinished": "Chat closed — read only",
+  "chatEmpty": "No messages yet",
+  "chatDelete": "Delete",
+  "chatOrganizerBadge": "Organizer",
+  "chatSendFailed": "Failed to send message",
+  "chatRetry": "Retry"
 }

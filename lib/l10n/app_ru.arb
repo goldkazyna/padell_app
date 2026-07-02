@@ -737,5 +737,17 @@
   "changePhoneOldHint": "Введите код, отправленный на текущий номер",
   "changePhoneEnterNew": "Введите новый номер телефона",
   "changePhoneNewHint": "Введите код, отправленный на новый номер",
-  "changePhoneSuccess": "Номер изменён"
+  "changePhoneSuccess": "Номер изменён",
+  "chatTitle": "Чат турнира",
+  "chatModeAdmin": "Только организатор",
+  "chatModeParticipants": "Участники",
+  "chatModeEveryone": "Открытый чат",
+  "chatInputHint": "Сообщение…",
+  "chatLockedOnlyAdmin": "Писать может только организатор",
+  "chatReadOnlyFinished": "Чат завершён — только чтение",
+  "chatEmpty": "Сообщений пока нет",
+  "chatDelete": "Удалить",
+  "chatOrganizerBadge": "Организатор",
+  "chatSendFailed": "Не удалось отправить сообщение",
+  "chatRetry": "Повторить"
 }
