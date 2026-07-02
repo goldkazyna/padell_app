@@ -717,5 +717,17 @@
   "changePhoneOldHint": "Ағымдағы нөмірге жіберілген кодты енгізіңіз",
   "changePhoneEnterNew": "Жаңа телефон нөмірін енгізіңіз",
   "changePhoneNewHint": "Жаңа нөмірге жіберілген кодты енгізіңіз",
-  "changePhoneSuccess": "Нөмір өзгертілді"
+  "changePhoneSuccess": "Нөмір өзгертілді",
+  "chatTitle": "Турнир чаты",
+  "chatModeAdmin": "Тек ұйымдастырушы",
+  "chatModeParticipants": "Қатысушылар",
+  "chatModeEveryone": "Ашық чат",
+  "chatInputHint": "Хабарлама…",
+  "chatLockedOnlyAdmin": "Тек ұйымдастырушы жаза алады",
+  "chatReadOnlyFinished": "Чат жабылды — тек оқу",
+  "chatEmpty": "Әзірге хабарлама жоқ",
+  "chatDelete": "Жою",
+  "chatOrganizerBadge": "Ұйымдастырушы",
+  "chatSendFailed": "Хабарлама жіберілмеді",
+  "chatRetry": "Қайталау"
 }

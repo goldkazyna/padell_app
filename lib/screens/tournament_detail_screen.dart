@@ -21,6 +21,7 @@ import '../widgets/tournaments/friend_registration_sheet.dart';
 import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'tournament_chat_screen.dart';
 
 class TournamentDetailScreen extends StatefulWidget {
   final int tournamentId;
@@ -139,15 +140,61 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   // === AppBar ===
   Widget _buildAppBar(BuildContext context) {
+    final tournament = context.read<TournamentProvider>().selectedTournament;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const AppBackButton(),
-          _buildCircleButton(
-            icon: Icons.ios_share,
-            onTap: () => _shareTournament(),
+          Row(
+            children: [
+              if (tournament?.chat?.canRead == true)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      _buildCircleButton(
+                        icon: Icons.chat_bubble_outline,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => TournamentChatScreen(
+                              tournamentId: tournament!.id,
+                              tournamentName: tournament.name,
+                              chat: tournament.chat!,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if ((tournament?.chat?.unreadCount ?? 0) > 0)
+                        Positioned(
+                          right: -2,
+                          top: -2,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                            decoration: const BoxDecoration(
+                                color: AppTheme.accent, shape: BoxShape.circle),
+                            child: Text(
+                              '${tournament!.chat!.unreadCount}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              _buildCircleButton(
+                icon: Icons.ios_share,
+                onTap: () => _shareTournament(),
+              ),
+            ],
           ),
         ],
       ),

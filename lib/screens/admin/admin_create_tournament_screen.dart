@@ -54,6 +54,8 @@ class _AdminCreateTournamentScreenState
   int? _durationHours; // длительность турнира в часах (необязательно)
   bool _isRated = true; // рейтинговый ли турнир (влияет на рейтинг игроков)
   bool _verifiedOnly = false; // только для верифицированных игроков
+  bool _chatEnabled = true; // включён ли чат турнира
+  String _chatWriteMode = 'participants'; // admin | participants | everyone
 
   // Какие секции-аккордеоны раскрыты. По умолчанию открыта только «Основное».
   final Set<String> _openSections = {'basic'};
@@ -241,6 +243,8 @@ class _AdminCreateTournamentScreenState
       'status': _status,
       'is_rated': _isRated,
       'verified_only': _verifiedOnly,
+      'chat_enabled': _chatEnabled,
+      'chat_write_mode': _chatWriteMode,
       'courts': courts,
       'courts_count': _courtsCount,
       'reserve_count': reserve,
@@ -507,6 +511,8 @@ class _AdminCreateTournamentScreenState
               const SizedBox(height: 12),
             ],
             _verifiedToggle(),
+            const SizedBox(height: 12),
+            _chatSettings(),
             const SizedBox(height: 12),
             _label('Уровень игроков'),
             _levelSliders(),
@@ -1887,6 +1893,62 @@ class _AdminCreateTournamentScreenState
             onChanged: (v) => setState(() => _verifiedOnly = v),
             activeColor: AppTheme.accent,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _chatSettings() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Text('Чат турнира',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+              ),
+              Switch(
+                value: _chatEnabled,
+                onChanged: (v) => setState(() => _chatEnabled = v),
+                activeColor: AppTheme.accent,
+              ),
+            ],
+          ),
+          if (_chatEnabled) ...[
+            const SizedBox(height: 8),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'admin', label: Text('Организатор')),
+                ButtonSegment(
+                    value: 'participants', label: Text('Участники')),
+                ButtonSegment(value: 'everyone', label: Text('Все')),
+              ],
+              selected: {_chatWriteMode},
+              onSelectionChanged: (s) =>
+                  setState(() => _chatWriteMode = s.first),
+              showSelectedIcon: false,
+              style: SegmentedButton.styleFrom(
+                foregroundColor: AppTheme.textSecondary,
+                selectedBackgroundColor: AppTheme.accent,
+                selectedForegroundColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Кто может писать. Читать могут все, кому доступен чат.',
+              style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+            ),
+          ],
         ],
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'tournament_chat.dart';
+
 class Club {
   final int id;
   final String name;
@@ -305,6 +307,7 @@ class Tournament {
   final bool inWaitlist;
   final int? waitlistPosition;
   final DateTime? moderationDeadline;
+  final TournamentChat? chat;
 
   Tournament({
     required this.id,
@@ -344,6 +347,7 @@ class Tournament {
     this.inWaitlist = false,
     this.waitlistPosition,
     this.moderationDeadline,
+    this.chat,
   });
 
   bool get isTeamTournament => type == 'team';
@@ -442,6 +446,9 @@ class Tournament {
       moderationDeadline: json['moderation_deadline'] != null
           ? DateTime.tryParse(json['moderation_deadline'] as String)
           : null,
+      chat: json['chat'] == null
+          ? null
+          : TournamentChat.fromJson(json['chat'] as Map<String, dynamic>),
     );
   }
 

@@ -28,9 +28,11 @@ import 'services/admin_service.dart';
 import 'services/invitation_service.dart';
 import 'services/moderation_service.dart';
 import 'services/support_service.dart';
+import 'services/chat_service.dart';
 import 'providers/court_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/chat_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,6 +74,7 @@ void main() async {
   final invitationService = InvitationService(apiService, storageService);
   final moderationService = ModerationService(apiService, storageService);
   final supportService = SupportService(apiService, storageService);
+  final chatService = ChatService(apiService, storageService);
   final pushService = PushNotificationService(apiService, storageService, navigatorKey);
   if (!kIsWeb) {
     try {
@@ -118,6 +121,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => SettingsProvider(storageService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ChatProvider(chatService),
+        ),
         Provider<ProfileService>.value(value: profileService),
         Provider<RatingService>.value(value: ratingService),
         Provider<PushNotificationService>.value(value: pushService),
@@ -126,6 +132,7 @@ void main() async {
         Provider<InvitationService>.value(value: invitationService),
         Provider<ModerationService>.value(value: moderationService),
         Provider<SupportService>.value(value: supportService),
+        Provider<ChatService>.value(value: chatService),
       ],
       child: const PadelApp(),
     ),

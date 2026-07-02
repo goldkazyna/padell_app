@@ -3801,6 +3801,78 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Номер изменён'**
   String get changePhoneSuccess;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чат турнира'**
+  String get chatTitle;
+
+  /// No description provided for @chatModeAdmin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Только организатор'**
+  String get chatModeAdmin;
+
+  /// No description provided for @chatModeParticipants.
+  ///
+  /// In ru, this message translates to:
+  /// **'Участники'**
+  String get chatModeParticipants;
+
+  /// No description provided for @chatModeEveryone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открытый чат'**
+  String get chatModeEveryone;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщение…'**
+  String get chatInputHint;
+
+  /// No description provided for @chatLockedOnlyAdmin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Писать может только организатор'**
+  String get chatLockedOnlyAdmin;
+
+  /// No description provided for @chatReadOnlyFinished.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чат завершён — только чтение'**
+  String get chatReadOnlyFinished;
+
+  /// No description provided for @chatEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщений пока нет'**
+  String get chatEmpty;
+
+  /// No description provided for @chatDelete.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить'**
+  String get chatDelete;
+
+  /// No description provided for @chatOrganizerBadge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организатор'**
+  String get chatOrganizerBadge;
+
+  /// No description provided for @chatSendFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось отправить сообщение'**
+  String get chatSendFailed;
+
+  /// No description provided for @chatRetry.
+  ///
+  /// In ru, this message translates to:
+  /// **'Повторить'**
+  String get chatRetry;
 }
 
 class _AppLocalizationsDelegate
