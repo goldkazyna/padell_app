@@ -7,12 +7,11 @@ class ChatUser {
   const ChatUser({required this.id, required this.name, this.avatar, this.level});
 
   factory ChatUser.fromJson(Map<String, dynamic> json) {
-    final rawLevel = json['level'];
     return ChatUser(
       id: (json['id'] as num?)?.toInt() ?? 0,
       name: json['name'] as String? ?? '',
       avatar: json['avatar'] as String?,
-      level: rawLevel == null ? null : rawLevel.toString(),
+      level: json['level']?.toString(),
     );
   }
 }
