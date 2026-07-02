@@ -29,16 +29,18 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
   final _controller = TextEditingController();
   final _scroll = ScrollController();
 
-  ChatProvider get _provider => context.read<ChatProvider>();
+  late final ChatProvider _provider;
 
   @override
   void initState() {
     super.initState();
+    _provider = context.read<ChatProvider>();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _provider.loadInitial(widget.tournamentId);
-      _jumpToBottom();
+      if (!mounted) return;
       _provider.startPolling(widget.tournamentId);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToBottom());
     });
   }
 
@@ -72,7 +74,7 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
     final ok = await _provider.send(widget.tournamentId, text);
     if (!mounted) return;
     if (ok) {
-      _jumpToBottom();
+      WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToBottom());
     } else {
       showAppAlert(context, AppLocalizations.of(context)!.chatSendFailed);
     }
