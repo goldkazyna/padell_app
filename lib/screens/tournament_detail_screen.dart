@@ -170,20 +170,28 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                       ),
                       if ((tournament?.chat?.unreadCount ?? 0) > 0)
                         Positioned(
-                          right: -2,
-                          top: -2,
+                          right: -4,
+                          top: -4,
                           child: Container(
-                            padding: const EdgeInsets.all(4),
-                            constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                            decoration: const BoxDecoration(
-                                color: AppTheme.accent, shape: BoxShape.circle),
+                            constraints: const BoxConstraints(
+                                minWidth: 20, minHeight: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppTheme.accent,
+                              borderRadius: BorderRadius.circular(10),
+                              // Тёмное кольцо-отбивка от кнопки (как на макете).
+                              border: Border.all(
+                                  color: AppTheme.background, width: 2),
+                            ),
                             child: Text(
                               '${tournament!.chat!.unreadCount}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1),
                             ),
                           ),
                         ),
