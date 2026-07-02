@@ -52,6 +52,17 @@ class FakeChatService extends ChatService {
   }
 }
 
+// Вариант фейка, который возвращает весь стор независимо от afterId —
+// нужен, чтобы проверить дедуп по id внутри ChatProvider.fetchNewer,
+// а не полагаться на фильтрацию afterId в FakeChatService.
+class _OverlappingChatService extends FakeChatService {
+  @override
+  Future<List<ChatMessage>> getMessages(int t,
+      {int? afterId, int? beforeId, int limit = 50}) async {
+    return List<ChatMessage>.from(store);
+  }
+}
+
 ChatMessage _msg(int id, {bool mine = false}) => ChatMessage(
     id: id, user: ChatUser(id: id, name: 'U$id'), text: 't$id', isMine: mine);
 
@@ -92,6 +103,17 @@ void main() {
     expect(ok, false);
     expect(p.messages, isEmpty);
     expect(p.error, isNotNull);
+  });
+
+  test('fetchNewer не дублирует сообщение с уже существующим id', () async {
+    // Симулирует гонку опроса/отправки: сервис возвращает сообщения,
+    // среди которых уже есть загруженные ранее (игнорирует afterId).
+    final fake = _OverlappingChatService()..store.add(_msg(1));
+    final p = ChatProvider(fake);
+    await p.loadInitial(10);
+    fake.store.add(_msg(2));
+    await p.fetchNewer(10);
+    expect(p.messages.map((m) => m.id), [1, 2]);
   });
 
   test('delete убирает сообщение из ленты', () async {

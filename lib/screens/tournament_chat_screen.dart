@@ -30,6 +30,7 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
   final _scroll = ScrollController();
 
   late final ChatProvider _provider;
+  bool _firstLoadDone = false;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _provider.loadInitial(widget.tournamentId);
       if (!mounted) return;
+      setState(() => _firstLoadDone = true);
       _provider.startPolling(widget.tournamentId);
       WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToBottom());
     });
@@ -70,10 +72,10 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
   Future<void> _send() async {
     final text = _controller.text;
     if (text.trim().isEmpty) return;
-    _controller.clear();
     final ok = await _provider.send(widget.tournamentId, text);
     if (!mounted) return;
     if (ok) {
+      _controller.clear();
       WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToBottom());
     } else {
       showAppAlert(context, AppLocalizations.of(context)!.chatSendFailed);
@@ -118,6 +120,9 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
           Expanded(
             child: Consumer<ChatProvider>(
               builder: (_, p, _) {
+                if (!_firstLoadDone) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 if (p.isLoading && p.messages.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }

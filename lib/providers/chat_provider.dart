@@ -43,12 +43,14 @@ class ChatProvider extends ChangeNotifier {
   Future<void> fetchNewer(int tournamentId) async {
     try {
       final list = await _service.getMessages(tournamentId, afterId: _lastId);
-      if (list.isNotEmpty) {
-        list.sort((a, b) => a.id.compareTo(b.id));
-        _messages.addAll(list);
-        await _markReadSafe(tournamentId);
-        notifyListeners();
-      }
+      if (list.isEmpty) return;
+      final existing = _messages.map((m) => m.id).toSet();
+      final fresh = list.where((m) => !existing.contains(m.id)).toList();
+      if (fresh.isEmpty) return;
+      fresh.sort((a, b) => a.id.compareTo(b.id));
+      _messages.addAll(fresh);
+      await _markReadSafe(tournamentId);
+      notifyListeners();
     } catch (_) {
       // опрос молча ретраит на следующем тике
     }
@@ -62,7 +64,9 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final msg = await _service.sendMessage(tournamentId, trimmed);
-      _messages.add(msg);
+      if (!_messages.any((m) => m.id == msg.id)) {
+        _messages.add(msg);
+      }
       return true;
     } catch (e) {
       _error = e.toString();
