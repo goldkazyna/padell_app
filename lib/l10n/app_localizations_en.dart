@@ -2048,4 +2048,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatRetry => 'Retry';
+
+  @override
+  String get chatToday => 'Today';
+
+  @override
+  String get chatYesterday => 'Yesterday';
 }

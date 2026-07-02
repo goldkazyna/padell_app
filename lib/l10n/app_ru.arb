@@ -749,5 +749,7 @@
   "chatDelete": "Удалить",
   "chatOrganizerBadge": "Организатор",
   "chatSendFailed": "Не удалось отправить сообщение",
-  "chatRetry": "Повторить"
+  "chatRetry": "Повторить",
+  "chatToday": "Сегодня",
+  "chatYesterday": "Вчера"
 }

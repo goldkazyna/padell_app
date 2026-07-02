@@ -2030,4 +2030,10 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get chatRetry => 'Қайталау';
+
+  @override
+  String get chatToday => 'Бүгін';
+
+  @override
+  String get chatYesterday => 'Кеше';
 }

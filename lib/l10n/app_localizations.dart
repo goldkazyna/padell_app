@@ -3873,6 +3873,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Повторить'**
   String get chatRetry;
+
+  /// No description provided for @chatToday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сегодня'**
+  String get chatToday;
+
+  /// No description provided for @chatYesterday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вчера'**
+  String get chatYesterday;
 }
 
 class _AppLocalizationsDelegate

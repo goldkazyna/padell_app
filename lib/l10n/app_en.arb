@@ -729,5 +729,7 @@
   "chatDelete": "Delete",
   "chatOrganizerBadge": "Organizer",
   "chatSendFailed": "Failed to send message",
-  "chatRetry": "Retry"
+  "chatRetry": "Retry",
+  "chatToday": "Today",
+  "chatYesterday": "Yesterday"
 }

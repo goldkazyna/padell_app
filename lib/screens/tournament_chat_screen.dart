@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../models/chat_message.dart';
 import '../models/tournament_chat.dart';
 import '../providers/chat_provider.dart';
 import '../theme/app_theme.dart';
@@ -103,14 +104,16 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
       appBar: AppBar(
         leading: const Padding(
             padding: EdgeInsets.only(left: 8), child: AppBackButton()),
-        titleSpacing: 0,
+        centerTitle: true,
         title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(widget.tournamentName,
                 style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w700),
+                    fontSize: 17, fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis),
+            const SizedBox(height: 2),
             Text(_modeLabel(l10n),
                 style: const TextStyle(
                     fontSize: 12, color: AppTheme.textSecondary)),
@@ -142,12 +145,22 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
                     itemCount: p.messages.length,
                     itemBuilder: (_, i) {
                       final m = p.messages[i];
+                      final prev = i > 0 ? p.messages[i - 1] : null;
+                      final showDate = _needsDateSeparator(prev, m);
                       final canDelete = m.isMine || widget.chat.isAdmin;
-                      return ChatMessageBubble(
+                      final bubble = ChatMessageBubble(
                         message: m,
                         onLongPress: canDelete
                             ? () => _confirmDelete(m.id, l10n)
                             : null,
+                      );
+                      if (!showDate) return bubble;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _dateSeparator(m, l10n),
+                          bubble,
+                        ],
                       );
                     },
                   ),
@@ -161,19 +174,106 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
     );
   }
 
+  bool _needsDateSeparator(ChatMessage? prev, ChatMessage current) {
+    if (prev == null) return true;
+    final a = prev.createdAt?.toLocal();
+    final b = current.createdAt?.toLocal();
+    if (b == null) return false;
+    if (a == null) return true;
+    return a.year != b.year || a.month != b.month || a.day != b.day;
+  }
+
+  Widget _dateSeparator(ChatMessage m, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Center(
+        child: Text(
+          _dateLabel(m.createdAt?.toLocal(), l10n),
+          style: const TextStyle(
+            color: AppTheme.textDim,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _dateLabel(DateTime? d, AppLocalizations l10n) {
+    if (d == null) return '';
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final that = DateTime(d.year, d.month, d.day);
+    final diff = today.difference(that).inDays;
+    if (diff == 0) return l10n.chatToday;
+    if (diff == 1) return l10n.chatYesterday;
+    return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+  }
+
   Future<void> _confirmDelete(int messageId, AppLocalizations l10n) async {
     await showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.card,
+      backgroundColor: Colors.transparent,
       builder: (ctx) => SafeArea(
-        child: ListTile(
-          leading: const Icon(Icons.delete_outline, color: AppTheme.error),
-          title: Text(l10n.chatDelete,
-              style: const TextStyle(color: AppTheme.error)),
-          onTap: () {
-            Navigator.pop(ctx);
-            _provider.delete(widget.tournamentId, messageId);
-          },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _sheetButton(
+                icon: Icons.delete_outline,
+                label: l10n.chatDelete,
+                color: AppTheme.error,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _provider.delete(widget.tournamentId, messageId);
+                },
+              ),
+              const SizedBox(height: 8),
+              _sheetButton(
+                label: l10n.cancel,
+                color: AppTheme.textPrimary,
+                onTap: () => Navigator.pop(ctx),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _sheetButton({
+    IconData? icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: AppTheme.card,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          height: 54,
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -186,22 +286,31 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
       final label = (widget.chat.writeMode == 'admin' && !widget.chat.isAdmin)
           ? l10n.chatLockedOnlyAdmin
           : l10n.chatReadOnlyFinished;
-      return Container(
-        width: double.infinity,
-        color: AppTheme.card,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.lock_outline,
-                size: 16, color: AppTheme.textSecondary),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textSecondary)),
+      return SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.lock_outline,
+                    size: 16, color: AppTheme.textSecondary),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(label,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppTheme.textSecondary)),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }

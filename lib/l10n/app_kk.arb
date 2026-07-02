@@ -729,5 +729,7 @@
   "chatDelete": "Жою",
   "chatOrganizerBadge": "Ұйымдастырушы",
   "chatSendFailed": "Хабарлама жіберілмеді",
-  "chatRetry": "Қайталау"
+  "chatRetry": "Қайталау",
+  "chatToday": "Бүгін",
+  "chatYesterday": "Кеше"
 }

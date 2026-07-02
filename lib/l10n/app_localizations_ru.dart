@@ -2051,4 +2051,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chatRetry => 'Повторить';
+
+  @override
+  String get chatToday => 'Сегодня';
+
+  @override
+  String get chatYesterday => 'Вчера';
 }
