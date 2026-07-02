@@ -75,7 +75,9 @@ class _TournamentChatScreenState extends State<TournamentChatScreen>
     final ok = await _provider.send(widget.tournamentId, text);
     if (!mounted) return;
     if (ok) {
-      _controller.clear();
+      // Очищаем поле только если пользователь не дописал новый текст, пока шла
+      // отправка — иначе стёрли бы неотправленное.
+      if (_controller.text == text) _controller.clear();
       WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToBottom());
     } else {
       showAppAlert(context, AppLocalizations.of(context)!.chatSendFailed);
