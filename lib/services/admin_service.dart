@@ -329,6 +329,23 @@ class AdminService {
     );
   }
 
+  /// Старт JPI solo с ручным посевом: order — id игроков в порядке слотов
+  /// (корт1 слот1..4, корт2 слот1..4, ...).
+  Future<AdminTournamentDetail> startTournamentWithOrder(
+    int id,
+    List<int> order,
+  ) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/tournaments/$id/start',
+      {'order': order},
+      token,
+    );
+    return AdminTournamentDetail.fromJson(
+      response['tournament'] as Map<String, dynamic>,
+    );
+  }
+
   /// Перезапустить турнир (`in_progress` → `open`, сетка удаляется).
   Future<AdminTournamentDetail> restartTournament(int id) async {
     final token = await _storage.getToken();
@@ -728,6 +745,44 @@ class AdminService {
       {'pairs': pairs},
       token,
     );
+  }
+
+  /// Сохранить счёт матча Just Padel It. POST/PUT одинаковы — сервис
+  /// идемпотентно переписывает счёт и статы.
+  Future<void> saveJpiScore(
+    int tournamentId,
+    int matchId, {
+    required int team1Score,
+    required int team2Score,
+  }) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/justpadelit/matches/$matchId/score',
+      {'team1_score': team1Score, 'team2_score': team2Score},
+      token,
+    );
+  }
+
+  /// Участники + уже созданные пары JPI.
+  Future<Map<String, dynamic>> getJpiPairs(int tournamentId) async {
+    final token = await _storage.getToken();
+    return _api.get('/admin/tournaments/$tournamentId/justpadelit/pairs', token);
+  }
+
+  /// Сохранить пары JPI. pairs — [[player1_id, player2_id], ...].
+  Future<void> saveJpiPairs(int tournamentId, List<List<int>> pairs) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/justpadelit/pairs',
+      {'pairs': pairs},
+      token,
+    );
+  }
+
+  /// Авто-посев (по рейтингу) + число кортов для экрана посева solo JPI.
+  Future<Map<String, dynamic>> getJpiSeeding(int tournamentId) async {
+    final token = await _storage.getToken();
+    return _api.get('/admin/tournaments/$tournamentId/justpadelit/seeding', token);
   }
 
   /// Сгенерировать следующий раунд (KOC). Возвращает свежий /matches.
