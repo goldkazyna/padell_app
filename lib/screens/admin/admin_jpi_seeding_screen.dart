@@ -282,7 +282,7 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
 
   Widget _courtCard(int courtIdx) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppTheme.card,
@@ -311,14 +311,98 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          for (int slot = 0; slot < 4; slot++) ...[
-            _playerDropdown(courtIdx, slot),
-            if (slot != 3) const SizedBox(height: 8),
-          ],
+          const SizedBox(height: 12),
+          // В 1-м раунде корт играется как слоты 0+2 против 1+3 — так делит
+          // движок. Показываем это визуально как две пары, чтобы посев был
+          // понятен. Индексы слотов и порядок отправки не меняем.
+          _pairBlock(courtIdx, 'Пара 1', 0, 2),
+          const SizedBox(height: 8),
+          _vsDivider(),
+          const SizedBox(height: 8),
+          _pairBlock(courtIdx, 'Пара 2', 1, 3),
         ],
       ),
     );
+  }
+
+  Widget _pairBlock(int courtIdx, String label, int slotA, int slotB) {
+    final sum =
+        _ratingOf(_slots[courtIdx][slotA]) + _ratingOf(_slots[courtIdx][slotB]);
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppTheme.background,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppTheme.border, width: 0.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppTheme.accent.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Рейтинг пары: $sum',
+                  style: const TextStyle(
+                    color: AppTheme.accent,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          _playerDropdown(courtIdx, slotA),
+          const SizedBox(height: 8),
+          _playerDropdown(courtIdx, slotB),
+        ],
+      ),
+    );
+  }
+
+  Widget _vsDivider() {
+    return Row(
+      children: const [
+        Expanded(child: Divider(color: AppTheme.border, height: 1)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            'против',
+            style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+          ),
+        ),
+        Expanded(child: Divider(color: AppTheme.border, height: 1)),
+      ],
+    );
+  }
+
+  /// Рейтинг игрока по id (0 — слот пуст).
+  int _ratingOf(int playerId) {
+    if (playerId == 0) return 0;
+    for (final p in _participants) {
+      if (p['id'] == playerId) {
+        final r = p['rating'];
+        if (r is num) return r.toInt();
+        return int.tryParse('$r') ?? 0;
+      }
+    }
+    return 0;
   }
 
   Widget _playerDropdown(int courtIdx, int slot) {
@@ -375,12 +459,20 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
           ),
         ),
         if (rating != null) ...[
-          const SizedBox(width: 6),
-          Text(
-            '$rating',
-            style: const TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 11,
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+            decoration: BoxDecoration(
+              color: AppTheme.accent.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              '$rating',
+              style: const TextStyle(
+                color: AppTheme.accent,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
