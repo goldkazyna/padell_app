@@ -238,6 +238,13 @@ class _AdminTournamentDetailScreenState
     return false;
   }
 
+  /// Solo Just Padel It: старт идёт через экран посева (авто по рейтингу +
+  /// ручная расстановка), поэтому кнопка называется «Посев», а не «Запустить».
+  bool get _isJpiSolo {
+    final t = _t;
+    return t != null && t.type == 'just_padel_it' && !t.isPaired;
+  }
+
   /// Открыть экран создания пар (JPI, KOC или Bali) и обновить карточку после.
   Future<void> _openCreatePairs() async {
     final t = _t;
@@ -638,7 +645,9 @@ class _AdminTournamentDetailScreenState
                 PopupMenuItem<String>(
                   value: 'start',
                   enabled: _t?.canStart ?? false,
-                  child: Text(_needPairs ? 'Создать пары' : l10n.startTournamentMenu),
+                  child: Text(_needPairs
+                      ? 'Создать пары'
+                      : (_isJpiSolo ? 'Посев' : l10n.startTournamentMenu)),
                 ),
                 PopupMenuItem<String>(
                   value: 'restart',
@@ -1352,7 +1361,9 @@ class _AdminTournamentDetailScreenState
         ));
       } else {
         children.add(_primaryButton(
-          label: _starting ? 'Запуск...' : 'Запустить турнир',
+          label: _starting
+              ? 'Запуск...'
+              : (_isJpiSolo ? 'Посев' : 'Запустить турнир'),
           onTap: _starting ? null : _start,
           loading: _starting,
           color: AppTheme.accent,
