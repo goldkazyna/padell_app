@@ -24,6 +24,7 @@ import '../../widgets/verified_badge.dart';
 import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
 import 'admin_jpi_create_pairs_screen.dart';
+import 'admin_jpi_seeding_screen.dart';
 import 'admin_koc_create_pairs_screen.dart';
 import 'admin_pairing_screen.dart';
 
@@ -263,6 +264,36 @@ class _AdminTournamentDetailScreenState
   Future<void> _start() async {
     final t = _t;
     if (t == null) return;
+
+    // Just Padel It solo (без фиксированных пар) — старт идёт через экран
+    // ручного посева (авто по рейтингу + свап), а не общий /start без body.
+    if (t.type == 'just_padel_it' && !t.isPaired) {
+      final started = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => AdminJpiSeedingScreen(
+            tournamentId: t.id,
+            tournamentName: t.name,
+          ),
+        ),
+      );
+      if (started == true && mounted) {
+        try {
+          final fresh =
+              await context.read<AdminService>().getTournamentDetail(t.id);
+          if (!mounted) return;
+          _applyToForm(fresh);
+          setState(() {
+            _t = fresh;
+            _matches = null;
+            _participants = null;
+            _invitations = null;
+          });
+          unawaited(_loadMatches());
+          unawaited(_loadParticipants());
+        } catch (_) {}
+      }
+      return;
+    }
 
     final ok = await _confirm(
       title: 'Запустить турнир?',
@@ -3787,7 +3818,8 @@ class _AdminTournamentDetailScreenState
     final collapsible = _matches?.type == 'round_robin'
         || _matches?.type == 'americano_flex'
         || _matches?.type == 'king_of_court'
-        || _matches?.type == 'bali_koc';
+        || _matches?.type == 'bali_koc'
+        || _matches?.type == 'just_padel_it';
     final expanded = !collapsible
         ? true
         : (_rrRoundExpanded[round.id] ?? (round.status == 'in_progress'));
@@ -4287,6 +4319,7 @@ class _AdminTournamentDetailScreenState
     final isTeam = _matches?.type == 'team';
     final isFlex = _matches?.type == 'americano_flex';
     final isRoundRobin = _matches?.type == 'round_robin';
+    final isJpi = _matches?.type == 'just_padel_it';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -4310,9 +4343,9 @@ class _AdminTournamentDetailScreenState
         team2Title: team2Title,
         initialScore1: initial1,
         initialScore2: initial2,
-        // У плей-офф, KOC, Bali и Round Robin ничья запрещена. У team — в плей-офф
-        // нельзя, в групповом этапе можно (ничья считается как одинаковые геймы).
-        requireDifferent: isPlayoff || isKoc || isBali || isRoundRobin,
+        // У плей-офф, KOC, Bali, Round Robin и JPI ничья запрещена. У team — в
+        // плей-офф нельзя, в групповом этапе можно (ничья = одинаковые геймы).
+        requireDifferent: isPlayoff || isKoc || isBali || isRoundRobin || isJpi,
       ),
     );
 
@@ -4375,6 +4408,13 @@ class _AdminTournamentDetailScreenState
             );
       } else if (isRoundRobin) {
         await context.read<AdminService>().saveRoundRobinScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+            );
+      } else if (isJpi) {
+        await context.read<AdminService>().saveJpiScore(
               tournamentId,
               matchId,
               team1Score: result.score1,
