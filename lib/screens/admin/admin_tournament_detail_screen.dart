@@ -23,6 +23,7 @@ import '../../widgets/moderation_countdown.dart';
 import '../../widgets/verified_badge.dart';
 import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
+import 'admin_jpi_create_pairs_screen.dart';
 import 'admin_koc_create_pairs_screen.dart';
 import 'admin_pairing_screen.dart';
 
@@ -225,25 +226,30 @@ class _AdminTournamentDetailScreenState
     }
   }
 
-  /// Нужно ли сначала создать пары (Bali или фикс-парный Король корта без пар).
+  /// Нужно ли сначала создать пары (Bali, фикс-парный Король корта или
+  /// фикс-парный Just Padel It без пар).
   bool get _needPairs {
     final t = _t;
     if (t == null) return false;
     if (t.type == 'bali_koc' && !t.baliPairsCreated) return true;
     if (t.type == 'king_of_court' && t.isPaired && !t.kocPairsCreated) return true;
+    if (t.type == 'just_padel_it' && t.isPaired && !t.jpiPairsCreated) return true;
     return false;
   }
 
-  /// Открыть экран создания пар (KOC или Bali) и обновить карточку после.
+  /// Открыть экран создания пар (JPI, KOC или Bali) и обновить карточку после.
   Future<void> _openCreatePairs() async {
     final t = _t;
     if (t == null) return;
+    final isJpi = t.type == 'just_padel_it';
     final isKoc = t.type == 'king_of_court';
     final ok = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => isKoc
-            ? AdminKocCreatePairsScreen(tournamentId: t.id, tournamentName: t.name)
-            : AdminBaliCreatePairsScreen(tournamentId: t.id, tournamentName: t.name),
+        builder: (_) => isJpi
+            ? AdminJpiCreatePairsScreen(tournamentId: t.id, tournamentName: t.name)
+            : isKoc
+                ? AdminKocCreatePairsScreen(tournamentId: t.id, tournamentName: t.name)
+                : AdminBaliCreatePairsScreen(tournamentId: t.id, tournamentName: t.name),
       ),
     );
     if (ok == true) {

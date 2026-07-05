@@ -27,6 +27,7 @@ class AdminTournamentDetail {
   final bool canDelete;
   final bool baliPairsCreated;
   final bool kocPairsCreated;
+  final bool jpiPairsCreated;
   final bool isPaired;
   final int? moderationHours;
   final int? moderationMinutes;
@@ -62,6 +63,7 @@ class AdminTournamentDetail {
     required this.canDelete,
     this.baliPairsCreated = false,
     this.kocPairsCreated = false,
+    this.jpiPairsCreated = false,
     this.isPaired = false,
     this.moderationHours,
     this.moderationMinutes,
@@ -108,6 +110,7 @@ class AdminTournamentDetail {
       canDelete: json['can_delete'] as bool? ?? false,
       baliPairsCreated: json['bali_pairs_created'] as bool? ?? false,
       kocPairsCreated: json['koc_pairs_created'] as bool? ?? false,
+      jpiPairsCreated: json['jpi_pairs_created'] as bool? ?? false,
       isPaired: json['is_paired'] as bool? ?? false,
       moderationHours: (json['moderation_hours'] as num?)?.toInt(),
       moderationMinutes: (json['moderation_minutes'] as num?)?.toInt(),
