@@ -46,7 +46,7 @@ class _AdminCreateTournamentScreenState
   // Парный Americano Flex (фиксированные пары, собирает админ).
   bool _flexIsPaired = false;
 
-  String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex
+  String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex / just_padel_it
   DateTime? _startDate;
   double _minLevel = 1.5;
   double _maxLevel = 4.0;
@@ -302,6 +302,11 @@ class _AdminCreateTournamentScreenState
       body['is_paired'] = true;
     }
 
+    if (_type == 'just_padel_it' && _flexIsPaired) {
+      // Just Padel It с фиксированными парами: пары создаются на этапе проведения.
+      body['is_paired'] = true;
+    }
+
     setState(() {
       _saving = true;
       _saveLabel = 'Создаём турнир...';
@@ -492,9 +497,15 @@ class _AdminCreateTournamentScreenState
               hint: '0',
               keyboardType: const TextInputType.numberWithOptions(),
             ),
-            if (_type == 'americano_flex' || _type == 'king_of_court') ...[
+            if (_type == 'americano_flex' ||
+                _type == 'king_of_court' ||
+                _type == 'just_padel_it') ...[
               const SizedBox(height: 12),
               _pairedToggle(),
+            ],
+            if (_type == 'just_padel_it') ...[
+              const SizedBox(height: 12),
+              _scoreTypeControl(),
             ],
           ],
         ),
@@ -736,6 +747,12 @@ class _AdminCreateTournamentScreenState
               title: 'Король корта',
               subtitle: 'Ротация по кортам',
               icon: Icons.emoji_events_outlined,
+            ),
+            card(
+              value: 'just_padel_it',
+              title: 'Just Padel It',
+              subtitle: 'Движение по кортам + бонусы',
+              icon: Icons.local_fire_department_outlined,
             ),
             card(
               value: 'round_robin',
@@ -1812,6 +1829,57 @@ class _AdminCreateTournamentScreenState
           ),
         ],
       ),
+    );
+  }
+
+  // Тип подсчёта результата. v1: активна только «По очкам»; «По сетам» — заглушка.
+  // Значение не отправляется — бэкенд по умолчанию считает по очкам.
+  Widget _scoreTypeControl() {
+    Widget pill({
+      required String text,
+      required bool active,
+      required bool enabled,
+    }) {
+      return Expanded(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: active
+                ? AppTheme.accent.withOpacity(0.15)
+                : AppTheme.cardRaised,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: active ? AppTheme.accent : AppTheme.border,
+              width: active ? 1.4 : 1,
+            ),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: enabled
+                  ? (active ? AppTheme.accent : AppTheme.textPrimary)
+                  : AppTheme.textDim,
+              fontSize: 13,
+              fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Тип подсчёта'),
+        Row(
+          children: [
+            pill(text: 'По очкам', active: true, enabled: true),
+            const SizedBox(width: 10),
+            pill(text: 'По сетам · скоро', active: false, enabled: false),
+          ],
+        ),
+      ],
     );
   }
 
