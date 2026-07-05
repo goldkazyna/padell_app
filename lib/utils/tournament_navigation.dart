@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/tournament.dart';
 import '../screens/tournament_live_bali_koc_screen.dart';
+import '../screens/tournament_live_justpadelit_screen.dart';
 import '../screens/tournament_live_kingofcourt_screen.dart';
 import '../screens/tournament_live_mexicano_screen.dart';
 import '../screens/tournament_live_screen.dart';
@@ -36,6 +37,12 @@ void openTournamentLiveByType(
       // Round Robin по структуре live идентичен Король корта (один лидерборд +
       // раунды), поэтому переиспользуем тот же экран.
       target = TournamentLiveKingOfCourtScreen(
+        tournamentId: tournamentId,
+        highlightPlayerId: highlightPlayerId,
+      );
+      break;
+    case 'just_padel_it':
+      target = TournamentLiveJustPadelItScreen(
         tournamentId: tournamentId,
         highlightPlayerId: highlightPlayerId,
       );

@@ -12,6 +12,7 @@ import '../widgets/tournaments/tournament_row_v2.dart';
 import 'tournament_detail_screen.dart';
 import 'tournament_stats_screen.dart';
 import 'tournament_live_kingofcourt_screen.dart';
+import 'tournament_live_justpadelit_screen.dart';
 import 'tournament_live_bali_koc_screen.dart';
 import 'club_detail_screen.dart';
 
@@ -947,14 +948,16 @@ class _ArchiveClubBlock extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => t.type == 'king_of_court'
-            ? TournamentLiveKingOfCourtScreen(tournamentId: t.id)
-            : t.type == 'bali_koc'
-                ? TournamentLiveBaliKocScreen(tournamentId: t.id)
-                : TournamentStatsScreen(
-                    tournamentId: t.id,
-                    tournamentName: t.name,
-                  ),
+        builder: (_) => t.type == 'just_padel_it'
+            ? TournamentLiveJustPadelItScreen(tournamentId: t.id)
+            : t.type == 'king_of_court'
+                ? TournamentLiveKingOfCourtScreen(tournamentId: t.id)
+                : t.type == 'bali_koc'
+                    ? TournamentLiveBaliKocScreen(tournamentId: t.id)
+                    : TournamentStatsScreen(
+                        tournamentId: t.id,
+                        tournamentName: t.name,
+                      ),
       ),
     );
   }
