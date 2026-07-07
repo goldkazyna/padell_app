@@ -375,6 +375,41 @@ class _AdminTournamentDetailScreenState
     }
   }
 
+  Future<void> _cancelTournament() async {
+    final t = _t;
+    if (t == null) return;
+
+    final ok = await _confirm(
+      title: 'Остановить турнир?',
+      message:
+          'Турнир будет остановлен и переведён в статус «Отменён». Отменить это действие нельзя.',
+      okText: 'Остановить',
+      destructive: true,
+    );
+    if (!ok) return;
+
+    setState(() => _starting = true);
+    try {
+      final updated =
+          await context.read<AdminService>().cancelTournament(t.id);
+      if (!mounted) return;
+      _applyToForm(updated);
+      setState(() {
+        _t = updated;
+        _starting = false;
+        _matches = null;
+        _participants = null;
+        _invitations = null;
+      });
+      if (!mounted) return;
+      await showAppAlert(context, 'Турнир остановлен');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _starting = false);
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    }
+  }
+
   Future<void> _sendPush() async {
     final t = _t;
     if (t == null) return;
@@ -637,6 +672,7 @@ class _AdminTournamentDetailScreenState
                 }
               }
               if (value == 'restart') _restart();
+              if (value == 'cancel') _cancelTournament();
               if (value == 'send_push') _sendPush();
             },
             itemBuilder: (context) {
@@ -655,6 +691,15 @@ class _AdminTournamentDetailScreenState
                   child: Text(l10n.restartTournament),
                 ),
               ];
+              // Остановить турнир (сменить статус на «Отменён») — доступно, пока
+              // турнир открыт или идёт (не завершён и не отменён).
+              if (_t?.status == 'open' || _t?.status == 'in_progress') {
+                items.add(PopupMenuItem<String>(
+                  value: 'cancel',
+                  child: const Text('Остановить турнир',
+                      style: TextStyle(color: AppTheme.error)),
+                ));
+              }
               // Личные турниры игроков не шлют пуши всем пользователям.
               if (!(_t?.isPersonal ?? false)) {
                 items.add(PopupMenuItem<String>(

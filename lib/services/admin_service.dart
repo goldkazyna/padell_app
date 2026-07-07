@@ -359,6 +359,19 @@ class AdminService {
     );
   }
 
+  /// Остановить (отменить) турнир — статус меняется на «cancelled».
+  Future<AdminTournamentDetail> cancelTournament(int id) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/tournaments/$id/cancel',
+      const {},
+      token,
+    );
+    return AdminTournamentDetail.fromJson(
+      response['tournament'] as Map<String, dynamic>,
+    );
+  }
+
   /// Отправить push-уведомление о турнире всем подходящим пользователям
   /// (как колокольчик в веб-админке). Возвращает текст результата.
   Future<String> sendTournamentPush(int id) async {
