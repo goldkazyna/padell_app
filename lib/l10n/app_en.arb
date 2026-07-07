@@ -731,5 +731,19 @@
   "chatSendFailed": "Failed to send message",
   "chatRetry": "Retry",
   "chatToday": "Today",
-  "chatYesterday": "Yesterday"
+  "chatYesterday": "Yesterday",
+  "notifyOrganizerChat": "Organizer chat",
+  "notifyOrganizerChatDesc": "Push when the organizer posts a new message in the tournament chat",
+  "sectionSettings": "Settings",
+  "sectionInfo": "Information",
+  "sectionAccount": "Account",
+  "coachTitle": "Coach",
+  "coachScheduleButton": "Schedule",
+  "coachScheduleButtonSubtitle": "Your lessons schedule",
+  "coachBusyToday": "Busy today",
+  "coachSlotFree": "Free",
+  "coachSlotBooked": "Booked",
+  "coachSlotBlocked": "Blocked",
+  "coachDayOff": "No working hours for this day",
+  "hoursShort": "h"
 }

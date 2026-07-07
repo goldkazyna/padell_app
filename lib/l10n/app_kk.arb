@@ -731,5 +731,19 @@
   "chatSendFailed": "Хабарлама жіберілмеді",
   "chatRetry": "Қайталау",
   "chatToday": "Бүгін",
-  "chatYesterday": "Кеше"
+  "chatYesterday": "Кеше",
+  "notifyOrganizerChat": "Ұйымдастырушы чаты",
+  "notifyOrganizerChatDesc": "Ұйымдастырушы турнир чатына жаңа хабарлама жазғанда пуш",
+  "sectionSettings": "Баптаулар",
+  "sectionInfo": "Ақпарат",
+  "sectionAccount": "Аккаунт",
+  "coachTitle": "Жаттықтырушы",
+  "coachScheduleButton": "Кесте",
+  "coachScheduleButtonSubtitle": "Сабақтар кестеңіз",
+  "coachBusyToday": "Бүгін бос емес",
+  "coachSlotFree": "Бос",
+  "coachSlotBooked": "Бос емес",
+  "coachSlotBlocked": "Бұғатталған",
+  "coachDayOff": "Бұл күнге жұмыс сағаттары жоқ",
+  "hoursShort": "сағ"
 }

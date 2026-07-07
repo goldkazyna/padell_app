@@ -2057,4 +2057,47 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chatYesterday => 'Вчера';
+
+  @override
+  String get notifyOrganizerChat => 'Чат организатора';
+
+  @override
+  String get notifyOrganizerChatDesc =>
+      'Пуш о новых сообщениях организатора в чате турнира';
+
+  @override
+  String get sectionSettings => 'Настройки';
+
+  @override
+  String get sectionInfo => 'Информация';
+
+  @override
+  String get sectionAccount => 'Аккаунт';
+
+  @override
+  String get coachTitle => 'Тренер';
+
+  @override
+  String get coachScheduleButton => 'Расписание';
+
+  @override
+  String get coachScheduleButtonSubtitle => 'Ваше расписание занятий';
+
+  @override
+  String get coachBusyToday => 'Занято сегодня';
+
+  @override
+  String get coachSlotFree => 'Свободно';
+
+  @override
+  String get coachSlotBooked => 'Занято';
+
+  @override
+  String get coachSlotBlocked => 'Заблокировано';
+
+  @override
+  String get coachDayOff => 'Рабочих часов на этот день нет';
+
+  @override
+  String get hoursShort => 'ч';
 }

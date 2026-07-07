@@ -20,6 +20,7 @@ class _NotificationSettingsScreenState
 
   bool _notifyOnlyMyLevel = false;
   bool _notifyReminders = true;
+  bool _notifyOrganizerChat = true;
   List<int>? _notifyClubIds; // null = все клубы
   List<Map<String, dynamic>> _clubs = [];
   bool _isLoading = true;
@@ -44,6 +45,7 @@ class _NotificationSettingsScreenState
       setState(() {
         _notifyOnlyMyLevel = response['notify_only_my_level'] == true;
         _notifyReminders = response['notify_tournament_reminders'] != false;
+        _notifyOrganizerChat = response['notify_organizer_chat'] != false;
         _notifyClubIds = response['notify_club_ids'] != null
             ? List<int>.from(response['notify_club_ids'])
             : null;
@@ -98,6 +100,28 @@ class _NotificationSettingsScreenState
     } catch (e) {
       setState(() {
         _notifyReminders = old;
+        _isSaving = false;
+      });
+    }
+  }
+
+  Future<void> _updateOrganizerChat(bool value) async {
+    final old = _notifyOrganizerChat;
+    setState(() {
+      _notifyOrganizerChat = value;
+      _isSaving = true;
+    });
+    try {
+      final token = await _storageService.getToken();
+      await _apiService.post(
+        '/notifications/settings',
+        {'notify_organizer_chat': value},
+        token,
+      );
+      setState(() => _isSaving = false);
+    } catch (e) {
+      setState(() {
+        _notifyOrganizerChat = old;
         _isSaving = false;
       });
     }
@@ -415,6 +439,63 @@ class _NotificationSettingsScreenState
                                 : Switch.adaptive(
                                     value: _notifyReminders,
                                     onChanged: _updateReminders,
+                                    activeColor: AppTheme.accent,
+                                  ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Чат организатора
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.card,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: const Color(0xFF2A2A2A),
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.notifyOrganizerChat,
+                                    style: const TextStyle(
+                                      color: AppTheme.textPrimary,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    AppLocalizations.of(context)!.notifyOrganizerChatDesc,
+                                    style: const TextStyle(
+                                      color: AppTheme.textSecondary,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            _isSaving
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: AppTheme.accent,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Switch.adaptive(
+                                    value: _notifyOrganizerChat,
+                                    onChanged: _updateOrganizerChat,
                                     activeColor: AppTheme.accent,
                                   ),
                           ],

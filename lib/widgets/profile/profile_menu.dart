@@ -14,6 +14,15 @@ import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils/app_alert.dart';
 
+// Палитра нижней части профиля (фон экрана не трогаем — берём из темы).
+const _card = Color(0xFF15181A);
+final _line = Colors.white.withValues(alpha: 0.065);
+const _text = Color(0xFFEEF1F2);
+const _text2 = Color(0xFF8B9298);
+const _dim = Color(0xFF5D646A);
+const _red = Color(0xFFE5564E);
+const _logout = Color(0xFFC9938F);
+
 class ProfileMenu extends StatelessWidget {
   const ProfileMenu({super.key});
 
@@ -26,114 +35,117 @@ class ProfileMenu extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // === НАСТРОЙКИ ===
-        const _SectionLabel('НАСТРОЙКИ'),
-        _Card(children: [
-          _SettingsRow(
-            icon: Icons.person_outline,
-            tint: AppTheme.accent,
-            title: l.editProfile,
-            subtitle: l.editProfileSubtitle,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+        SettingsSection(
+          label: l.sectionSettings,
+          children: [
+            SettingsRow(
+              icon: Icons.person_outline,
+              title: l.editProfile,
+              subtitle: l.editProfileSubtitle,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const EditProfileScreen())),
             ),
-          ),
-          const _Divider(),
-          _SettingsRow(
-            icon: Icons.bookmark_outline,
-            tint: AppTheme.blue,
-            title: l.myBookings,
-            subtitle: l.bookedCourts,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
+            SettingsRow(
+              icon: Icons.bookmark_border,
+              title: l.myBookings,
+              subtitle: l.bookedCourts,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const MyBookingsScreen())),
             ),
-          ),
-          const _Divider(),
-          _SettingsRow(
-            icon: Icons.notifications_outlined,
-            tint: AppTheme.amber,
-            title: l.notifications,
-            subtitle: l.notificationSettingsMenu,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const NotificationSettingsScreen()),
+            SettingsRow(
+              icon: Icons.notifications_none,
+              title: l.notifications,
+              subtitle: l.notificationSettingsMenu,
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const NotificationSettingsScreen())),
             ),
-          ),
-          const _Divider(),
-          _SettingsRow(
-            icon: Icons.language,
-            tint: AppTheme.purple,
-            title: l.language,
-            subtitle: localeProvider.isRussian ? 'Русский' : 'English',
-            onTap: () => _showLanguageDialog(context),
-          ),
-          const _Divider(),
-          _SettingsRow(
-            icon: Icons.tune,
-            tint: AppTheme.accent,
-            title: l.settingsMenuItem,
-            subtitle: l.settingsMenuItemSubtitle,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            SettingsRow(
+              icon: Icons.language,
+              title: l.language,
+              subtitle: localeProvider.isRussian
+                  ? 'Русский'
+                  : localeProvider.isKazakh
+                      ? 'Қазақша'
+                      : 'English',
+              onTap: () => _showLanguageDialog(context),
             ),
-            isLast: true,
-          ),
-        ]),
+            SettingsRow(
+              icon: Icons.tune,
+              title: l.settingsMenuItem,
+              subtitle: l.settingsMenuItemSubtitle,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            ),
+          ],
+        ),
 
         // === ИНФОРМАЦИЯ ===
-        const SizedBox(height: 16),
-        const _SectionLabel('ИНФОРМАЦИЯ'),
-        _Card(children: [
-          _SettingsRow(
-            icon: Icons.info_outline,
-            tint: AppTheme.accent,
-            title: l.tournamentInfoTitle,
-            subtitle: l.tournamentInfoMenuSubtitle,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => const TournamentTypesInfoScreen()),
+        SettingsSection(
+          label: l.sectionInfo,
+          children: [
+            SettingsRow(
+              icon: Icons.info_outline,
+              title: l.tournamentInfoTitle,
+              subtitle: l.tournamentInfoMenuSubtitle,
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const TournamentTypesInfoScreen())),
             ),
-            isLast: true,
-          ),
-        ]),
+          ],
+        ),
 
         // === АККАУНТ ===
-        const SizedBox(height: 16),
-        const _SectionLabel('АККАУНТ'),
-        _Card(children: [
-          _SettingsRow(
-            icon: Icons.logout,
-            tint: AppTheme.error,
-            tintBg: AppTheme.errorSoft,
-            title: l.logout,
-            subtitle: l.logoutSubtitle,
-            onTap: () => _showLogoutDialog(context),
-          ),
-          const _Divider(),
-          _SettingsRow(
-            icon: Icons.delete_outline,
-            tint: AppTheme.error,
-            tintBg: AppTheme.errorSoft,
-            title: l.deleteAccount,
-            titleColor: AppTheme.error,
-            subtitle: l.deleteAccountSubtitle,
-            onTap: () => _showDeleteAccountDialog(context),
-            isLast: true,
-          ),
-        ]),
+        SettingsSection(
+          label: l.sectionAccount,
+          children: [
+            SettingsRow(
+              icon: Icons.logout,
+              title: l.logout,
+              subtitle: l.logoutSubtitle,
+              iconColor: _logout,
+              titleColor: _logout,
+              onTap: () => _showLogoutDialog(context),
+            ),
+            SettingsRow(
+              icon: Icons.delete_outline,
+              title: l.deleteAccount,
+              subtitle: l.deleteAccountSubtitle,
+              iconColor: _red,
+              titleColor: _red,
+              onTap: () => _showDeleteAccountDialog(context),
+            ),
+          ],
+        ),
 
-        // === РАЗРАБОТЧИК ===
-        const SizedBox(height: 16),
-        _NewsChannelRow(),
-        const SizedBox(height: 12),
-        _DevRow(),
-        const SizedBox(height: 10),
+        // === Подвал ===
+        const SizedBox(height: 18),
+        FooterLink(
+          icon: Icons.send,
+          iconTint: const Color(0xFF4D8FF0),
+          title: l.newsChannelTitle,
+          subtitle: l.newsChannelSubtitle,
+          onTap: () => _launch('https://t.me/padelkz_app'),
+        ),
+        FooterLink(
+          icon: Icons.code,
+          iconTint: _text2,
+          title: l.developerLabel,
+          subtitle: 'Дудников Денис · @mdlabkz',
+          onTap: () => _launch('https://t.me/mdlabkz'),
+        ),
         const _AppVersionLabel(),
       ],
     );
+  }
+
+  static Future<void> _launch(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   void _showLanguageDialog(BuildContext context) {
@@ -145,7 +157,10 @@ class ProfileMenu extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
           'Язык / Language',
-          style: TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+          style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -189,19 +204,23 @@ class ProfileMenu extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(l.logoutTitle, style: const TextStyle(color: AppTheme.textPrimary)),
-        content: Text(l.logoutConfirm, style: const TextStyle(color: AppTheme.textSecondary)),
+        title: Text(l.logoutTitle,
+            style: const TextStyle(color: AppTheme.textPrimary)),
+        content: Text(l.logoutConfirm,
+            style: const TextStyle(color: AppTheme.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
+            child: Text(l.cancel,
+                style: const TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               context.read<AuthProvider>().logout();
             },
-            child: Text(l.logout, style: const TextStyle(color: AppTheme.error)),
+            child:
+                Text(l.logout, style: const TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -215,19 +234,21 @@ class ProfileMenu extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(l.deleteAccountTitle, style: const TextStyle(color: AppTheme.textPrimary)),
-        content: Text(l.deleteAccountWarning, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+        title: Text(l.deleteAccountTitle,
+            style: const TextStyle(color: AppTheme.textPrimary)),
+        content: Text(l.deleteAccountWarning,
+            style:
+                const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
+            child: Text(l.cancel,
+                style: const TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               final auth = context.read<AuthProvider>();
-              // Отправляем SMS-код, затем экран ввода кода — удаление только
-              // после подтверждения кодом.
               final sent = await auth.sendDeleteCode();
               if (!context.mounted) return;
               if (sent) {
@@ -241,7 +262,8 @@ class ProfileMenu extends StatelessWidget {
                     title: l.error, isError: true);
               }
             },
-            child: Text(l.deleteButton, style: const TextStyle(color: AppTheme.error)),
+            child: Text(l.deleteButton,
+                style: const TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -249,106 +271,153 @@ class ProfileMenu extends StatelessWidget {
   }
 }
 
-// === UI components ===
+// === Переиспользуемые виджеты ===
 
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: AppTheme.textDim,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 1.4,
-        ),
-      ),
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
+/// Секция сгруппированного списка: заголовок + карточка со строками,
+/// разделёнными тонкими линиями с левым инсетом.
+class SettingsSection extends StatelessWidget {
+  final String label;
   final List<Widget> children;
-  const _Card({required this.children});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.border),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(children: children),
-    );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  const _Divider();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
-  }
-}
-
-class _SettingsRow extends StatelessWidget {
-  final IconData icon;
-  final Color tint;
-  final Color? tintBg;
-  final String title;
-  final Color? titleColor;
-  final String subtitle;
-  final VoidCallback onTap;
-  final bool isLast;
-
-  const _SettingsRow({
-    required this.icon,
-    required this.tint,
-    this.tintBg,
-    required this.title,
-    this.titleColor,
-    required this.subtitle,
-    required this.onTap,
-    this.isLast = false,
+  const SettingsSection({
+    super.key,
+    required this.label,
+    required this.children,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bg = tintBg ?? Color.alphaBlend(
-      tint.withValues(alpha: 0.22),
-      AppTheme.card,
-    ).withValues(alpha: 1);
+    final rows = <Widget>[];
+    for (var i = 0; i < children.length; i++) {
+      if (i > 0) {
+        rows.add(Container(height: 1, margin: const EdgeInsets.only(left: 52), color: _line));
+      }
+      rows.add(children[i]);
+    }
 
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isLast ? Colors.transparent : AppTheme.divider,
-              width: 0.5,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 6, top: 20, bottom: 9),
+          child: Text(
+            label.toUpperCase(),
+            style: const TextStyle(
+              color: _dim,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.0,
             ),
           ),
         ),
+        Container(
+          decoration: BoxDecoration(
+            color: _card,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _line),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(children: rows),
+        ),
+      ],
+    );
+  }
+}
+
+/// Строка секции: монохромная контурная иконка, заголовок + подзаголовок, шеврон.
+class SettingsRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color? iconColor;
+  final Color? titleColor;
+  final VoidCallback onTap;
+
+  const SettingsRow({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.iconColor,
+    this.titleColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 24,
+              child: Icon(icon, size: 22, color: iconColor ?? _text2),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: titleColor ?? _text,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: _text2, fontSize: 12.5),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 20, color: _dim),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Строка-ссылка в подвале (Telegram-канал, разработчик).
+class FooterLink extends StatelessWidget {
+  final IconData icon;
+  final Color iconTint;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const FooterLink({
+    super.key,
+    required this.icon,
+    required this.iconTint,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 11),
         child: Row(
           children: [
             Container(
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: tintBg ?? tint.withValues(alpha: 0.13),
+                color: const Color(0xFF191D1F),
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: _line),
               ),
-              child: Icon(icon, size: 17, color: tint),
+              child: Icon(icon, size: 18, color: iconTint),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -357,23 +426,21 @@ class _SettingsRow extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      color: titleColor ?? AppTheme.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                    style: const TextStyle(
+                      color: _text,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 1),
                   Text(
                     subtitle,
-                    style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: _text2, fontSize: 12),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, size: 16, color: AppTheme.textDim),
+            const Icon(Icons.open_in_new, size: 17, color: _dim),
           ],
         ),
       ),
@@ -386,7 +453,8 @@ class _LanguageOption extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _LanguageOption({required this.label, required this.isSelected, required this.onTap});
+  const _LanguageOption(
+      {required this.label, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -414,102 +482,8 @@ class _LanguageOption extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            if (isSelected) const Icon(Icons.check_circle, color: AppTheme.accent, size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NewsChannelRow extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return GestureDetector(
-      onTap: () async {
-        final url = Uri.parse('https://t.me/padelkz_app');
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Row(
-          children: [
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: const Color(0xFF229ED9).withValues(alpha: 0.16),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.send, size: 16, color: Color(0xFF229ED9)),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l.newsChannelTitle,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
-                  ),
-                  Text(
-                    l.newsChannelSubtitle,
-                    style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.open_in_new, size: 14, color: AppTheme.textDim),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DevRow extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        final url = Uri.parse('https://t.me/mdlabkz');
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Row(
-          children: [
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: AppTheme.blue.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.code, size: 16, color: AppTheme.blue),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.developerLabel,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
-                  ),
-                  const Text(
-                    'Дудников Денис · @mdlabkz',
-                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.open_in_new, size: 14, color: AppTheme.textDim),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: AppTheme.accent, size: 20),
           ],
         ),
       ),
@@ -547,14 +521,10 @@ class _AppVersionLabelState extends State<_AppVersionLabel> {
   Widget build(BuildContext context) {
     if (_version == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       child: Text(
         'v$_version',
-        style: const TextStyle(
-          color: AppTheme.textDim,
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-        ),
+        style: const TextStyle(color: _dim, fontSize: 12),
       ),
     );
   }

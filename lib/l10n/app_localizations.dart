@@ -3885,6 +3885,90 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Вчера'**
   String get chatYesterday;
+
+  /// No description provided for @notifyOrganizerChat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чат организатора'**
+  String get notifyOrganizerChat;
+
+  /// No description provided for @notifyOrganizerChatDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пуш о новых сообщениях организатора в чате турнира'**
+  String get notifyOrganizerChatDesc;
+
+  /// No description provided for @sectionSettings.
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки'**
+  String get sectionSettings;
+
+  /// No description provided for @sectionInfo.
+  ///
+  /// In ru, this message translates to:
+  /// **'Информация'**
+  String get sectionInfo;
+
+  /// No description provided for @sectionAccount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Аккаунт'**
+  String get sectionAccount;
+
+  /// No description provided for @coachTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тренер'**
+  String get coachTitle;
+
+  /// No description provided for @coachScheduleButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Расписание'**
+  String get coachScheduleButton;
+
+  /// No description provided for @coachScheduleButtonSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваше расписание занятий'**
+  String get coachScheduleButtonSubtitle;
+
+  /// No description provided for @coachBusyToday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Занято сегодня'**
+  String get coachBusyToday;
+
+  /// No description provided for @coachSlotFree.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободно'**
+  String get coachSlotFree;
+
+  /// No description provided for @coachSlotBooked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Занято'**
+  String get coachSlotBooked;
+
+  /// No description provided for @coachSlotBlocked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокировано'**
+  String get coachSlotBlocked;
+
+  /// No description provided for @coachDayOff.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рабочих часов на этот день нет'**
+  String get coachDayOff;
+
+  /// No description provided for @hoursShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'ч'**
+  String get hoursShort;
 }
 
 class _AppLocalizationsDelegate

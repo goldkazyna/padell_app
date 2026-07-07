@@ -751,5 +751,19 @@
   "chatSendFailed": "Не удалось отправить сообщение",
   "chatRetry": "Повторить",
   "chatToday": "Сегодня",
-  "chatYesterday": "Вчера"
+  "chatYesterday": "Вчера",
+  "notifyOrganizerChat": "Чат организатора",
+  "notifyOrganizerChatDesc": "Пуш о новых сообщениях организатора в чате турнира",
+  "sectionSettings": "Настройки",
+  "sectionInfo": "Информация",
+  "sectionAccount": "Аккаунт",
+  "coachTitle": "Тренер",
+  "coachScheduleButton": "Расписание",
+  "coachScheduleButtonSubtitle": "Ваше расписание занятий",
+  "coachBusyToday": "Занято сегодня",
+  "coachSlotFree": "Свободно",
+  "coachSlotBooked": "Занято",
+  "coachSlotBlocked": "Заблокировано",
+  "coachDayOff": "Рабочих часов на этот день нет",
+  "hoursShort": "ч"
 }

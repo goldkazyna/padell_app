@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -12,6 +14,7 @@ import '../models/tournament.dart';
 import '../providers/settings_provider.dart';
 import '../providers/tournament_provider.dart';
 import '../providers/home_provider.dart';
+import '../services/chat_service.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/moderation_countdown.dart';
 import '../widgets/tournaments/team_list_section.dart';
@@ -33,12 +36,38 @@ class TournamentDetailScreen extends StatefulWidget {
 }
 
 class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
+  Timer? _chatUnreadTimer;
+  int? _chatUnread; // живой счётчик непрочитанного (перекрывает значение из модели)
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TournamentProvider>().loadTournamentDetails(widget.tournamentId);
     });
+    // Каждые 5 сек обновляем бейдж чата, пока экран открыт.
+    _chatUnreadTimer = Timer.periodic(
+        const Duration(seconds: 5), (_) => _pollChatUnread());
+  }
+
+  @override
+  void dispose() {
+    _chatUnreadTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _pollChatUnread() async {
+    final t = context.read<TournamentProvider>().selectedTournament;
+    if (t == null || t.id != widget.tournamentId || t.chat?.canRead != true) {
+      return;
+    }
+    try {
+      final count =
+          await context.read<ChatService>().getUnreadCount(widget.tournamentId);
+      if (mounted) setState(() => _chatUnread = count);
+    } catch (_) {
+      // молча ретраим на следующем тике
+    }
   }
 
   @override
@@ -141,6 +170,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   // === AppBar ===
   Widget _buildAppBar(BuildContext context) {
     final tournament = context.read<TournamentProvider>().selectedTournament;
+    // Живой счётчик из опроса перекрывает значение из модели турнира.
+    final chatUnread = _chatUnread ?? (tournament?.chat?.unreadCount ?? 0);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Row(
@@ -156,19 +187,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     clipBehavior: Clip.none,
                     children: [
                       _buildCircleButton(
-                        icon: Icons.chat_bubble_outline,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => TournamentChatScreen(
-                              tournamentId: tournament!.id,
-                              tournamentName: tournament.name,
-                              chat: tournament.chat!,
-                            ),
-                          ),
-                        ),
+                        icon: CupertinoIcons.chat_bubble,
+                        onTap: () => _openChat(context, tournament!),
                       ),
-                      if ((tournament?.chat?.unreadCount ?? 0) > 0)
+                      if (chatUnread > 0)
                         Positioned(
                           right: -4,
                           top: -4,
@@ -185,10 +207,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                                   color: AppTheme.background, width: 2),
                             ),
                             child: Text(
-                              '${tournament!.chat!.unreadCount}',
+                              '$chatUnread',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                   height: 1),
@@ -207,6 +229,25 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _openChat(BuildContext context, Tournament t) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TournamentChatScreen(
+          tournamentId: t.id,
+          tournamentName: t.name,
+          chat: t.chat!,
+        ),
+      ),
+    );
+    // Вернулись из чата (кнопка «назад») — гасим бейдж сразу (сообщения уже
+    // отмечены прочитанными) и перечитываем детали турнира.
+    if (mounted) {
+      setState(() => _chatUnread = 0);
+      context.read<TournamentProvider>().loadTournamentDetails(t.id);
+    }
   }
 
   Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {

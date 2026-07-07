@@ -389,6 +389,7 @@ class PushNotificationService {
       'slot_available',
       'tournament_cancelled',
       'tournament_reminder',
+      'tournament_chat',
     };
     if (tournamentTypes.contains(type) && tournamentId.isNotEmpty) {
       final id = int.tryParse(tournamentId);

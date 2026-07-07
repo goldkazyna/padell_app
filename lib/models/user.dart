@@ -92,6 +92,9 @@ class User {
   List<AdminClubRef> get manageableClubs =>
       [...adminClubs, ...moderatorClubs];
 
+  /// Тренер клуба (роль coach) — для блока «Тренер» и расписания на главной.
+  bool get isCoach => role == 'coach';
+
   /// Полные права на турниры в данном клубе:
   /// admin клуба или модератор с tournaments_full_access.
   bool hasTournamentsFullAccess(int clubId) {

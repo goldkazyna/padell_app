@@ -41,6 +41,14 @@ class ChatService {
         '/tournaments/$tournamentId/chat/messages/$messageId', null, token);
   }
 
+  /// Лёгкий счётчик непрочитанного (для бейджа на экране турнира).
+  Future<int> getUnreadCount(int tournamentId) async {
+    final token = await _storage.getToken();
+    final r = await _api.get(
+        '/tournaments/$tournamentId/chat/unread-count', token);
+    return (r['unread_count'] as num?)?.toInt() ?? 0;
+  }
+
   Future<void> markRead(int tournamentId, int lastMessageId) async {
     final token = await _storage.getToken();
     await _api.post('/tournaments/$tournamentId/chat/read',

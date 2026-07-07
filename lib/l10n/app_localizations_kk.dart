@@ -2036,4 +2036,47 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get chatYesterday => 'Кеше';
+
+  @override
+  String get notifyOrganizerChat => 'Ұйымдастырушы чаты';
+
+  @override
+  String get notifyOrganizerChatDesc =>
+      'Ұйымдастырушы турнир чатына жаңа хабарлама жазғанда пуш';
+
+  @override
+  String get sectionSettings => 'Баптаулар';
+
+  @override
+  String get sectionInfo => 'Ақпарат';
+
+  @override
+  String get sectionAccount => 'Аккаунт';
+
+  @override
+  String get coachTitle => 'Жаттықтырушы';
+
+  @override
+  String get coachScheduleButton => 'Кесте';
+
+  @override
+  String get coachScheduleButtonSubtitle => 'Сабақтар кестеңіз';
+
+  @override
+  String get coachBusyToday => 'Бүгін бос емес';
+
+  @override
+  String get coachSlotFree => 'Бос';
+
+  @override
+  String get coachSlotBooked => 'Бос емес';
+
+  @override
+  String get coachSlotBlocked => 'Бұғатталған';
+
+  @override
+  String get coachDayOff => 'Бұл күнге жұмыс сағаттары жоқ';
+
+  @override
+  String get hoursShort => 'сағ';
 }

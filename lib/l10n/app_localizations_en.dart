@@ -2054,4 +2054,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatYesterday => 'Yesterday';
+
+  @override
+  String get notifyOrganizerChat => 'Organizer chat';
+
+  @override
+  String get notifyOrganizerChatDesc =>
+      'Push when the organizer posts a new message in the tournament chat';
+
+  @override
+  String get sectionSettings => 'Settings';
+
+  @override
+  String get sectionInfo => 'Information';
+
+  @override
+  String get sectionAccount => 'Account';
+
+  @override
+  String get coachTitle => 'Coach';
+
+  @override
+  String get coachScheduleButton => 'Schedule';
+
+  @override
+  String get coachScheduleButtonSubtitle => 'Your lessons schedule';
+
+  @override
+  String get coachBusyToday => 'Busy today';
+
+  @override
+  String get coachSlotFree => 'Free';
+
+  @override
+  String get coachSlotBooked => 'Booked';
+
+  @override
+  String get coachSlotBlocked => 'Blocked';
+
+  @override
+  String get coachDayOff => 'No working hours for this day';
+
+  @override
+  String get hoursShort => 'h';
 }
