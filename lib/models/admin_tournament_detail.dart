@@ -33,6 +33,7 @@ class AdminTournamentDetail {
   final int? moderationMinutes;
   final bool tournamentsFullAccess;
   final bool isAdminPairing;
+  final String pairingMode; // 'self' | 'admin' — кто собирает пары (team)
   final bool isPersonal; // личный турнир игрока (без клуба)
   final String? creatorName; // организатор личного турнира
 
@@ -69,6 +70,7 @@ class AdminTournamentDetail {
     this.moderationMinutes,
     this.tournamentsFullAccess = true,
     this.isAdminPairing = false,
+    this.pairingMode = 'self',
     this.isPersonal = false,
     this.creatorName,
   });
@@ -94,6 +96,7 @@ class AdminTournamentDetail {
       price: (json['price'] as num?)?.toDouble(),
       verifiedOnly: json['verified_only'] as bool? ?? false,
       isAdminPairing: json['is_admin_pairing'] as bool? ?? false,
+      pairingMode: json['pairing_mode'] as String? ?? 'self',
       isPersonal: json['is_personal'] as bool? ?? false,
       creatorName: (json['creator'] as Map<String, dynamic>?)?['name'] as String?,
       hasPlayoff: json['has_playoff'] as bool? ?? false,

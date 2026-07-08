@@ -65,6 +65,7 @@ class _AdminTournamentDetailScreenState
   double _maxLevel = 5.0;
   bool _verifiedOnly = false;
   String _status = 'open'; // draft / open — редактируемый статус
+  String _pairingMode = 'self'; // self / admin — кто собирает пары (team)
 
   bool _saving = false;
   bool _starting = false;
@@ -151,6 +152,7 @@ class _AdminTournamentDetailScreenState
     _minLevel = t.minLevel <= 0 ? 1.0 : t.minLevel;
     _maxLevel = t.maxLevel <= 0 ? 5.0 : t.maxLevel;
     _verifiedOnly = t.verifiedOnly;
+    _pairingMode = t.pairingMode == 'admin' ? 'admin' : 'self';
     // Тоггл статуса работает только для черновик/открыт; иные статусы оставляем как есть.
     _status = (t.status == 'draft' || t.status == 'open') ? t.status : _status;
     _moderationHours.text = (t.moderationHours ?? 0) > 0 ? '${t.moderationHours}' : '';
@@ -212,6 +214,7 @@ class _AdminTournamentDetailScreenState
             moderationHours: int.tryParse(_moderationHours.text.trim()),
             moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
             status: _status,
+            pairingMode: t.type == 'team' ? _pairingMode : null,
           );
       if (!mounted) return;
       _applyToForm(updated);
@@ -225,6 +228,36 @@ class _AdminTournamentDetailScreenState
       setState(() => _saving = false);
       await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
     }
+  }
+
+  // Кнопка выбора режима сбора пар (self / admin) для командного турнира.
+  Widget _pairingBtn(String label, String value, bool disabled) {
+    final active = _pairingMode == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: disabled ? null : () => setState(() => _pairingMode = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: active ? AppTheme.accent.withOpacity(0.15) : AppTheme.card,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: active ? AppTheme.accent : AppTheme.border,
+              width: 1.2,
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: active ? AppTheme.accent : AppTheme.textPrimary,
+              fontSize: 13,
+              fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Нужно ли сначала создать пары (Bali, фикс-парный Король корта или
@@ -1038,6 +1071,43 @@ class _AdminTournamentDetailScreenState
                   ],
                 ),
               ),
+              // Кто собирает пары — только для командного турнира.
+              if (_t?.type == 'team') ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardRaised,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Кто собирает пары',
+                          style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          _pairingBtn('Сами игроки', 'self', disabled),
+                          const SizedBox(width: 8),
+                          _pairingBtn('Админ собирает', 'admin', disabled),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _pairingMode == 'admin'
+                            ? 'Игроки записываются по одному, пары собираете вы перед стартом.'
+                            : 'Пары регистрируются сами (через поиск партнёра).',
+                        style: const TextStyle(
+                            color: AppTheme.textDim, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 16),

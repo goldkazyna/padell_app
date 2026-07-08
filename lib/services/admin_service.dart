@@ -292,6 +292,7 @@ class AdminService {
     int? moderationHours,
     int? moderationMinutes,
     String? status,
+    String? pairingMode,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -309,6 +310,8 @@ class AdminService {
       'moderation_minutes': moderationMinutes,
       // Перевод черновик ⇄ открыта регистрация.
       if (status != null) 'status': status,
+      // Кто собирает пары (командный турнир): self / admin.
+      if (pairingMode != null) 'pairing_mode': pairingMode,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(
