@@ -20,6 +20,7 @@ class AdminTournamentDetail {
   final bool hasPlayoff;
   final bool hasLowerBracket;
   final bool hasBronzeMatch;
+  final int? courtsCount; // задано вручную; null = авто
   final List<String> courts;
   final bool canEdit;
   final bool canStart;
@@ -57,6 +58,7 @@ class AdminTournamentDetail {
     required this.hasPlayoff,
     required this.hasLowerBracket,
     required this.hasBronzeMatch,
+    this.courtsCount,
     required this.courts,
     required this.canEdit,
     required this.canStart,
@@ -102,6 +104,7 @@ class AdminTournamentDetail {
       hasPlayoff: json['has_playoff'] as bool? ?? false,
       hasLowerBracket: json['has_lower_bracket'] as bool? ?? false,
       hasBronzeMatch: json['has_bronze_match'] as bool? ?? false,
+      courtsCount: (json['courts_count'] as num?)?.toInt(),
       courts: (json['courts'] as List?)
               ?.map((c) => c?.toString() ?? '')
               .where((c) => c.isNotEmpty)

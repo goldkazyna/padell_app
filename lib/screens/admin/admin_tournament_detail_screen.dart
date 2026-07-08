@@ -66,6 +66,11 @@ class _AdminTournamentDetailScreenState
   bool _verifiedOnly = false;
   String _status = 'open'; // draft / open — редактируемый статус
   String _pairingMode = 'self'; // self / admin — кто собирает пары (team)
+  // Плей-офф командного турнира (редактируемые до старта).
+  bool _teamHasPlayoff = true;
+  bool _teamHasLowerBracket = false;
+  bool _teamHasBronzeMatch = false;
+  final _teamCourts = TextEditingController(); // пусто = авто
 
   bool _saving = false;
   bool _starting = false;
@@ -111,6 +116,7 @@ class _AdminTournamentDetailScreenState
     _name.dispose();
     _description.dispose();
     _maxParticipants.dispose();
+    _teamCourts.dispose();
     _price.dispose();
     _moderationHours.dispose();
     _moderationMinutes.dispose();
@@ -153,6 +159,10 @@ class _AdminTournamentDetailScreenState
     _maxLevel = t.maxLevel <= 0 ? 5.0 : t.maxLevel;
     _verifiedOnly = t.verifiedOnly;
     _pairingMode = t.pairingMode == 'admin' ? 'admin' : 'self';
+    _teamHasPlayoff = t.hasPlayoff;
+    _teamHasLowerBracket = t.hasLowerBracket;
+    _teamHasBronzeMatch = t.hasBronzeMatch;
+    _teamCourts.text = t.courtsCount != null ? '${t.courtsCount}' : '';
     // Тоггл статуса работает только для черновик/открыт; иные статусы оставляем как есть.
     _status = (t.status == 'draft' || t.status == 'open') ? t.status : _status;
     _moderationHours.text = (t.moderationHours ?? 0) > 0 ? '${t.moderationHours}' : '';
@@ -215,6 +225,12 @@ class _AdminTournamentDetailScreenState
             moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
             status: _status,
             pairingMode: t.type == 'team' ? _pairingMode : null,
+            hasPlayoff: t.type == 'team' ? _teamHasPlayoff : null,
+            hasLowerBracket: t.type == 'team' ? _teamHasLowerBracket : null,
+            hasBronzeMatch: t.type == 'team' ? _teamHasBronzeMatch : null,
+            courtsCount: t.type == 'team' && _teamCourts.text.trim().isNotEmpty
+                ? int.tryParse(_teamCourts.text.trim())
+                : null,
           );
       if (!mounted) return;
       _applyToForm(updated);
@@ -256,6 +272,50 @@ class _AdminTournamentDetailScreenState
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // Тумблер-строка настройки (плей-офф командного турнира).
+  Widget _boolTile({
+    required String label,
+    String? subtitle,
+    required bool value,
+    required ValueChanged<bool>? onChanged,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: AppTheme.cardRaised,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(subtitle,
+                      style: const TextStyle(
+                          color: AppTheme.textDim, fontSize: 11)),
+                ],
+              ],
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: AppTheme.accent,
+          ),
+        ],
       ),
     );
   }
@@ -1148,6 +1208,62 @@ class _AdminTournamentDetailScreenState
                     ],
                   ),
                 ),
+                const SizedBox(height: 12),
+                const Text('Количество кортов',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _teamCourts,
+                  enabled: !disabled,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: AppTheme.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: 'оставьте пустым для авто',
+                    hintStyle: const TextStyle(color: AppTheme.textDim),
+                    filled: true,
+                    fillColor: AppTheme.cardRaised,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Пусто — авто. Иначе матчи группы идут волнами, не более N '
+                  'одновременно.',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                ),
+                _boolTile(
+                  label: 'С плей-офф',
+                  subtitle: 'На вылет после групп. Выкл — только групповой этап.',
+                  value: _teamHasPlayoff,
+                  onChanged: disabled
+                      ? null
+                      : (v) => setState(() => _teamHasPlayoff = v),
+                ),
+                if (_teamHasPlayoff) ...[
+                  _boolTile(
+                    label: 'Нижняя сетка',
+                    subtitle: 'Утешительная — для проигравших.',
+                    value: _teamHasLowerBracket,
+                    onChanged: disabled
+                        ? null
+                        : (v) => setState(() => _teamHasLowerBracket = v),
+                  ),
+                  _boolTile(
+                    label: 'Матч за 3-е место',
+                    value: _teamHasBronzeMatch,
+                    onChanged: disabled
+                        ? null
+                        : (v) => setState(() => _teamHasBronzeMatch = v),
+                  ),
+                ],
               ],
             ],
           ),

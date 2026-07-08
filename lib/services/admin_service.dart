@@ -293,6 +293,10 @@ class AdminService {
     int? moderationMinutes,
     String? status,
     String? pairingMode,
+    bool? hasPlayoff,
+    bool? hasLowerBracket,
+    bool? hasBronzeMatch,
+    int? courtsCount,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -312,6 +316,11 @@ class AdminService {
       if (status != null) 'status': status,
       // Кто собирает пары (командный турнир): self / admin.
       if (pairingMode != null) 'pairing_mode': pairingMode,
+      // Плей-офф командного турнира (шлём только когда переданы).
+      if (hasPlayoff != null) 'has_playoff': hasPlayoff,
+      if (hasLowerBracket != null) 'has_lower_bracket': hasLowerBracket,
+      if (hasBronzeMatch != null) 'has_bronze_match': hasBronzeMatch,
+      if (courtsCount != null) 'courts_count': courtsCount,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(
