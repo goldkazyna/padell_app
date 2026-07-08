@@ -43,6 +43,8 @@ class _AdminCreateTournamentScreenState
   final _roundsCount = TextEditingController(text: '7');
   // Кол-во кортов вручную для Americano Flex (пусто = авто floor(игроки/4)).
   final _flexCourts = TextEditingController();
+  // Кол-во кортов вручную для Team (Групповой + плей-офф); пусто = авто ceil(игроки/4).
+  final _teamCourts = TextEditingController();
   // Парный Americano Flex (фиксированные пары, собирает админ).
   bool _flexIsPaired = false;
 
@@ -100,6 +102,11 @@ class _AdminCreateTournamentScreenState
       return _flexMaxCourts;
     }
     final maxP = int.tryParse(_maxParticipants.text.trim()) ?? 16;
+    if (_type == 'team') {
+      // Ручной ввод кортов; пусто = авто ceil(игроки/4).
+      final manual = int.tryParse(_teamCourts.text.trim());
+      if (manual != null && manual >= 1) return manual.clamp(1, 32);
+    }
     final n = (maxP / 4).ceil();
     return n.clamp(1, 32);
   }
@@ -109,6 +116,9 @@ class _AdminCreateTournamentScreenState
     super.initState();
     _maxParticipants.addListener(_onMaxOrGroupsChanged);
     _flexCourts.addListener(() {
+      if (mounted) setState(() {}); // пересчитать поля кортов
+    });
+    _teamCourts.addListener(() {
       if (mounted) setState(() {}); // пересчитать поля кортов
     });
     _updateRoundsCount();
@@ -142,6 +152,7 @@ class _AdminCreateTournamentScreenState
     _moderationMinutes.dispose();
     _roundsCount.dispose();
     _flexCourts.dispose();
+    _teamCourts.dispose();
     for (final c in _courtNames) {
       c.dispose();
     }
@@ -958,6 +969,20 @@ class _AdminCreateTournamentScreenState
         const SizedBox(height: 12),
         _label('Количество групп'),
         _teamGroupsSelector(),
+        const SizedBox(height: 12),
+        _label('Количество кортов'),
+        _textField(
+          _teamCourts,
+          hint: 'оставьте пустым для авто',
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Если заполнено — матчи группового этапа идут волнами, не более N '
+          'одновременно. Пусто — авто (по числу игроков).',
+          style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+        ),
         const SizedBox(height: 12),
         _checkboxTile(
           value: _teamHasPlayoff,
