@@ -375,19 +375,47 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   // === Локация ===
   Widget _buildLocation(Tournament t) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.location_on_outlined, color: AppTheme.textSecondary, size: 16),
-        const SizedBox(width: 4),
-        Expanded(
-          child: Text(
-            t.club.fullAddress,
-            style: const TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 14,
+        Row(
+          children: [
+            const Icon(Icons.location_on_outlined,
+                color: AppTheme.textSecondary, size: 16),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                t.club.fullAddress,
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
+        // Клуб-площадка (где играют) — если задан, показываем отдельной строкой.
+        if (t.venueClubName != null) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              const Icon(Icons.place_outlined,
+                  color: AppTheme.textSecondary, size: 16),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  t.venueClubCity != null && t.venueClubCity!.isNotEmpty
+                      ? 'Площадка: ${t.venueClubName}, ${t.venueClubCity}'
+                      : 'Площадка: ${t.venueClubName}',
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

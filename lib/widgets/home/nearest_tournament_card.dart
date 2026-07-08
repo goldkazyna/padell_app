@@ -116,6 +116,25 @@ class NearestTournamentCard extends StatelessWidget {
                   _buildInfoChip(AppLocalizations.of(context)!.levelShort(t.levelText), AppTheme.textSecondary),
                 ],
               ),
+              if (t.venueClubName != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.place_outlined,
+                        size: 13, color: AppTheme.textSecondary),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        t.venueClubName!,
+                        style: const TextStyle(
+                            color: AppTheme.textSecondary, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 12),
