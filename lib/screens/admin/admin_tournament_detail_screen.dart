@@ -271,6 +271,39 @@ class _AdminTournamentDetailScreenState
     return false;
   }
 
+  /// Командный турнир с «Админ собирает пары»: перед стартом админ собирает
+  /// пары через экран сбора (там же и запуск). Кнопка — «Собрать пары».
+  bool get _needAdminPairing =>
+      (_t?.isAdminPairing ?? false) && _t?.status == 'open';
+
+  /// Открыть экран сбора пар (админ собирает) и обновить карточку после.
+  Future<void> _openAdminPairing() async {
+    final t = _t;
+    if (t == null) return;
+    final ok = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => AdminPairingScreen(
+          tournamentId: t.id,
+          tournamentName: t.name,
+        ),
+      ),
+    );
+    if (ok == true) {
+      try {
+        final fresh =
+            await context.read<AdminService>().getTournamentDetail(t.id);
+        if (mounted) {
+          _applyToForm(fresh);
+          setState(() {
+            _t = fresh;
+            _matches = null;
+            _participants = null;
+          });
+        }
+      } catch (_) {}
+    }
+  }
+
   /// Solo Just Padel It: старт идёт через экран посева (авто по рейтингу +
   /// ручная расстановка), поэтому кнопка называется «Посев», а не «Запустить».
   bool get _isJpiSolo {
@@ -698,7 +731,11 @@ class _AdminTournamentDetailScreenState
             color: AppTheme.card,
             onSelected: (value) {
               if (value == 'start') {
-                if (_needPairs) {
+                // То же действие, что и у нижней кнопки: собрать пары (админ)
+                // / создать пары (Bali/KOC/JPI) / запустить.
+                if (_needAdminPairing) {
+                  _openAdminPairing();
+                } else if (_needPairs) {
                   _openCreatePairs();
                 } else {
                   _start();
@@ -713,10 +750,14 @@ class _AdminTournamentDetailScreenState
               final items = <PopupMenuEntry<String>>[
                 PopupMenuItem<String>(
                   value: 'start',
-                  enabled: _t?.canStart ?? false,
-                  child: Text(_needPairs
-                      ? 'Создать пары'
-                      : (_isJpiSolo ? 'Посев' : l10n.startTournamentMenu)),
+                  enabled: _needAdminPairing || (_t?.canStart ?? false),
+                  child: Text(_needAdminPairing
+                      ? 'Собрать пары'
+                      : (_needPairs
+                          ? 'Создать пары'
+                          : (_isJpiSolo
+                              ? 'Посев'
+                              : l10n.startTournamentMenu))),
                 ),
                 PopupMenuItem<String>(
                   value: 'restart',
@@ -1436,33 +1477,7 @@ class _AdminTournamentDetailScreenState
       if (children.isNotEmpty) children.add(const SizedBox(height: 10));
       children.add(_primaryButton(
         label: 'Собрать пары',
-        onTap: _starting
-            ? null
-            : () async {
-                final ok = await Navigator.of(context).push<bool>(
-                  MaterialPageRoute(
-                    builder: (_) => AdminPairingScreen(
-                      tournamentId: t.id,
-                      tournamentName: t.name,
-                    ),
-                  ),
-                );
-                if (ok == true) {
-                  try {
-                    final fresh = await context
-                        .read<AdminService>()
-                        .getTournamentDetail(t.id);
-                    if (mounted) {
-                      _applyToForm(fresh);
-                      setState(() {
-                        _t = fresh;
-                        _matches = null;
-                        _participants = null;
-                      });
-                    }
-                  } catch (_) {}
-                }
-              },
+        onTap: _starting ? null : _openAdminPairing,
         color: AppTheme.accent,
       ));
     } else if (t.canStart) {
