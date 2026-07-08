@@ -36,6 +36,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
     'Шымкент',
     'Караганда',
     'Актобе',
+    'Костанай',
   ];
 
   final _name = TextEditingController();

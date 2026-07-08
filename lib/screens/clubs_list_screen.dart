@@ -38,6 +38,7 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
     'Шымкент',
     'Караганда',
     'Актобе',
+    'Костанай',
   ];
 
   @override
