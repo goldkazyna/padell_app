@@ -34,6 +34,22 @@ class AdminService {
     return AdminClubEdit.fromJson(response['club'] as Map<String, dynamic>);
   }
 
+  /// Поиск клубов для выбора площадки турнира. Возвращает список
+  /// {id, name, city}. Пустой запрос — вернёт первые клубы.
+  Future<List<Map<String, dynamic>>> searchClubs(String query) async {
+    final token = await _storage.getToken();
+    final q = Uri.encodeQueryComponent(query.trim());
+    final response = await _api.get('/clubs?search=$q', token);
+    final list = (response['clubs'] as List? ?? []).cast<Map<String, dynamic>>();
+    return list
+        .map((c) => {
+              'id': c['id'],
+              'name': c['name'],
+              'city': c['city'],
+            })
+        .toList();
+  }
+
   // ---------------------------------------------------------------------------
   // Управление игроками клуба (feature 'users')
   // ---------------------------------------------------------------------------

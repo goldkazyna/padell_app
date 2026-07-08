@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,6 +60,11 @@ class _AdminCreateTournamentScreenState
   bool _verifiedOnly = false; // только для верифицированных игроков
   bool _chatEnabled = true; // включён ли чат турнира
   String _chatWriteMode = 'participants'; // admin | participants | everyone
+
+  // Клуб-площадка (необязательно) — где физически играют, отдельно от
+  // организующего клуба (widget.clubId).
+  int? _venueClubId;
+  String? _venueClubName;
 
   // Какие секции-аккордеоны раскрыты. По умолчанию открыта только «Основное».
   final Set<String> _openSections = {'basic'};
@@ -260,6 +267,7 @@ class _AdminCreateTournamentScreenState
       'courts_count': _courtsCount,
       'reserve_count': reserve,
       'waitlist_size': waitlistSize,
+      if (_venueClubId != null) 'venue_club_id': _venueClubId,
     };
 
     if (_type == 'americano') {
@@ -507,6 +515,16 @@ class _AdminCreateTournamentScreenState
               _price,
               hint: '0',
               keyboardType: const TextInputType.numberWithOptions(),
+            ),
+            const SizedBox(height: 12),
+            _label('Клуб (площадка)'),
+            _venueClubField(),
+            const Padding(
+              padding: EdgeInsets.only(top: 4),
+              child: Text(
+                'Необязательно. Где физически играют — увидят записавшиеся.',
+                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+              ),
             ),
             if (_type == 'americano_flex' ||
                 _type == 'king_of_court' ||
@@ -1522,6 +1540,343 @@ class _AdminCreateTournamentScreenState
           ],
         ),
       ),
+    );
+  }
+
+  /// Поле выбора клуба-площадки (необязательно). Тап открывает поиск,
+  /// крестик — сбрасывает выбор без открытия sheet.
+  Widget _venueClubField() {
+    final hasVenue = _venueClubId != null;
+    return GestureDetector(
+      onTap: _showVenueClubPicker,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppTheme.cardRaised,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.place_outlined,
+                color: AppTheme.textSecondary, size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                hasVenue ? _venueClubName ?? '' : 'Не выбран',
+                style: TextStyle(
+                  color: hasVenue ? AppTheme.textPrimary : AppTheme.textDim,
+                  fontSize: 14,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (hasVenue)
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _venueClubId = null;
+                    _venueClubName = null;
+                  });
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(Icons.close, color: AppTheme.textDim, size: 18),
+                ),
+              )
+            else
+              const Icon(Icons.chevron_right,
+                  color: AppTheme.textDim, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Bottom sheet поиска клуба-площадки с debounce (400мс).
+  Future<void> _showVenueClubPicker() async {
+    final admin = context.read<AdminService>();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        final searchCtrl = TextEditingController();
+        Timer? debounce;
+        List<Map<String, dynamic>> results = [];
+        bool loading = true;
+        String? error;
+        bool initialLoadStarted = false;
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            Future<void> runSearch(String query) async {
+              setSheetState(() => loading = true);
+              try {
+                final found = await admin.searchClubs(query);
+                setSheetState(() {
+                  results = found;
+                  loading = false;
+                  error = null;
+                });
+              } catch (e) {
+                setSheetState(() {
+                  loading = false;
+                  error = '$e';
+                });
+              }
+            }
+
+            // Первичная загрузка (пустой запрос) — один раз при открытии sheet.
+            if (!initialLoadStarted) {
+              initialLoadStarted = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                runSearch('');
+              });
+            }
+
+            void onChanged(String value) {
+              debounce?.cancel();
+              debounce = Timer(const Duration(milliseconds: 400), () {
+                runSearch(value);
+              });
+            }
+
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3A3A3A),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Клуб (площадка)',
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: searchCtrl,
+                        autofocus: false,
+                        onChanged: onChanged,
+                        style: const TextStyle(
+                            color: AppTheme.textPrimary, fontSize: 14),
+                        decoration: InputDecoration(
+                          hintText: 'Название, адрес или город',
+                          hintStyle: const TextStyle(
+                              color: AppTheme.textDim, fontSize: 13),
+                          prefixIcon: const Icon(Icons.search,
+                              color: AppTheme.textSecondary, size: 20),
+                          filled: true,
+                          fillColor: AppTheme.cardRaised,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                                color: AppTheme.accent, width: 1.2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      if (_venueClubId != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _venueClubId = null;
+                                _venueClubName = null;
+                              });
+                              Navigator.of(sheetContext).pop();
+                            },
+                            child: const Text(
+                              'Убрать площадку',
+                              style: TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.4,
+                        ),
+                        child: loading
+                            ? const Padding(
+                                padding: EdgeInsets.all(24),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                        color: AppTheme.accent,
+                                        strokeWidth: 2.5),
+                                  ),
+                                ),
+                              )
+                            : error != null
+                                ? Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Ошибка поиска: $error',
+                                      style: const TextStyle(
+                                          color: AppTheme.textSecondary,
+                                          fontSize: 13),
+                                    ),
+                                  )
+                                : results.isEmpty
+                                    ? const Padding(
+                                        padding: EdgeInsets.all(16),
+                                        child: Text(
+                                          'Ничего не найдено',
+                                          style: TextStyle(
+                                              color: AppTheme.textSecondary,
+                                              fontSize: 13),
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: results.length,
+                                        itemBuilder: (context, index) {
+                                          final club = results[index];
+                                          final id = club['id'] as int;
+                                          final name =
+                                              '${club['name'] ?? ''}';
+                                          final city = club['city'];
+                                          final isSelected =
+                                              _venueClubId == id;
+                                          return GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _venueClubId = id;
+                                                _venueClubName = name;
+                                              });
+                                              Navigator.of(sheetContext).pop();
+                                            },
+                                            child: Container(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 6),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 10),
+                                              decoration: BoxDecoration(
+                                                color: isSelected
+                                                    ? AppTheme.accent
+                                                        .withAlpha(15)
+                                                    : AppTheme.card,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                  color: isSelected
+                                                      ? AppTheme.accent
+                                                          .withAlpha(60)
+                                                      : const Color(
+                                                          0xFF2A2A2A),
+                                                  width:
+                                                      isSelected ? 1 : 0.5,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          name,
+                                                          style: TextStyle(
+                                                            color: isSelected
+                                                                ? AppTheme
+                                                                    .accent
+                                                                : AppTheme
+                                                                    .textPrimary,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600,
+                                                          ),
+                                                          maxLines: 1,
+                                                          overflow:
+                                                              TextOverflow
+                                                                  .ellipsis,
+                                                        ),
+                                                        if (city != null &&
+                                                            '$city'
+                                                                .isNotEmpty)
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                        top:
+                                                                            2),
+                                                            child: Text(
+                                                              '$city',
+                                                              style: const TextStyle(
+                                                                  color: AppTheme
+                                                                      .textSecondary,
+                                                                  fontSize:
+                                                                      12),
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  if (isSelected)
+                                                    const Icon(
+                                                        Icons.check_circle,
+                                                        color:
+                                                            AppTheme.accent,
+                                                        size: 20),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
