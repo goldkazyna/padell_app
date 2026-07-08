@@ -199,7 +199,10 @@ class HeroTournamentCard extends StatelessWidget {
   // ===== Meta row: format · price =====
   Widget _buildMetaRow(BuildContext context) {
     final fmt = _formatChipColors(tournament.formatColor);
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
       children: [
         Text(
           localizeTournamentType(context, tournament.type, fallback: tournament.typeName),
@@ -225,6 +228,27 @@ class HeroTournamentCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
               fontFeatures: [FontFeature.tabularFigures()],
             ),
+          ),
+        ],
+      ],
+        ),
+        if (tournament.venueClubName != null) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              const Icon(Icons.place_outlined,
+                  size: 13, color: AppTheme.textDim),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  tournament.venueClubName!,
+                  style:
+                      const TextStyle(color: AppTheme.textDim, fontSize: 12),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         ],
       ],
