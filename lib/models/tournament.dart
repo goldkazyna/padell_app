@@ -280,6 +280,8 @@ class Tournament {
   final DateTime datetime;
   final String type;
   final String typeName;
+  final String? venueClubName; // клуб-площадка (где играют), null если не задан
+  final String? venueClubCity;
   final String status;
   final String statusName;
   final bool isRated;
@@ -320,6 +322,8 @@ class Tournament {
     required this.datetime,
     required this.type,
     required this.typeName,
+    this.venueClubName,
+    this.venueClubCity,
     required this.status,
     required this.statusName,
     this.isRated = true,
@@ -414,6 +418,8 @@ class Tournament {
       datetime: DateTime.parse(json['datetime'] as String),
       type: json['type'] as String,
       typeName: json['type_name'] as String,
+      venueClubName: (json['venue_club'] as Map<String, dynamic>?)?['name'] as String?,
+      venueClubCity: (json['venue_club'] as Map<String, dynamic>?)?['city'] as String?,
       status: json['status'] as String,
       statusName: json['status_name'] as String,
       isRated: json['is_rated'] as bool? ?? true,

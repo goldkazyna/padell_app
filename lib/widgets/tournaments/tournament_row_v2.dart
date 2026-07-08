@@ -171,6 +171,26 @@ class TournamentRowV2 extends StatelessWidget {
                             ),
                           ],
                         ),
+                        // Клуб-площадка (где играют) — показываем, если задан.
+                        if (tournament.venueClubName != null) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(Icons.place_outlined,
+                                  size: 12, color: AppTheme.textDim),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  tournament.venueClubName!,
+                                  style: const TextStyle(
+                                      color: AppTheme.textDim, fontSize: 11),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),
