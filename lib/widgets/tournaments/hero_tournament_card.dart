@@ -57,7 +57,7 @@ class HeroTournamentCard extends StatelessWidget {
             // 2) Title
             Text(
               tournament.name,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -103,7 +103,7 @@ class HeroTournamentCard extends StatelessWidget {
             children: [
               Text(
                 dateShort,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -113,7 +113,7 @@ class HeroTournamentCard extends StatelessWidget {
               ),
               Text(
                 dowShort.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -213,8 +213,8 @@ class HeroTournamentCard extends StatelessWidget {
           ),
         ),
         if (tournament.price > 0) ...[
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Text(
               '·',
               style: TextStyle(color: AppTheme.textDim, fontSize: 12),
@@ -222,7 +222,7 @@ class HeroTournamentCard extends StatelessWidget {
           ),
           Text(
             tournament.priceTextCompact,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.w700,
@@ -236,14 +236,14 @@ class HeroTournamentCard extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.place_outlined,
+              Icon(Icons.place_outlined,
                   size: 13, color: AppTheme.textDim),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
                   tournament.venueClubName!,
                   style:
-                      const TextStyle(color: AppTheme.textDim, fontSize: 12),
+                      TextStyle(color: AppTheme.textDim, fontSize: 12),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -281,7 +281,7 @@ class HeroTournamentCard extends StatelessWidget {
             children: [
               Text(
                 l.tournamentLevelLabel,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -322,7 +322,7 @@ class HeroTournamentCard extends StatelessWidget {
             children: [
               Text(
                 tournament.minLevel.toStringAsFixed(2),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textDim,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -345,7 +345,7 @@ class HeroTournamentCard extends StatelessWidget {
               const Spacer(),
               Text(
                 tournament.maxLevel.toStringAsFixed(2),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textDim,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -401,7 +401,7 @@ class HeroTournamentCard extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         if (full)
-          const Text(
+          Text(
             'мест нет',
             style: TextStyle(
               color: AppTheme.error,
@@ -412,7 +412,7 @@ class HeroTournamentCard extends StatelessWidget {
         else if (amberClose)
           Text(
             '⚠ ${tournament.participantsCount} из ${tournament.maxParticipants}',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.amber,
               fontSize: 11,
               fontWeight: FontWeight.w700,
@@ -422,7 +422,7 @@ class HeroTournamentCard extends StatelessWidget {
         else
           Text(
             '${tournament.participantsCount} из ${tournament.maxParticipants}',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,

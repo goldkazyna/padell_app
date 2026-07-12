@@ -139,7 +139,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 const SizedBox(height: 16),
                 Text(
                   AppLocalizations.of(context)!.updateAvailable,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -151,7 +151,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                       ? AppLocalizations.of(context)!.updateRequired
                       : AppLocalizations.of(context)!.newVersionAvailable,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                   ),
@@ -295,7 +295,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         return Scaffold(
           body: screens[_currentIndex],
           bottomNavigationBar: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppTheme.card,
               border: Border(
                 top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),

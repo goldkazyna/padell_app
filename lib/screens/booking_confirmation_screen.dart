@@ -58,7 +58,7 @@ class BookingConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 l10n.bookingConfirmedSubtitle,
-                style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary),
+                style: TextStyle(fontSize: 14, color: AppTheme.textSecondary),
               ),
               const SizedBox(height: 28),
 
@@ -134,7 +134,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(l10n.goHome,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textSecondary)),
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textSecondary)),
                     ),
                   ),
                 ),

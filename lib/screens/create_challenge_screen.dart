@@ -70,7 +70,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
       lastDate: now.add(const Duration(days: 90)),
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             surface: AppTheme.card,
           ),
@@ -87,7 +87,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
       initialTime: _selectedTime ?? const TimeOfDay(hour: 18, minute: 0),
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             surface: AppTheme.card,
           ),
@@ -130,21 +130,21 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.challengeAddPlayer,
-                    style: const TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     AppLocalizations.of(context)!.challengePositionTeam(position, position <= 2 ? AppLocalizations.of(context)!.challengeTeamA : AppLocalizations.of(context)!.challengeTeamB),
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: phoneController,
                     keyboardType: TextInputType.phone,
-                    style: const TextStyle(color: AppTheme.textPrimary),
+                    style: TextStyle(color: AppTheme.textPrimary),
                     decoration: InputDecoration(
                       hintText: AppLocalizations.of(context)!.challengePhoneHint,
-                      hintStyle: const TextStyle(color: AppTheme.textSecondary),
+                      hintStyle: TextStyle(color: AppTheme.textSecondary),
                       filled: true,
                       fillColor: AppTheme.background,
                       border: OutlineInputBorder(
@@ -225,20 +225,20 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                                       children: [
                                         Text(
                                           player['full_name'] ?? '',
-                                          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                                          style: TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
                                           maxLines: 1, overflow: TextOverflow.ellipsis,
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
                                           '${player['rating'] ?? 0} ELO · ${player['phone'] ?? ''}',
-                                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                                          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                                           maxLines: 1, overflow: TextOverflow.ellipsis,
                                         ),
                                       ],
                                     ),
                                   ),
                                   alreadyAdded
-                                      ? const Icon(Icons.check_circle, color: AppTheme.textSecondary, size: 22)
+                                      ? Icon(Icons.check_circle, color: AppTheme.textSecondary, size: 22)
                                       : const Icon(Icons.add_circle_outline, color: AppTheme.accent, size: 22),
                                 ],
                               ),
@@ -251,7 +251,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                   ] else if (!isSearching && phoneController.text.trim().isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(AppLocalizations.of(context)!.challengeNobodyFound, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                      child: Text(AppLocalizations.of(context)!.challengeNobodyFound, style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     ),
                   ],
                   // Open slot button
@@ -408,7 +408,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
         ),
         content: Text(
           message,
-          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         ),
         actions: [
           TextButton(
@@ -454,7 +454,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                   Expanded(
                     child: Text(
                       AppLocalizations.of(context)!.challengeNewTitle,
-                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -493,7 +493,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     const SizedBox(height: 16),
 
                     // Type
-                    Text(AppLocalizations.of(context)!.challengeType, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    Text(AppLocalizations.of(context)!.challengeType, style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -505,7 +505,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     const SizedBox(height: 16),
 
                     // Min level
-                    Text(AppLocalizations.of(context)!.challengeMinLevel, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    Text(AppLocalizations.of(context)!.challengeMinLevel, style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     const SizedBox(height: 8),
                     _buildLevelButtons(
                       selected: _minLevel,
@@ -519,7 +519,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     const SizedBox(height: 12),
 
                     // Max level
-                    Text(AppLocalizations.of(context)!.challengeMaxLevel, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    Text(AppLocalizations.of(context)!.challengeMaxLevel, style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
                     const SizedBox(height: 8),
                     _buildLevelButtons(
                       selected: _maxLevel,
@@ -533,7 +533,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     // Court
                     Text(
                       AppLocalizations.of(context)!.challengeCourtLayout,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 0.5),
                     ),
                     const SizedBox(height: 12),
                     CourtWidget(
@@ -629,21 +629,21 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
               const SizedBox(width: 10),
               Text(
                 _loadingClubs ? AppLocalizations.of(context)!.challengeLoadingClubs : AppLocalizations.of(context)!.challengeClubOptional,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
             ],
           ),
-          icon: const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
+          icon: Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
           items: [
             DropdownMenuItem<int?>(
               value: null,
-              child: Text(AppLocalizations.of(context)!.challengeNoClub, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+              child: Text(AppLocalizations.of(context)!.challengeNoClub, style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
             ),
             ..._clubs.map((c) => DropdownMenuItem<int?>(
               value: c['id'] as int,
               child: Text(
                 c['name'] as String,
-                style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+                style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
                 maxLines: 1, overflow: TextOverflow.ellipsis,
               ),
             )),

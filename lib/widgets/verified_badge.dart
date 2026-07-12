@@ -38,7 +38,7 @@ class VerifiedBadge extends StatelessWidget {
     final badge = Container(
       width: size + 2,
       height: size + 2,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.blue,
         shape: BoxShape.circle,
       ),

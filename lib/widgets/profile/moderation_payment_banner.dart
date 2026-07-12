@@ -107,7 +107,7 @@ class _ModerationPaymentBannerState extends State<ModerationPaymentBanner> {
                               color: AppTheme.amber.withAlpha(46),
                               borderRadius: BorderRadius.circular(11),
                             ),
-                            child: const Icon(Icons.schedule,
+                            child: Icon(Icons.schedule,
                                 size: 20, color: AppTheme.amber),
                           ),
                           const SizedBox(width: 12),
@@ -120,7 +120,7 @@ class _ModerationPaymentBannerState extends State<ModerationPaymentBanner> {
                                   left.isNegative
                                       ? 'Оплатите участие'
                                       : 'Оплатите участие — ${_fmt(left)}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppTheme.amber,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w800,
@@ -133,7 +133,7 @@ class _ModerationPaymentBannerState extends State<ModerationPaymentBanner> {
                                   p.date.isNotEmpty
                                       ? '${p.name} · ${p.date}'
                                       : p.name,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppTheme.textSecondary,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,

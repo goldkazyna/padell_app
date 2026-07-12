@@ -145,7 +145,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                       children: [
                         Text(
                           _data?.clubName ?? l.coachScheduleButton,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -155,7 +155,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                         ),
                         Text(
                           l.coachScheduleButton,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppTheme.textSecondary, fontSize: 13),
                         ),
                       ],
@@ -193,7 +193,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(l.error,
-                style: const TextStyle(color: AppTheme.textSecondary)),
+                style: TextStyle(color: AppTheme.textSecondary)),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => _load(),
@@ -215,13 +215,13 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
               padding: const EdgeInsets.fromLTRB(32, 80, 32, 0),
               child: Column(
                 children: [
-                  const Icon(Icons.event_busy_outlined,
+                  Icon(Icons.event_busy_outlined,
                       size: 44, color: AppTheme.textDim),
                   const SizedBox(height: 12),
                   Text(
                     l.coachDayOff,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textSecondary, fontSize: 14),
                   ),
                 ],

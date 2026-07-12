@@ -13,7 +13,7 @@ class ChatMessageBubble extends StatelessWidget {
   static const double _gap = 10;
 
   // Насыщенная палитра для аватара-заглушки (организатор — всегда зелёный).
-  static const List<Color> _palette = [
+  static List<Color> _palette = [
     AppTheme.blue,
     Color(0xFF7C3AED),
     AppTheme.orange,
@@ -191,7 +191,7 @@ class ChatMessageBubble extends StatelessWidget {
   Widget _time() {
     return Text(
       message.timeLabel,
-      style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+      style: TextStyle(color: AppTheme.textDim, fontSize: 11),
     );
   }
 }

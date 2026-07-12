@@ -60,7 +60,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                     const SizedBox(width: 12),
                     Text(
                       AppLocalizations.of(context)!.challenge,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -179,7 +179,7 @@ class _OpenTab extends StatelessWidget {
           return Center(
             child: Text(
               AppLocalizations.of(context)!.noOpenChallenges,
-              style: const TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }
@@ -225,7 +225,7 @@ class _MyTab extends StatelessWidget {
           return Center(
             child: Text(
               AppLocalizations.of(context)!.noMyChallenges,
-              style: const TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }

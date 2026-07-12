@@ -106,7 +106,7 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back,
+                    icon: Icon(Icons.arrow_back,
                         color: AppTheme.textPrimary, size: 20),
                     onPressed: () => Navigator.pop(context),
                     padding: EdgeInsets.zero,
@@ -129,7 +129,7 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
 
               Text(
                 AppLocalizations.of(context)!.confirmLogin,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -149,7 +149,7 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
               if (_initError) ...[
                 Text(
                   AppLocalizations.of(context)!.connectionFailed,
-                  style: const TextStyle(color: AppTheme.error, fontSize: 14),
+                  style: TextStyle(color: AppTheme.error, fontSize: 14),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -185,7 +185,7 @@ class _TelegramWaitingScreenState extends State<TelegramWaitingScreen> {
                 const SizedBox(height: 12),
                 Text(
                   AppLocalizations.of(context)!.waitingForConfirmation,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,
                   ),

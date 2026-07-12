@@ -388,6 +388,7 @@ class PushNotificationService {
       'registration_rejected',
       'slot_available',
       'tournament_cancelled',
+      'tournament_date_changed',
       'tournament_reminder',
       'tournament_chat',
     };

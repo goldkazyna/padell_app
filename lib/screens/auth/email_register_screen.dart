@@ -59,7 +59,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
             const SizedBox(height: 12),
             Text(
               AppLocalizations.of(context)!.selectCityTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -141,7 +141,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_back,
+                        icon: Icon(Icons.arrow_back,
                             color: AppTheme.textPrimary, size: 20),
                         onPressed: () => Navigator.pop(context),
                         padding: EdgeInsets.zero,
@@ -152,7 +152,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     // Title
                     Text(
                       AppLocalizations.of(context)!.registrationTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -171,13 +171,13 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     // Name field
                     Text(
                       AppLocalizations.of(context)!.fullName,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _nameController,
                       textCapitalization: TextCapitalization.words,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
                       decoration: _inputDecoration(AppLocalizations.of(context)!.fullNamePlaceholder),
                       validator: (value) {
@@ -190,7 +190,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Email field
-                    const Text(
+                    Text(
                       'Email',
                       style:
                           TextStyle(color: AppTheme.textSecondary, fontSize: 14),
@@ -200,7 +200,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       autocorrect: false,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
                       decoration: _inputDecoration('example@mail.com'),
                       validator: (value) {
@@ -221,9 +221,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       children: [
                         Text(
                           AppLocalizations.of(context)!.phoneLabel,
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                          style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                         ),
-                        const Text(' *', style: TextStyle(color: AppTheme.error, fontSize: 14)),
+                        Text(' *', style: TextStyle(color: AppTheme.error, fontSize: 14)),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -242,17 +242,17 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                               enabledBorder: state.hasError
                                   ? OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(16),
-                                      borderSide: const BorderSide(color: AppTheme.error),
+                                      borderSide: BorderSide(color: AppTheme.error),
                                     )
                                   : null,
                             ),
                             initialCountryCode: 'KZ',
                             languageCode: 'ru',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: AppTheme.textPrimary, fontSize: 16),
-                            dropdownTextStyle: const TextStyle(
+                            dropdownTextStyle: TextStyle(
                                 color: AppTheme.textPrimary, fontSize: 16),
-                            dropdownIcon: const Icon(Icons.arrow_drop_down, color: AppTheme.textSecondary),
+                            dropdownIcon: Icon(Icons.arrow_drop_down, color: AppTheme.textSecondary),
                             flagsButtonPadding: const EdgeInsets.only(left: 12),
                             disableLengthCheck: false,
                             onChanged: (phone) {
@@ -265,7 +265,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                               padding: const EdgeInsets.only(left: 16, top: 4),
                               child: Text(
                                 state.errorText!,
-                                style: const TextStyle(color: AppTheme.error, fontSize: 12),
+                                style: TextStyle(color: AppTheme.error, fontSize: 12),
                               ),
                             ),
                         ],
@@ -278,9 +278,9 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                       children: [
                         Text(
                           AppLocalizations.of(context)!.cityLabel,
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                          style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                         ),
-                        const Text(' *', style: TextStyle(color: AppTheme.error, fontSize: 14)),
+                        Text(' *', style: TextStyle(color: AppTheme.error, fontSize: 14)),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -324,7 +324,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                                       ),
                                     ),
                                   ),
-                                  const Icon(
+                                  Icon(
                                     Icons.chevron_right,
                                     color: AppTheme.textSecondary,
                                     size: 20,
@@ -338,7 +338,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                               padding: const EdgeInsets.only(left: 16, top: 8),
                               child: Text(
                                 state.errorText!,
-                                style: const TextStyle(color: AppTheme.error, fontSize: 12),
+                                style: TextStyle(color: AppTheme.error, fontSize: 12),
                               ),
                             ),
                         ],
@@ -349,13 +349,13 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     // Password field
                     Text(
                       AppLocalizations.of(context)!.password,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
                       decoration:
                           _inputDecoration(AppLocalizations.of(context)!.minSixChars).copyWith(
@@ -386,13 +386,13 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                     // Confirm password field
                     Text(
                       AppLocalizations.of(context)!.confirmPassword,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _confirmPasswordController,
                       obscureText: _obscureConfirm,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
                       decoration:
                           _inputDecoration(AppLocalizations.of(context)!.repeatPassword).copyWith(
@@ -427,7 +427,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
                           padding: const EdgeInsets.only(top: 12),
                           child: Text(
                             auth.error!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.error,
                               fontSize: 14,
                             ),
@@ -540,11 +540,11 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.error),
+        borderSide: BorderSide(color: AppTheme.error),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.error),
+        borderSide: BorderSide(color: AppTheme.error),
       ),
     );
   }

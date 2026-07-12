@@ -60,7 +60,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
         backgroundColor: AppTheme.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () {
             context.read<AuthProvider>().clearError();
             Navigator.pop(context);
@@ -75,7 +75,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
             children: [
               Text(
                 l.verificationCode,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -84,7 +84,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
               const SizedBox(height: 8),
               Text(
                 l.codeSentTo(_formattedPhone),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 16,
                 ),
@@ -102,7 +102,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                     child: Center(
                       child: Text(
                         auth.error!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.error,
                           fontSize: 14,
                         ),

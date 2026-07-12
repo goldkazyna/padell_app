@@ -74,7 +74,7 @@ class MyRankCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         c.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -103,7 +103,7 @@ class MyRankCard extends StatelessWidget {
                     ),
                     RatingFormatter.formatRating(c.rating, precise),
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,
                   ),
@@ -124,7 +124,7 @@ class MyRankCard extends StatelessWidget {
               ),
               Text(
                 AppLocalizations.of(context)!.ratingOutOfPlayers(c.totalPlayers),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 11,
                 ),

@@ -111,7 +111,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(20, 14, 20, 8),
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -184,7 +184,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(_error!, style: const TextStyle(color: AppTheme.textSecondary)),
+                      Text(_error!, style: TextStyle(color: AppTheme.textSecondary)),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _loadProfile,
@@ -302,7 +302,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           ),
 
           // History section
-          const Padding(
+          Padding(
             padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(
               'ИСТОРИЯ РЕЙТИНГА',
@@ -314,7 +314,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           ),
 
           if (p.history.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(32),
               child: Center(
                 child: Text('Нет данных', style: TextStyle(color: AppTheme.textSecondary)),
@@ -338,7 +338,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       alignment: Alignment.center,
-      child: const Icon(
+      child: Icon(
         Icons.tune_rounded,
         size: 22,
         color: AppTheme.amber,
@@ -360,13 +360,13 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           : (place != null && place > 3)
               ? Text(
                   '$place',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),
                 )
-              : const Icon(
+              : Icon(
                   Icons.emoji_events_outlined,
                   size: 22,
                   color: AppTheme.textSecondary,
@@ -405,12 +405,12 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 children: [
                   Text(
                     h.tournamentName,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
                     maxLines: 1, overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     h.date,
-                    style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+                    style: TextStyle(fontSize: 11, color: AppTheme.textSecondary),
                   ),
                 ],
               ),
@@ -428,7 +428,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                   ),
                   child: Text(
                     AppLocalizations.of(ctx)!.unratedBadge,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.orange,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -474,14 +474,14 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.verified_outlined,
+            Icon(Icons.verified_outlined,
                 color: AppTheme.blue, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Уровень подтверждён',
                     style: TextStyle(
                       color: AppTheme.blue,
@@ -493,7 +493,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                     const SizedBox(height: 2),
                     Text(
                       pieces.join(' · '),
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 12,
                           height: 1.4),
@@ -548,7 +548,7 @@ class _InviteTournamentTile extends StatelessWidget {
                   Text(t.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 15,
                           fontWeight: FontWeight.w700)),
@@ -556,11 +556,11 @@ class _InviteTournamentTile extends StatelessWidget {
                   Text('${t.club.name} · ${t.dateShort}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textSecondary, fontSize: 13)),
                   const SizedBox(height: 2),
                   Text('Уровень ${t.levelText}',
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textDim, fontSize: 12)),
                 ],
               ),

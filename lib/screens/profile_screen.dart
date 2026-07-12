@@ -103,7 +103,7 @@ class _PushDebugButton extends StatelessWidget {
         onPressed: () {
           context.read<PushNotificationService>().showDebugLog(context);
         },
-        child: const Text(
+        child: Text(
           'Push Debug Log',
           style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
         ),

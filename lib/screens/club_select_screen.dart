@@ -68,13 +68,13 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
                   ),
                   child: TextField(
                     controller: _searchController,
-                    style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
                     textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
                       isCollapsed: true,
                       hintText: AppLocalizations.of(context)!.searchClub,
-                      hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
-                      prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary, size: 20),
+                      hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                      prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary, size: 20),
                       prefixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.only(right: 16),
@@ -139,7 +139,7 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(provider.error!, style: const TextStyle(color: AppTheme.textSecondary)),
+            Text(provider.error!, style: TextStyle(color: AppTheme.textSecondary)),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => provider.loadClubs(),
@@ -157,7 +157,7 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
           children: [
             const Icon(Icons.sports_tennis, size: 48, color: Color(0xFF3F3F46)),
             const SizedBox(height: 12),
-            Text(AppLocalizations.of(context)!.noClubsFound, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15)),
+            Text(AppLocalizations.of(context)!.noClubsFound, style: TextStyle(color: AppTheme.textSecondary, fontSize: 15)),
           ],
         ),
       );
@@ -292,7 +292,7 @@ class _ClubCard extends StatelessWidget {
                 children: [
                   Text(
                     club.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: AppTheme.textPrimary,
@@ -302,7 +302,7 @@ class _ClubCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       club.address!,
-                      style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                      style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                     ),
                   ],
                   const SizedBox(height: 10),

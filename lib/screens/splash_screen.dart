@@ -29,68 +29,31 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             const Spacer(flex: 2),
 
-            // Logo
+            // Logo (официальный логотип PADEL KZ)
             Container(
-              width: 88,
-              height: 88,
+              width: 130,
+              height: 130,
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.accent,
-                borderRadius: BorderRadius.circular(22),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
               ),
-              child: Center(
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFF0A3D20), width: 3),
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 3,
-                      height: 28,
-                      color: const Color(0xFF0A3D20),
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Positioned(
-                            top: 10,
-                            left: -12,
-                            right: -12,
-                            child: Container(
-                              height: 3,
-                              color: const Color(0xFF0A3D20),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset(
+                'assets/app_icon.png',
+                fit: BoxFit.contain,
               ),
             ),
             const SizedBox(height: 24),
 
             // Title
-            const Text(
-              'PADEL',
+            Text(
+              'PADEL KZ',
               style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 6,
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Subtitle
-            Text(
-              'TOURNAMENT APP',
-              style: TextStyle(
-                color: AppTheme.textSecondary.withValues(alpha: 0.6),
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 3,
               ),
             ),
 

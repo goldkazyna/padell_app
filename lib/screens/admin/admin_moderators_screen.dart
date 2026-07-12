@@ -82,23 +82,23 @@ class _AdminModeratorsScreenState extends State<AdminModeratorsScreen> {
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16)),
-        title: const Text('Удалить модератора?',
+        title: Text('Удалить модератора?',
             style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 17,
                 fontWeight: FontWeight.bold)),
         content: Text('${mod.name} больше не будет модератором клуба.',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Отмена',
+            child: Text('Отмена',
                 style: TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Удалить',
+            child: Text('Удалить',
                 style: TextStyle(
                     color: AppTheme.error, fontWeight: FontWeight.w600)),
           ),
@@ -149,13 +149,13 @@ class _AdminModeratorsScreenState extends State<AdminModeratorsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Модераторы',
+                Text('Модераторы',
                     style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.w800)),
                 Text(widget.clubName,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textSecondary, fontSize: 13),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis),
@@ -200,11 +200,11 @@ class _AdminModeratorsScreenState extends State<AdminModeratorsScreen> {
         padding: const EdgeInsets.all(24),
         child: Text(_error!,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppTheme.textSecondary)),
+            style: TextStyle(color: AppTheme.textSecondary)),
       ));
     }
     if (_moderators.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Column(
@@ -245,7 +245,7 @@ class _AdminModeratorsScreenState extends State<AdminModeratorsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(m.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w600),
@@ -273,13 +273,13 @@ class _AdminModeratorsScreenState extends State<AdminModeratorsScreen> {
             ),
             IconButton(
               onPressed: () => _openEditSheet(m),
-              icon: const Icon(Icons.tune,
+              icon: Icon(Icons.tune,
                   color: AppTheme.textSecondary, size: 20),
               tooltip: 'Права',
             ),
             IconButton(
               onPressed: () => _confirmDelete(m),
-              icon: const Icon(Icons.delete_outline,
+              icon: Icon(Icons.delete_outline,
                   color: AppTheme.error, size: 20),
               tooltip: 'Удалить',
             ),
@@ -306,11 +306,11 @@ class _AdminModeratorsScreenState extends State<AdminModeratorsScreen> {
     final fallback = Container(
       width: 40,
       height: 40,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
           color: AppTheme.cardRaised, shape: BoxShape.circle),
       alignment: Alignment.center,
       child: Text(initials,
-          style: const TextStyle(
+          style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 13,
               fontWeight: FontWeight.w700)),
@@ -416,7 +416,7 @@ class _AddModeratorSheetState extends State<_AddModeratorSheet> {
   Widget build(BuildContext context) {
     final inset = MediaQuery.of(context).viewInsets.bottom;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -439,13 +439,13 @@ class _AddModeratorSheetState extends State<_AddModeratorSheet> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text('Добавить модератора',
+              Text('Добавить модератора',
                   style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
-              const Text('Найдите пользователя по номеру телефона',
+              Text('Найдите пользователя по номеру телефона',
                   style:
                       TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
               const SizedBox(height: 14),
@@ -455,11 +455,11 @@ class _AddModeratorSheetState extends State<_AddModeratorSheet> {
                     child: TextField(
                       controller: _phone,
                       keyboardType: TextInputType.phone,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Телефон',
-                        hintStyle: const TextStyle(color: AppTheme.textDim),
+                        hintStyle: TextStyle(color: AppTheme.textDim),
                         filled: true,
                         fillColor: AppTheme.card,
                         contentPadding: const EdgeInsets.symmetric(
@@ -526,7 +526,7 @@ class _AddModeratorSheetState extends State<_AddModeratorSheet> {
                                       CrossAxisAlignment.start,
                                   children: [
                                     Text(u.name,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             color: AppTheme.textPrimary,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600)),
@@ -538,7 +538,7 @@ class _AddModeratorSheetState extends State<_AddModeratorSheet> {
                                         if (u.level != null)
                                           'L${u.level!.toStringAsFixed(2)}',
                                       ].join(' · '),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           color: AppTheme.textSecondary,
                                           fontSize: 12),
                                     ),
@@ -574,7 +574,7 @@ class _AddModeratorSheetState extends State<_AddModeratorSheet> {
               if (_error != null) ...[
                 const SizedBox(height: 10),
                 Text(_error!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.error, fontSize: 12)),
               ],
               const SizedBox(height: 14),
@@ -654,7 +654,7 @@ class _EditPermsSheetState extends State<_EditPermsSheet> {
   Widget build(BuildContext context) {
     final inset = MediaQuery.of(context).viewInsets.bottom;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -677,14 +677,14 @@ class _EditPermsSheetState extends State<_EditPermsSheet> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text('Права модератора',
+              Text('Права модератора',
                   style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
               Text(widget.moderator.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 12)),
               const SizedBox(height: 14),
               _PermSwitch(
@@ -702,7 +702,7 @@ class _EditPermsSheetState extends State<_EditPermsSheet> {
               if (_error != null) ...[
                 const SizedBox(height: 10),
                 Text(_error!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.error, fontSize: 12)),
               ],
               const SizedBox(height: 14),
@@ -759,12 +759,12 @@ class _PermSwitch extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600)),
                 Text(subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textSecondary, fontSize: 11)),
               ],
             ),

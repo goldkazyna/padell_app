@@ -112,7 +112,7 @@ class _QuizScreenState extends State<QuizScreen> {
             child: const Icon(Icons.check_circle, size: 56, color: AppTheme.accent),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Ваш уровень определён',
             style: TextStyle(
               color: AppTheme.textPrimary,
@@ -148,7 +148,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 const SizedBox(height: 8),
                 Text(
                   r.category,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -157,7 +157,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 const SizedBox(height: 6),
                 Text(
                   '${r.score} из ${r.maxScore} баллов',
-                  style: const TextStyle(color: AppTheme.textDim, fontSize: 12),
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 12),
                 ),
               ],
             ),
@@ -216,7 +216,7 @@ class _QuizScreenState extends State<QuizScreen> {
               const Spacer(),
               Text(
                 '${_index + 1} / ${_questions.length}',
-                style: const TextStyle(color: AppTheme.textDim, fontSize: 13, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppTheme.textDim, fontSize: 13, fontWeight: FontWeight.w600),
               ),
               const Spacer(),
               const SizedBox(width: 34),
@@ -231,7 +231,7 @@ class _QuizScreenState extends State<QuizScreen> {
               children: [
                 Text(
                   q.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -242,7 +242,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   const SizedBox(height: 6),
                   Text(
                     q.subtitle,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                   ),
                 ],
                 const SizedBox(height: 24),

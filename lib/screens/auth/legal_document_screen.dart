@@ -63,7 +63,7 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
                       border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.chevron_left, color: AppTheme.textPrimary, size: 24),
+                      icon: Icon(Icons.chevron_left, color: AppTheme.textPrimary, size: 24),
                       onPressed: () => Navigator.pop(context),
                       padding: EdgeInsets.zero,
                     ),
@@ -72,7 +72,7 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
                   Expanded(
                     child: Text(
                       widget.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 17,
                         fontWeight: FontWeight.bold,

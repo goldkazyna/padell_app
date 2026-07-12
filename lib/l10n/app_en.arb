@@ -152,6 +152,8 @@
 
   "bookingConfirmed": "Booking Confirmed!",
   "bookingConfirmedSubtitle": "You have successfully booked a court",
+  "paymentNotCompletedTitle": "Payment not completed",
+  "paymentNotCompleted": "You didn't finish the payment. The booking is saved as unpaid — you can pay later in \"My bookings\" or at the club.",
   "myBookings": "My Bookings",
   "goHome": "Go Home",
 
@@ -161,6 +163,7 @@
   "noPastBookings": "No past bookings",
   "statusPending": "New request",
   "statusConfirmed": "Confirmed",
+  "statusNotConfirmed": "Not confirmed",
   "statusCancelled": "Cancelled",
   "cancel": "Cancel",
   "cancelBooking": "Cancel booking?",
@@ -206,6 +209,11 @@
   "settingsMenuItemSubtitle": "Rating and level display",
   "preciseRatingTitle": "Precise rating values",
   "preciseRatingSubtitle": "Show rating and level with two decimals (2.69 instead of 2690)",
+  "themeTitle": "Appearance",
+  "themeSubtitle": "Light, dark or follow system",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
 
   "newsChannelTitle": "Latest app news",
   "newsChannelSubtitle": "Telegram channel @padelkz_app",

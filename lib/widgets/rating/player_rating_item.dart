@@ -84,7 +84,7 @@ class PlayerRatingItem extends StatelessWidget {
                     Flexible(
                       child: Text(
                         player.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -110,7 +110,7 @@ class PlayerRatingItem extends StatelessWidget {
                     rating: player.rating,
                     precise: precise,
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 12,
                   ),

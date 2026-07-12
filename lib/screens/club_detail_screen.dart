@@ -10,6 +10,7 @@ import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
 import '../widgets/coming_soon_badge.dart';
 import '../widgets/main_tab_bar.dart';
+import 'club_past_tournaments_screen.dart';
 import 'club_stats_screen.dart';
 import 'tournaments_screen.dart';
 
@@ -143,7 +144,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
                   'Поделиться',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -214,9 +215,9 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline, color: AppTheme.textSecondary, size: 48),
+                Icon(Icons.error_outline, color: AppTheme.textSecondary, size: 48),
                 const SizedBox(height: 12),
-                const Text(
+                Text(
                   'Не удалось загрузить клуб',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -342,6 +343,10 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: _buildPastTournamentsCard(club),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         child: _buildStatsCard(club),
       ),
       Padding(
@@ -399,7 +404,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               errorBuilder: (ctx, err, stack) => Container(
                 color: AppTheme.card,
                 alignment: Alignment.center,
-                child: const Icon(Icons.person,
+                child: Icon(Icons.person,
                     color: AppTheme.textSecondary, size: 40),
               ),
             ),
@@ -417,7 +422,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 coach.name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -430,7 +435,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                     coach.specialization!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                       height: 1.25,
@@ -705,7 +710,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
             const SizedBox(height: 8),
             Text(
               action.label,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 12,
               ),
@@ -741,7 +746,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       },
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF22C55E), Color(0xFF166534)],
@@ -761,8 +766,8 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
           children: [
             // Calendar icon box
             Container(
-              width: 44,
-              height: 44,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
@@ -791,6 +796,85 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               ),
               child: Text(
                 '${club.openTournamentsCount}',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, color: Colors.white, size: 22),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPastTournamentsCard(Club club) {
+    if (club.tournamentsCount <= 0) return const SizedBox.shrink();
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ClubPastTournamentsScreen(
+              clubId: club.id,
+              clubName: club.name,
+            ),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF22C55E), Color(0xFF166534)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.accent.withAlpha(40),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.emoji_events_outlined,
+                  color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Прошедшие турниры',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${club.tournamentsCount}',
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 14,
@@ -944,7 +1028,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Не показывать турниры этого клуба',
                     style: TextStyle(
                       color: AppTheme.textPrimary,
@@ -1037,7 +1121,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -1047,7 +1131,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   const SizedBox(height: 2),
                   Text(
                     value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -1057,7 +1141,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               ),
             ),
             if (onTap != null)
-              const Icon(Icons.chevron_right,
+              Icon(Icons.chevron_right,
                   color: AppTheme.textSecondary, size: 20),
           ],
         ),
@@ -1076,7 +1160,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'О КЛУБЕ',
             style: TextStyle(
               color: AppTheme.textSecondary,
@@ -1088,7 +1172,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
           const SizedBox(height: 8),
           Text(
             description,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 14,
               height: 1.45,
@@ -1184,7 +1268,7 @@ class _ShareRow extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -1193,7 +1277,7 @@ class _ShareRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     url,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                     ),
@@ -1203,7 +1287,7 @@ class _ShareRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right,
+            Icon(Icons.chevron_right,
                 color: AppTheme.textSecondary, size: 20),
           ],
         ),

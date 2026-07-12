@@ -119,12 +119,12 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
         backgroundColor: AppTheme.background,
         elevation: 0,
         title: Text(l.changePhoneTitle,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 17,
                 fontWeight: FontWeight.w600)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -146,13 +146,13 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l.changePhoneOldHint,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         Text(_formatPhone(widget.currentPhone),
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary, fontSize: 15)),
         const SizedBox(height: 36),
         OtpCodeInput(
@@ -179,7 +179,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l.changePhoneEnterNew,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600)),
@@ -191,7 +191,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
           onChanged: (_) {
             if (_error != null) setState(() => _error = null);
           },
-          style: const TextStyle(
+          style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w600),
@@ -202,7 +202,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
           ],
           decoration: InputDecoration(
             prefixText: '+7  ',
-            prefixStyle: const TextStyle(
+            prefixStyle: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600),
@@ -256,13 +256,13 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l.changePhoneNewHint,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         Text(_formatPhone(_fullNewPhone),
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary, fontSize: 15)),
         const SizedBox(height: 36),
         OtpCodeInput(
@@ -290,7 +290,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
       padding: const EdgeInsets.only(top: 16),
       child: Center(
         child: Text(_error!,
-            style: const TextStyle(color: AppTheme.error, fontSize: 14),
+            style: TextStyle(color: AppTheme.error, fontSize: 14),
             textAlign: TextAlign.center),
       ),
     );

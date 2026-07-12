@@ -92,7 +92,7 @@ class _ActiveTournamentCardState extends State<ActiveTournamentCard>
 
             Text(
               t.name,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -101,19 +101,19 @@ class _ActiveTournamentCardState extends State<ActiveTournamentCard>
             const SizedBox(height: 4),
             Text(
               t.club.name,
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
             if (t.venueClubName != null) ...[
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Icon(Icons.place_outlined,
+                  Icon(Icons.place_outlined,
                       size: 13, color: AppTheme.textSecondary),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
                       t.venueClubName!,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textSecondary, fontSize: 13),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -126,18 +126,18 @@ class _ActiveTournamentCardState extends State<ActiveTournamentCard>
 
             Row(
               children: [
-                const Icon(Icons.calendar_today,
+                Icon(Icons.calendar_today,
                     color: AppTheme.textSecondary, size: 14),
                 const SizedBox(width: 6),
                 Text(
                   '${t.date} · ${t.time}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                 ),
                 const Spacer(),
                 Text(
                   t.participantsText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,
                   ),
@@ -244,11 +244,11 @@ class _ActiveTournamentCardState extends State<ActiveTournamentCard>
       child: Center(
         child: Column(
           children: [
-            const Icon(Icons.sports_tennis, color: AppTheme.textSecondary, size: 40),
+            Icon(Icons.sports_tennis, color: AppTheme.textSecondary, size: 40),
             const SizedBox(height: 12),
             Text(
               AppLocalizations.of(context)!.notInTournaments,
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
           ],
         ),

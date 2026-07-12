@@ -78,13 +78,13 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
       initialDateRange: _range,
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: _accent,
             surface: AppTheme.card,
             onSurface: AppTheme.textPrimary,
           ),
           dialogTheme:
-              const DialogThemeData(backgroundColor: AppTheme.background),
+              DialogThemeData(backgroundColor: AppTheme.background),
         ),
         child: child!,
       ),
@@ -124,7 +124,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Статистика клуба',
                           style: TextStyle(
                             color: AppTheme.textPrimary,
@@ -136,7 +136,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
                           widget.clubName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 13,
                           ),
@@ -177,7 +177,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
             Expanded(
               child: Text(
                 '${_fmt(_range.start)} — ${_fmt(_range.end)}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -226,7 +226,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
           ),
           if (retry) ...[
             const SizedBox(height: 12),
@@ -244,7 +244,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 4, bottom: 2),
       child: Row(
-        children: const [
+        children: [
           SizedBox(width: 28),
           SizedBox(width: 50),
           Expanded(child: SizedBox()),
@@ -304,7 +304,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
                 : Text(
                     '$rank',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -326,7 +326,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
                         p.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -342,7 +342,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
                 if (_subtitle(p) != null)
                   Text(
                     _subtitle(p)!,
-                    style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                   ),
               ],
             ),
@@ -353,7 +353,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
             child: Text(
               '${p.tournaments}',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -366,7 +366,7 @@ class _ClubStatsScreenState extends State<ClubStatsScreen> {
             child: Text(
               p.matches > 0 ? '${p.winrate}%' : '—',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,

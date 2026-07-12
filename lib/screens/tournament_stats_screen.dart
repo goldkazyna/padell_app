@@ -75,14 +75,14 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(_error!, style: const TextStyle(color: AppTheme.textSecondary)),
+                        Text(_error!, style: TextStyle(color: AppTheme.textSecondary)),
                         const SizedBox(height: 16),
                         ElevatedButton(onPressed: _load, child: const Text('Повторить')),
                       ],
                     ),
                   )
                 : _data == null
-                    ? const Center(child: Text('Нет данных', style: TextStyle(color: AppTheme.textSecondary)))
+                    ? Center(child: Text('Нет данных', style: TextStyle(color: AppTheme.textSecondary)))
                     : Column(
                         children: [
                           _buildHeader(),
@@ -138,13 +138,13 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
           const SizedBox(height: 16),
           Text(
             name,
-            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 22, fontWeight: FontWeight.bold),
+            style: TextStyle(color: AppTheme.textPrimary, fontSize: 22, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
           Text(
             '$date · $clubName',
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             textAlign: TextAlign.center,
           ),
         ],
@@ -200,7 +200,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
     final playoff = _data?['playoff'] as List<dynamic>? ?? [];
 
     if (matches.isEmpty && playoff.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('Матчи не сыграны', style: TextStyle(color: AppTheme.textSecondary)),
       );
     }
@@ -221,7 +221,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                 padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
                 child: Text(
                   entry.key.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -235,7 +235,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                   )),
             ]),
         if (playoff.isNotEmpty) ...[
-          const Padding(
+          Padding(
             padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
             child: Text(
               'ПЛЕЙ-ОФФ',
@@ -277,7 +277,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
               children: [
                 Text(
                   '$stage · Раунд $round',
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12, letterSpacing: 0.5),
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12, letterSpacing: 0.5),
                 ),
               ],
             ),
@@ -289,7 +289,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Text(
                   '$t1Score : $t2Score',
-                  style: const TextStyle(color: AppTheme.textPrimary, fontSize: 28, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppTheme.textPrimary, fontSize: 28, fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(child: _buildTeamColumn(team2, CrossAxisAlignment.end, t2Won)),
@@ -337,8 +337,8 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: isCompleted
                     ? Text('$t1Score : $t2Score',
-                        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 28, fontWeight: FontWeight.bold))
-                    : const Text('vs',
+                        style: TextStyle(color: AppTheme.textPrimary, fontSize: 28, fontWeight: FontWeight.bold))
+                    : Text('vs',
                         style: TextStyle(color: AppTheme.textSecondary, fontSize: 16)),
               ),
               Expanded(child: _buildTeamColumn(team2, CrossAxisAlignment.end, t2Won)),
@@ -402,7 +402,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
       child: Center(
         child: Text(
           initials,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -419,7 +419,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
     final participants = _data?['participants'] as List<dynamic>? ?? [];
 
     if (participants.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('Нет участников', style: TextStyle(color: AppTheme.textSecondary)),
       );
     }
@@ -460,7 +460,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                     child: Text(
                       '${index + 1}',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -483,15 +483,15 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(name,
-                            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
                             maxLines: 1, overflow: TextOverflow.ellipsis),
                         Text('L$levelCategory · $level',
-                            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
                       ],
                     ),
                   ),
                   Text('$rating',
-                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w700)),
+                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w700)),
                 ],
               ),
             ),
@@ -508,7 +508,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
     final playoff = _data?['playoff'] as List<dynamic>? ?? [];
 
     if (leaderboard.isEmpty && teamStandings.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('Нет данных', style: TextStyle(color: AppTheme.textSecondary)),
       );
     }
@@ -526,7 +526,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
-            children: const [
+            children: [
               SizedBox(width: 28, child: Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700))),
               SizedBox(width: 8),
               Expanded(child: Text('ИГРОК', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700))),
@@ -546,7 +546,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
               if (index >= leaderboard.length) {
                 final poIndex = index - leaderboard.length;
                 if (poIndex == 0) {
-                  return const Padding(
+                  return Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text('ПЛЕЙ-ОФФ',
                         style: TextStyle(color: AppTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
@@ -599,19 +599,19 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                         decoration: const BoxDecoration(color: Color(0xFF27272A), shape: BoxShape.circle),
                         child: Center(
                           child: Text(initials,
-                              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 9, fontWeight: FontWeight.w700)),
+                              style: TextStyle(color: AppTheme.textSecondary, fontSize: 9, fontWeight: FontWeight.w700)),
                         ),
                       ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(name,
-                            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
                             maxLines: 1, overflow: TextOverflow.ellipsis),
                       ),
                       SizedBox(width: 28, child: Text('$wins', textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF22C55E), fontSize: 12))),
                       SizedBox(width: 28, child: Text('$losses', textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 12))),
-                      SizedBox(width: 36, child: Text('$ptsFor:$ptsAgainst', textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10))),
-                      SizedBox(width: 36, child: Text('$winPercent%', textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w600))),
+                      SizedBox(width: 36, child: Text('$ptsFor:$ptsAgainst', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.textSecondary, fontSize: 10))),
+                      SizedBox(width: 36, child: Text('$winPercent%', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w600))),
                       SizedBox(width: 40, child: Text('$totalPoints', textAlign: TextAlign.right, style: const TextStyle(color: Color(0xFF22C55E), fontSize: 13, fontWeight: FontWeight.w800))),
                     ],
                   ),
@@ -630,7 +630,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
-            children: const [
+            children: [
               SizedBox(width: 28, child: Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700))),
               SizedBox(width: 8),
               Expanded(child: Text('КОМАНДА', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700))),
@@ -646,7 +646,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
               if (index >= teamStandings.length) {
                 final poIndex = index - teamStandings.length;
                 if (poIndex == 0) {
-                  return const Padding(
+                  return Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text('ПЛЕЙ-ОФФ',
                         style: TextStyle(color: AppTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
@@ -698,7 +698,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                               onTap: () => _openPlayer(p1['id'] as int? ?? 0, p1['name'] as String? ?? ''),
                               child: Text(
                                 p1['name'] as String? ?? '',
-                                style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+                                style: TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
                                 maxLines: 1, overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -708,7 +708,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                               onTap: () => _openPlayer(p2['id'] as int? ?? 0, p2['name'] as String? ?? ''),
                               child: Text(
                                 p2['name'] as String? ?? '',
-                                style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+                                style: TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
                                 maxLines: 1, overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -720,7 +720,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text('$wins – $losses',
-                            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w700)),
+                            style: TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 2),
                         Text(diff >= 0 ? '+$diff' : '$diff',
                             style: TextStyle(

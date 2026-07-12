@@ -73,7 +73,7 @@ class _NotificationCategoriesScreenState extends State<NotificationCategoriesScr
                   const SizedBox(width: 12),
                   Text(
                     l10n.notifications,
-                    style: const TextStyle(color: AppTheme.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

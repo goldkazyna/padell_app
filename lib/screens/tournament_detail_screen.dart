@@ -94,7 +94,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     child: Center(
                       child: Text(
                         AppLocalizations.of(context)!.failedToLoadTournament,
-                        style: const TextStyle(color: AppTheme.textSecondary),
+                        style: TextStyle(color: AppTheme.textSecondary),
                       ),
                     ),
                   ),
@@ -365,7 +365,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   Widget _buildTitle(Tournament t) {
     return Text(
       t.name,
-      style: const TextStyle(
+      style: TextStyle(
         color: AppTheme.textPrimary,
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -380,13 +380,13 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       children: [
         Row(
           children: [
-            const Icon(Icons.location_on_outlined,
+            Icon(Icons.location_on_outlined,
                 color: AppTheme.textSecondary, size: 16),
             const SizedBox(width: 4),
             Expanded(
               child: Text(
                 t.club.fullAddress,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 14,
                 ),
@@ -399,7 +399,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.place_outlined,
+              Icon(Icons.place_outlined,
                   color: AppTheme.textSecondary, size: 16),
               const SizedBox(width: 4),
               Expanded(
@@ -407,7 +407,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                   t.venueClubCity != null && t.venueClubCity!.isNotEmpty
                       ? 'Площадка: ${t.venueClubName}, ${t.venueClubCity}'
                       : 'Площадка: ${t.venueClubName}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                   ),
@@ -505,7 +505,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     IconData? icon,
     required String value,
     required String subtitle,
-    Color valueColor = AppTheme.textPrimary,
+    Color? valueColor,
   }) {
     return Expanded(
       child: Container(
@@ -520,7 +520,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
@@ -538,7 +538,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                   child: Text(
                     value,
                     style: TextStyle(
-                      color: valueColor,
+                      color: valueColor ?? AppTheme.textPrimary,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -550,7 +550,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
                 ),
@@ -580,7 +580,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             children: [
               Text(
                 l10n.pendingModeration,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -606,7 +606,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           children: [
             Text(
               l10n.participants,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -619,7 +619,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             const Spacer(),
             Text(
               l10n.countOfMax(t.participantsCount, t.maxParticipants),
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 14,
               ),
@@ -640,7 +640,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             child: Center(
               child: Text(
                 l10n.noParticipantsYet,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
             ),
           )
@@ -673,12 +673,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppTheme.textSecondary, width: 1),
                     ),
-                    child: const Icon(Icons.add, color: AppTheme.textSecondary, size: 12),
+                    child: Icon(Icons.add, color: AppTheme.textSecondary, size: 12),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     l10n.spotsLeftCount(t.spotsLeft),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
                     ),
@@ -695,7 +695,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             children: [
               Text(
                 'Лист ожидания',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -707,7 +707,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               if (t.waitlistSize > 0)
                 Text(
                   '${t.waitlistParticipants.length} / ${t.waitlistSize}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                   ),
@@ -957,7 +957,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     Flexible(
                       child: Text(
                         participant.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -981,7 +981,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                       rating: participant.rating,
                       precise: precise,
                     ),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                     ),
@@ -1179,7 +1179,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         const SizedBox(height: 20),
         Text(
           AppLocalizations.of(context)!.organizer,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -1209,7 +1209,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                       children: [
                         Text(
                           orgName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -1219,7 +1219,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                           const SizedBox(height: 2),
                           Text(
                             orgPhone,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.textSecondary,
                               fontSize: 13,
                             ),
@@ -1332,7 +1332,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   Widget _buildBottomButton(Tournament t, TournamentProvider provider) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         border: Border(
           top: BorderSide(color: Color(0xFF1A1A1A), width: 0.5),
@@ -1483,7 +1483,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               onPressed: () => _onCancel(t.id),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppTheme.error,
-                side: const BorderSide(color: AppTheme.error, width: 1),
+                side: BorderSide(color: AppTheme.error, width: 1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
               child: const Row(
@@ -1529,7 +1529,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               onPressed: () => _onCancel(t.id),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppTheme.error,
-                side: const BorderSide(color: AppTheme.error, width: 1),
+                side: BorderSide(color: AppTheme.error, width: 1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
               child: Row(
@@ -1554,7 +1554,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           onPressed: () => _onCancel(t.id),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppTheme.error,
-            side: const BorderSide(color: AppTheme.error, width: 1),
+            side: BorderSide(color: AppTheme.error, width: 1),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
           child: Row(
@@ -1653,11 +1653,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
+              Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
               const SizedBox(width: 6),
               Text(
                 AppLocalizations.of(context)!.noSpotsLeft,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -1686,7 +1686,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -1739,15 +1739,15 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Все места заняты', style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text('Все места заняты', style: TextStyle(color: AppTheme.textPrimary)),
         content: Text(
           'Встать в лист ожидания? Если кто-то отменит запись — вас автоматически переведут на турнир.$posText',
-          style: const TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Нет', style: TextStyle(color: AppTheme.textSecondary)),
+            child: Text('Нет', style: TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -1764,11 +1764,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Отменить заявку?', style: TextStyle(color: AppTheme.textPrimary)),
-        content: const Text('Вы уверены, что хотите отозвать заявку на турнир?', style: TextStyle(color: AppTheme.textSecondary)),
+        title: Text('Отменить заявку?', style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text('Вы уверены, что хотите отозвать заявку на турнир?', style: TextStyle(color: AppTheme.textSecondary)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Нет', style: TextStyle(color: AppTheme.textSecondary))),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Да, отменить', style: TextStyle(color: AppTheme.error))),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Нет', style: TextStyle(color: AppTheme.textSecondary))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Да, отменить', style: TextStyle(color: AppTheme.error))),
         ],
       ),
     );
@@ -1855,7 +1855,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   Widget _buildTeamBottomButton(Tournament t, TournamentProvider provider) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         border: Border(
           top: BorderSide(color: Color(0xFF1A1A1A), width: 0.5),
@@ -1943,7 +1943,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         onPressed: () => _onCancelTeam(t.id),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppTheme.error,
-          side: const BorderSide(color: AppTheme.error, width: 1),
+          side: BorderSide(color: AppTheme.error, width: 1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
         child: Row(
@@ -2042,11 +2042,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
+              Icon(Icons.block, color: AppTheme.textSecondary, size: 18),
               const SizedBox(width: 6),
               Text(
                 AppLocalizations.of(context)!.noSpotsLeft,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -2089,11 +2089,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Отменить заявку?', style: TextStyle(color: AppTheme.textPrimary)),
-        content: const Text('Вы уверены, что хотите отозвать заявку команды на турнир?', style: TextStyle(color: AppTheme.textSecondary)),
+        title: Text('Отменить заявку?', style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text('Вы уверены, что хотите отозвать заявку команды на турнир?', style: TextStyle(color: AppTheme.textSecondary)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Нет', style: TextStyle(color: AppTheme.textSecondary))),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Да, отменить', style: TextStyle(color: AppTheme.error))),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Нет', style: TextStyle(color: AppTheme.textSecondary))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Да, отменить', style: TextStyle(color: AppTheme.error))),
         ],
       ),
     );
@@ -2135,7 +2135,7 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
         children: [
           Text(
             AppLocalizations.of(context)!.tournamentDescription,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -2153,7 +2153,7 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
                 final tp = TextPainter(
                   text: TextSpan(
                     text: widget.text,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       height: 1.4,
@@ -2179,7 +2179,7 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
                       overflow: _expanded
                           ? TextOverflow.visible
                           : TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
                         height: 1.4,

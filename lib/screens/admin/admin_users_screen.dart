@@ -188,7 +188,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Пользователи',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -198,7 +198,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 ),
                 Text(
                   widget.clubName,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -211,7 +211,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               padding: const EdgeInsets.only(left: 8),
               child: Text(
                 '$_total',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary, fontSize: 12),
               ),
             ),
@@ -226,12 +226,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       child: TextField(
         controller: _searchCtrl,
         onChanged: _onSearchChanged,
-        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+        style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'Имя или ID',
-          hintStyle: const TextStyle(color: AppTheme.textDim),
+          hintStyle: TextStyle(color: AppTheme.textDim),
           prefixIcon:
-              const Icon(Icons.search, color: AppTheme.textSecondary),
+              Icon(Icons.search, color: AppTheme.textSecondary),
           filled: true,
           fillColor: AppTheme.card,
           contentPadding:
@@ -321,12 +321,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
+              Icon(Icons.error_outline,
                   color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_error!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textSecondary)),
+                  style: TextStyle(color: AppTheme.textSecondary)),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _load,
@@ -339,7 +339,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       );
     }
     if (_users.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('Никого не нашли',
             style: TextStyle(color: AppTheme.textSecondary)),
       );
@@ -402,7 +402,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         children: [
                           Flexible(
                             child: Text(u.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                     color: AppTheme.textPrimary,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600),
@@ -422,7 +422,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                           if (u.level != null) 'L${_fmtLevel(u.level!)}',
                           'Рейтинг ${u.rating}',
                         ].join(' · '),
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textSecondary, fontSize: 12),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -430,7 +430,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right,
+                Icon(Icons.chevron_right,
                     color: AppTheme.textDim, size: 20),
               ],
             ),
@@ -450,7 +450,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       ),
       alignment: Alignment.center,
       child: Text(initials,
-          style: const TextStyle(
+          style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 13,
               fontWeight: FontWeight.w700)),
@@ -617,7 +617,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Редактировать игрока',
                 style: TextStyle(
                   color: AppTheme.textPrimary,
@@ -628,11 +628,11 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               const SizedBox(height: 4),
               Text(
                 'ID ${widget.initial.id}',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary, fontSize: 12),
               ),
               const SizedBox(height: 16),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(bottom: 4),
                 child: Text('Имя',
                     style: TextStyle(
@@ -640,7 +640,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               ),
               TextField(
                 controller: _name,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary, fontSize: 14),
                 decoration: InputDecoration(
                   filled: true,
@@ -654,7 +654,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(bottom: 4),
                 child: Text('Уровень',
                     style: TextStyle(
@@ -671,7 +671,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   children: [
                     IconButton(
                       onPressed: () => _stepLevel(-0.25),
-                      icon: const Icon(Icons.remove,
+                      icon: Icon(Icons.remove,
                           color: AppTheme.textPrimary),
                     ),
                     Expanded(
@@ -680,7 +680,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                             ? _level!.toStringAsFixed(2)
                             : '—',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.w700),
@@ -688,7 +688,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                     ),
                     IconButton(
                       onPressed: () => _stepLevel(0.25),
-                      icon: const Icon(Icons.add,
+                      icon: Icon(Icons.add,
                           color: AppTheme.textPrimary),
                     ),
                   ],
@@ -697,7 +697,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               const SizedBox(height: 6),
               Text(
                 'Рейтинг пересчитается автоматически (level × 1000 + 125).',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textDim, fontSize: 11),
               ),
               const SizedBox(height: 12),
@@ -743,7 +743,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               if (_error != null) ...[
                 const SizedBox(height: 10),
                 Text(_error!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.error, fontSize: 12)),
               ],
               const SizedBox(height: 16),
@@ -755,12 +755,12 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                           ? null
                           : () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppTheme.cardRaised),
+                        side: BorderSide(color: AppTheme.cardRaised),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Отмена',
+                      child: Text('Отмена',
                           style:
                               TextStyle(color: AppTheme.textSecondary)),
                     ),

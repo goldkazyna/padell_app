@@ -30,7 +30,7 @@ class TournamentLiveScreen extends StatefulWidget {
 
 enum _LiveTab { rounds, table }
 
-const _hdrStyle = TextStyle(
+final _hdrStyle = TextStyle(
   color: AppTheme.textDim,
   fontSize: 10,
   fontWeight: FontWeight.w700,
@@ -119,12 +119,12 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
+              Icon(Icons.error_outline,
                   color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_error!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textPrimary)),
+                  style: TextStyle(color: AppTheme.textPrimary)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _load,
@@ -186,7 +186,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: Row(
             children: [
@@ -257,19 +257,19 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                     borderRadius: BorderRadius.circular(9),
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.emoji_events_rounded,
+                  child: Icon(Icons.emoji_events_rounded,
                       color: AppTheme.amber, size: 18),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(title,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 15,
                           fontWeight: FontWeight.w800)),
                 ),
                 Text('$played / $total',
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w700)),
@@ -328,7 +328,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               ),
               const SizedBox(width: 8),
               Text(label,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -336,7 +336,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               if (sub != null) ...[
                 const SizedBox(width: 6),
                 Text('· $sub',
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textDim,
                         fontSize: 11,
                         fontWeight: FontWeight.w500)),
@@ -558,7 +558,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           const SizedBox(height: 14),
           Text(
             t['name'] as String? ?? '',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -571,10 +571,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             children: [
               Text(
                 t['club_name'] as String? ?? '',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary, fontSize: 13),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6),
                 child: Text('·',
                     style: TextStyle(
@@ -582,7 +582,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               ),
               Text(
                 t['format_name'] as String? ?? '',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.purple,
                     fontSize: 13,
                     fontWeight: FontWeight.w600),
@@ -661,7 +661,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
             child: Row(
-              children: const [
+              children: [
                 Icon(Icons.emoji_events_outlined,
                     color: AppTheme.amber, size: 16),
                 SizedBox(width: 8),
@@ -757,7 +757,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       // чтобы при переносе имени на 2 строки остальные ячейки тоже были подсвечены.
       decoration: BoxDecoration(
         color: isMe ? AppTheme.accent.withAlpha(20) : null,
-        border: const Border(
+        border: Border(
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
       ),
@@ -824,13 +824,13 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 fontWeight: FontWeight.w700))),
         // П
         cell(Text('${p['losses']}',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
         // З
         cell(Text('$draws',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
@@ -849,14 +849,14 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         )),
         // % (забитых мячей от всех мячей)
         cell(Text('$ballPercent',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600))),
         // Очки
         cell(Text(
           '${p['total_points']}',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textPrimary,
             fontSize: 14,
             fontWeight: FontWeight.w800,
@@ -883,7 +883,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
             child: Row(
-              children: const [
+              children: [
                 Icon(Icons.emoji_events_outlined,
                     color: AppTheme.amber, size: 16),
                 SizedBox(width: 8),
@@ -992,7 +992,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     return TableRow(
       decoration: BoxDecoration(
         color: isMe ? AppTheme.accent.withAlpha(20) : null,
-        border: const Border(
+        border: Border(
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
       ),
@@ -1066,7 +1066,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 fontWeight: FontWeight.w700))),
         // З (забитые мячи)
         cell(Text('$pointsFor',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
@@ -1074,7 +1074,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         cell(
           Text(
             '$pointsAgainst',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -1183,7 +1183,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 children: [
                   Text(
                     'Раунд ${round['round_number']}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -1192,7 +1192,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                   const SizedBox(width: 10),
                   Text(
                     '$completedCount / ${matches.length} матчей',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textDim,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -1206,12 +1206,12 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       pulse: true,
                     )
                   else if (allCompleted)
-                    const _RoundStatusPill(
+                    _RoundStatusPill(
                       text: 'завершён',
                       color: AppTheme.textDim,
                     )
                   else
-                    const _RoundStatusPill(
+                    _RoundStatusPill(
                       text: 'ожидание',
                       color: AppTheme.amber,
                     ),
@@ -1219,7 +1219,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                   AnimatedRotation(
                     turns: expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 180),
-                    child: const Icon(
+                    child: Icon(
                       Icons.keyboard_arrow_down,
                       color: AppTheme.textSecondary,
                       size: 22,
@@ -1242,7 +1242,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   // Блок «Отдыхают» — игроки, пропускающие раунд (Americano Flex).
   Widget _buildByes(List<Map<String, dynamic>> byes) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(top: BorderSide(color: AppTheme.divider, width: 0.5)),
       ),
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
@@ -1250,7 +1250,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
+            children: [
               Icon(Icons.bedtime_outlined, color: AppTheme.amber, size: 15),
               SizedBox(width: 6),
               Text(
@@ -1284,7 +1284,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                     ),
                     child: Text(
                       b['name'] as String? ?? '—',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -1315,7 +1315,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     return Container(
       decoration: BoxDecoration(
         color: hasMe ? AppTheme.accent.withAlpha(20) : null,
-        border: const Border(
+        border: Border(
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
       ),
@@ -1341,7 +1341,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       ),
                       child: Text(
                         'Корт $court',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 11,
                             fontWeight: FontWeight.w600),
@@ -1652,11 +1652,11 @@ class _DatePill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.event_rounded, color: AppTheme.amber, size: 14),
+          Icon(Icons.event_rounded, color: AppTheme.amber, size: 14),
           const SizedBox(width: 6),
           Text(
             date.isEmpty ? 'Завершён' : date,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.amber,
               fontSize: 13,
               fontWeight: FontWeight.w700,

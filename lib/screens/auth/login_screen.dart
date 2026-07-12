@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/secure_payment_badge.dart';
 import 'telegram_waiting_screen.dart';
 import 'email_login_screen.dart';
-import 'legal_document_screen.dart';
 import 'verify_code_screen.dart';
 import 'phone_login_screen.dart';
 
@@ -79,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
+        title: Text(
           'Введите код',
           style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
         ),
@@ -88,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
           obscureText: true,
           keyboardType: TextInputType.number,
           autofocus: true,
-          style: const TextStyle(color: AppTheme.textPrimary),
+          style: TextStyle(color: AppTheme.textPrimary),
           decoration: InputDecoration(
             hintText: '••••••••',
             hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
@@ -103,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Отмена',
               style: TextStyle(color: AppTheme.textSecondary),
             ),
@@ -189,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
+        title: Text(
           'Ошибка',
           style: TextStyle(
             color: AppTheme.error,
@@ -199,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         content: Text(
           message,
-          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         ),
         actions: [
           TextButton(
@@ -239,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        content: const Text(
+        content: Text(
           'Этот способ входа скоро будет доступен',
           style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         ),
@@ -256,28 +257,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _openTerms() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LegalDocumentScreen(
-          title: AppLocalizations.of(context)!.termsOfService,
-          assetPath: 'assets/legal/terms.html',
-        ),
-      ),
-    );
-  }
-
-  void _openConsent() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LegalDocumentScreen(
-          title: AppLocalizations.of(context)!.consentToProcessing,
-          assetPath: 'assets/legal/consent.html',
-        ),
-      ),
-    );
+  Future<void> _openDoc(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   @override
@@ -323,7 +307,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       border: Border.all(color: const Color(0x14FFFFFF)),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back, size: 20, color: AppTheme.textPrimary),
+                      icon: Icon(Icons.arrow_back, size: 20, color: AppTheme.textPrimary),
                       onPressed: () => Navigator.maybePop(context),
                       padding: EdgeInsets.zero,
                     ),
@@ -335,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: _onSecretTap,
-                    child: const Text(
+                    child: Text(
                       'Вход',
                       style: TextStyle(
                         color: AppTheme.textPrimary,
@@ -346,7 +330,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Выберите удобный способ',
                     style: TextStyle(
                       color: AppTheme.textSecondary,
@@ -407,7 +391,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Row(
                       children: [
                         Expanded(child: Container(height: 1, color: const Color(0x14FFFFFF))),
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
                             'или',
@@ -458,10 +442,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: _ConsentText(
-                          onTerms: _openTerms,
-                          onConsent: _openConsent,
-                        ),
+                        child: _ConsentText(onOpenDoc: _openDoc),
                       ),
                     ],
                   ),
@@ -471,14 +452,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.only(left: 28, top: 6),
                       child: Text(
                         AppLocalizations.of(context)!.authAcceptHint,
-                        style: const TextStyle(color: AppTheme.error, fontSize: 11),
+                        style: TextStyle(color: AppTheme.error, fontSize: 11),
                       ),
                     ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
+
+                  // Значки платёжных систем (VISA / Mastercard / Apple Pay)
+                  const SecurePaymentBadge(),
+
+                  const SizedBox(height: 14),
 
                   // Footer
-                  const Center(
+                  Center(
                     child: Opacity(
                       opacity: 0.6,
                       child: Text(
@@ -577,7 +563,7 @@ class _ProviderButton extends StatelessWidget {
                 ),
               ),
               if (loading)
-                const SizedBox(
+                SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
@@ -625,7 +611,7 @@ class _EmailButton extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 AppLocalizations.of(context)!.loginViaEmail,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -639,60 +625,84 @@ class _EmailButton extends StatelessWidget {
   }
 }
 
+// URL-адреса юридических документов PADEL KZ (общие для приложения).
+const _kLegalOfferUrl = 'https://padel-p.kz/legal/offer_agreement.pdf';
+const _kLegalPrivacyUrl = 'https://padel-p.kz/legal/privacy_policy.pdf';
+const _kLegalGoodsUrl = 'https://padel-p.kz/legal/goods_description.pdf';
+const _kLegalCardUrl = 'https://padel-p.kz/legal/card_payment.pdf';
+
 class _ConsentText extends StatefulWidget {
-  final VoidCallback onTerms;
-  final VoidCallback onConsent;
-  const _ConsentText({required this.onTerms, required this.onConsent});
+  final void Function(String url) onOpenDoc;
+  const _ConsentText({required this.onOpenDoc});
 
   @override
   State<_ConsentText> createState() => _ConsentTextState();
 }
 
 class _ConsentTextState extends State<_ConsentText> {
-  late final TapGestureRecognizer _termsTap;
-  late final TapGestureRecognizer _consentTap;
+  late final TapGestureRecognizer _offerTap;
+  late final TapGestureRecognizer _privacyTap;
+  late final TapGestureRecognizer _goodsTap;
+  late final TapGestureRecognizer _cardTap;
 
   @override
   void initState() {
     super.initState();
-    _termsTap = TapGestureRecognizer()..onTap = widget.onTerms;
-    _consentTap = TapGestureRecognizer()..onTap = widget.onConsent;
+    _offerTap = TapGestureRecognizer()
+      ..onTap = () => widget.onOpenDoc(_kLegalOfferUrl);
+    _privacyTap = TapGestureRecognizer()
+      ..onTap = () => widget.onOpenDoc(_kLegalPrivacyUrl);
+    _goodsTap = TapGestureRecognizer()
+      ..onTap = () => widget.onOpenDoc(_kLegalGoodsUrl);
+    _cardTap = TapGestureRecognizer()
+      ..onTap = () => widget.onOpenDoc(_kLegalCardUrl);
   }
 
   @override
   void dispose() {
-    _termsTap.dispose();
-    _consentTap.dispose();
+    _offerTap.dispose();
+    _privacyTap.dispose();
+    _goodsTap.dispose();
+    _cardTap.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    const linkStyle = TextStyle(
+    final l10n = AppLocalizations.of(context)!;
+    final linkStyle = TextStyle(
       color: AppTheme.accent,
       decoration: TextDecoration.underline,
       decorationColor: AppTheme.accent,
     );
     return RichText(
       text: TextSpan(
-        style: const TextStyle(
+        style: TextStyle(
           color: AppTheme.textSecondary,
           fontSize: 11,
           height: 1.5,
         ),
         children: [
-          const TextSpan(text: 'Продолжая, я принимаю '),
+          TextSpan(text: l10n.agreeWithDocsPrefix),
           TextSpan(
-            text: 'Пользовательское соглашение',
-            style: linkStyle,
-            recognizer: _termsTap,
-          ),
-          const TextSpan(text: ' и '),
+              text: l10n.docOfferAgreement,
+              style: linkStyle,
+              recognizer: _offerTap),
+          const TextSpan(text: ', '),
           TextSpan(
-            text: 'согласие на обработку данных',
-            style: linkStyle,
-            recognizer: _consentTap,
-          ),
+              text: l10n.docPrivacyPolicy,
+              style: linkStyle,
+              recognizer: _privacyTap),
+          const TextSpan(text: ', '),
+          TextSpan(
+              text: l10n.docGoodsDescription,
+              style: linkStyle,
+              recognizer: _goodsTap),
+          const TextSpan(text: ', '),
+          TextSpan(
+              text: l10n.docCardPayment,
+              style: linkStyle,
+              recognizer: _cardTap),
         ],
       ),
     );
@@ -797,7 +807,7 @@ class _SecretPhoneForm extends StatelessWidget {
           TextFormField(
             controller: controller,
             keyboardType: TextInputType.phone,
-            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+            style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(10),
@@ -805,7 +815,7 @@ class _SecretPhoneForm extends StatelessWidget {
             ],
             decoration: InputDecoration(
               prefixText: '+7  ',
-              prefixStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+              prefixStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 16),
               hintText: '(000) 000-00-00',
               hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
               filled: true,
@@ -833,7 +843,7 @@ class _SecretPhoneForm extends StatelessWidget {
               if (auth.error == null) return const SizedBox.shrink();
               return Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(auth.error!, style: const TextStyle(color: AppTheme.error, fontSize: 13)),
+                child: Text(auth.error!, style: TextStyle(color: AppTheme.error, fontSize: 13)),
               );
             },
           ),

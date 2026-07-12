@@ -39,12 +39,12 @@ class VerificationBlockersBanner extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline, color: AppTheme.amber, size: 18),
+              Icon(Icons.info_outline, color: AppTheme.amber, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l.verificationNotConfirmedTitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.amber,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -128,7 +128,7 @@ class _BlockerRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -137,7 +137,7 @@ class _BlockerRow extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       desc,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 12,
                         height: 1.3,
@@ -146,7 +146,7 @@ class _BlockerRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded,
+              Icon(Icons.chevron_right_rounded,
                   color: AppTheme.amber, size: 18),
             ],
           ),

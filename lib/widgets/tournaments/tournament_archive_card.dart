@@ -70,7 +70,7 @@ class TournamentArchiveCard extends StatelessWidget {
               children: [
                 Text(
                   day,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class TournamentArchiveCard extends StatelessWidget {
                 ),
                 Text(
                   month,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 12,
                   ),
@@ -94,7 +94,7 @@ class TournamentArchiveCard extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -119,7 +119,7 @@ class TournamentArchiveCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   club,
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                 ),
                 const SizedBox(height: 10),
 
@@ -138,7 +138,7 @@ class TournamentArchiveCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             place,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.textPrimary,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -158,7 +158,7 @@ class TournamentArchiveCard extends StatelessWidget {
                         ),
                         child: Text(
                           l10n.unratedBadge,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.orange,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,

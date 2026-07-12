@@ -69,7 +69,7 @@ class _NotificationBellState extends State<NotificationBell> with WidgetsBinding
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppTheme.border),
             ),
-            child: const Icon(Icons.notifications_outlined, size: 18, color: AppTheme.textPrimary),
+            child: Icon(Icons.notifications_outlined, size: 18, color: AppTheme.textPrimary),
           ),
           if (_unreadCount > 0)
             Positioned(

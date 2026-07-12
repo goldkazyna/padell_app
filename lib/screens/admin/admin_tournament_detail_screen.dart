@@ -228,7 +228,9 @@ class _AdminTournamentDetailScreenState
             hasPlayoff: t.type == 'team' ? _teamHasPlayoff : null,
             hasLowerBracket: t.type == 'team' ? _teamHasLowerBracket : null,
             hasBronzeMatch: t.type == 'team' ? _teamHasBronzeMatch : null,
-            courtsCount: t.type == 'team' && _teamCourts.text.trim().isNotEmpty
+            courtsCount: (t.type == 'team' ||
+                        (t.type == 'just_padel_it' && !t.isPaired)) &&
+                    _teamCourts.text.trim().isNotEmpty
                 ? int.tryParse(_teamCourts.text.trim())
                 : null,
           );
@@ -297,14 +299,14 @@ class _AdminTournamentDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600)),
                 if (subtitle != null) ...[
                   const SizedBox(height: 2),
                   Text(subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textDim, fontSize: 11)),
                 ],
               ],
@@ -597,17 +599,17 @@ class _AdminTournamentDetailScreenState
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         title: Text(title,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w700)),
         content: Text(message,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary, fontSize: 14, height: 1.4)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Отмена',
+            child: Text('Отмена',
                 style: TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
@@ -638,7 +640,7 @@ class _AdminTournamentDetailScreenState
       lastDate: lastDate,
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             onPrimary: Colors.white,
             surface: AppTheme.card,
@@ -655,7 +657,7 @@ class _AdminTournamentDetailScreenState
       initialTime: TimeOfDay.fromDateTime(initial),
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             onPrimary: Colors.white,
             surface: AppTheme.card,
@@ -744,7 +746,7 @@ class _AdminTournamentDetailScreenState
                   if ((_actionLabel ?? '').isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Text(_actionLabel!,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textPrimary, fontSize: 13)),
                   ],
                 ],
@@ -768,7 +770,7 @@ class _AdminTournamentDetailScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Управление турниром',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -778,7 +780,7 @@ class _AdminTournamentDetailScreenState
                 ),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -787,7 +789,7 @@ class _AdminTournamentDetailScreenState
             ),
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: AppTheme.textPrimary),
+            icon: Icon(Icons.more_vert, color: AppTheme.textPrimary),
             color: AppTheme.card,
             onSelected: (value) {
               if (value == 'start') {
@@ -830,7 +832,7 @@ class _AdminTournamentDetailScreenState
               if (_t?.status == 'open' || _t?.status == 'in_progress') {
                 items.add(PopupMenuItem<String>(
                   value: 'cancel',
-                  child: const Text('Остановить турнир',
+                  child: Text('Остановить турнир',
                       style: TextStyle(color: AppTheme.error)),
                 ));
               }
@@ -924,13 +926,13 @@ class _AdminTournamentDetailScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline,
+            Icon(Icons.error_outline,
                 color: AppTheme.error, size: 48),
             const SizedBox(height: 12),
             Text(_error ?? '',
                 textAlign: TextAlign.center,
                 style:
-                    const TextStyle(color: AppTheme.textSecondary)),
+                    TextStyle(color: AppTheme.textSecondary)),
             const SizedBox(height: 16),
             TextButton(
               onPressed: _load,
@@ -950,18 +952,18 @@ class _AdminTournamentDetailScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.construction_outlined,
+            Icon(Icons.construction_outlined,
                 color: AppTheme.textDim, size: 56),
             const SizedBox(height: 12),
             Text(title,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
             Text(subtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,
                     height: 1.4)),
@@ -1060,7 +1062,7 @@ class _AdminTournamentDetailScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Часов',
+                        Text('Часов',
                             style: TextStyle(color: AppTheme.textDim, fontSize: 11)),
                         const SizedBox(height: 4),
                         _textField(_moderationHours,
@@ -1075,7 +1077,7 @@ class _AdminTournamentDetailScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Минут (для отладки)',
+                        Text('Минут (для отладки)',
                             style: TextStyle(color: AppTheme.textDim, fontSize: 11)),
                         const SizedBox(height: 4),
                         _textField(_moderationMinutes,
@@ -1088,7 +1090,7 @@ class _AdminTournamentDetailScreenState
                 ],
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Меняет только новые заявки — у уже поданных дедлайн остаётся прежним.',
                 style: TextStyle(color: AppTheme.textDim, fontSize: 11),
               ),
@@ -1105,7 +1107,7 @@ class _AdminTournamentDetailScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Только для верифицированных',
+                          Text('Только для верифицированных',
                               style: TextStyle(
                                   color: AppTheme.textPrimary,
                                   fontSize: 14,
@@ -1115,7 +1117,7 @@ class _AdminTournamentDetailScreenState
                             _verifiedOnly
                                 ? 'Заявки только от верифицированных игроков'
                                 : 'Заявки от любых игроков',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: AppTheme.textDim, fontSize: 11),
                           ),
                         ],
@@ -1145,7 +1147,7 @@ class _AdminTournamentDetailScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Открыта регистрация',
+                          Text('Открыта регистрация',
                               style: TextStyle(
                                   color: AppTheme.textPrimary,
                                   fontSize: 14,
@@ -1155,7 +1157,7 @@ class _AdminTournamentDetailScreenState
                             _status == 'open'
                                 ? 'Турнир виден игрокам, идёт онлайн-запись'
                                 : 'Черновик — игроки не видят турнир',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: AppTheme.textDim, fontSize: 11),
                           ),
                         ],
@@ -1172,6 +1174,39 @@ class _AdminTournamentDetailScreenState
                   ],
                 ),
               ),
+              // Количество кортов — для solo Just Padel It.
+              if (_isJpiSolo) ...[
+                const SizedBox(height: 12),
+                Text('Количество кортов',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _teamCourts,
+                  enabled: !disabled,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(color: AppTheme.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: 'напр. 3 (кортов × 4 = игроков)',
+                    hintStyle: TextStyle(color: AppTheme.textDim),
+                    filled: true,
+                    fillColor: AppTheme.cardRaised,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Для посева игроков должно быть ровно кортов × 4.',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                ),
+              ],
               // Кто собирает пары — только для командного турнира.
               if (_t?.type == 'team') ...[
                 const SizedBox(height: 12),
@@ -1184,7 +1219,7 @@ class _AdminTournamentDetailScreenState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Кто собирает пары',
+                      Text('Кто собирает пары',
                           style: TextStyle(
                               color: AppTheme.textPrimary,
                               fontSize: 14,
@@ -1202,14 +1237,14 @@ class _AdminTournamentDetailScreenState
                         _pairingMode == 'admin'
                             ? 'Игроки записываются по одному, пары собираете вы перед стартом.'
                             : 'Пары регистрируются сами (через поиск партнёра).',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textDim, fontSize: 11),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text('Количество кортов',
+                Text('Количество кортов',
                     style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
@@ -1219,10 +1254,10 @@ class _AdminTournamentDetailScreenState
                   controller: _teamCourts,
                   enabled: !disabled,
                   keyboardType: TextInputType.number,
-                  style: const TextStyle(color: AppTheme.textPrimary),
+                  style: TextStyle(color: AppTheme.textPrimary),
                   decoration: InputDecoration(
                     hintText: 'оставьте пустым для авто',
-                    hintStyle: const TextStyle(color: AppTheme.textDim),
+                    hintStyle: TextStyle(color: AppTheme.textDim),
                     filled: true,
                     fillColor: AppTheme.cardRaised,
                     border: OutlineInputBorder(
@@ -1234,7 +1269,7 @@ class _AdminTournamentDetailScreenState
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Пусто — авто. Иначе матчи группы идут волнами, не более N '
                   'одновременно.',
                   style: TextStyle(color: AppTheme.textDim, fontSize: 11),
@@ -1321,7 +1356,7 @@ class _AdminTournamentDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(t.statusName,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700)),
@@ -1330,7 +1365,7 @@ class _AdminTournamentDetailScreenState
                   t.startDate != null
                       ? _fmtDateTime(t.startDate!)
                       : 'Дата не задана',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 12),
                 ),
               ],
@@ -1354,12 +1389,12 @@ class _AdminTournamentDetailScreenState
       ),
       child: Row(
         children: [
-          const Icon(Icons.lock_outline, color: AppTheme.amber, size: 18),
+          Icon(Icons.lock_outline, color: AppTheme.amber, size: 18),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary, fontSize: 12, height: 1.4),
             ),
           ),
@@ -1382,7 +1417,7 @@ class _AdminTournamentDetailScreenState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(title,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w700)),
@@ -1396,7 +1431,7 @@ class _AdminTournamentDetailScreenState
   Widget _label(String text) => Padding(
         padding: const EdgeInsets.only(bottom: 6),
         child: Text(text,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600)),
@@ -1416,11 +1451,11 @@ class _AdminTournamentDetailScreenState
       maxLines: maxLines,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
-      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+      style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle:
-            const TextStyle(color: AppTheme.textDim, fontSize: 13),
+            TextStyle(color: AppTheme.textDim, fontSize: 13),
         filled: true,
         fillColor: AppTheme.cardRaised,
         contentPadding:
@@ -1457,7 +1492,7 @@ class _AdminTournamentDetailScreenState
         ),
         child: Row(
           children: [
-            const Icon(Icons.event_outlined,
+            Icon(Icons.event_outlined,
                 color: AppTheme.textSecondary, size: 18),
             const SizedBox(width: 10),
             Expanded(
@@ -1468,7 +1503,7 @@ class _AdminTournamentDetailScreenState
                           : AppTheme.textDim,
                       fontSize: 14)),
             ),
-            const Icon(Icons.chevron_right,
+            Icon(Icons.chevron_right,
                 color: AppTheme.textDim, size: 18),
           ],
         ),
@@ -1481,7 +1516,7 @@ class _AdminTournamentDetailScreenState
       children: [
         Row(
           children: [
-            const SizedBox(
+            SizedBox(
               width: 64,
               child: Text('Мин',
                   style: TextStyle(
@@ -1509,7 +1544,7 @@ class _AdminTournamentDetailScreenState
               child: Text(
                 _minLevel.toStringAsFixed(2),
                 textAlign: TextAlign.right,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary, fontSize: 13),
               ),
             ),
@@ -1517,7 +1552,7 @@ class _AdminTournamentDetailScreenState
         ),
         Row(
           children: [
-            const SizedBox(
+            SizedBox(
               width: 64,
               child: Text('Макс',
                   style: TextStyle(
@@ -1545,7 +1580,7 @@ class _AdminTournamentDetailScreenState
               child: Text(
                 _maxLevel.toStringAsFixed(2),
                 textAlign: TextAlign.right,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary, fontSize: 13),
               ),
             ),
@@ -1564,12 +1599,12 @@ class _AdminTournamentDetailScreenState
           SizedBox(
             width: 110,
             child: Text(label,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary, fontSize: 13)),
           ),
           Expanded(
             child: Text(value,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary, fontSize: 13)),
           ),
         ],
@@ -1768,11 +1803,11 @@ class _AdminTournamentDetailScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
+              Icon(Icons.error_outline, color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_invitationsError!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textSecondary)),
+                  style: TextStyle(color: AppTheme.textSecondary)),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _loadInvitations,
@@ -1806,13 +1841,13 @@ class _AdminTournamentDetailScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Приглашено: ${list.length} / $maxInvites',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 15,
                             fontWeight: FontWeight.w700)),
                     if (atLimit && (_t?.type != 'team' || (_t?.isAdminPairing ?? false))) ...[
                       const SizedBox(height: 2),
-                      const Text('Лимит приглашений достигнут',
+                      Text('Лимит приглашений достигнут',
                           style: TextStyle(
                               color: AppTheme.amber, fontSize: 12)),
                     ],
@@ -1838,7 +1873,7 @@ class _AdminTournamentDetailScreenState
           ),
           const SizedBox(height: 14),
           if (list.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 48),
               child: Center(
                 child: Text('Пока никого не пригласили',
@@ -1878,7 +1913,7 @@ class _AdminTournamentDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(p.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700)),
@@ -1901,7 +1936,7 @@ class _AdminTournamentDetailScreenState
           ),
           IconButton(
             onPressed: () => _cancelInvitation(inv),
-            icon: const Icon(Icons.close, size: 20, color: AppTheme.error),
+            icon: Icon(Icons.close, size: 20, color: AppTheme.error),
             tooltip: 'Убрать из списка',
           ),
         ],
@@ -1930,13 +1965,13 @@ class _AdminTournamentDetailScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
+              Icon(Icons.error_outline,
                   color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_participantsError!,
                   textAlign: TextAlign.center,
                   style:
-                      const TextStyle(color: AppTheme.textSecondary)),
+                      TextStyle(color: AppTheme.textSecondary)),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _loadParticipants,
@@ -2015,10 +2050,10 @@ class _AdminTournamentDetailScreenState
         children: [
           Row(
             children: [
-              const Icon(Icons.hourglass_top, color: AppTheme.blue, size: 18),
+              Icon(Icons.hourglass_top, color: AppTheme.blue, size: 18),
               const SizedBox(width: 8),
               Text('Лист ожидания: ${waiting.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700)),
@@ -2039,7 +2074,7 @@ class _AdminTournamentDetailScreenState
                       const SizedBox(width: 10),
                       Expanded(child: _nameAndMeta(p)),
                       PopupMenuButton<String>(
-                        icon: const Icon(Icons.more_vert,
+                        icon: Icon(Icons.more_vert,
                             color: AppTheme.textSecondary),
                         color: AppTheme.cardRaised,
                         onSelected: (v) {
@@ -2054,7 +2089,7 @@ class _AdminTournamentDetailScreenState
                         itemBuilder: (_) => [
                           _popupItem(
                               'profile',
-                              const Icon(Icons.person_outline,
+                              Icon(Icons.person_outline,
                                   size: 18, color: AppTheme.textSecondary),
                               'Просмотреть профиль',
                               AppTheme.textPrimary),
@@ -2074,7 +2109,7 @@ class _AdminTournamentDetailScreenState
                                 AppTheme.textPrimary),
                             _popupItem(
                                 'remove',
-                                const Icon(Icons.delete_outline,
+                                Icon(Icons.delete_outline,
                                     size: 18, color: AppTheme.error),
                                 'Удалить',
                                 AppTheme.error),
@@ -2103,11 +2138,11 @@ class _AdminTournamentDetailScreenState
         children: [
           Row(
             children: [
-              const Icon(Icons.schedule,
+              Icon(Icons.schedule,
                   color: AppTheme.amber, size: 18),
               const SizedBox(width: 8),
               Text('На модерации: ${pending.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700)),
@@ -2139,7 +2174,7 @@ class _AdminTournamentDetailScreenState
               ModerationCountdown(deadline: p.moderationDeadline!, compact: true),
             ],
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert,
+              icon: Icon(Icons.more_vert,
                   color: AppTheme.textSecondary),
               color: AppTheme.cardRaised,
               onSelected: (v) {
@@ -2153,7 +2188,7 @@ class _AdminTournamentDetailScreenState
               },
               itemBuilder: (_) => [
                 _popupItem('profile',
-                    const Icon(Icons.person_outline,
+                    Icon(Icons.person_outline,
                         size: 18, color: AppTheme.textSecondary),
                     'Просмотреть профиль', AppTheme.textPrimary),
                 ..._phoneMenuItems(p),
@@ -2162,11 +2197,11 @@ class _AdminTournamentDetailScreenState
                         size: 18, color: AppTheme.accent),
                     'Одобрить', AppTheme.accent),
                 _popupItem('waitlist',
-                    const Icon(Icons.hourglass_bottom,
+                    Icon(Icons.hourglass_bottom,
                         size: 18, color: AppTheme.blue),
                     'Переместить в лист ожидания', AppTheme.textPrimary),
                 _popupItem('reject',
-                    const Icon(Icons.cancel, size: 18, color: AppTheme.error),
+                    Icon(Icons.cancel, size: 18, color: AppTheme.error),
                     'Отклонить', AppTheme.error),
               ],
             ),
@@ -2191,7 +2226,7 @@ class _AdminTournamentDetailScreenState
           const SizedBox(width: 10),
           Expanded(child: _nameAndMeta(p)),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert,
+            icon: Icon(Icons.more_vert,
                 color: AppTheme.textSecondary),
             color: AppTheme.cardRaised,
             onSelected: (v) {
@@ -2206,14 +2241,14 @@ class _AdminTournamentDetailScreenState
             },
             itemBuilder: (_) => [
               _popupItem('profile',
-                  const Icon(Icons.person_outline,
+                  Icon(Icons.person_outline,
                       size: 18, color: AppTheme.textSecondary),
                   'Просмотреть профиль', AppTheme.textPrimary),
               ..._phoneMenuItems(p),
               // Действия изменения состава — только когда это разрешено.
               if (canModify) ...[
                 _popupItem('replace',
-                    const Icon(Icons.swap_horiz,
+                    Icon(Icons.swap_horiz,
                         size: 18, color: AppTheme.textSecondary),
                     'Заменить', AppTheme.textPrimary),
                 _popupItem('to_moderation',
@@ -2221,11 +2256,11 @@ class _AdminTournamentDetailScreenState
                         size: 18, color: AppTheme.accent),
                     'Переместить в модерацию', AppTheme.textPrimary),
                 _popupItem('waitlist',
-                    const Icon(Icons.hourglass_bottom,
+                    Icon(Icons.hourglass_bottom,
                         size: 18, color: AppTheme.blue),
                     'Переместить в лист ожидания', AppTheme.textPrimary),
                 _popupItem('remove',
-                    const Icon(Icons.delete_outline,
+                    Icon(Icons.delete_outline,
                         size: 18, color: AppTheme.error),
                     'Удалить', AppTheme.error),
               ],
@@ -2289,10 +2324,10 @@ class _AdminTournamentDetailScreenState
         children: [
           Row(
             children: [
-              const Icon(Icons.hourglass_top, color: AppTheme.blue, size: 18),
+              Icon(Icons.hourglass_top, color: AppTheme.blue, size: 18),
               const SizedBox(width: 8),
               Text('Пар в листе ожидания: ${teams.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700)),
@@ -2319,11 +2354,11 @@ class _AdminTournamentDetailScreenState
         children: [
           Row(
             children: [
-              const Icon(Icons.schedule,
+              Icon(Icons.schedule,
                   color: AppTheme.amber, size: 18),
               const SizedBox(width: 8),
               Text('Пар на модерации: ${teams.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700)),
@@ -2351,7 +2386,7 @@ class _AdminTournamentDetailScreenState
           if (t.player1 != null)
             _buildTeamPlayerRow(t.player1!, isFirst: true),
           if (t.player1 != null && t.player2 != null)
-            const Divider(color: AppTheme.divider, height: 14),
+            Divider(color: AppTheme.divider, height: 14),
           if (t.player2 != null)
             _buildTeamPlayerRow(t.player2!, isFirst: false),
           const SizedBox(height: 8),
@@ -2374,7 +2409,7 @@ class _AdminTournamentDetailScreenState
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
-                  child: const Text('Отклонить',
+                  child: Text('Отклонить',
                       style: TextStyle(
                           color: AppTheme.error,
                           fontWeight: FontWeight.w700)),
@@ -2385,7 +2420,7 @@ class _AdminTournamentDetailScreenState
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
-                  child: const Text('Удалить пару',
+                  child: Text('Удалить пару',
                       style: TextStyle(
                           color: AppTheme.error,
                           fontWeight: FontWeight.w700)),
@@ -2432,19 +2467,19 @@ class _AdminTournamentDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('$approved / $max $subtitle',
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w700)),
                 if (pending > 0) ...[
                   const SizedBox(height: 2),
                   Text('На модерации: $pending',
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.amber, fontSize: 12)),
                 ],
                 if (isFull) ...[
                   const SizedBox(height: 2),
-                  const Text('Лимит участников достигнут',
+                  Text('Лимит участников достигнут',
                       style: TextStyle(
                           color: AppTheme.error, fontSize: 12)),
                 ],
@@ -2528,7 +2563,7 @@ class _AdminTournamentDetailScreenState
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('Ошибка: $_journalError',
-                style: const TextStyle(color: AppTheme.textSecondary)),
+                style: TextStyle(color: AppTheme.textSecondary)),
             const SizedBox(height: 12),
             ElevatedButton(
                 onPressed: _loadJournal, child: const Text('Повторить')),
@@ -2649,7 +2684,7 @@ class _AdminTournamentDetailScreenState
                 const SizedBox(height: 4),
                 Text(
                   _journalTime(e.createdAt!),
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textDim, fontSize: 11),
                 ),
               ],
@@ -2687,7 +2722,7 @@ class _AdminTournamentDetailScreenState
           ? null
           : Center(
               child: Text(initials,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700)),
@@ -2709,7 +2744,7 @@ class _AdminTournamentDetailScreenState
           children: [
             Flexible(
               child: Text(p.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
@@ -2720,13 +2755,13 @@ class _AdminTournamentDetailScreenState
             if (p.levelVerified)
               const VerifiedBadge(size: 13)
             else
-              const Icon(Icons.shield_outlined,
+              Icon(Icons.shield_outlined,
                   size: 14, color: AppTheme.textDim),
           ],
         ),
         if (pieces.isNotEmpty)
           Text(pieces.join(' · '),
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textSecondary, fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis),
@@ -2739,7 +2774,7 @@ class _AdminTournamentDetailScreenState
       padding: const EdgeInsets.symmetric(vertical: 24),
       child: Center(
         child: Text(text,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary, fontSize: 13)),
       ),
     );
@@ -2776,7 +2811,7 @@ class _AdminTournamentDetailScreenState
     return [
       _popupItem(
         'copy_phone',
-        const Icon(Icons.phone_outlined, size: 18, color: AppTheme.textSecondary),
+        Icon(Icons.phone_outlined, size: 18, color: AppTheme.textSecondary),
         _formatPhone(p.phone),
         AppTheme.textSecondary),
       _popupItem(
@@ -3109,13 +3144,13 @@ class _AdminTournamentDetailScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
+              Icon(Icons.error_outline,
                   color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_matchesError!,
                   textAlign: TextAlign.center,
                   style:
-                      const TextStyle(color: AppTheme.textSecondary)),
+                      TextStyle(color: AppTheme.textSecondary)),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _loadMatches,
@@ -3155,7 +3190,7 @@ class _AdminTournamentDetailScreenState
             const SizedBox(height: 80),
             Center(
               child: Column(
-                children: const [
+                children: [
                   Icon(Icons.sports_tennis,
                       color: AppTheme.textDim, size: 48),
                   SizedBox(height: 12),
@@ -3225,7 +3260,7 @@ class _AdminTournamentDetailScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Row(
+                Row(
                   children: [
                     Icon(Icons.groups_rounded,
                         color: AppTheme.accent, size: 22),
@@ -3246,12 +3281,12 @@ class _AdminTournamentDetailScreenState
                       ? 'Зарегистрировано $participants игроков → '
                           'нужно создать $expected пар.'
                       : 'Сначала зарегистрируйте участников.',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                 ),
                 if (!ready) ...[
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Игроков должно быть минимум 8 и кратно 4.',
                     style: TextStyle(
                         color: AppTheme.amber,
@@ -3358,7 +3393,7 @@ class _AdminTournamentDetailScreenState
           Row(
             children: [
               Text('Сыграно ${s.matchesPlayed} / ${s.matchesTotal}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700)),
@@ -3598,14 +3633,14 @@ class _AdminTournamentDetailScreenState
               children: [
                 Expanded(
                   child: Text(g.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 15,
                           fontWeight: FontWeight.w700)),
                 ),
                 Text(
                   '$played / $total',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 12),
                 ),
               ],
@@ -3683,7 +3718,7 @@ class _AdminTournamentDetailScreenState
       alignment: alignment,
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppTheme.textSecondary,
           fontSize: 10,
           fontWeight: FontWeight.w700,
@@ -3711,7 +3746,7 @@ class _AdminTournamentDetailScreenState
       );
     }
 
-    const numStyle = TextStyle(
+    final numStyle = TextStyle(
         color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600);
 
     return TableRow(children: [
@@ -3735,7 +3770,7 @@ class _AdminTournamentDetailScreenState
               softWrap: true,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 13,
                   fontWeight: FontWeight.w600)),
@@ -3751,7 +3786,7 @@ class _AdminTournamentDetailScreenState
       cell(Text('${p.pointsFor}', style: numStyle)),
       cell(
         Text('${p.pointsAgainst}',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600)),
@@ -3789,7 +3824,7 @@ class _AdminTournamentDetailScreenState
   }
 
   TableRow _leaderboardHeaderRow() {
-    const hdrStyle = TextStyle(
+    final hdrStyle = TextStyle(
       color: AppTheme.textSecondary,
       fontSize: 10,
       fontWeight: FontWeight.w700,
@@ -3873,7 +3908,7 @@ class _AdminTournamentDetailScreenState
               softWrap: true,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -3892,10 +3927,10 @@ class _AdminTournamentDetailScreenState
                 fontSize: 12,
                 fontWeight: FontWeight.w700))),
         cell(Text('${p.pointsFor}:${p.pointsAgainst}',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary, fontSize: 11))),
         cell(Text('${p.winPercent}%',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 11,
                 fontWeight: FontWeight.w600))),
@@ -3943,7 +3978,7 @@ class _AdminTournamentDetailScreenState
   }
 
   TableRow _roundRobinHeaderRow() {
-    const hdrStyle = TextStyle(
+    final hdrStyle = TextStyle(
       color: AppTheme.textSecondary,
       fontSize: 10,
       fontWeight: FontWeight.w700,
@@ -4011,7 +4046,7 @@ class _AdminTournamentDetailScreenState
         ? const Color(0xFF22C55E)
         : (diff < 0 ? const Color(0xFFEF4444) : AppTheme.textSecondary);
 
-    const statSecondary = TextStyle(
+    final statSecondary = TextStyle(
         color: AppTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600);
 
     return TableRow(
@@ -4034,7 +4069,7 @@ class _AdminTournamentDetailScreenState
               softWrap: true,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -4086,7 +4121,7 @@ class _AdminTournamentDetailScreenState
       child: Row(
         children: [
           Text('Раунд ${round.roundNumber}',
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 13,
                   fontWeight: FontWeight.w700)),
@@ -4218,7 +4253,7 @@ class _AdminTournamentDetailScreenState
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text('Корт ${m.courtNumber}',
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textDim, fontSize: 11)),
                 ),
               _matchTeamRow(m.team1, isWinner: m.winner == 1, isCompleted: m.isCompleted),
@@ -4282,7 +4317,7 @@ class _AdminTournamentDetailScreenState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
-          children: const [
+          children: [
             Icon(Icons.emoji_events_outlined,
                 color: AppTheme.amber, size: 18),
             SizedBox(width: 8),
@@ -4345,19 +4380,19 @@ class _AdminTournamentDetailScreenState
                   borderRadius: BorderRadius.circular(9),
                 ),
                 alignment: Alignment.center,
-                child: const Icon(Icons.emoji_events_rounded,
+                child: Icon(Icons.emoji_events_rounded,
                     color: AppTheme.amber, size: 17),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(title,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w800)),
               ),
               Text('$played / $total',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w700)),
@@ -4405,7 +4440,7 @@ class _AdminTournamentDetailScreenState
               ),
               const SizedBox(width: 8),
               Text(label,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -4413,7 +4448,7 @@ class _AdminTournamentDetailScreenState
               if (sub != null) ...[
                 const SizedBox(width: 6),
                 Text('· $sub',
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textDim,
                         fontSize: 11,
                         fontWeight: FontWeight.w500)),
@@ -4450,7 +4485,7 @@ class _AdminTournamentDetailScreenState
                   children: [
                     if (m.courtNumber != null)
                       Text('Корт ${m.courtNumber}',
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppTheme.textDim,
                               fontSize: 11,
                               fontWeight: FontWeight.w600)),
@@ -4818,11 +4853,11 @@ class _ScoreSheetState extends State<_ScoreSheet> {
               const SizedBox(height: 12),
               Center(
                 child: Text(widget.headline,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textSecondary, fontSize: 12)),
               ),
               const SizedBox(height: 4),
-              const Center(
+              Center(
                 child: Text('Введите счёт',
                     style: TextStyle(
                         color: AppTheme.textPrimary,
@@ -4836,7 +4871,7 @@ class _ScoreSheetState extends State<_ScoreSheet> {
               if (_error != null) ...[
                 const SizedBox(height: 10),
                 Text(_error!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.error, fontSize: 12)),
               ],
               const SizedBox(height: 16),
@@ -4846,14 +4881,14 @@ class _ScoreSheetState extends State<_ScoreSheet> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
+                        side: BorderSide(
                             color: AppTheme.cardRaised),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Отмена',
+                      child: Text('Отмена',
                           style: TextStyle(color: AppTheme.textSecondary)),
                     ),
                   ),
@@ -4895,7 +4930,7 @@ class _ScoreSheetState extends State<_ScoreSheet> {
         children: [
           Expanded(
             child: Text(title,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600)),
@@ -4912,7 +4947,7 @@ class _ScoreSheetState extends State<_ScoreSheet> {
                 FilteringTextInputFormatter.digitsOnly,
               ],
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.w700),
@@ -5026,7 +5061,7 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
               ),
               const SizedBox(height: 12),
               Text(widget.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700)),
@@ -5034,13 +5069,13 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
               TextField(
                 controller: _ctrl,
                 autofocus: true,
-                style: const TextStyle(color: AppTheme.textPrimary),
+                style: TextStyle(color: AppTheme.textPrimary),
                 onChanged: _onChanged,
                 decoration: InputDecoration(
                   hintText: 'Телефон или имя (от 2 символов)',
-                  hintStyle: const TextStyle(color: AppTheme.textDim),
+                  hintStyle: TextStyle(color: AppTheme.textDim),
                   prefixIcon:
-                      const Icon(Icons.search, color: AppTheme.textSecondary),
+                      Icon(Icons.search, color: AppTheme.textSecondary),
                   filled: true,
                   fillColor: AppTheme.card,
                   border: OutlineInputBorder(
@@ -5070,11 +5105,11 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
       return Padding(
         padding: const EdgeInsets.all(16),
         child: Text(_error!,
-            style: const TextStyle(color: AppTheme.error)),
+            style: TextStyle(color: AppTheme.error)),
       );
     }
     if (_ctrl.text.trim().length < 2) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
         child: Center(
           child: Text('Введите имя или телефон для поиска',
@@ -5083,7 +5118,7 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
       );
     }
     if (_results.isEmpty) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
         child: Center(
           child: Text('Никого не нашли',
@@ -5117,7 +5152,7 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
                   child: Center(
                     child: Text(
                       _initialsOf(p.name),
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.w700),
@@ -5130,7 +5165,7 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(p.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppTheme.textPrimary,
                               fontSize: 14,
                               fontWeight: FontWeight.w600)),
@@ -5140,7 +5175,7 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
                           if (p.rating != null) '${p.rating}',
                           if ((p.phone ?? '').isNotEmpty) p.phone!,
                         ].join(' · '),
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textSecondary, fontSize: 12),
                       ),
                     ],

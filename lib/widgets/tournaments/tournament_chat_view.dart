@@ -102,7 +102,7 @@ class _TournamentChatViewState extends State<TournamentChatView>
               if (p.messages.isEmpty) {
                 return Center(
                   child: Text(l10n.chatEmpty,
-                      style: const TextStyle(color: AppTheme.textSecondary)),
+                      style: TextStyle(color: AppTheme.textSecondary)),
                 );
               }
               return RefreshIndicator(
@@ -155,7 +155,7 @@ class _TournamentChatViewState extends State<TournamentChatView>
       child: Center(
         child: Text(
           _dateLabel(m.createdAt?.toLocal(), l10n),
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textDim,
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -266,13 +266,13 @@ class _TournamentChatViewState extends State<TournamentChatView>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.lock_outline,
+                Icon(Icons.lock_outline,
                     size: 16, color: AppTheme.textSecondary),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(label,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppTheme.textSecondary)),
+                      style: TextStyle(color: AppTheme.textSecondary)),
                 ),
               ],
             ),
@@ -293,10 +293,10 @@ class _TournamentChatViewState extends State<TournamentChatView>
                 controller: _controller,
                 minLines: 1,
                 maxLines: 4,
-                style: const TextStyle(color: AppTheme.textPrimary),
+                style: TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
                   hintText: l10n.chatInputHint,
-                  hintStyle: const TextStyle(color: AppTheme.textDim),
+                  hintStyle: TextStyle(color: AppTheme.textDim),
                   filled: true,
                   fillColor: AppTheme.background,
                   contentPadding: const EdgeInsets.symmetric(

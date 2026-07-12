@@ -34,7 +34,7 @@ Future<void> showAppAlert(
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -45,7 +45,7 @@ Future<void> showAppAlert(
               ),
         content: Text(
           message,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textPrimary,
             fontSize: 14,
             height: 1.4,

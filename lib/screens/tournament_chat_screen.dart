@@ -47,7 +47,7 @@ class TournamentChatScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis),
             const SizedBox(height: 2),
             Text(_modeLabel(l10n),
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 12, color: AppTheme.textSecondary)),
           ],
         ),

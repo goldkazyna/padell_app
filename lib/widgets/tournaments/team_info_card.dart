@@ -38,7 +38,7 @@ class TeamInfoCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 l10n.yourTeam,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -111,7 +111,7 @@ class TeamInfoCard extends StatelessWidget {
             children: [
               Text(
                 player.name,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -126,7 +126,7 @@ class TeamInfoCard extends StatelessWidget {
                     rating: player.rating,
                     precise: precise,
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 12,
                   ),
@@ -139,7 +139,7 @@ class TeamInfoCard extends StatelessWidget {
           final precise = ctx.watch<SettingsProvider>().preciseRating;
           return Text(
             RatingFormatter.formatRating(player.rating, precise),
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 15,
               fontWeight: FontWeight.w600,

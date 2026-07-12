@@ -161,7 +161,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
                     _sectionLabel('Пары · $pairsCount'),
                     const SizedBox(height: 8),
                     if (teams.isEmpty)
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.symmetric(vertical: 8),
                         child: Text('Пар пока нет',
                             style: TextStyle(
@@ -190,13 +190,13 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Сбор пар',
+                Text('Сбор пар',
                     style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.w800)),
                 Text(widget.tournamentName,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textSecondary, fontSize: 13),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis),
@@ -214,7 +214,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Собрано $pairs из $max пар',
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600)),
@@ -244,7 +244,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Сбор пар откроется при полном составе',
+          Text('Сбор пар откроется при полном составе',
               style: TextStyle(
                   color: AppTheme.orange,
                   fontSize: 14,
@@ -255,7 +255,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
             '${pending > 0 ? ' · $pending на модерации' : ''}.\n'
             'Сначала подтвердите всех участников, затем собирайте пары.',
             style:
-                const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                TextStyle(color: AppTheme.textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -285,7 +285,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
   }
 
   Widget _sectionLabel(String text) => Text(text,
-      style: const TextStyle(
+      style: TextStyle(
           color: AppTheme.textSecondary,
           fontSize: 12,
           fontWeight: FontWeight.w700,
@@ -319,7 +319,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
                     fontWeight: FontWeight.w600)),
             const SizedBox(width: 6),
             Text('$rating',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textDim, fontSize: 11)),
           ],
         ),
@@ -348,14 +348,14 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
               children: [
                 Text(
                   '${p1?['name'] ?? '—'}  +  ${p2?['name'] ?? '—'}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 2),
                 Text('Средний рейтинг: $avg',
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textDim, fontSize: 11)),
               ],
             ),
@@ -366,7 +366,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
                 : () => _run(() => context
                     .read<AdminService>()
                     .deletePair(widget.tournamentId, id)),
-            icon: const Icon(Icons.close_rounded,
+            icon: Icon(Icons.close_rounded,
                 color: AppTheme.textSecondary, size: 20),
           ),
         ],
@@ -377,7 +377,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
   Widget _bottomBar(bool canStart) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         border: Border(top: BorderSide(color: AppTheme.border, width: 0.5)),
       ),

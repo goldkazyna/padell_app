@@ -80,7 +80,7 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -107,7 +107,7 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               AppLocalizations.of(context)!.choosePartner,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -122,12 +122,12 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
             child: TextField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+              style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
               onChanged: _onPhoneChanged,
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.enterPhoneNumber,
-                hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
+                hintStyle: TextStyle(color: AppTheme.textSecondary),
+                prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary),
                 filled: true,
                 fillColor: AppTheme.card,
                 border: OutlineInputBorder(
@@ -172,7 +172,7 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
                   padding: const EdgeInsets.all(24),
                   child: Text(
                     AppLocalizations.of(context)!.playersNotFound,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                   ),
                 );
               }

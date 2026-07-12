@@ -25,8 +25,8 @@ class TournamentHistory extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
                   'История турниров',
                   style: TextStyle(
@@ -55,7 +55,7 @@ class TournamentHistory extends StatelessWidget {
                   child: Text(
                     AppLocalizations.of(context)!.noFinishedTournamentsYet,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                   ),
                 )
               else
@@ -129,13 +129,13 @@ class TournamentHistoryRow extends StatelessWidget {
                   : (place != null && place > 3)
                       ? Text(
                           '$place',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
                           ),
                         )
-                      : const Icon(
+                      : Icon(
                           Icons.emoji_events_outlined,
                           size: 18,
                           color: AppTheme.textSecondary,
@@ -148,7 +148,7 @@ class TournamentHistoryRow extends StatelessWidget {
                 children: [
                   Text(
                     tournament.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -159,7 +159,7 @@ class TournamentHistoryRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     dateText,
-                    style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                   ),
                 ],
               ),
@@ -175,7 +175,7 @@ class TournamentHistoryRow extends StatelessWidget {
                 ),
                 child: Text(
                   AppLocalizations.of(context)!.unratedBadge,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.orange,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,

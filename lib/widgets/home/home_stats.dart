@@ -55,7 +55,7 @@ class HomeStats extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class HomeStats extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 10,
                 letterSpacing: 1,

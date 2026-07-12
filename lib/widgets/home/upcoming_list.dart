@@ -92,7 +92,7 @@ class _UpcomingListState extends State<UpcomingList> {
       child: Center(
         child: Text(
           AppLocalizations.of(context)!.calendarNoTournamentsForDay,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
         ),
       ),
     );
@@ -109,7 +109,7 @@ class _UpcomingListState extends State<UpcomingList> {
       child: Center(
         child: Text(
           AppLocalizations.of(context)!.calendarEmptyAll,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
           textAlign: TextAlign.center,
         ),
       ),
@@ -341,7 +341,7 @@ class _TournamentRow extends StatelessWidget {
                       Flexible(
                         child: Text(
                           '${localizeTournamentType(context, t.type, fallback: t.typeName)} · ${AppLocalizations.of(context)!.levelShort(t.levelText)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.textSecondary,
@@ -355,7 +355,7 @@ class _TournamentRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     t.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.2,
@@ -374,7 +374,7 @@ class _TournamentRow extends StatelessWidget {
               children: [
                 Text(
                   t.priceText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: AppTheme.textPrimary,

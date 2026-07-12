@@ -38,7 +38,7 @@ class _MyTournamentsHistoryScreenState
           padding: EdgeInsets.only(left: 12),
           child: Center(child: AppBackButton()),
         ),
-        title: const Text(
+        title: Text(
           'История турниров',
           style: TextStyle(
             color: AppTheme.textPrimary,
@@ -57,7 +57,7 @@ class _MyTournamentsHistoryScreenState
                 child: CircularProgressIndicator(color: AppTheme.accent));
           }
           if (tournaments.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(

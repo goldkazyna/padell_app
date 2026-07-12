@@ -81,7 +81,7 @@ class _TournamentTypesInfoScreenState
                   Expanded(
                     child: Text(
                       l.tournamentInfoTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class _TournamentTypesInfoScreenState
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Text(
                 l.tournamentInfoHeader,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 13,
                   height: 1.35,
@@ -181,7 +181,7 @@ class _TypeCardState extends State<_TypeCard> {
                   Expanded(
                     child: Text(
                       info.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -191,7 +191,7 @@ class _TypeCardState extends State<_TypeCard> {
                   AnimatedRotation(
                     turns: _open ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: const Icon(
+                    child: Icon(
                       Icons.keyboard_arrow_down_rounded,
                       color: AppTheme.textSecondary,
                     ),
@@ -207,7 +207,7 @@ class _TypeCardState extends State<_TypeCard> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Text(
                 info.body,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 13.5,
                   height: 1.45,

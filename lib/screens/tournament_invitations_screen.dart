@@ -128,11 +128,11 @@ class _TournamentInvitationsScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.error, size: 44),
+              Icon(Icons.error_outline, color: AppTheme.error, size: 44),
               const SizedBox(height: 12),
               Text(_error!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textSecondary)),
+                  style: TextStyle(color: AppTheme.textSecondary)),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _load,
@@ -150,7 +150,7 @@ class _TournamentInvitationsScreenState
         color: AppTheme.accent,
         backgroundColor: AppTheme.card,
         child: ListView(
-          children: const [
+          children: [
             SizedBox(height: 120),
             Icon(Icons.mark_email_unread_outlined,
                 color: AppTheme.textDim, size: 56),
@@ -204,13 +204,13 @@ class _TournamentInvitationsScreenState
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
               child: Row(
                 children: [
-                  const Icon(Icons.person_outline,
+                  Icon(Icons.person_outline,
                       size: 15, color: AppTheme.textSecondary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Пригласил: ${inv.invitedByName}',
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textSecondary, fontSize: 13),
                     ),
                   ),

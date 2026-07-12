@@ -6,6 +6,7 @@ class StorageService {
   static const _onboardingKey = 'onboarding_seen';
   static const _localeKey = 'app_locale';
   static const _preciseRatingKey = 'precise_rating';
+  static const _themeModeKey = 'theme_mode';
 
   final FlutterSecureStorage? _storage;
   final Map<String, String> _webStorage = {};
@@ -81,5 +82,14 @@ class StorageService {
   Future<bool> getPreciseRating() async {
     final v = await _read(_preciseRatingKey);
     return v == 'true';
+  }
+
+  /// Тема: 'system' | 'light' | 'dark'. По умолчанию — тёмная.
+  Future<void> saveThemeMode(String value) async {
+    await _write(_themeModeKey, value);
+  }
+
+  Future<String?> getThemeMode() async {
+    return _read(_themeModeKey);
   }
 }

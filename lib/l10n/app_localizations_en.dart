@@ -429,6 +429,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingConfirmedSubtitle => 'You have successfully booked a court';
 
   @override
+  String get paymentNotCompletedTitle => 'Payment not completed';
+
+  @override
+  String get paymentNotCompleted =>
+      'You didn\'t finish the payment. The booking is saved as unpaid — you can pay later in \"My bookings\" or at the club.';
+
+  @override
   String get myBookings => 'My Bookings';
 
   @override
@@ -451,6 +458,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusConfirmed => 'Confirmed';
+
+  @override
+  String get statusNotConfirmed => 'Not confirmed';
 
   @override
   String get statusCancelled => 'Cancelled';
@@ -566,6 +576,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get preciseRatingSubtitle =>
       'Show rating and level with two decimals (2.69 instead of 2690)';
+
+  @override
+  String get themeTitle => 'Appearance';
+
+  @override
+  String get themeSubtitle => 'Light, dark or follow system';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
 
   @override
   String get newsChannelTitle => 'Latest app news';

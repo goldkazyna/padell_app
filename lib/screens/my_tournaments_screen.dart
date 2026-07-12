@@ -49,7 +49,7 @@ class _MyTournamentsScreenState extends State<MyTournamentsScreen> {
           padding: EdgeInsets.only(left: 12),
           child: Center(child: AppBackButton()),
         ),
-        title: const Text(
+        title: Text(
           'Мои турниры',
           style: TextStyle(
             color: AppTheme.textPrimary,
@@ -66,7 +66,7 @@ class _MyTournamentsScreenState extends State<MyTournamentsScreen> {
                 child: CircularProgressIndicator(color: AppTheme.accent));
           }
           if (provider.myTournaments.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(

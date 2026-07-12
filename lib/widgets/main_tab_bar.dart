@@ -20,7 +20,7 @@ class MainTabBar extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final current = mainTabNotifier.value;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.card,
         border: Border(
           top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),

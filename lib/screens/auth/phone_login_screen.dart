@@ -50,7 +50,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
         backgroundColor: AppTheme.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () {
             context.read<AuthProvider>().clearError();
             Navigator.pop(context);
@@ -67,7 +67,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
               children: [
                 Text(
                   l.phoneLoginTitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -76,7 +76,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
                 const SizedBox(height: 8),
                 Text(
                   l.phoneLoginSubtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 16,
                   ),
@@ -86,7 +86,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   autofocus: true,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -98,7 +98,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
                   ],
                   decoration: InputDecoration(
                     prefixText: '+7  ',
-                    prefixStyle: const TextStyle(
+                    prefixStyle: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -133,7 +133,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
                       padding: const EdgeInsets.only(top: 12),
                       child: Text(
                         auth.error!,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.error, fontSize: 14),
                       ),
                     );

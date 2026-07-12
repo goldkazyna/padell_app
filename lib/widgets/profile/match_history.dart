@@ -19,7 +19,7 @@ class MatchHistory extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context)!.matchHistory,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -46,7 +46,7 @@ class MatchHistory extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.noMatchesYet,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                   ),
@@ -130,7 +130,7 @@ class _MatchCard extends StatelessWidget {
               children: [
                 Text(
                   dateParts['day']!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class _MatchCard extends StatelessWidget {
                 ),
                 Text(
                   dateParts['month']!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 11,
                   ),
@@ -155,7 +155,7 @@ class _MatchCard extends StatelessWidget {
               children: [
                 Text(
                   match.tournamentName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -166,7 +166,7 @@ class _MatchCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   match.formatName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,
                   ),
@@ -175,13 +175,13 @@ class _MatchCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Row(
                     children: [
-                      const Icon(Icons.people_outline,
+                      Icon(Icons.people_outline,
                           color: AppTheme.textSecondary, size: 13),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           match.partner!.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 12,
                           ),

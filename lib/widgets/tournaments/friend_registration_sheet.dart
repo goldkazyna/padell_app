@@ -99,7 +99,7 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -121,7 +121,7 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
           const SizedBox(height: 20),
 
           // Title
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               'Записать с другом',
@@ -133,7 +133,7 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
             ),
           ),
           const SizedBox(height: 4),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               'Вы оба попадёте как отдельные участники, заявка пойдёт на модерацию.',
@@ -148,12 +148,12 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
             child: TextField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+              style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
               onChanged: _onPhoneChanged,
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.enterPhoneNumber,
-                hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
+                hintStyle: TextStyle(color: AppTheme.textSecondary),
+                prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary),
                 filled: true,
                 fillColor: AppTheme.card,
                 border: OutlineInputBorder(
@@ -199,7 +199,7 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
                   padding: const EdgeInsets.all(24),
                   child: Text(
                     AppLocalizations.of(context)!.playersNotFound,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                   ),
                 );
               }

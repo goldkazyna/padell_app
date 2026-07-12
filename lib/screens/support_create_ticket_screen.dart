@@ -78,7 +78,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
               child: Row(
-                children: const [
+                children: [
                   AppBackButton(),
                   SizedBox(width: 4),
                   Text(
@@ -113,7 +113,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                   const SizedBox(height: 8),
                   _photosRow(),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Фото или PDF. Изображения сжимаются автоматически.',
                     style: TextStyle(color: AppTheme.textDim, fontSize: 12),
                   ),
@@ -183,14 +183,14 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.picture_as_pdf,
+                      Icon(Icons.picture_as_pdf,
                           color: AppTheme.error, size: 26),
                       const SizedBox(height: 4),
                       Text(
                         _photos[i].path.split(Platform.pathSeparator).last,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textDim, fontSize: 9),
                       ),
                     ],
@@ -208,7 +208,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                 child: GestureDetector(
                   onTap: () => setState(() => _photos.removeAt(i)),
                   child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                         color: AppTheme.error, shape: BoxShape.circle),
                     padding: const EdgeInsets.all(2),
                     child: const Icon(Icons.close,
@@ -229,7 +229,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: const Color(0xFF2A2A2A)),
               ),
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.add, color: AppTheme.textDim, size: 22),
@@ -309,7 +309,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
 
   Widget _label(String text) => Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 13,
             fontWeight: FontWeight.w700),
@@ -322,10 +322,10 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
       child: TextField(
         controller: c,
         maxLines: maxLines,
-        style: const TextStyle(color: AppTheme.textPrimary),
+        style: TextStyle(color: AppTheme.textPrimary),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: AppTheme.textDim),
+          hintStyle: TextStyle(color: AppTheme.textDim),
           filled: true,
           fillColor: AppTheme.card,
           border: OutlineInputBorder(

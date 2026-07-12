@@ -96,12 +96,12 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
               const SizedBox(height: 14),
               Row(
                 children: [
-                  const Icon(Icons.verified_outlined,
+                  Icon(Icons.verified_outlined,
                       color: AppTheme.blue, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     AppLocalizations.of(context)!.verificationSheetTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -112,7 +112,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
               const SizedBox(height: 4),
               Text(
                 widget.playerName,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 13,
                 ),
@@ -146,7 +146,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Text(
           l.verificationLoadFailed(_error ?? ''),
-          style: const TextStyle(color: AppTheme.error, fontSize: 13),
+          style: TextStyle(color: AppTheme.error, fontSize: 13),
           textAlign: TextAlign.center,
         ),
       );
@@ -166,12 +166,12 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.info_outline, color: AppTheme.amber, size: 20),
+              Icon(Icons.info_outline, color: AppTheme.amber, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   l.verificationNotConfirmedYet,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary, fontSize: 13),
                 ),
               ),
@@ -186,7 +186,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
             padding: const EdgeInsets.only(bottom: 8, left: 2),
             child: Text(
               l.verificationToConfirm,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -213,13 +213,13 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.verified_outlined,
+            Icon(Icons.verified_outlined,
                 color: AppTheme.blue, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 l.verificationConfirmedByClub,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600),
@@ -239,7 +239,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               l.verificationHistoryRecords(info.history.length),
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textSecondary, fontSize: 12),
             ),
           ),
@@ -275,7 +275,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
                 l.verificationLatestEntry,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.blue,
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
@@ -330,7 +330,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -339,7 +339,7 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
                 const SizedBox(height: 4),
                 Text(
                   desc,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 12,
                     height: 1.4,
@@ -363,14 +363,14 @@ class _LevelVerificationSheetState extends State<LevelVerificationSheet> {
             width: 130,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textSecondary, fontSize: 12),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 13,
                   fontWeight: FontWeight.w600),

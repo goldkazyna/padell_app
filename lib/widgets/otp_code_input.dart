@@ -75,7 +75,7 @@ class _OtpCodeInputState extends State<OtpCodeInput> {
               ),
               child: Text(
                 filled ? text[i] : '',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

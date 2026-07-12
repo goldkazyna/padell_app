@@ -158,6 +158,8 @@
 
   "bookingConfirmed": "Бронь подтверждена!",
   "bookingConfirmedSubtitle": "Вы успешно забронировали корт",
+  "paymentNotCompletedTitle": "Оплата не завершена",
+  "paymentNotCompleted": "Вы не завершили оплату. Бронь сохранена как неоплаченная — оплатить можно позже в разделе «Мои брони» или на месте в клубе.",
   "myBookings": "Мои бронирования",
   "goHome": "На главную",
 
@@ -167,6 +169,7 @@
   "noPastBookings": "Нет прошедших бронирований",
   "statusPending": "Новая заявка",
   "statusConfirmed": "Подтверждено",
+  "statusNotConfirmed": "Не подтверждено",
   "statusCancelled": "Отменено",
   "cancel": "Отменить",
   "cancelBooking": "Отменить бронирование?",
@@ -212,6 +215,11 @@
   "settingsMenuItemSubtitle": "Отображение рейтинга и уровня",
   "preciseRatingTitle": "Точные значения рейтинга",
   "preciseRatingSubtitle": "Показывать рейтинг и уровень с двумя знаками (2.69 вместо 2690)",
+  "themeTitle": "Тема оформления",
+  "themeSubtitle": "Светлая, тёмная или как в системе",
+  "themeSystem": "Системная",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная",
 
   "newsChannelTitle": "Последние новости приложения",
   "newsChannelSubtitle": "Telegram-канал @padelkz_app",

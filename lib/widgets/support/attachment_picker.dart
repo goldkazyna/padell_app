@@ -46,7 +46,7 @@ Future<File?> pickSupportAttachment(BuildContext context) async {
 Widget _tile(BuildContext ctx, IconData icon, String label, String value) {
   return ListTile(
     leading: Icon(icon, color: AppTheme.accent),
-    title: Text(label, style: const TextStyle(color: AppTheme.textPrimary)),
+    title: Text(label, style: TextStyle(color: AppTheme.textPrimary)),
     onTap: () => Navigator.pop(ctx, value),
   );
 }

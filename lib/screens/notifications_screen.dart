@@ -156,7 +156,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   const SizedBox(width: 12),
                   Text(
                     AppLocalizations.of(context)!.notifications,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -179,7 +179,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             children: [
                               Text(
                                 AppLocalizations.of(context)!.failedToLoadNotifications,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppTheme.textSecondary,
                                   fontSize: 15,
                                 ),
@@ -197,7 +197,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.notifications_off_outlined,
                                     color: AppTheme.textSecondary,
                                     size: 48,
@@ -205,7 +205,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   const SizedBox(height: 12),
                                   Text(
                                     AppLocalizations.of(context)!.noNotifications,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppTheme.textSecondary,
                                       fontSize: 16,
                                     ),
@@ -335,7 +335,7 @@ class _NotificationCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     body,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
                     ),
@@ -347,7 +347,7 @@ class _NotificationCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     _formatDate(createdAt, AppLocalizations.of(context)!),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 11,
                     ),

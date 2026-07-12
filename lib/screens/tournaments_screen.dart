@@ -158,12 +158,12 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
           : null,
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             surface: AppTheme.card,
             onSurface: AppTheme.textPrimary,
           ),
-          dialogTheme: const DialogThemeData(backgroundColor: AppTheme.background),
+          dialogTheme: DialogThemeData(backgroundColor: AppTheme.background),
         ),
         child: child!,
       ),
@@ -240,7 +240,7 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Text(
               AppLocalizations.of(context)!.tournaments,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 26,
                 fontWeight: FontWeight.w700,
@@ -428,7 +428,7 @@ class _OpenTab extends StatelessWidget {
           return Center(
             child: Text(
               AppLocalizations.of(context)!.noOpenTournaments,
-              style: const TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }
@@ -532,7 +532,7 @@ class _OpenTab extends StatelessWidget {
         children: [
           Text(
             AppLocalizations.of(context)!.forYouSection,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 15,
               fontWeight: FontWeight.w700,
@@ -560,7 +560,7 @@ class _OpenTab extends StatelessWidget {
           const Spacer(),
           Text(
             '$count',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textDim,
               fontSize: 11,
               fontFeatures: [FontFeature.tabularFigures()],
@@ -596,7 +596,7 @@ class _OpenTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               color: AppTheme.background,
-              child: const Text(
+              child: Text(
                 'ОСТАЛЬНЫЕ ТУРНИРЫ',
                 style: TextStyle(
                   color: AppTheme.textDim,
@@ -673,7 +673,7 @@ class _MyTab extends StatelessWidget {
           return Center(
             child: Text(
               AppLocalizations.of(context)!.notRegisteredForTournaments,
-              style: const TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }
@@ -778,7 +778,7 @@ class _ArchiveTabState extends State<_ArchiveTab> {
           : DateTimeRange(start: now.subtract(const Duration(days: 7)), end: now),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             surface: AppTheme.card,
           ),
@@ -817,7 +817,7 @@ class _ArchiveTabState extends State<_ArchiveTab> {
                 return Center(
                   child: Text(
                     AppLocalizations.of(context)!.noFinishedTournaments,
-                    style: const TextStyle(color: AppTheme.textSecondary),
+                    style: TextStyle(color: AppTheme.textSecondary),
                   ),
                 );
               }
@@ -1042,7 +1042,7 @@ class _CancelledTabState extends State<_CancelledTab> {
           return Center(
             child: Text(
               AppLocalizations.of(context)!.noCancelledTournaments,
-              style: const TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: AppTheme.textSecondary),
             ),
           );
         }
@@ -1116,7 +1116,7 @@ class _FilterSheet extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -1152,7 +1152,7 @@ class _FilterSheet extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Сбросить',
                             style: TextStyle(
                                 color: AppTheme.textSecondary,
@@ -1230,7 +1230,7 @@ class _CheckboxRow extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

@@ -176,7 +176,7 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Посев участников',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -186,7 +186,7 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
                 ),
                 Text(
                   widget.tournamentName,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -211,11 +211,11 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
+              Icon(Icons.error_outline, color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_error!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textPrimary)),
+                  style: TextStyle(color: AppTheme.textPrimary)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _load,
@@ -342,7 +342,7 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -378,7 +378,7 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
 
   Widget _vsDivider() {
     return Row(
-      children: const [
+      children: [
         Expanded(child: Divider(color: AppTheme.border, height: 1)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
@@ -419,12 +419,12 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
           value: current == 0 ? null : current,
           isExpanded: true,
           dropdownColor: AppTheme.card,
-          icon: const Icon(Icons.expand_more, color: AppTheme.textSecondary),
+          icon: Icon(Icons.expand_more, color: AppTheme.textSecondary),
           hint: Text(
             'Игрок ${slot + 1}',
-            style: const TextStyle(color: AppTheme.textDim, fontSize: 14),
+            style: TextStyle(color: AppTheme.textDim, fontSize: 14),
           ),
-          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
           items: [
             for (final p in _participants)
               DropdownMenuItem<int>(
@@ -451,7 +451,7 @@ class _AdminJpiSeedingScreenState extends State<AdminJpiSeedingScreen> {
             name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 14,
               fontWeight: FontWeight.w600,

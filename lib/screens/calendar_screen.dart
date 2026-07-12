@@ -39,7 +39,7 @@ class CalendarScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     l.calendarTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class CalendarScreen extends StatelessWidget {
                         child: Text(
                           l.calendarEmptyAll,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 14,
                           ),
@@ -172,7 +172,7 @@ class _DayHeader extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           '· $dateStr',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 13,
             fontWeight: FontWeight.w500,
@@ -262,7 +262,7 @@ class _CalendarRow extends StatelessWidget {
                       Flexible(
                         child: Text(
                           '${t.typeName} · ${l.levelShort(t.levelText)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.textSecondary,
@@ -276,7 +276,7 @@ class _CalendarRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     t.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.2,
@@ -295,7 +295,7 @@ class _CalendarRow extends StatelessWidget {
               children: [
                 Text(
                   t.priceText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: AppTheme.textPrimary,

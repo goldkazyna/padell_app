@@ -200,7 +200,7 @@ class _NotificationSettingsScreenState
             Expanded(
               child: Text(
                 clubName,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
@@ -287,7 +287,7 @@ class _NotificationSettingsScreenState
                   const SizedBox(width: 12),
                   Text(
                     AppLocalizations.of(context)!.notifications,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -312,7 +312,7 @@ class _NotificationSettingsScreenState
                     children: [
                       Text(
                         AppLocalizations.of(context)!.failedToLoadSettings,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 15,
                         ),
@@ -352,7 +352,7 @@ class _NotificationSettingsScreenState
                                 children: [
                                   Text(
                                     AppLocalizations.of(context)!.onlyMyLevelTournaments,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppTheme.textPrimary,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
@@ -361,7 +361,7 @@ class _NotificationSettingsScreenState
                                   const SizedBox(height: 4),
                                   Text(
                                     AppLocalizations.of(context)!.onlyMyLevelTournamentsDesc,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppTheme.textSecondary,
                                       fontSize: 13,
                                     ),
@@ -407,7 +407,7 @@ class _NotificationSettingsScreenState
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Напоминать о турнирах',
                                     style: TextStyle(
                                       color: AppTheme.textPrimary,
@@ -416,7 +416,7 @@ class _NotificationSettingsScreenState
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  const Text(
+                                  Text(
                                     'Пуш за день и за 2 часа до начала записанного турнира',
                                     style: TextStyle(
                                       color: AppTheme.textSecondary,
@@ -466,7 +466,7 @@ class _NotificationSettingsScreenState
                                 children: [
                                   Text(
                                     AppLocalizations.of(context)!.notifyOrganizerChat,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppTheme.textPrimary,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
@@ -475,7 +475,7 @@ class _NotificationSettingsScreenState
                                   const SizedBox(height: 4),
                                   Text(
                                     AppLocalizations.of(context)!.notifyOrganizerChatDesc,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppTheme.textSecondary,
                                       fontSize: 13,
                                     ),
@@ -507,7 +507,7 @@ class _NotificationSettingsScreenState
                         const SizedBox(height: 20),
                         Text(
                           AppLocalizations.of(context)!.notifyClubsTitle,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -516,7 +516,7 @@ class _NotificationSettingsScreenState
                         const SizedBox(height: 4),
                         Text(
                           AppLocalizations.of(context)!.notifyClubsDesc,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 13,
                           ),

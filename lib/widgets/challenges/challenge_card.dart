@@ -36,7 +36,7 @@ class ChallengeCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     challenge.club?.name ?? AppLocalizations.of(context)!.challenge,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -117,7 +117,7 @@ class ChallengeCard extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -182,7 +182,7 @@ class ChallengeCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ))
-                : const Icon(
+                : Icon(
                     Icons.add,
                     color: AppTheme.textSecondary,
                     size: 18,

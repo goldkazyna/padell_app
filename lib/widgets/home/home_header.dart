@@ -70,7 +70,7 @@ class _HomeHeaderState extends State<HomeHeader> with WidgetsBindingObserver {
             Flexible(
               child: Text(
                 name,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -89,7 +89,7 @@ class _HomeHeaderState extends State<HomeHeader> with WidgetsBindingObserver {
                       color: AppTheme.card,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.notifications_outlined,
                       color: AppTheme.textPrimary,
                       size: 22,

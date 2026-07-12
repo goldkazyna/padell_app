@@ -38,6 +38,7 @@ class Club {
   final bool isCommunity;
   final bool comingSoon;
   final int openTournamentsCount;
+  final int tournamentsCount;
   final bool onlinePaymentEnabled;
   final bool allowBookingWithoutPayment;
   final String? offerAgreementUrl;
@@ -63,6 +64,7 @@ class Club {
     this.isCommunity = false,
     this.comingSoon = false,
     this.openTournamentsCount = 0,
+    this.tournamentsCount = 0,
     this.onlinePaymentEnabled = false,
     this.allowBookingWithoutPayment = true,
     this.offerAgreementUrl,
@@ -91,6 +93,7 @@ class Club {
       isCommunity: json['is_community'] as bool? ?? false,
       comingSoon: json['coming_soon'] as bool? ?? false,
       openTournamentsCount: json['open_tournaments_count'] as int? ?? 0,
+      tournamentsCount: json['tournaments_count'] as int? ?? 0,
       onlinePaymentEnabled: json['online_payment_enabled'] as bool? ?? false,
       allowBookingWithoutPayment:
           json['allow_booking_without_payment'] as bool? ?? true,
@@ -127,6 +130,7 @@ class Club {
     isCommunity: isCommunity ?? this.isCommunity,
     comingSoon: comingSoon,
     openTournamentsCount: openTournamentsCount ?? this.openTournamentsCount,
+    tournamentsCount: tournamentsCount,
     onlinePaymentEnabled: onlinePaymentEnabled,
     allowBookingWithoutPayment: allowBookingWithoutPayment,
     offerAgreementUrl: offerAgreementUrl,

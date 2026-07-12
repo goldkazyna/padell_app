@@ -91,7 +91,7 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Мои турниры',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -101,7 +101,7 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
                 ),
                 Text(
                   widget.clubName,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                 ),
               ],
@@ -206,13 +206,13 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
+              Icon(Icons.error_outline,
                   color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_error!,
                   textAlign: TextAlign.center,
                   style:
-                      const TextStyle(color: AppTheme.textPrimary)),
+                      TextStyle(color: AppTheme.textPrimary)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _load,
@@ -233,7 +233,7 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
           padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               Icon(Icons.emoji_events_outlined,
                   color: AppTheme.textDim, size: 48),
               SizedBox(height: 12),
@@ -296,17 +296,17 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
-        title: const Text('Дублировать турнир?',
+        title: Text('Дублировать турнир?',
             style: TextStyle(color: AppTheme.textPrimary)),
         content: Text(
           'Создастся копия «${t.name}» со всеми настройками как черновик. '
           'Участники не переносятся — на дубль можно записываться заново.',
-          style: const TextStyle(color: AppTheme.textDim),
+          style: TextStyle(color: AppTheme.textDim),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Отмена',
+            child: Text('Отмена',
                 style: TextStyle(color: AppTheme.textDim)),
           ),
           TextButton(
@@ -415,7 +415,7 @@ class _TournamentCard extends StatelessWidget {
                     summary.date.isEmpty
                         ? 'Дата не задана'
                         : '${summary.date} · ${summary.time}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textDim,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -426,7 +426,7 @@ class _TournamentCard extends StatelessWidget {
                     width: 28,
                     height: 28,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert,
+                      icon: Icon(Icons.more_vert,
                           color: AppTheme.textDim, size: 20),
                       padding: EdgeInsets.zero,
                       color: AppTheme.card,
@@ -437,7 +437,7 @@ class _TournamentCard extends StatelessWidget {
                         PopupMenuItem<String>(
                           value: 'duplicate',
                           child: Row(
-                            children: const [
+                            children: [
                               Icon(Icons.copy_rounded,
                                   color: AppTheme.textPrimary, size: 18),
                               SizedBox(width: 10),
@@ -455,7 +455,7 @@ class _TournamentCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 summary.name,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -472,7 +472,7 @@ class _TournamentCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '${summary.participantsCount} / ${summary.maxParticipants}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -484,7 +484,7 @@ class _TournamentCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     'L${_fmtLevel(summary.minLevel)}–${_fmtLevel(summary.maxLevel)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -510,7 +510,7 @@ class _TournamentCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             '${summary.pendingCount} на модерации',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.amber,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,

@@ -423,6 +423,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get bookingConfirmedSubtitle => 'Сіз кортты сәтті брондадыңыз';
 
   @override
+  String get paymentNotCompletedTitle => 'Төлем аяқталмады';
+
+  @override
+  String get paymentNotCompleted =>
+      'Сіз төлемді аяқтаған жоқсыз. Брон төленбеген күйінде сақталды — кейінірек «Менің брондарым» бөлімінде немесе клубта төлеуге болады.';
+
+  @override
   String get myBookings => 'Менің брондарым';
 
   @override
@@ -445,6 +452,9 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get statusConfirmed => 'Расталды';
+
+  @override
+  String get statusNotConfirmed => 'Расталмаған';
 
   @override
   String get statusCancelled => 'Күші жойылды';
@@ -560,6 +570,21 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get preciseRatingSubtitle =>
       'Рейтинг пен деңгейді екі ондық санмен көрсету (2690 орнына 2.69)';
+
+  @override
+  String get themeTitle => 'Безендіру тақырыбы';
+
+  @override
+  String get themeSubtitle => 'Ашық, қараңғы немесе жүйедегідей';
+
+  @override
+  String get themeSystem => 'Жүйелік';
+
+  @override
+  String get themeLight => 'Ашық';
+
+  @override
+  String get themeDark => 'Қараңғы';
 
   @override
   String get newsChannelTitle => 'Қолданбаның соңғы жаңалықтары';

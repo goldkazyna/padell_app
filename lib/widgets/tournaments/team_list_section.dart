@@ -13,7 +13,7 @@ class TeamListSection extends StatelessWidget {
   final int? currentUserId;
 
   static const Color _pendingColor = Color(0xFFF59E0B);
-  static const Color _waitlistColor = AppTheme.blue;
+  static final Color _waitlistColor = AppTheme.blue;
 
   const TeamListSection({
     super.key,
@@ -36,7 +36,7 @@ class TeamListSection extends StatelessWidget {
             children: [
               Text(
                 l10n.pendingModeration,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -59,7 +59,7 @@ class TeamListSection extends StatelessWidget {
           children: [
             Text(
               l10n.teams,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class TeamListSection extends StatelessWidget {
             const Spacer(),
             Text(
               l10n.countOfMax(tournament.participantsCount, tournament.maxParticipants),
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 14,
               ),
@@ -93,7 +93,7 @@ class TeamListSection extends StatelessWidget {
             child: Center(
               child: Text(
                 l10n.noTeamsYet,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
             ),
           )
@@ -121,12 +121,12 @@ class TeamListSection extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppTheme.textSecondary, width: 1),
                     ),
-                    child: const Icon(Icons.add, color: AppTheme.textSecondary, size: 12),
+                    child: Icon(Icons.add, color: AppTheme.textSecondary, size: 12),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     l10n.spotsLeftCount(tournament.spotsLeft),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
                     ),
@@ -141,7 +141,7 @@ class TeamListSection extends StatelessWidget {
           const SizedBox(height: 24),
           Row(
             children: [
-              const Text(
+              Text(
                 'Лист ожидания',
                 style: TextStyle(
                   color: AppTheme.textPrimary,
@@ -155,7 +155,7 @@ class TeamListSection extends StatelessWidget {
               if (tournament.waitlistSize > 0)
                 Text(
                   '${tournament.waitlistTeams.length} / ${tournament.waitlistSize} пар',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
                   ),
@@ -291,7 +291,7 @@ class TeamListSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: _waitlistColor.withAlpha(60), width: 0.5),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.hourglass_bottom, color: _waitlistColor, size: 14),

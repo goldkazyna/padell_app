@@ -86,7 +86,7 @@ class TournamentCard extends StatelessWidget {
                 // Day
                 Text(
                   day,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -98,7 +98,7 @@ class TournamentCard extends StatelessWidget {
                 // Month
                 Text(
                   month,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -118,7 +118,7 @@ class TournamentCard extends StatelessWidget {
                 // Time
                 Text(
                   time,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -130,7 +130,7 @@ class TournamentCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -180,7 +180,7 @@ class TournamentCard extends StatelessWidget {
                         ),
                         child: Text(
                           AppLocalizations.of(context)!.tournamentUnrated,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.orange,
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
@@ -267,7 +267,7 @@ class TournamentCard extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 12,
             fontWeight: FontWeight.w500,

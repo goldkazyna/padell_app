@@ -60,7 +60,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back,
+                    icon: Icon(Icons.arrow_back,
                         color: AppTheme.textPrimary, size: 20),
                     onPressed: () => Navigator.pop(context),
                     padding: EdgeInsets.zero,
@@ -71,7 +71,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 // Title
                 Text(
                   AppLocalizations.of(context)!.passwordRecovery,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.enterEmailForResetLink,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 15,
                   ),
@@ -110,7 +110,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Text(
                           _successMessage,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 15,
                           ),
@@ -145,7 +145,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ] else ...[
                   // Email field
-                  const Text(
+                  Text(
                     'Email',
                     style:
                         TextStyle(color: AppTheme.textSecondary, fontSize: 14),
@@ -155,7 +155,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     autocorrect: false,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppTheme.textPrimary, fontSize: 16),
                     decoration: InputDecoration(
                       hintText: 'example@mail.com',
@@ -176,11 +176,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: AppTheme.error),
+                        borderSide: BorderSide(color: AppTheme.error),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: AppTheme.error),
+                        borderSide: BorderSide(color: AppTheme.error),
                       ),
                     ),
                     validator: (value) {
@@ -203,7 +203,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         padding: const EdgeInsets.only(top: 12),
                         child: Text(
                           auth.error!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.error,
                             fontSize: 14,
                           ),

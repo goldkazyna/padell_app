@@ -75,7 +75,7 @@ class AdminClubBlock extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             club.name,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w700,

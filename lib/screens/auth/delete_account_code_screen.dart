@@ -39,7 +39,7 @@ class _DeleteAccountCodeScreenState extends State<DeleteAccountCodeScreen> {
         backgroundColor: AppTheme.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () {
             context.read<AuthProvider>().clearError();
             Navigator.pop(context);
@@ -54,7 +54,7 @@ class _DeleteAccountCodeScreenState extends State<DeleteAccountCodeScreen> {
             children: [
               Text(
                 l.deleteAccountTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class _DeleteAccountCodeScreenState extends State<DeleteAccountCodeScreen> {
               Text(
                 l.deleteAccountCodeHint,
                 style:
-                    const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
+                    TextStyle(color: AppTheme.textSecondary, fontSize: 15),
               ),
               const SizedBox(height: 40),
               OtpCodeInput(
@@ -80,7 +80,7 @@ class _DeleteAccountCodeScreenState extends State<DeleteAccountCodeScreen> {
                     child: Center(
                       child: Text(
                         auth.error!,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.error, fontSize: 14),
                         textAlign: TextAlign.center,
                       ),

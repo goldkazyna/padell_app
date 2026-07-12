@@ -79,7 +79,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 16, 4),
               child: Row(
-                children: const [
+                children: [
                   AppBackButton(),
                   SizedBox(width: 4),
                   Text(
@@ -110,7 +110,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: AppTheme.textDim)),
+            Text(_error!, style: TextStyle(color: AppTheme.textDim)),
             TextButton(onPressed: _load, child: const Text('Повторить')),
           ],
         ),
@@ -282,7 +282,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                 ? 'Активных обращений нет.\nНажмите «Создать обращение».'
                 : 'Закрытых обращений нет.',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppTheme.textDim),
+            style: TextStyle(color: AppTheme.textDim),
           ),
         ],
       ),
@@ -376,7 +376,7 @@ class _TicketCard extends StatelessWidget {
                               const SizedBox(height: 3),
                               Text.rich(TextSpan(children: [
                                 if (ticket.isUrgent)
-                                  const TextSpan(
+                                  TextSpan(
                                     text: 'Срочный',
                                     style: TextStyle(
                                         color: AppTheme.error,
@@ -388,7 +388,7 @@ class _TicketCard extends StatelessWidget {
                                   TextSpan(text: ticket.category!),
                                 if (!ticket.isUrgent && ticket.category == null)
                                   const TextSpan(text: 'Обращение'),
-                              ], style: const TextStyle(
+                              ], style: TextStyle(
                                   color: AppTheme.textSecondary,
                                   fontSize: 12.5))),
                             ],
@@ -417,7 +417,7 @@ class _TicketCard extends StatelessWidget {
                               children: [
                                 Text(
                                   _fmt(ticket.lastMessageAt),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       color: AppTheme.textDim, fontSize: 12),
                                 ),
                                 if (ticket.unreadCount > 0) ...[

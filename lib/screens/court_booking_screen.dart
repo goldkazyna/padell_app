@@ -11,6 +11,7 @@ import '../widgets/app_back_button.dart';
 import '../widgets/secure_payment_badge.dart';
 import 'booking_confirmation_screen.dart';
 import 'club_detail_screen.dart';
+import 'payment_failed_screen.dart';
 import 'payment_webview_screen.dart';
 
 class CourtBookingScreen extends StatefulWidget {
@@ -454,7 +455,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Нужен тренер',
                     style: TextStyle(
                       fontSize: 14,
@@ -465,7 +466,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(fontSize: 11, color: AppTheme.textDim),
+                    style: TextStyle(fontSize: 11, color: AppTheme.textDim),
                   ),
                 ],
               ),
@@ -502,7 +503,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
               );
             },
             behavior: HitTestBehavior.opaque,
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
@@ -530,7 +531,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(Icons.info_outline, color: AppTheme.textSecondary, size: 18),
           SizedBox(width: 10),
@@ -629,7 +630,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                 const SizedBox(height: 3),
                 Text(
                   '${_fmtPrice(rate)} ₸',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     color: AppTheme.textSecondary,
@@ -677,7 +678,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       ),
       child: TextField(
         controller: controller,
-        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+        style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: Color(0xFF52525B), fontSize: 14),
@@ -697,7 +698,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       ),
       child: TextField(
         controller: _commentController,
-        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+        style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         maxLines: 2,
         decoration: InputDecoration(
           hintText: AppLocalizations.of(context)!.optional,
@@ -872,15 +873,26 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
 
     final url = pay['payment_url'] as String?;
     if (pay['success'] == true && url != null && url.isNotEmpty && bookingId != null) {
-      // Открываем оплату внутри приложения (WebView). Экран сам закроется,
-      // когда вебхук пометит бронь оплаченной (опрос статуса).
-      await Navigator.push<bool>(
+      // Открываем оплату внутри приложения (WebView). Экран возвращает
+      // true — если оплата прошла, false — если закрыли вручную не оплатив.
+      final paid = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
           builder: (_) => PaymentWebViewScreen(url: url, bookingId: bookingId),
         ),
       );
       if (!mounted) return;
+
+      if (paid != true) {
+        // Пользователь закрыл оплату не заплатив — показываем отдельный
+        // экран «Оплата не завершена» (бронь осталась неоплаченной).
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
+        );
+        return;
+      }
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -935,7 +947,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     final spans = <Widget>[
       Text(
         l10n.agreeWithDocsPrefix,
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
       ),
     ];
     for (var i = 0; i < docs.length; i++) {
@@ -953,7 +965,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
         ),
       ));
       if (i < docs.length - 1) {
-        spans.add(const Text(', ',
+        spans.add(Text(', ',
             style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)));
       }
     }
@@ -969,7 +981,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             onChanged: (v) => setState(() => _agreedToDocs = v ?? false),
             activeColor: AppTheme.accent,
             checkColor: Colors.black,
-            side: const BorderSide(color: AppTheme.textSecondary, width: 1.5),
+            side: BorderSide(color: AppTheme.textSecondary, width: 1.5),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: VisualDensity.compact,
           ),

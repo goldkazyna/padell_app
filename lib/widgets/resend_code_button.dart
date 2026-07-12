@@ -61,7 +61,7 @@ class _ResendCodeButtonState extends State<ResendCodeButton> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Text(
           l.resendCodeIn(_remaining),
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textDim,
             fontSize: 14,
             fontWeight: FontWeight.w500,

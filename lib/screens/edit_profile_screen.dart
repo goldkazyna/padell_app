@@ -17,18 +17,18 @@ import 'auth/change_phone_screen.dart';
 
 // Local utility aliases mapped to global AppTheme
 class _T {
-  static const bg = AppTheme.background;
-  static const card = AppTheme.card;
-  static const cardRaised = AppTheme.cardRaised;
-  static const border = AppTheme.border;
-  static const divider = AppTheme.divider;
-  static const text = AppTheme.textPrimary;
-  static const muted = AppTheme.textSecondary;
-  static const dim = AppTheme.textDim;
+  static final bg = AppTheme.background;
+  static final card = AppTheme.card;
+  static final cardRaised = AppTheme.cardRaised;
+  static final border = AppTheme.border;
+  static final divider = AppTheme.divider;
+  static final text = AppTheme.textPrimary;
+  static final muted = AppTheme.textSecondary;
+  static final dim = AppTheme.textDim;
   static const green = AppTheme.accent;
   static const greenSoft = AppTheme.accentSoft;
-  static const amber = AppTheme.amber;
-  static const red = AppTheme.error;
+  static final amber = AppTheme.amber;
+  static final red = AppTheme.error;
   static const rowIconBg = Color(0x0AFFFFFF); // rgba(255,255,255,0.04)
 }
 
@@ -234,13 +234,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ListTile(
               leading: const Icon(Icons.camera_alt, color: _T.green),
               title: Text(AppLocalizations.of(context)!.photoCamera,
-                  style: const TextStyle(color: _T.text)),
+                  style: TextStyle(color: _T.text)),
               onTap: () { Navigator.pop(ctx); _takePhoto(ImageSource.camera); },
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: _T.green),
               title: Text(AppLocalizations.of(context)!.photoGallery,
-                  style: const TextStyle(color: _T.text)),
+                  style: TextStyle(color: _T.text)),
               onTap: () { Navigator.pop(ctx); _takePhoto(ImageSource.gallery); },
             ),
             const SizedBox(height: 16),
@@ -297,13 +297,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       lastDate: DateTime(now.year - 1, now.month, now.day),
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: _T.green,
             onPrimary: Colors.white,
             surface: _T.card,
             onSurface: _T.text,
           ),
-          dialogTheme: const DialogThemeData(backgroundColor: _T.card),
+          dialogTheme: DialogThemeData(backgroundColor: _T.card),
         ),
         child: child!,
       ),
@@ -336,7 +336,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 12),
             Text(
               AppLocalizations.of(context)!.selectCity,
-              style: const TextStyle(color: _T.text, fontSize: 17, fontWeight: FontWeight.w600),
+              style: TextStyle(color: _T.text, fontSize: 17, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             ...cities.map((city) => ListTile(
@@ -411,7 +411,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               fontWeight: FontWeight.w600),
                                         ),
                                         const SizedBox(width: 4),
-                                        const Icon(Icons.chevron_right,
+                                        Icon(Icons.chevron_right,
                                             size: 16, color: _T.dim),
                                       ],
                                     ),
@@ -425,7 +425,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? localizeCity(context, _city)
                                   : null,
                               placeholder: AppLocalizations.of(context)!.selectCity,
-                              trailing: const Icon(Icons.chevron_right, size: 16, color: _T.dim),
+                              trailing: Icon(Icons.chevron_right, size: 16, color: _T.dim),
                               onTap: _pickCity,
                               incomplete: _city == null || _city!.isEmpty,
                               isLast: true,
@@ -440,7 +440,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? '${_ageFromDate(_birthDate!)} · ${_formatDate(_birthDate!)}'
                                   : null,
                               placeholder: AppLocalizations.of(context)!.agePlaceholder,
-                              trailing: const Icon(Icons.chevron_right, size: 16, color: _T.dim),
+                              trailing: Icon(Icons.chevron_right, size: 16, color: _T.dim),
                               onTap: _pickBirthDate,
                               incomplete: _birthDate == null,
                             ),
@@ -507,7 +507,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(width: 10),
           Text(
             AppLocalizations.of(context)!.editProfile,
-            style: const TextStyle(
+            style: TextStyle(
               color: _T.text, fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: -0.2,
             ),
           ),
@@ -557,7 +557,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             colors: [Color(0xFF1F1F26), Color(0xFF1A1A20)],
           ),
           borderRadius: BorderRadius.circular(18),
-          border: const Border.fromBorderSide(BorderSide(color: _T.border)),
+          border: Border.fromBorderSide(BorderSide(color: _T.border)),
         ),
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
         child: Column(
@@ -574,7 +574,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _nameController.text.trim().isEmpty
                             ? AppLocalizations.of(context)!.profileNameless
                             : _nameController.text.trim(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: _T.text, fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: -0.3,
                         ),
                         maxLines: 1,
@@ -583,7 +583,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 3),
                       Text(
                         '$cityLabel · ${AppLocalizations.of(context)!.profileLevelLabel(levelText)}',
-                        style: const TextStyle(color: _T.muted, fontSize: 12),
+                        style: TextStyle(color: _T.muted, fontSize: 12),
                       ),
                       const SizedBox(height: 6),
                       Wrap(spacing: 4, runSpacing: 4, children: [
@@ -614,7 +614,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Expanded(
                         child: Text(
                           AppLocalizations.of(context)!.profileFilled,
-                          style: const TextStyle(color: _T.muted, fontSize: 12),
+                          style: TextStyle(color: _T.muted, fontSize: 12),
                         ),
                       ),
                       Text(
@@ -637,7 +637,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   if (hint != null) ...[
                     const SizedBox(height: 6),
-                    Text(hint, style: const TextStyle(color: _T.dim, fontSize: 11)),
+                    Text(hint, style: TextStyle(color: _T.dim, fontSize: 11)),
                   ],
                 ],
               ),
@@ -680,7 +680,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFF1B1B21), width: 2),
               ),
-              child: const Icon(Icons.camera_alt_outlined, size: 12, color: _T.text),
+              child: Icon(Icons.camera_alt_outlined, size: 12, color: _T.text),
             ),
           ),
         ],
@@ -724,7 +724,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 color: _T.dim, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.4,
               ),
             ),
@@ -738,7 +738,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               child: Text(
                 AppLocalizations.of(context)!.optional,
-                style: const TextStyle(color: _T.dim, fontSize: 10, fontWeight: FontWeight.w500),
+                style: TextStyle(color: _T.dim, fontSize: 10, fontWeight: FontWeight.w500),
               ),
             ),
         ],
@@ -753,7 +753,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: BoxDecoration(
           color: _T.card,
           borderRadius: BorderRadius.circular(14),
-          border: const Border.fromBorderSide(BorderSide(color: _T.border)),
+          border: Border.fromBorderSide(BorderSide(color: _T.border)),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(children: children),
@@ -807,11 +807,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   Row(
                     children: [
-                      Text(label, style: const TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
+                      Text(label, style: TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
                       if (incomplete && empty) ...[
                         const SizedBox(width: 5),
                         Text('• ${AppLocalizations.of(context)!.notFilled}',
-                          style: const TextStyle(color: _T.amber, fontSize: 11, height: 1.2)),
+                          style: TextStyle(color: _T.amber, fontSize: 11, height: 1.2)),
                       ],
                     ],
                   ),
@@ -868,10 +868,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 Row(
                   children: [
-                    Text(label, style: const TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
+                    Text(label, style: TextStyle(color: _T.dim, fontSize: 11, height: 1.2)),
                     if (incomplete && controller.text.isEmpty) ...[
                       const SizedBox(width: 5),
-                      const Text('• Не заполнено',
+                      Text('• Не заполнено',
                         style: TextStyle(color: _T.amber, fontSize: 11, height: 1.2)),
                     ],
                   ],
@@ -880,14 +880,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 TextField(
                   controller: controller,
                   keyboardType: keyboardType,
-                  style: const TextStyle(color: _T.text, fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: _T.text, fontSize: 14, fontWeight: FontWeight.w500),
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
                     hintText: hint,
-                    hintStyle: const TextStyle(color: _T.dim, fontSize: 14, fontWeight: FontWeight.w500),
+                    hintStyle: TextStyle(color: _T.dim, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
@@ -928,10 +928,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 Row(
                   children: [
-                    Text(label, style: const TextStyle(color: _T.dim, fontSize: 11)),
+                    Text(label, style: TextStyle(color: _T.dim, fontSize: 11)),
                     if (incomplete && value == null) ...[
                       const SizedBox(width: 5),
-                      const Text('• Не заполнено',
+                      Text('• Не заполнено',
                         style: TextStyle(color: _T.amber, fontSize: 11)),
                     ],
                   ],

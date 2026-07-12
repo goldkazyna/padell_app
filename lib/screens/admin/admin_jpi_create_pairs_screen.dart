@@ -174,7 +174,7 @@ class _AdminJpiCreatePairsScreenState extends State<AdminJpiCreatePairsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Создать пары',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -184,7 +184,7 @@ class _AdminJpiCreatePairsScreenState extends State<AdminJpiCreatePairsScreen> {
                 ),
                 Text(
                   widget.tournamentName,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -209,11 +209,11 @@ class _AdminJpiCreatePairsScreenState extends State<AdminJpiCreatePairsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
+              Icon(Icons.error_outline, color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_error!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textPrimary)),
+                  style: TextStyle(color: AppTheme.textPrimary)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _load,
@@ -344,7 +344,7 @@ class _AdminJpiCreatePairsScreenState extends State<AdminJpiCreatePairsScreen> {
               children: [
                 Text(
                   (p1?['name'] as String?) ?? '?',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
@@ -352,7 +352,7 @@ class _AdminJpiCreatePairsScreenState extends State<AdminJpiCreatePairsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   (p2?['name'] as String?) ?? '?',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
@@ -419,12 +419,12 @@ class _AdminJpiCreatePairsScreenState extends State<AdminJpiCreatePairsScreen> {
           value: current == 0 ? null : current,
           isExpanded: true,
           dropdownColor: AppTheme.card,
-          icon: const Icon(Icons.expand_more, color: AppTheme.textSecondary),
+          icon: Icon(Icons.expand_more, color: AppTheme.textSecondary),
           hint: Text(
             slot == 0 ? 'Игрок 1' : 'Игрок 2',
-            style: const TextStyle(color: AppTheme.textDim, fontSize: 14),
+            style: TextStyle(color: AppTheme.textDim, fontSize: 14),
           ),
-          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
           items: [
             for (final p in _participants)
               DropdownMenuItem<int>(
@@ -484,7 +484,7 @@ class _AdminJpiCreatePairsScreenState extends State<AdminJpiCreatePairsScreen> {
           const SizedBox(width: 6),
           Text(
             '$rating',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 11,
             ),

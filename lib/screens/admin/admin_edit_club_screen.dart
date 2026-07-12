@@ -9,13 +9,13 @@ import '../../widgets/app_back_button.dart';
 
 // Local utility aliases — same pattern as edit_profile_screen.dart
 class _T {
-  static const bg = AppTheme.background;
-  static const card = AppTheme.card;
-  static const border = AppTheme.border;
-  static const divider = AppTheme.divider;
-  static const text = AppTheme.textPrimary;
-  static const muted = AppTheme.textSecondary;
-  static const dim = AppTheme.textDim;
+  static final bg = AppTheme.background;
+  static final card = AppTheme.card;
+  static final border = AppTheme.border;
+  static final divider = AppTheme.divider;
+  static final text = AppTheme.textPrimary;
+  static final muted = AppTheme.textSecondary;
+  static final dim = AppTheme.textDim;
   static const green = AppTheme.accent;
   static const greenSoft = AppTheme.accentSoft;
   static const rowIconBg = Color(0x0AFFFFFF);
@@ -176,7 +176,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
             const SizedBox(height: 12),
             Text(
               AppLocalizations.of(context)!.selectCity,
-              style: const TextStyle(
+              style: TextStyle(
                 color: _T.text,
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
@@ -255,7 +255,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
                                         ? localizeCity(context, _city)
                                         : null,
                                 placeholder: l10n.selectCity,
-                                trailing: const Icon(
+                                trailing: Icon(
                                   Icons.chevron_right,
                                   size: 16,
                                   color: _T.dim,
@@ -334,7 +334,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
           const SizedBox(width: 10),
           Text(
             l10n.editClubCard,
-            style: const TextStyle(
+            style: TextStyle(
               color: _T.text,
               fontSize: 17,
               fontWeight: FontWeight.w600,
@@ -384,7 +384,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
         decoration: BoxDecoration(
           color: _T.card,
           borderRadius: BorderRadius.circular(14),
-          border: const Border.fromBorderSide(BorderSide(color: _T.border)),
+          border: Border.fromBorderSide(BorderSide(color: _T.border)),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(children: children),
@@ -435,7 +435,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: _T.dim,
                     fontSize: 11,
                     height: 1.2,
@@ -446,7 +446,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
                   controller: controller,
                   keyboardType: keyboardType,
                   maxLines: maxLines,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: _T.text,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -457,7 +457,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
                     contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
                     hintText: hint,
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                       color: _T.dim,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -495,7 +495,7 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: _T.dim,
                       fontSize: 11,
                       height: 1.2,

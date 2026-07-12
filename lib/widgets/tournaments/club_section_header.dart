@@ -38,7 +38,7 @@ class ClubSectionHeader extends StatelessWidget {
                 children: [
                   Text(
                     clubName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -51,12 +51,12 @@ class ClubSectionHeader extends StatelessWidget {
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined,
+                        Icon(Icons.location_on_outlined,
                             size: 10, color: AppTheme.textSecondary),
                         const SizedBox(width: 3),
                         Text(
                           city!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 11,
                           ),
@@ -107,7 +107,7 @@ class ClubSubHeader extends StatelessWidget {
                 children: [
                   Text(
                     clubName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -120,7 +120,7 @@ class ClubSubHeader extends StatelessWidget {
                     const SizedBox(height: 1),
                     Text(
                       city!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textDim,
                         fontSize: 10,
                       ),

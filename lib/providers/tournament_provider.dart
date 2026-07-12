@@ -111,6 +111,14 @@ class TournamentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Прошедшие (завершённые) турниры конкретного клуба за всё время.
+  /// Возвращает список напрямую, не трогая общий архив.
+  Future<List<Tournament>> fetchClubPastTournaments(int clubId) async {
+    final token = await _storage.getToken();
+    if (token == null) return [];
+    return _service.getArchiveTournaments(token, clubId: clubId);
+  }
+
   Future<void> loadCancelledTournaments() async {
     final token = await _storage.getToken();
     if (token == null) return;

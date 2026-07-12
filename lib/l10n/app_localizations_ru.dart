@@ -431,6 +431,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bookingConfirmedSubtitle => 'Вы успешно забронировали корт';
 
   @override
+  String get paymentNotCompletedTitle => 'Оплата не завершена';
+
+  @override
+  String get paymentNotCompleted =>
+      'Вы не завершили оплату. Бронь сохранена как неоплаченная — оплатить можно позже в разделе «Мои брони» или на месте в клубе.';
+
+  @override
   String get myBookings => 'Мои бронирования';
 
   @override
@@ -453,6 +460,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get statusConfirmed => 'Подтверждено';
+
+  @override
+  String get statusNotConfirmed => 'Не подтверждено';
 
   @override
   String get statusCancelled => 'Отменено';
@@ -568,6 +578,21 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get preciseRatingSubtitle =>
       'Показывать рейтинг и уровень с двумя знаками (2.69 вместо 2690)';
+
+  @override
+  String get themeTitle => 'Тема оформления';
+
+  @override
+  String get themeSubtitle => 'Светлая, тёмная или как в системе';
+
+  @override
+  String get themeSystem => 'Системная';
+
+  @override
+  String get themeLight => 'Светлая';
+
+  @override
+  String get themeDark => 'Тёмная';
 
   @override
   String get newsChannelTitle => 'Последние новости приложения';

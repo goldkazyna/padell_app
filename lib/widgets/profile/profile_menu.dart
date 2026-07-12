@@ -155,7 +155,7 @@ class ProfileMenu extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
+        title: Text(
           'Язык / Language',
           style: TextStyle(
               color: AppTheme.textPrimary,
@@ -205,14 +205,14 @@ class ProfileMenu extends StatelessWidget {
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(l.logoutTitle,
-            style: const TextStyle(color: AppTheme.textPrimary)),
+            style: TextStyle(color: AppTheme.textPrimary)),
         content: Text(l.logoutConfirm,
-            style: const TextStyle(color: AppTheme.textSecondary)),
+            style: TextStyle(color: AppTheme.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l.cancel,
-                style: const TextStyle(color: AppTheme.textSecondary)),
+                style: TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () {
@@ -220,7 +220,7 @@ class ProfileMenu extends StatelessWidget {
               context.read<AuthProvider>().logout();
             },
             child:
-                Text(l.logout, style: const TextStyle(color: AppTheme.error)),
+                Text(l.logout, style: TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -235,15 +235,15 @@ class ProfileMenu extends StatelessWidget {
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(l.deleteAccountTitle,
-            style: const TextStyle(color: AppTheme.textPrimary)),
+            style: TextStyle(color: AppTheme.textPrimary)),
         content: Text(l.deleteAccountWarning,
             style:
-                const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+                TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l.cancel,
-                style: const TextStyle(color: AppTheme.textSecondary)),
+                style: TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () async {
@@ -263,7 +263,7 @@ class ProfileMenu extends StatelessWidget {
               }
             },
             child: Text(l.deleteButton,
-                style: const TextStyle(color: AppTheme.error)),
+                style: TextStyle(color: AppTheme.error)),
           ),
         ],
       ),

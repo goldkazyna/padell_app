@@ -95,14 +95,14 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                             color: const Color(0xFF2A2A2A), width: 0.5),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.close,
+                        icon: Icon(Icons.close,
                             color: AppTheme.textPrimary, size: 22),
                         onPressed: () => Navigator.of(context).pop(_paid),
                         padding: EdgeInsets.zero,
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Оплата',
                         style: TextStyle(

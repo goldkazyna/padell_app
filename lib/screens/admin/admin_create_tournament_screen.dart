@@ -393,13 +393,13 @@ class _AdminCreateTournamentScreenState
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Парный Americano Flex',
+              Text('Парный Americano Flex',
                   style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 18,
                       fontWeight: FontWeight.w800)),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Пары фиксированные — партнёр не меняется весь турнир. '
                 'Меняются только соперники и отдых.\n\n'
                 '• Игроки записываются по одному, пары собирает админ перед стартом.\n'
@@ -457,7 +457,7 @@ class _AdminCreateTournamentScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Создать турнир',
                   style: TextStyle(
                     color: AppTheme.textPrimary,
@@ -467,7 +467,7 @@ class _AdminCreateTournamentScreenState
                 ),
                 Text(
                   widget.clubName,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 13),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -519,7 +519,7 @@ class _AdminCreateTournamentScreenState
             const SizedBox(height: 12),
             _label('Клуб (площадка)'),
             _venueClubField(),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 4),
               child: Text(
                 'Необязательно. Где физически играют — увидят записавшиеся.',
@@ -595,7 +595,7 @@ class _AdminCreateTournamentScreenState
             _textField(_telegramUrl,
                 hint: 'https://t.me/...',
                 keyboardType: TextInputType.url),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 4),
               child: Text(
                 'Если указана — кнопка «Записаться» в карточке турнира будет вести в этот чат вместо записи через приложение.',
@@ -625,7 +625,7 @@ class _AdminCreateTournamentScreenState
                 ),
               ],
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 4),
               child: Text(
                 'Пусто = без таймера. Минуты — для отладки; если заданы, важнее часов.',
@@ -747,7 +747,7 @@ class _AdminCreateTournamentScreenState
                   )),
               const SizedBox(height: 2),
               Text(subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textSecondary, fontSize: 11),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis),
@@ -853,14 +853,14 @@ class _AdminCreateTournamentScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(title,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: AppTheme.textPrimary,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700)),
                         if (!open && summary.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(summary,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   color: AppTheme.textSecondary,
                                   fontSize: 12),
                               maxLines: 1,
@@ -872,7 +872,7 @@ class _AdminCreateTournamentScreenState
                   AnimatedRotation(
                     turns: open ? 0.5 : 0.0,
                     duration: const Duration(milliseconds: 180),
-                    child: const Icon(Icons.keyboard_arrow_down,
+                    child: Icon(Icons.keyboard_arrow_down,
                         color: AppTheme.textSecondary, size: 22),
                   ),
                 ],
@@ -959,13 +959,13 @@ class _AdminCreateTournamentScreenState
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Авто: игроков в группе − 1. Можно изменить вручную.',
           style: TextStyle(color: AppTheme.textDim, fontSize: 11),
         ),
         const SizedBox(height: 12),
         _playoffSettings(),
-        const Divider(color: AppTheme.border, height: 28),
+        Divider(color: AppTheme.border, height: 28),
       ]);
     } else if (_type == 'team') {
       children.addAll([
@@ -977,10 +977,10 @@ class _AdminCreateTournamentScreenState
             _pairingMode == 'admin'
                 ? 'Игроки записываются по одному, пары собираете вы перед стартом.'
                 : 'Пары регистрируются сами (через поиск партнёра).',
-            style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+            style: TextStyle(color: AppTheme.textDim, fontSize: 11),
           ),
         ),
-        const Text(
+        Text(
           'Фиксированные пары играют групповой этап. Можно добавить плей-офф на вылет или оставить только группы. Количество указано в парах.',
           style: TextStyle(color: AppTheme.textDim, fontSize: 11),
         ),
@@ -996,7 +996,7 @@ class _AdminCreateTournamentScreenState
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Если заполнено — матчи группового этапа идут волнами, не более N '
           'одновременно. Пусто — авто (по числу игроков).',
           style: TextStyle(color: AppTheme.textDim, fontSize: 11),
@@ -1023,14 +1023,14 @@ class _AdminCreateTournamentScreenState
             onChanged: (v) => setState(() => _teamHasBronzeMatch = v),
           ),
         ] else
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(top: 4),
             child: Text(
               'Без плей-офф: турнир завершится после группового этапа, итоговое место — по таблице групп.',
               style: TextStyle(color: AppTheme.textDim, fontSize: 11),
             ),
           ),
-        const Divider(color: AppTheme.border, height: 28),
+        Divider(color: AppTheme.border, height: 28),
       ]);
     }
 
@@ -1049,7 +1049,7 @@ class _AdminCreateTournamentScreenState
         Text(
           'Сколько кортов играет одновременно (1 корт = 4 игрока). '
           'Максимум — $_flexMaxCourts. Пусто = $_flexMaxCourts.',
-          style: const TextStyle(color: AppTheme.textDim, fontSize: 11),
+          style: TextStyle(color: AppTheme.textDim, fontSize: 11),
         ),
         const SizedBox(height: 12),
       ]);
@@ -1057,7 +1057,7 @@ class _AdminCreateTournamentScreenState
       children.addAll([
         Text(
           'Кол-во кортов: $_courtsCount  (автоматически: участников ÷ 4)',
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
         ),
         const SizedBox(height: 12),
       ]);
@@ -1414,7 +1414,7 @@ class _AdminCreateTournamentScreenState
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textPrimary, fontSize: 13),
               ),
             ),
@@ -1434,7 +1434,7 @@ class _AdminCreateTournamentScreenState
   Widget _label(String text) => Padding(
         padding: const EdgeInsets.only(bottom: 6),
         child: Text(text,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600)),
@@ -1452,10 +1452,10 @@ class _AdminCreateTournamentScreenState
       maxLines: maxLines,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
-      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+      style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppTheme.textDim, fontSize: 13),
+        hintStyle: TextStyle(color: AppTheme.textDim, fontSize: 13),
         filled: true,
         fillColor: AppTheme.cardRaised,
         contentPadding:
@@ -1524,7 +1524,7 @@ class _AdminCreateTournamentScreenState
         ),
         child: Row(
           children: [
-            const Icon(Icons.event_outlined,
+            Icon(Icons.event_outlined,
                 color: AppTheme.textSecondary, size: 18),
             const SizedBox(width: 10),
             Expanded(
@@ -1535,7 +1535,7 @@ class _AdminCreateTournamentScreenState
                           : AppTheme.textDim,
                       fontSize: 14)),
             ),
-            const Icon(Icons.chevron_right,
+            Icon(Icons.chevron_right,
                 color: AppTheme.textDim, size: 18),
           ],
         ),
@@ -1557,7 +1557,7 @@ class _AdminCreateTournamentScreenState
         ),
         child: Row(
           children: [
-            const Icon(Icons.place_outlined,
+            Icon(Icons.place_outlined,
                 color: AppTheme.textSecondary, size: 18),
             const SizedBox(width: 10),
             Expanded(
@@ -1579,13 +1579,13 @@ class _AdminCreateTournamentScreenState
                     _venueClubName = null;
                   });
                 },
-                child: const Padding(
+                child: Padding(
                   padding: EdgeInsets.all(4),
                   child: Icon(Icons.close, color: AppTheme.textDim, size: 18),
                 ),
               )
             else
-              const Icon(Icons.chevron_right,
+              Icon(Icons.chevron_right,
                   color: AppTheme.textDim, size: 18),
           ],
         ),
@@ -1666,7 +1666,7 @@ class _AdminCreateTournamentScreenState
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Клуб (площадка)',
                         style: TextStyle(
                           color: AppTheme.textPrimary,
@@ -1679,13 +1679,13 @@ class _AdminCreateTournamentScreenState
                         controller: searchCtrl,
                         autofocus: false,
                         onChanged: onChanged,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textPrimary, fontSize: 14),
                         decoration: InputDecoration(
                           hintText: 'Название, адрес или город',
-                          hintStyle: const TextStyle(
+                          hintStyle: TextStyle(
                               color: AppTheme.textDim, fontSize: 13),
-                          prefixIcon: const Icon(Icons.search,
+                          prefixIcon: Icon(Icons.search,
                               color: AppTheme.textSecondary, size: 20),
                           filled: true,
                           fillColor: AppTheme.cardRaised,
@@ -1718,7 +1718,7 @@ class _AdminCreateTournamentScreenState
                               });
                               Navigator.of(sheetContext).pop();
                             },
-                            child: const Text(
+                            child: Text(
                               'Убрать площадку',
                               style: TextStyle(
                                 color: AppTheme.textSecondary,
@@ -1751,13 +1751,13 @@ class _AdminCreateTournamentScreenState
                                     padding: const EdgeInsets.all(16),
                                     child: Text(
                                       'Ошибка поиска: $error',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           color: AppTheme.textSecondary,
                                           fontSize: 13),
                                     ),
                                   )
                                 : results.isEmpty
-                                    ? const Padding(
+                                    ? Padding(
                                         padding: EdgeInsets.all(16),
                                         child: Text(
                                           'Ничего не найдено',
@@ -1846,7 +1846,7 @@ class _AdminCreateTournamentScreenState
                                                                             2),
                                                             child: Text(
                                                               '$city',
-                                                              style: const TextStyle(
+                                                              style: TextStyle(
                                                                   color: AppTheme
                                                                       .textSecondary,
                                                                   fontSize:
@@ -1893,7 +1893,7 @@ class _AdminCreateTournamentScreenState
       lastDate: lastDate,
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             onPrimary: Colors.white,
             surface: AppTheme.card,
@@ -1954,7 +1954,7 @@ class _AdminCreateTournamentScreenState
                     Center(
                       child: Text(
                         label(i),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 24,
                           fontWeight: FontWeight.w600,
@@ -1966,7 +1966,7 @@ class _AdminCreateTournamentScreenState
             }
 
             return Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppTheme.card,
                 borderRadius:
                     BorderRadius.vertical(top: Radius.circular(20)),
@@ -1989,7 +1989,7 @@ class _AdminCreateTournamentScreenState
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                     child: Row(
                       children: [
-                        const Text('Выберите время',
+                        Text('Выберите время',
                             style: TextStyle(
                                 color: AppTheme.textPrimary,
                                 fontSize: 16,
@@ -2015,7 +2015,7 @@ class _AdminCreateTournamentScreenState
                             onChanged: (i) => setSheet(() => hour = i),
                           ),
                         ),
-                        const Text(':',
+                        Text(':',
                             style: TextStyle(
                                 color: AppTheme.textSecondary,
                                 fontSize: 24,
@@ -2043,7 +2043,7 @@ class _AdminCreateTournamentScreenState
                               padding:
                                   const EdgeInsets.symmetric(vertical: 14),
                             ),
-                            child: const Text('Отмена',
+                            child: Text('Отмена',
                                 style: TextStyle(
                                     color: AppTheme.textSecondary,
                                     fontSize: 15)),
@@ -2088,7 +2088,7 @@ class _AdminCreateTournamentScreenState
           SizedBox(
             width: 56,
             child: Text(label,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary, fontSize: 12)),
           ),
           Expanded(
@@ -2108,7 +2108,7 @@ class _AdminCreateTournamentScreenState
             child: Text(
               value.toStringAsFixed(2),
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary, fontSize: 13),
             ),
           ),
@@ -2186,7 +2186,7 @@ class _AdminCreateTournamentScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Рейтинговый турнир',
+                Text('Рейтинговый турнир',
                     style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
@@ -2196,7 +2196,7 @@ class _AdminCreateTournamentScreenState
                   _isRated
                       ? 'Влияет на рейтинг игроков'
                       : 'Не повлияет на рейтинг игроков',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textDim, fontSize: 11),
                 ),
               ],
@@ -2278,7 +2278,7 @@ class _AdminCreateTournamentScreenState
               children: [
                 Row(
                   children: [
-                    const Text('Парный',
+                    Text('Парный',
                         style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 14,
@@ -2286,13 +2286,13 @@ class _AdminCreateTournamentScreenState
                     const SizedBox(width: 6),
                     GestureDetector(
                       onTap: _showPairedInfo,
-                      child: const Icon(Icons.help_outline,
+                      child: Icon(Icons.help_outline,
                           size: 16, color: AppTheme.textSecondary),
                     ),
                   ],
                 ),
                 const SizedBox(height: 2),
-                const Text('Фиксированные пары, ротация соперников',
+                Text('Фиксированные пары, ротация соперников',
                     style: TextStyle(color: AppTheme.textDim, fontSize: 11)),
               ],
             ),
@@ -2320,7 +2320,7 @@ class _AdminCreateTournamentScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Только для верифицированных',
+                Text('Только для верифицированных',
                     style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,
@@ -2330,7 +2330,7 @@ class _AdminCreateTournamentScreenState
                   _verifiedOnly
                       ? 'Заявки только от верифицированных игроков'
                       : 'Заявки от любых игроков',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textDim, fontSize: 11),
                 ),
               ],
@@ -2358,7 +2358,7 @@ class _AdminCreateTournamentScreenState
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text('Чат турнира',
                     style: TextStyle(
                         color: AppTheme.textPrimary,
@@ -2392,7 +2392,7 @@ class _AdminCreateTournamentScreenState
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Кто может писать. Читать могут все, кому доступен чат.',
               style: TextStyle(color: AppTheme.textDim, fontSize: 11),
             ),
@@ -2473,7 +2473,7 @@ class _AdminCreateTournamentScreenState
                   if ((_saveLabel ?? '').isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Text(_saveLabel!,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textPrimary, fontSize: 13)),
                   ],
                 ],

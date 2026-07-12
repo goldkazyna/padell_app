@@ -65,7 +65,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             children: [
               Text(
                 AppLocalizations.of(context)!.challengeChoosePosition,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -74,7 +74,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               const SizedBox(height: 4),
               Text(
                 AppLocalizations.of(context)!.challengePositionHint,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 13,
                 ),
@@ -122,7 +122,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           Expanded(
                             child: Text(
                               pos <= 2 ? AppLocalizations.of(context)!.challengeTeamA : AppLocalizations.of(context)!.challengeTeamB,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppTheme.textPrimary,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w500,
@@ -131,7 +131,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.chevron_right,
                             color: AppTheme.textSecondary,
                             size: 20,
@@ -172,8 +172,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
-        title: Text(AppLocalizations.of(context)!.challengeCancelTitle, style: const TextStyle(color: AppTheme.textPrimary)),
-        content: Text(AppLocalizations.of(context)!.challengeCancelConfirm, style: const TextStyle(color: AppTheme.textSecondary)),
+        title: Text(AppLocalizations.of(context)!.challengeCancelTitle, style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text(AppLocalizations.of(context)!.challengeCancelConfirm, style: TextStyle(color: AppTheme.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -181,7 +181,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(AppLocalizations.of(context)!.challengeYesCancel, style: const TextStyle(color: AppTheme.error)),
+            child: Text(AppLocalizations.of(context)!.challengeYesCancel, style: TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -288,7 +288,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         children: [
                           Text(
                             provider.error!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.textSecondary,
                             ),
                             textAlign: TextAlign.center,
@@ -332,7 +332,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     child: Center(
                       child: Text(
                         AppLocalizations.of(context)!.challengeNotFound,
-                        style: const TextStyle(color: AppTheme.textSecondary),
+                        style: TextStyle(color: AppTheme.textSecondary),
                       ),
                     ),
                   ),
@@ -409,7 +409,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           Expanded(
             child: Text(
               AppLocalizations.of(context)!.challenge,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -481,13 +481,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           // Date & time
           Row(
             children: [
-              const Icon(Icons.calendar_today,
+              Icon(Icons.calendar_today,
                   color: AppTheme.textSecondary, size: 16),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   '${challenge.dayOfWeek}, ${challenge.dateFormatted} в ${challenge.timeFormatted}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -503,13 +503,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.location_on,
+                Icon(Icons.location_on,
                     color: AppTheme.textSecondary, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     challenge.club!.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -525,13 +525,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           // Level
           Row(
             children: [
-              const Icon(Icons.trending_up,
+              Icon(Icons.trending_up,
                   color: AppTheme.textSecondary, size: 16),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   AppLocalizations.of(context)!.challengeLevel(challenge.levelText),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -578,7 +578,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       children: [
         Text(
           AppLocalizations.of(context)!.challengeScore,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -708,7 +708,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       children: [
         Text(
           AppLocalizations.of(context)!.challengeResult,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -731,12 +731,12 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('$teamAWins', style: const TextStyle(color: AppTheme.textPrimary, fontSize: 36, fontWeight: FontWeight.w700)),
-                  const Padding(
+                  Text('$teamAWins', style: TextStyle(color: AppTheme.textPrimary, fontSize: 36, fontWeight: FontWeight.w700)),
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(':', style: TextStyle(color: AppTheme.textSecondary, fontSize: 36, fontWeight: FontWeight.w700)),
                   ),
-                  Text('$teamBWins', style: const TextStyle(color: AppTheme.textPrimary, fontSize: 36, fontWeight: FontWeight.w700)),
+                  Text('$teamBWins', style: TextStyle(color: AppTheme.textPrimary, fontSize: 36, fontWeight: FontWeight.w700)),
                 ],
               ),
               const SizedBox(height: 8),
@@ -746,7 +746,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
                     AppLocalizations.of(context)!.challengeSetScore(entry.key + 1, entry.value.teamA, entry.value.teamB),
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                   ),
                 )),
               const SizedBox(height: 16),
@@ -773,7 +773,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     Expanded(
                       child: Text(
                         player.fullName,
-                        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
+                        style: TextStyle(color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -889,7 +889,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         children: [
           Text(
             AppLocalizations.of(context)!.challengeResult,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -903,13 +903,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             children: [
               Text(
                 '$totalA',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 40,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   ':',
@@ -922,7 +922,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               ),
               Text(
                 '$totalB',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 40,
                   fontWeight: FontWeight.w800,
@@ -953,7 +953,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.challengeSetLabel(i + 1),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 13,
                     ),
@@ -961,7 +961,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                   const SizedBox(width: 16),
                   Text(
                     '${s.teamA} : ${s.teamB}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -1054,7 +1054,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             child: Text(
               hint,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 13,
               ),

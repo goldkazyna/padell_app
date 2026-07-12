@@ -163,7 +163,7 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
           const SizedBox(width: 14),
           Text(
             widget.title,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 22,
               fontWeight: FontWeight.w800,
@@ -180,12 +180,12 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: TextField(
         controller: _searchController,
-        style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+        style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
         decoration: InputDecoration(
           hintText: widget.type == 'community'
               ? l.searchCommunityHint
               : l.searchClubHint,
-          hintStyle: const TextStyle(
+          hintStyle: TextStyle(
               color: AppTheme.textSecondary, fontSize: 14),
           filled: true,
           fillColor: AppTheme.card,
@@ -195,7 +195,7 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          prefixIcon: const Icon(Icons.search,
+          prefixIcon: Icon(Icons.search,
               color: AppTheme.textSecondary, size: 20),
         ),
         onChanged: (value) {
@@ -217,9 +217,9 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.textSecondary, size: 48),
+              Icon(Icons.error_outline, color: AppTheme.textSecondary, size: 48),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Не удалось загрузить клубы',
                 style: TextStyle(color: AppTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.w600),
               ),
@@ -239,7 +239,7 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
       );
     }
     if (_clubs.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Клубов не найдено',
           style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
@@ -314,7 +314,7 @@ class _ClubTile extends StatelessWidget {
                 children: [
                   Text(
                     club.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -330,11 +330,11 @@ class _ClubTile extends StatelessWidget {
                   if (club.city != null && club.city!.isNotEmpty)
                     Row(
                       children: [
-                        const Icon(Icons.location_city_outlined, size: 12, color: AppTheme.textSecondary),
+                        Icon(Icons.location_city_outlined, size: 12, color: AppTheme.textSecondary),
                         const SizedBox(width: 4),
                         Text(
                           club.city!,
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                         ),
                       ],
                     ),
@@ -342,7 +342,7 @@ class _ClubTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       club.address!,
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -350,7 +350,26 @@ class _ClubTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppTheme.textSecondary, size: 20),
+            if (club.tournamentsCount > 0) ...[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.emoji_events_outlined,
+                      size: 15, color: AppTheme.textSecondary),
+                  const SizedBox(width: 3),
+                  Text(
+                    '${club.tournamentsCount}',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 8),
+            ],
+            Icon(Icons.chevron_right, color: AppTheme.textSecondary, size: 20),
           ],
         ),
       ),

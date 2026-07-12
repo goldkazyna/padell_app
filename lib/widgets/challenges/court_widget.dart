@@ -300,7 +300,7 @@ class CourtWidget extends StatelessWidget {
     final precise = context.watch<SettingsProvider>().preciseRating;
     return Text(
       RatingFormatter.formatRating(player.rating, precise),
-      style: const TextStyle(
+      style: TextStyle(
         color: AppTheme.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.w400,

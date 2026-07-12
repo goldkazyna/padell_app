@@ -152,7 +152,7 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(meta,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textSecondary, fontSize: 12)),
                   ),
               ],
@@ -192,7 +192,7 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: AppTheme.textDim)),
+            Text(_error!, style: TextStyle(color: AppTheme.textDim)),
             TextButton(onPressed: _load, child: const Text('Повторить')),
           ],
         ),
@@ -235,7 +235,7 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(label,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 11,
                 fontWeight: FontWeight.w700)),
@@ -254,7 +254,7 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (closed)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(bottom: 8),
               child: Text(
                 'Тикет закрыт. Новое сообщение откроет его снова.',
@@ -281,7 +281,7 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
                                 color: AppTheme.cardRaised,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(Icons.picture_as_pdf,
+                              child: Icon(Icons.picture_as_pdf,
                                   color: AppTheme.error, size: 24),
                             )
                           else
@@ -296,7 +296,7 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
                             child: GestureDetector(
                               onTap: () => setState(() => _photos.removeAt(i)),
                               child: Container(
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                     color: AppTheme.error,
                                     shape: BoxShape.circle),
                                 padding: const EdgeInsets.all(1),
@@ -316,7 +316,7 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
             children: [
               GestureDetector(
                 onTap: _sending ? null : _addAttachment,
-                child: const SizedBox(
+                child: SizedBox(
                   width: 42,
                   height: 44,
                   child: Icon(Icons.attach_file, color: AppTheme.textSecondary),
@@ -335,8 +335,8 @@ class _SupportTicketThreadScreenState extends State<SupportTicketThreadScreen> {
                     controller: _reply,
                     minLines: 1,
                     maxLines: 4,
-                    style: const TextStyle(color: AppTheme.textPrimary),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: AppTheme.textPrimary),
+                    decoration: InputDecoration(
                       hintText: 'Сообщение…',
                       hintStyle: TextStyle(color: AppTheme.textDim),
                       border: InputBorder.none,
@@ -477,7 +477,7 @@ class _MessageBubble extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.picture_as_pdf,
+                              Icon(Icons.picture_as_pdf,
                                   color: AppTheme.error, size: 22),
                               const SizedBox(width: 8),
                               Column(
@@ -490,14 +490,14 @@ class _MessageBubble extends StatelessWidget {
                                       a.name.isEmpty ? 'Документ.pdf' : a.name,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           color: AppTheme.textPrimary,
                                           fontSize: 12.5),
                                     ),
                                   ),
                                   if (a.sizeLabel.isNotEmpty)
                                     Text(a.sizeLabel,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             color: AppTheme.textDim,
                                             fontSize: 11)),
                                 ],
@@ -521,7 +521,7 @@ class _MessageBubble extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               _fmt(message.createdAt),
-              style: const TextStyle(color: AppTheme.textDim, fontSize: 10.5),
+              style: TextStyle(color: AppTheme.textDim, fontSize: 10.5),
             ),
           ],
         ),

@@ -39,15 +39,15 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         backgroundColor: AppTheme.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(l10n.cancelBooking, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        content: Text(l10n.areYouSure, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+        content: Text(l10n.areYouSure, style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.no, style: const TextStyle(color: AppTheme.textSecondary)),
+            child: Text(l10n.no, style: TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.yesCancelIt, style: const TextStyle(color: AppTheme.error)),
+            child: Text(l10n.yesCancelIt, style: TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -178,7 +178,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
             const SizedBox(height: 12),
             Text(
               isUpcoming ? AppLocalizations.of(context)!.noUpcomingBookings : AppLocalizations.of(context)!.noPastBookings,
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
           ],
         ),
@@ -254,14 +254,19 @@ class _BookingCard extends StatelessWidget {
     final canCancel = booking['can_cancel'] == true;
     final cancelMinHours = (booking['cancel_min_hours'] as int?) ?? 12;
     final isProcessed = booking['is_processed'] ?? true;
+    final bool isPaid = booking['is_paid'] == true;
+    final paymentMethod = booking['payment_method'] as String? ?? '';
 
-    final bool isPending = !isProcessed;
     final bool isCancelled = status == 'cancelled';
+    // Онлайн-бронь (Plexy), которую не оплатили — показываем «Не подтверждено».
+    final bool isUnpaidOnline =
+        !isCancelled && paymentMethod == 'plexy' && !isPaid;
+    final bool isPending = !isProcessed && !isUnpaidOnline;
 
     Color borderColor;
     if (isCancelled) {
       borderColor = const Color(0xFF3F3F46);
-    } else if (isPending) {
+    } else if (isPending || isUnpaidOnline) {
       borderColor = const Color(0xFFEF4444).withAlpha(50);
     } else {
       borderColor = AppTheme.accent.withAlpha(40);
@@ -270,7 +275,7 @@ class _BookingCard extends StatelessWidget {
     Color gradEnd;
     if (isCancelled) {
       gradEnd = const Color(0xFF1A1A1A);
-    } else if (isPending) {
+    } else if (isPending || isUnpaidOnline) {
       gradEnd = const Color(0xFF1F1A1A);
     } else {
       gradEnd = const Color(0xFF1A1D1A);
@@ -307,6 +312,7 @@ class _BookingCard extends StatelessWidget {
                     _StatusBadge(
                       isCancelled: isCancelled,
                       isPending: isPending,
+                      isUnpaidOnline: isUnpaidOnline,
                     ),
                   ],
                 ),
@@ -367,7 +373,7 @@ class _BookingCard extends StatelessWidget {
                             ),
                             child: Text(
                               l10n.cancel,
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.error),
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.error),
                             ),
                           ),
                         ),
@@ -385,12 +391,12 @@ class _BookingCard extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline, size: 14, color: AppTheme.amber),
+                        Icon(Icons.info_outline, size: 14, color: AppTheme.amber),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'Отмена менее чем за $cancelMinHours часов через приложение невозможна. Свяжитесь с клубом.',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               color: AppTheme.amber,
                               fontWeight: FontWeight.w600,
@@ -414,8 +420,13 @@ class _BookingCard extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   final bool isCancelled;
   final bool isPending;
+  final bool isUnpaidOnline;
 
-  const _StatusBadge({required this.isCancelled, required this.isPending});
+  const _StatusBadge({
+    required this.isCancelled,
+    required this.isPending,
+    this.isUnpaidOnline = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -428,6 +439,10 @@ class _StatusBadge extends StatelessWidget {
       text = l10n.statusCancelled;
       bg = const Color(0xFF3F3F46).withAlpha(40);
       fg = const Color(0xFF71717A);
+    } else if (isUnpaidOnline) {
+      text = l10n.statusNotConfirmed;
+      bg = AppTheme.error;
+      fg = Colors.white;
     } else if (isPending) {
       text = l10n.statusPending;
       bg = AppTheme.error;

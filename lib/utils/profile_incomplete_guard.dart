@@ -36,7 +36,7 @@ Future<void> showProfileIncompleteDialog(BuildContext context) {
             const SizedBox(height: 16),
             Text(
               l.profileBannerTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -46,7 +46,7 @@ Future<void> showProfileIncompleteDialog(BuildContext context) {
             Text(
               l.profileBannerDesc,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 14,
               ),
@@ -85,7 +85,7 @@ Future<void> showProfileIncompleteDialog(BuildContext context) {
               onPressed: () => Navigator.of(ctx).pop(),
               child: Text(
                 l.later,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary, fontSize: 14),
               ),
             ),

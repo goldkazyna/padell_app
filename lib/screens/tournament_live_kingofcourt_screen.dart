@@ -172,11 +172,11 @@ class _TournamentLiveKingOfCourtScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.error, size: 48),
+              Icon(Icons.error_outline, color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
               Text(_error!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textPrimary)),
+                  style: TextStyle(color: AppTheme.textPrimary)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _load,
@@ -233,7 +233,7 @@ class _TournamentLiveKingOfCourtScreenState
           const SizedBox(height: 14),
           Text(
             t['name'] as String? ?? '',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -246,10 +246,10 @@ class _TournamentLiveKingOfCourtScreenState
             children: [
               Text(
                 t['club_name'] as String? ?? '',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.textSecondary, fontSize: 13),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6),
                 child: Text('·',
                     style:
@@ -257,7 +257,7 @@ class _TournamentLiveKingOfCourtScreenState
               ),
               Text(
                 t['format_name'] as String? ?? '',
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppTheme.amber,
                     fontSize: 13,
                     fontWeight: FontWeight.w600),
@@ -324,7 +324,7 @@ class _TournamentLiveKingOfCourtScreenState
   bool get _isPaired => _data?['tournament']?['is_paired'] == true;
 
   Widget _buildLeaderboard(List<Map<String, dynamic>> leaderboard) {
-    const hdrStyle = TextStyle(
+    final hdrStyle = TextStyle(
         color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700);
     Widget hdr(String text, double width,
         {TextAlign align = TextAlign.center}) {
@@ -724,7 +724,7 @@ class _TournamentLiveKingOfCourtScreenState
                 children: [
                   Text(
                     'Раунд ${round['round_number']}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -733,7 +733,7 @@ class _TournamentLiveKingOfCourtScreenState
                   const SizedBox(width: 10),
                   Text(
                     '$completedCount / ${matches.length} матчей',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textDim,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -745,18 +745,18 @@ class _TournamentLiveKingOfCourtScreenState
                     const SizedBox(width: 6),
                   ],
                   if (inProgress)
-                    const _RoundStatusPill(
+                    _RoundStatusPill(
                       text: 'идёт',
                       color: AppTheme.accent,
                       pulse: true,
                     )
                   else if (allCompleted)
-                    const _RoundStatusPill(
+                    _RoundStatusPill(
                       text: 'завершён',
                       color: AppTheme.textDim,
                     )
                   else
-                    const _RoundStatusPill(
+                    _RoundStatusPill(
                       text: 'ожидание',
                       color: AppTheme.amber,
                     ),
@@ -764,7 +764,7 @@ class _TournamentLiveKingOfCourtScreenState
                   AnimatedRotation(
                     turns: expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 180),
-                    child: const Icon(
+                    child: Icon(
                       Icons.keyboard_arrow_down,
                       color: AppTheme.textSecondary,
                       size: 22,
@@ -820,7 +820,7 @@ class _TournamentLiveKingOfCourtScreenState
     return Container(
       decoration: BoxDecoration(
         color: hasMe ? AppTheme.accent.withAlpha(20) : null,
-        border: const Border(
+        border: Border(
           top: BorderSide(color: AppTheme.divider, width: 0.5),
         ),
       ),
@@ -1138,11 +1138,11 @@ class _DatePill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.event_rounded, color: AppTheme.amber, size: 14),
+          Icon(Icons.event_rounded, color: AppTheme.amber, size: 14),
           const SizedBox(width: 6),
           Text(
             date.isEmpty ? 'Завершён' : date,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.amber,
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -1344,7 +1344,7 @@ class _PlayerTile extends StatelessWidget {
   }
 
   List<Widget> _buildNameLines(String name) {
-    const style = TextStyle(
+    final style = TextStyle(
       color: AppTheme.textPrimary,
       fontSize: 11,
       fontWeight: FontWeight.w600,
@@ -1355,7 +1355,7 @@ class _PlayerTile extends StatelessWidget {
         name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) {
       return [
-        const Text('—', textAlign: TextAlign.center, style: style),
+        Text('—', textAlign: TextAlign.center, style: style),
       ];
     }
     final first = parts.first;

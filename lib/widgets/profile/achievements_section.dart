@@ -15,7 +15,7 @@ class AchievementsSection extends StatelessWidget {
           children: [
             Text(
               l.achievements,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -69,7 +69,7 @@ class AchievementsSection extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 11,
             ),

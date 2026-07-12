@@ -86,7 +86,7 @@ class NearestTournamentCard extends StatelessWidget {
                       children: [
                         Text(
                           t.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -97,7 +97,7 @@ class NearestTournamentCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           t.club.name,
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                          style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -120,13 +120,13 @@ class NearestTournamentCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.place_outlined,
+                    Icon(Icons.place_outlined,
                         size: 13, color: AppTheme.textSecondary),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
                         t.venueClubName!,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppTheme.textSecondary, fontSize: 12),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -214,11 +214,11 @@ class NearestTournamentCard extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
-            const Icon(Icons.event_available, color: AppTheme.textSecondary, size: 40),
+            Icon(Icons.event_available, color: AppTheme.textSecondary, size: 40),
             const SizedBox(height: 12),
             Text(
               AppLocalizations.of(context)!.notInTournaments,
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -306,14 +306,14 @@ class _PaymentTimerFooterState extends State<_PaymentTimerFooter> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.schedule, size: 16, color: AppTheme.amber),
+          Icon(Icons.schedule, size: 16, color: AppTheme.amber),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               left.isNegative
                   ? 'Оплатите участие'
                   : 'Оплатите участие — осталось ${_fmt(left)}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.amber,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,

@@ -121,7 +121,7 @@ class _ScoreInputWidgetState extends State<ScoreInputWidget> {
               if (widget.isEditable && widget.setIndex > 0)
                 GestureDetector(
                   onTap: widget.onDelete,
-                  child: const Icon(
+                  child: Icon(
                     Icons.delete_outline,
                     color: AppTheme.error,
                     size: 20,
@@ -265,7 +265,7 @@ class _ScoreInputWidgetState extends State<ScoreInputWidget> {
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
         ],
-        style: const TextStyle(
+        style: TextStyle(
           color: AppTheme.textPrimary,
           fontSize: 22,
           fontWeight: FontWeight.w700,

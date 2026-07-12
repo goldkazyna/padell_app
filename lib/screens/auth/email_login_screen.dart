@@ -81,7 +81,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back,
+                    icon: Icon(Icons.arrow_back,
                         color: AppTheme.textPrimary, size: 20),
                     onPressed: () => Navigator.pop(context),
                     padding: EdgeInsets.zero,
@@ -92,7 +92,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 // Title
                 Text(
                   AppLocalizations.of(context)!.emailLoginTitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -101,7 +101,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.enterEmailAndPassword,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 15,
                   ),
@@ -111,14 +111,14 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 // Email or phone field
                 Text(
                   AppLocalizations.of(context)!.emailOrPhone,
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _loginController,
                   keyboardType: TextInputType.emailAddress,
                   autocorrect: false,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary, fontSize: 16),
                   decoration: _inputDecoration(
                     AppLocalizations.of(context)!.emailOrPhonePlaceholder,
@@ -146,13 +146,13 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 // Password field
                 Text(
                   AppLocalizations.of(context)!.password,
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textPrimary, fontSize: 16),
                   decoration: _inputDecoration(AppLocalizations.of(context)!.enterPassword).copyWith(
                     suffixIcon: IconButton(
@@ -204,7 +204,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
                         auth.error!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.error,
                           fontSize: 14,
                         ),
@@ -316,11 +316,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.error),
+        borderSide: BorderSide(color: AppTheme.error),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.error),
+        borderSide: BorderSide(color: AppTheme.error),
       ),
     );
   }

@@ -874,6 +874,18 @@ abstract class AppLocalizations {
   /// **'Вы успешно забронировали корт'**
   String get bookingConfirmedSubtitle;
 
+  /// No description provided for @paymentNotCompletedTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплата не завершена'**
+  String get paymentNotCompletedTitle;
+
+  /// No description provided for @paymentNotCompleted.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы не завершили оплату. Бронь сохранена как неоплаченная — оплатить можно позже в разделе «Мои брони» или на месте в клубе.'**
+  String get paymentNotCompleted;
+
   /// No description provided for @myBookings.
   ///
   /// In ru, this message translates to:
@@ -921,6 +933,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Подтверждено'**
   String get statusConfirmed;
+
+  /// No description provided for @statusNotConfirmed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не подтверждено'**
+  String get statusNotConfirmed;
 
   /// No description provided for @statusCancelled.
   ///
@@ -1149,6 +1167,36 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Показывать рейтинг и уровень с двумя знаками (2.69 вместо 2690)'**
   String get preciseRatingSubtitle;
+
+  /// No description provided for @themeTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тема оформления'**
+  String get themeTitle;
+
+  /// No description provided for @themeSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Светлая, тёмная или как в системе'**
+  String get themeSubtitle;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In ru, this message translates to:
+  /// **'Системная'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In ru, this message translates to:
+  /// **'Светлая'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тёмная'**
+  String get themeDark;
 
   /// No description provided for @newsChannelTitle.
   ///

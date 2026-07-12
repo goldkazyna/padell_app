@@ -56,7 +56,7 @@ class TournamentRowV2 extends StatelessWidget {
                       children: [
                         Text(
                           dowShort.toUpperCase(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
@@ -66,7 +66,7 @@ class TournamentRowV2 extends StatelessWidget {
                         const SizedBox(height: 1),
                         Text(
                           tournament.time,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -144,7 +144,7 @@ class TournamentRowV2 extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 'L${tournament.minLevel.toStringAsFixed(2)}–${tournament.maxLevel.toStringAsFixed(2)}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppTheme.textDim,
                                   fontSize: 11,
                                   fontFeatures: [FontFeature.tabularFigures()],
@@ -154,14 +154,14 @@ class TournamentRowV2 extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            const Text('·',
+                            Text('·',
                                 style:
                                     TextStyle(color: AppTheme.textDim, fontSize: 11)),
                             const SizedBox(width: 6),
                             Flexible(
                               child: Text(
                                 dateShort,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppTheme.textDim,
                                   fontSize: 11,
                                 ),
@@ -176,13 +176,13 @@ class TournamentRowV2 extends StatelessWidget {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(Icons.place_outlined,
+                              Icon(Icons.place_outlined,
                                   size: 12, color: AppTheme.textDim),
                               const SizedBox(width: 4),
                               Flexible(
                                 child: Text(
                                   tournament.venueClubName!,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       color: AppTheme.textDim, fontSize: 11),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -218,9 +218,9 @@ class TournamentRowV2 extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cancel_outlined, size: 11, color: AppTheme.error),
+            Icon(Icons.cancel_outlined, size: 11, color: AppTheme.error),
             const SizedBox(width: 4),
-            const Text(
+            Text(
               'ЗАПОЛНЕН',
               style: TextStyle(
                 color: AppTheme.error,
@@ -250,7 +250,7 @@ class TournamentRowV2 extends StatelessWidget {
           const SizedBox(height: 1),
           Text(
             tournament.spotsLeftText(),
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.amber,
               fontSize: 10,
               fontWeight: FontWeight.w600,

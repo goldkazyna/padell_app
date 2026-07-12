@@ -48,13 +48,13 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
       lastDate: DateTime(now.year - 1, now.month, now.day),
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.accent,
             onPrimary: Colors.white,
             surface: AppTheme.card,
             onSurface: AppTheme.textPrimary,
           ),
-          dialogTheme: const DialogThemeData(backgroundColor: AppTheme.card),
+          dialogTheme: DialogThemeData(backgroundColor: AppTheme.card),
         ),
         child: child!,
       ),
@@ -86,7 +86,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
             const SizedBox(height: 12),
             Text(
               l.selectCity,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 17,
                   fontWeight: FontWeight.w600),
@@ -173,7 +173,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
                   children: [
                     Text(
                       l.registrationTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -182,7 +182,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
                     const SizedBox(height: 8),
                     Text(
                       l.registrationSubtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textSecondary, fontSize: 15),
                     ),
                     const SizedBox(height: 28),
@@ -193,7 +193,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
                     TextField(
                       controller: _nameController,
                       onChanged: (_) => setState(() {}),
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppTheme.textPrimary, fontSize: 16),
                       decoration: _inputDecoration('Фамилия Имя'),
                     ),
@@ -272,7 +272,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
 
   Widget _label(String text) => Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppTheme.textSecondary,
           fontSize: 13,
           fontWeight: FontWeight.w600,
@@ -324,7 +324,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right,
+            Icon(Icons.chevron_right,
                 size: 18, color: AppTheme.textSecondary),
           ],
         ),

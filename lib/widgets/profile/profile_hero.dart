@@ -180,7 +180,7 @@ class _TopRow extends StatelessWidget {
             children: [
               Text(
                 'ID ${user?.id ?? '—'}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.textDim,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -193,7 +193,7 @@ class _TopRow extends StatelessWidget {
                   Flexible(
                     child: Text(
                       user?.name ?? '—',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -216,7 +216,7 @@ class _TopRow extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 user?.formattedPhone ?? '',
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
               ),
             ],
           ),
@@ -240,7 +240,7 @@ class _TopRow extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppTheme.border),
                 ),
-                child: const Icon(Icons.edit_outlined, size: 16, color: AppTheme.textPrimary),
+                child: Icon(Icons.edit_outlined, size: 16, color: AppTheme.textPrimary),
               ),
             ),
       ],
@@ -274,7 +274,7 @@ class _RatingRow extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context)!.rating,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textDim,
             fontSize: 10,
             fontWeight: FontWeight.w600,
@@ -302,7 +302,7 @@ class _RatingRow extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   '#$rank',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 12,
                   ),
@@ -367,7 +367,7 @@ class _LevelProgress extends StatelessWidget {
                 levelStr,
                 nextLevel.toStringAsFixed(2),
               ),
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 10,
                 letterSpacing: 0.3,
@@ -375,7 +375,7 @@ class _LevelProgress extends StatelessWidget {
             ),
             Text(
               '$ratingStr / $targetStr',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.textDim,
                 fontSize: 10,
               ),
@@ -439,7 +439,7 @@ class _StatsStrip extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Color(0x33000000),
         border: Border(top: BorderSide(color: AppTheme.border)),
       ),
@@ -471,7 +471,7 @@ class _StatsStrip extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textDim,
             fontSize: 10,
             letterSpacing: 1,

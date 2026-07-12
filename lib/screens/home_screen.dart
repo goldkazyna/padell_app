@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     home.error!,
-                    style: const TextStyle(color: AppTheme.textSecondary),
+                    style: TextStyle(color: AppTheme.textSecondary),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -371,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         content: Text(
           message,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 14,
             height: 1.4,
@@ -484,7 +484,7 @@ void _showAccreditationDialog(BuildContext context) {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Аккредитация',
                       style: TextStyle(
@@ -497,7 +497,7 @@ void _showAccreditationDialog(BuildContext context) {
                 ],
               ),
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Чтобы вы могли создавать турниры, вам необходимо получить аккредитацию.\n\nНапишите в Telegram:',
                 style: TextStyle(
                   color: AppTheme.textSecondary,

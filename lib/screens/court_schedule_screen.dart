@@ -169,7 +169,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             if (widget.club.address != null)
               Text(widget.club.address!,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 12,
                       color: AppTheme.textSecondary,
                       fontWeight: FontWeight.w500)),
@@ -190,7 +190,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                 if (provider.scheduleError != null) {
                   return Center(
                       child: Text(provider.scheduleError!,
-                          style: const TextStyle(color: AppTheme.textSecondary)));
+                          style: TextStyle(color: AppTheme.textSecondary)));
                 }
                 if (provider.scheduleData == null) return const SizedBox.shrink();
 
@@ -199,7 +199,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                 if (courts.isEmpty) {
                   return Center(
                       child: Text(l10n.noCourtsAvailable,
-                          style: const TextStyle(color: AppTheme.textSecondary)));
+                          style: TextStyle(color: AppTheme.textSecondary)));
                 }
 
                 return Column(
@@ -315,7 +315,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
     if (slots.isEmpty) {
       return Center(
           child: Text(AppLocalizations.of(context)!.noSlotsForDay,
-              style: const TextStyle(color: AppTheme.textSecondary)));
+              style: TextStyle(color: AppTheme.textSecondary)));
     }
 
     return ListView.builder(

@@ -157,6 +157,8 @@
 
   "bookingConfirmed": "Брон расталды!",
   "bookingConfirmedSubtitle": "Сіз кортты сәтті брондадыңыз",
+  "paymentNotCompletedTitle": "Төлем аяқталмады",
+  "paymentNotCompleted": "Сіз төлемді аяқтаған жоқсыз. Брон төленбеген күйінде сақталды — кейінірек «Менің брондарым» бөлімінде немесе клубта төлеуге болады.",
   "myBookings": "Менің брондарым",
   "goHome": "Басты бетке",
 
@@ -166,6 +168,7 @@
   "noPastBookings": "Өткен брондар жоқ",
   "statusPending": "Жаңа өтінім",
   "statusConfirmed": "Расталды",
+  "statusNotConfirmed": "Расталмаған",
   "statusCancelled": "Күші жойылды",
   "cancel": "Бас тарту",
   "cancelBooking": "Бронды жою керек пе?",
@@ -211,6 +214,11 @@
   "settingsMenuItemSubtitle": "Рейтинг пен деңгейді көрсету",
   "preciseRatingTitle": "Дәл рейтинг мәндері",
   "preciseRatingSubtitle": "Рейтинг пен деңгейді екі ондық санмен көрсету (2690 орнына 2.69)",
+  "themeTitle": "Безендіру тақырыбы",
+  "themeSubtitle": "Ашық, қараңғы немесе жүйедегідей",
+  "themeSystem": "Жүйелік",
+  "themeLight": "Ашық",
+  "themeDark": "Қараңғы",
 
   "newsChannelTitle": "Қолданбаның соңғы жаңалықтары",
   "newsChannelSubtitle": "Telegram-арна @padelkz_app",

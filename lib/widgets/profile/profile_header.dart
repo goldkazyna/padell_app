@@ -80,7 +80,7 @@ class ProfileHeader extends StatelessWidget {
                         children: [
                           Text(
                             user?.name ?? l.profileUser,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.textPrimary,
                               fontSize: 18,
                               fontWeight: FontWeight.w900,

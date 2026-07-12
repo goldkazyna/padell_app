@@ -257,7 +257,7 @@ class _RatingScreenState extends State<RatingScreen> {
               children: [
                 Text(
                   l10n.ratingTitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -327,10 +327,10 @@ class _RatingScreenState extends State<RatingScreen> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: TextField(
                 controller: _searchController,
-                style: const TextStyle(color: AppTheme.textPrimary),
+                style: TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
                   hintText: l10n.ratingSearchHint,
-                  hintStyle: const TextStyle(color: AppTheme.textSecondary),
+                  hintStyle: TextStyle(color: AppTheme.textSecondary),
                   filled: true,
                   fillColor: AppTheme.card,
                   border: OutlineInputBorder(
@@ -338,7 +338,7 @@ class _RatingScreenState extends State<RatingScreen> {
                     borderSide: BorderSide.none,
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
+                  prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary),
                 ),
                 onChanged: _onSearchChanged,
                 onSubmitted: (value) {
@@ -467,11 +467,11 @@ class _RatingScreenState extends State<RatingScreen> {
       child: Row(
         children: [
           const SizedBox(width: 4),
-          const Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+          Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
           const SizedBox(width: 48),
-          Text(l10n.ratingPlayerHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+          Text(l10n.ratingPlayerHeader, style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
           const Spacer(),
-          Text(l10n.ratingPointsHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+          Text(l10n.ratingPointsHeader, style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
           const SizedBox(width: 4),
         ],
       ),
@@ -490,7 +490,7 @@ class _RatingScreenState extends State<RatingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(rating.error!, style: const TextStyle(color: AppTheme.textSecondary), textAlign: TextAlign.center),
+            Text(rating.error!, style: TextStyle(color: AppTheme.textSecondary), textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: () => rating.loadRating(), child: Text(l10n.retry)),
           ],
@@ -499,7 +499,7 @@ class _RatingScreenState extends State<RatingScreen> {
     }
 
     if (rating.players.isEmpty) {
-      return Center(child: Text(l10n.ratingPlayersNotFound, style: const TextStyle(color: AppTheme.textSecondary)));
+      return Center(child: Text(l10n.ratingPlayersNotFound, style: TextStyle(color: AppTheme.textSecondary)));
     }
 
     return RefreshIndicator(
@@ -604,7 +604,7 @@ class _RatingScreenState extends State<RatingScreen> {
                 Row(
                   children: [
                     Flexible(
-                      child: Text(player.name, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      child: Text(player.name, style: TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ),
                     if (player.levelVerified) ...[
                       const SizedBox(width: 5),
@@ -620,7 +620,7 @@ class _RatingScreenState extends State<RatingScreen> {
                       rating: player.rating,
                       precise: precise,
                     ),
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
                   );
                 }),
               ],
@@ -711,7 +711,7 @@ class _RatingScreenState extends State<RatingScreen> {
                       rating: card.rating,
                       precise: precise,
                     ),
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
                   );
                 }),
               ],
@@ -756,11 +756,11 @@ class _RatingScreenState extends State<RatingScreen> {
           child: Row(
             children: [
               const SizedBox(width: 4),
-              const Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
               const SizedBox(width: 48),
-              Text(l10n.ratingPlayerHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              Text(l10n.ratingPlayerHeader, style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
               const Spacer(),
-              const Text('РОСТ', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              Text('РОСТ', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
               const SizedBox(width: 4),
             ],
           ),
@@ -816,7 +816,7 @@ class _RatingScreenState extends State<RatingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_growthError!, style: const TextStyle(color: AppTheme.textSecondary)),
+            Text(_growthError!, style: TextStyle(color: AppTheme.textSecondary)),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: _loadGrowth, child: Text(l10n.retry)),
           ],
@@ -825,7 +825,7 @@ class _RatingScreenState extends State<RatingScreen> {
     }
 
     if (_growthPlayers.isEmpty) {
-      return const Center(child: Text('Нет данных за этот период', style: TextStyle(color: AppTheme.textSecondary)));
+      return Center(child: Text('Нет данных за этот период', style: TextStyle(color: AppTheme.textSecondary)));
     }
 
     return RefreshIndicator(
@@ -911,7 +911,7 @@ class _RatingScreenState extends State<RatingScreen> {
                       rating: card.rating,
                       precise: precise,
                     ),
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
                   );
                 }),
               ],
@@ -956,11 +956,11 @@ class _RatingScreenState extends State<RatingScreen> {
           child: Row(
             children: [
               const SizedBox(width: 4),
-              const Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              Text('#', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
               const SizedBox(width: 48),
-              Text(l10n.ratingPlayerHeader, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              Text(l10n.ratingPlayerHeader, style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
               const Spacer(),
-              const Text('ТУРН.', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
+              Text('ТУРН.', style: TextStyle(color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700)),
               const SizedBox(width: 4),
             ],
           ),
@@ -1011,14 +1011,14 @@ class _RatingScreenState extends State<RatingScreen> {
 
     if (_tournamentsError != null) {
       return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(_tournamentsError!, style: const TextStyle(color: AppTheme.textSecondary)),
+        Text(_tournamentsError!, style: TextStyle(color: AppTheme.textSecondary)),
         const SizedBox(height: 16),
         ElevatedButton(onPressed: _loadTournaments, child: Text(l10n.retry)),
       ]));
     }
 
     if (_tournamentsPlayers.isEmpty) {
-      return const Center(child: Text('Нет данных за этот период', style: TextStyle(color: AppTheme.textSecondary)));
+      return Center(child: Text('Нет данных за этот период', style: TextStyle(color: AppTheme.textSecondary)));
     }
 
     return RefreshIndicator(
@@ -1093,7 +1093,7 @@ class _RatingScreenState extends State<RatingScreen> {
                   rating: card.rating,
                   precise: precise,
                 ),
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
               );
             }),
           ])),

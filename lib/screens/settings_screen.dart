@@ -28,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     l.settingsTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -69,7 +69,7 @@ class SettingsScreen extends StatelessWidget {
                         children: [
                           Text(
                             l.preciseRatingTitle,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.textPrimary,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -78,7 +78,7 @@ class SettingsScreen extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             l.preciseRatingSubtitle,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.textDim,
                               fontSize: 11,
                               height: 1.4,
