@@ -155,6 +155,12 @@
   "docPrivacyPolicy": "Политикой конфиденциальности",
   "docGoodsDescription": "Описанием товаров и услуг",
   "docCardPayment": "Условиями оплаты картой",
+  "documentsTitle": "Документы",
+  "documentsSubtitle": "Юридические документы приложения",
+  "docTitleOffer": "Договор оферты",
+  "docTitlePrivacy": "Политика конфиденциальности",
+  "docTitleGoods": "Описание товаров и услуг",
+  "docTitleCard": "Условия оплаты картой",
 
   "bookingConfirmed": "Бронь подтверждена!",
   "bookingConfirmedSubtitle": "Вы успешно забронировали корт",
@@ -320,6 +326,7 @@
   "noTeamsYet": "Пока нет команд",
 
   "enterPhoneNumber": "Введите номер телефона",
+  "enterNameOrPhone": "Имя или номер телефона",
   "playersNotFound": "Игроки не найдены",
   "registerWith": "Записаться с {name}",
   "@registerWith": { "placeholders": { "name": { "type": "String" } } },
@@ -773,5 +780,7 @@
   "coachSlotBooked": "Занято",
   "coachSlotBlocked": "Заблокировано",
   "coachDayOff": "Рабочих часов на этот день нет",
-  "hoursShort": "ч"
+  "hoursShort": "ч",
+  "tournamentDurationTitle": "Длительность турнира",
+  "tournamentDurationSubtitle": "У турнира не указана длительность. Выберите, на сколько добавить его в календарь."
 }

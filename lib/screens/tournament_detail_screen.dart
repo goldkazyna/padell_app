@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
@@ -38,6 +39,8 @@ class TournamentDetailScreen extends StatefulWidget {
 class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   Timer? _chatUnreadTimer;
   int? _chatUnread; // живой счётчик непрочитанного (перекрывает значение из модели)
+  Timer? _paymentTimer; // прячет кнопку оплаты в момент истечения дедлайна
+  DateTime? _scheduledDeadline;
 
   @override
   void initState() {
@@ -53,7 +56,31 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   @override
   void dispose() {
     _chatUnreadTimer?.cancel();
+    _paymentTimer?.cancel();
     super.dispose();
+  }
+
+  /// Дедлайн оплаты прошёл (кнопку оплаты показывать нельзя).
+  bool _paymentDeadlinePassed(Tournament t) =>
+      t.moderationDeadline != null &&
+      !t.moderationDeadline!.isAfter(DateTime.now());
+
+  /// Одноразовый таймер: перестроить экран ровно в момент истечения дедлайна,
+  /// чтобы кнопка оплаты исчезла без ручного обновления.
+  void _maybeSchedulePaymentExpiry(Tournament t) {
+    final deadline =
+        t.registrationStatus == 'pending' ? t.moderationDeadline : null;
+    if (deadline == _scheduledDeadline) return; // уже запланировано
+    _paymentTimer?.cancel();
+    _scheduledDeadline = deadline;
+    if (deadline != null && deadline.isAfter(DateTime.now())) {
+      _paymentTimer = Timer(
+        deadline.difference(DateTime.now()) + const Duration(seconds: 1),
+        () {
+          if (mounted) setState(() {});
+        },
+      );
+    }
   }
 
   Future<void> _pollChatUnread() async {
@@ -103,6 +130,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             );
           }
 
+          // Запланировать скрытие кнопки оплаты в момент истечения дедлайна.
+          _maybeSchedulePaymentExpiry(tournament);
+
           final userId = context.read<HomeProvider>().user?.id;
 
           return SafeArea(
@@ -136,7 +166,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                             const SizedBox(height: 16),
                             _DescriptionBlock(text: tournament.description!),
                           ],
-                          if (tournament.registrationStatus == 'pending' && tournament.club.paymentUrl != null)
+                          if (tournament.registrationStatus == 'pending' &&
+                              tournament.club.paymentUrl != null &&
+                              !_paymentDeadlinePassed(tournament))
                             _buildPaymentButton(tournament),
                           const SizedBox(height: 28),
                           if (!tournament.usesSoloRegistration) ...[
@@ -220,6 +252,13 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     ],
                   ),
                 ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: _buildCircleButton(
+                  icon: CupertinoIcons.calendar_badge_plus,
+                  onTap: () => _addToCalendar(),
+                ),
+              ),
               _buildCircleButton(
                 icon: Icons.ios_share,
                 onTap: () => _shareTournament(),
@@ -297,6 +336,101 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         isError: true,
       );
     }
+  }
+
+  Future<void> _addToCalendar() async {
+    final tournament = context.read<TournamentProvider>().selectedTournament;
+    if (tournament == null) return;
+
+    // Длительность турнира: если задана — берём её, иначе спрашиваем у пользователя.
+    var hours = tournament.durationHours;
+    if (hours == null) {
+      hours = await _askTournamentDuration();
+      if (hours == null || !mounted) return; // отменили выбор
+    }
+
+    // datetime приходит как UTC-обёртка над местным (клубным) временем Алматы
+    // (start_date->toIso8601String() отдаёт +00:00, хотя часы — местные).
+    // Dart при парсинге сдвигает это в локальное время устройства, поэтому берём
+    // .toUtc() (возвращает исходные 20:00) и эти стеночные часы кладём как локальные —
+    // тогда календарь покажет ровно то время, что у турнира, без сдвига.
+    final dt = tournament.datetime.toUtc();
+    final start = DateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute);
+
+    final event = Event(
+      title: tournament.name,
+      description: 'https://padel-p.kz/t/${tournament.id}',
+      location: tournament.club.fullAddress,
+      startDate: start,
+      endDate: start.add(Duration(hours: hours)),
+    );
+
+    try {
+      final ok = await Add2Calendar.addEvent2Cal(event);
+      if (!ok && mounted) {
+        showAppAlert(context, AppLocalizations.of(context)!.error, isError: true);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showAppAlert(context, '$e',
+          title: AppLocalizations.of(context)!.error, isError: true);
+    }
+  }
+
+  /// Диалог выбора длительности турнира (когда она не задана). Возвращает часы или null.
+  Future<int?> _askTournamentDuration() {
+    final l10n = AppLocalizations.of(context)!;
+    const options = [1, 2, 3, 4];
+    return showDialog<int>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l10n.tournamentDurationTitle,
+          style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.tournamentDurationSubtitle,
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: options
+                  .map((h) => GestureDetector(
+                        onTap: () => Navigator.pop(ctx, h),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 22, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.background,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppTheme.border),
+                          ),
+                          child: Text(
+                            '$h ${l10n.hoursShort}',
+                            style: TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   // === Теги ===

@@ -9,6 +9,7 @@ import '../../screens/my_bookings_screen.dart';
 import '../../screens/edit_profile_screen.dart';
 import '../../screens/settings_screen.dart';
 import '../../screens/tournament_types_info_screen.dart';
+import '../../screens/documents_screen.dart';
 import '../../screens/auth/delete_account_code_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
@@ -93,6 +94,14 @@ class ProfileMenu extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (_) => const TournamentTypesInfoScreen())),
+            ),
+            SettingsRow(
+              icon: Icons.description_outlined,
+              title: l.documentsTitle,
+              subtitle: l.documentsSubtitle,
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DocumentsScreen())),
             ),
           ],
         ),

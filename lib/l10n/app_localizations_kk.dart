@@ -417,6 +417,24 @@ class AppLocalizationsKk extends AppLocalizations {
   String get docCardPayment => 'Картамен төлеу шарттарымен';
 
   @override
+  String get documentsTitle => 'Құжаттар';
+
+  @override
+  String get documentsSubtitle => 'Қосымшаның заңды құжаттары';
+
+  @override
+  String get docTitleOffer => 'Оферта шарты';
+
+  @override
+  String get docTitlePrivacy => 'Құпиялылық саясаты';
+
+  @override
+  String get docTitleGoods => 'Тауарлар мен қызметтер сипаттамасы';
+
+  @override
+  String get docTitleCard => 'Картамен төлеу шарттары';
+
+  @override
   String get bookingConfirmed => 'Брон расталды!';
 
   @override
@@ -839,6 +857,9 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get enterPhoneNumber => 'Телефон нөмірін енгізіңіз';
+
+  @override
+  String get enterNameOrPhone => 'Аты немесе телефон нөмірі';
 
   @override
   String get playersNotFound => 'Ойыншылар табылмады';
@@ -2104,4 +2125,11 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get hoursShort => 'сағ';
+
+  @override
+  String get tournamentDurationTitle => 'Турнир ұзақтығы';
+
+  @override
+  String get tournamentDurationSubtitle =>
+      'Турнирдің ұзақтығы көрсетілмеген. Күнтізбеге қанша уақытқа қосуды таңдаңыз.';
 }

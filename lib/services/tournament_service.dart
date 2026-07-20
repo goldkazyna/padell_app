@@ -77,11 +77,11 @@ class TournamentService {
 
   // === Team registration ===
 
-  Future<List<PartnerSearchResult>> searchPartner(int tournamentId, String phone, String token) async {
-    developer.log('searchPartner: tournamentId=$tournamentId, phone=$phone', name: 'TournamentService');
+  Future<List<PartnerSearchResult>> searchPartner(int tournamentId, String query, String token) async {
+    developer.log('searchPartner: tournamentId=$tournamentId, query=$query', name: 'TournamentService');
     final response = await _api.post(
       '/tournaments/$tournamentId/search-partner',
-      {'phone': phone},
+      {'query': query},
       token,
     );
     developer.log('searchPartner response: $response', name: 'TournamentService');

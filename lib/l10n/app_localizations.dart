@@ -862,6 +862,42 @@ abstract class AppLocalizations {
   /// **'Условиями оплаты картой'**
   String get docCardPayment;
 
+  /// No description provided for @documentsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Документы'**
+  String get documentsTitle;
+
+  /// No description provided for @documentsSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Юридические документы приложения'**
+  String get documentsSubtitle;
+
+  /// No description provided for @docTitleOffer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Договор оферты'**
+  String get docTitleOffer;
+
+  /// No description provided for @docTitlePrivacy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Политика конфиденциальности'**
+  String get docTitlePrivacy;
+
+  /// No description provided for @docTitleGoods.
+  ///
+  /// In ru, this message translates to:
+  /// **'Описание товаров и услуг'**
+  String get docTitleGoods;
+
+  /// No description provided for @docTitleCard.
+  ///
+  /// In ru, this message translates to:
+  /// **'Условия оплаты картой'**
+  String get docTitleCard;
+
   /// No description provided for @bookingConfirmed.
   ///
   /// In ru, this message translates to:
@@ -1659,6 +1695,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Введите номер телефона'**
   String get enterPhoneNumber;
+
+  /// No description provided for @enterNameOrPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя или номер телефона'**
+  String get enterNameOrPhone;
 
   /// No description provided for @playersNotFound.
   ///
@@ -4017,6 +4059,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'ч'**
   String get hoursShort;
+
+  /// No description provided for @tournamentDurationTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Длительность турнира'**
+  String get tournamentDurationTitle;
+
+  /// No description provided for @tournamentDurationSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'У турнира не указана длительность. Выберите, на сколько добавить его в календарь.'**
+  String get tournamentDurationSubtitle;
 }
 
 class _AppLocalizationsDelegate

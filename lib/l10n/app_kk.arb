@@ -154,6 +154,12 @@
   "docPrivacyPolicy": "Құпиялылық саясатымен",
   "docGoodsDescription": "Тауарлар мен қызметтер сипаттамасымен",
   "docCardPayment": "Картамен төлеу шарттарымен",
+  "documentsTitle": "Құжаттар",
+  "documentsSubtitle": "Қосымшаның заңды құжаттары",
+  "docTitleOffer": "Оферта шарты",
+  "docTitlePrivacy": "Құпиялылық саясаты",
+  "docTitleGoods": "Тауарлар мен қызметтер сипаттамасы",
+  "docTitleCard": "Картамен төлеу шарттары",
 
   "bookingConfirmed": "Брон расталды!",
   "bookingConfirmedSubtitle": "Сіз кортты сәтті брондадыңыз",
@@ -319,6 +325,7 @@
   "noTeamsYet": "Командалар әлі жоқ",
 
   "enterPhoneNumber": "Телефон нөмірін енгізіңіз",
+  "enterNameOrPhone": "Аты немесе телефон нөмірі",
   "playersNotFound": "Ойыншылар табылмады",
   "registerWith": "{name} серіктесімен тіркелу",
   "@registerWith": { "placeholders": { "name": { "type": "String" } } },
@@ -753,5 +760,7 @@
   "coachSlotBooked": "Бос емес",
   "coachSlotBlocked": "Бұғатталған",
   "coachDayOff": "Бұл күнге жұмыс сағаттары жоқ",
-  "hoursShort": "сағ"
+  "hoursShort": "сағ",
+  "tournamentDurationTitle": "Турнир ұзақтығы",
+  "tournamentDurationSubtitle": "Турнирдің ұзақтығы көрсетілмеген. Күнтізбеге қанша уақытқа қосуды таңдаңыз."
 }

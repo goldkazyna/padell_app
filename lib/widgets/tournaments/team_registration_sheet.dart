@@ -31,10 +31,11 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
 
   void _onPhoneChanged(String value) {
     _debounce?.cancel();
-    final digits = value.replaceAll(RegExp(r'\D'), '');
-    if (digits.length >= 5) {
+    final term = value.trim();
+    // Ищем и по имени, и по телефону — минимум 2 символа.
+    if (term.length >= 2) {
       _debounce = Timer(const Duration(milliseconds: 500), () {
-        context.read<TournamentProvider>().searchPartner(widget.tournamentId, digits);
+        context.read<TournamentProvider>().searchPartner(widget.tournamentId, term);
       });
     }
   }
@@ -121,11 +122,11 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
               controller: _phoneController,
-              keyboardType: TextInputType.phone,
+              keyboardType: TextInputType.text,
               style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
               onChanged: _onPhoneChanged,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.enterPhoneNumber,
+                hintText: AppLocalizations.of(context)!.enterNameOrPhone,
                 hintStyle: TextStyle(color: AppTheme.textSecondary),
                 prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary),
                 filled: true,

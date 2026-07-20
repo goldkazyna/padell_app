@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/legal_docs.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/secure_payment_badge.dart';
@@ -625,11 +626,12 @@ class _EmailButton extends StatelessWidget {
   }
 }
 
-// URL-адреса юридических документов PADEL KZ (общие для приложения).
-const _kLegalOfferUrl = 'https://padel-p.kz/legal/offer_agreement.pdf';
-const _kLegalPrivacyUrl = 'https://padel-p.kz/legal/privacy_policy.pdf';
-const _kLegalGoodsUrl = 'https://padel-p.kz/legal/goods_description.pdf';
-const _kLegalCardUrl = 'https://padel-p.kz/legal/card_payment.pdf';
+// URL-адреса юридических документов — единый источник в utils/legal_docs.dart
+// (переиспользуются в разделе «Документы» профиля).
+const _kLegalOfferUrl = kLegalOfferUrl;
+const _kLegalPrivacyUrl = kLegalPrivacyUrl;
+const _kLegalGoodsUrl = kLegalGoodsUrl;
+const _kLegalCardUrl = kLegalCardUrl;
 
 class _ConsentText extends StatefulWidget {
   final void Function(String url) onOpenDoc;

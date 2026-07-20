@@ -278,6 +278,7 @@ class Tournament {
   final String date;
   final String time;
   final DateTime datetime;
+  final int? durationHours; // длительность турнира в часах (необязательное поле)
   final String type;
   final String typeName;
   final String? venueClubName; // клуб-площадка (где играют), null если не задан
@@ -320,6 +321,7 @@ class Tournament {
     required this.date,
     required this.time,
     required this.datetime,
+    this.durationHours,
     required this.type,
     required this.typeName,
     this.venueClubName,
@@ -416,6 +418,7 @@ class Tournament {
       date: json['date'] as String,
       time: json['time'] as String,
       datetime: DateTime.parse(json['datetime'] as String),
+      durationHours: (json['duration_hours'] as num?)?.toInt(),
       type: json['type'] as String,
       typeName: json['type_name'] as String,
       venueClubName: (json['venue_club'] as Map<String, dynamic>?)?['name'] as String?,

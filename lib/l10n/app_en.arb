@@ -149,6 +149,12 @@
   "docPrivacyPolicy": "the Privacy Policy",
   "docGoodsDescription": "the Goods and Services Description",
   "docCardPayment": "the Card Payment Terms",
+  "documentsTitle": "Documents",
+  "documentsSubtitle": "App legal documents",
+  "docTitleOffer": "Offer Agreement",
+  "docTitlePrivacy": "Privacy Policy",
+  "docTitleGoods": "Goods and Services Description",
+  "docTitleCard": "Card Payment Terms",
 
   "bookingConfirmed": "Booking Confirmed!",
   "bookingConfirmedSubtitle": "You have successfully booked a court",
@@ -306,6 +312,7 @@
   "noTeamsYet": "No teams yet",
 
   "enterPhoneNumber": "Enter phone number",
+  "enterNameOrPhone": "Name or phone number",
   "playersNotFound": "Players not found",
   "registerWith": "Register with {name}",
 
@@ -753,5 +760,7 @@
   "coachSlotBooked": "Booked",
   "coachSlotBlocked": "Blocked",
   "coachDayOff": "No working hours for this day",
-  "hoursShort": "h"
+  "hoursShort": "h",
+  "tournamentDurationTitle": "Tournament duration",
+  "tournamentDurationSubtitle": "This tournament has no duration set. Choose how long to add it to the calendar."
 }

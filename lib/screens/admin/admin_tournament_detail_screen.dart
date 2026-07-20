@@ -229,6 +229,7 @@ class _AdminTournamentDetailScreenState
             hasLowerBracket: t.type == 'team' ? _teamHasLowerBracket : null,
             hasBronzeMatch: t.type == 'team' ? _teamHasBronzeMatch : null,
             courtsCount: (t.type == 'team' ||
+                        t.type == 'americano_flex' ||
                         (t.type == 'just_padel_it' && !t.isPaired)) &&
                     _teamCourts.text.trim().isNotEmpty
                 ? int.tryParse(_teamCourts.text.trim())
@@ -371,6 +372,11 @@ class _AdminTournamentDetailScreenState
   bool get _isJpiSolo {
     final t = _t;
     return t != null && t.type == 'just_padel_it' && !t.isPaired;
+  }
+
+  bool get _isFlex {
+    final t = _t;
+    return t != null && t.type == 'americano_flex';
   }
 
   /// Открыть экран создания пар (JPI, KOC или Bali) и обновить карточку после.
@@ -1204,6 +1210,39 @@ class _AdminTournamentDetailScreenState
                 const SizedBox(height: 4),
                 Text(
                   'Для посева игроков должно быть ровно кортов × 4.',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                ),
+              ],
+              // Количество кортов — для Americano Flex.
+              if (_isFlex) ...[
+                const SizedBox(height: 12),
+                Text('Количество кортов',
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _teamCourts,
+                  enabled: !disabled,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(color: AppTheme.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: 'напр. 2',
+                    hintStyle: TextStyle(color: AppTheme.textDim),
+                    filled: true,
+                    fillColor: AppTheme.cardRaised,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Сколько кортов задействовано — влияет на расписание раундов.',
                   style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                 ),
               ],

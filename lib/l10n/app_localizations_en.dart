@@ -423,6 +423,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get docCardPayment => 'the Card Payment Terms';
 
   @override
+  String get documentsTitle => 'Documents';
+
+  @override
+  String get documentsSubtitle => 'App legal documents';
+
+  @override
+  String get docTitleOffer => 'Offer Agreement';
+
+  @override
+  String get docTitlePrivacy => 'Privacy Policy';
+
+  @override
+  String get docTitleGoods => 'Goods and Services Description';
+
+  @override
+  String get docTitleCard => 'Card Payment Terms';
+
+  @override
   String get bookingConfirmed => 'Booking Confirmed!';
 
   @override
@@ -852,6 +870,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterPhoneNumber => 'Enter phone number';
+
+  @override
+  String get enterNameOrPhone => 'Name or phone number';
 
   @override
   String get playersNotFound => 'Players not found';
@@ -2122,4 +2143,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hoursShort => 'h';
+
+  @override
+  String get tournamentDurationTitle => 'Tournament duration';
+
+  @override
+  String get tournamentDurationSubtitle =>
+      'This tournament has no duration set. Choose how long to add it to the calendar.';
 }

@@ -425,6 +425,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get docCardPayment => 'Условиями оплаты картой';
 
   @override
+  String get documentsTitle => 'Документы';
+
+  @override
+  String get documentsSubtitle => 'Юридические документы приложения';
+
+  @override
+  String get docTitleOffer => 'Договор оферты';
+
+  @override
+  String get docTitlePrivacy => 'Политика конфиденциальности';
+
+  @override
+  String get docTitleGoods => 'Описание товаров и услуг';
+
+  @override
+  String get docTitleCard => 'Условия оплаты картой';
+
+  @override
   String get bookingConfirmed => 'Бронь подтверждена!';
 
   @override
@@ -854,6 +872,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get enterPhoneNumber => 'Введите номер телефона';
+
+  @override
+  String get enterNameOrPhone => 'Имя или номер телефона';
 
   @override
   String get playersNotFound => 'Игроки не найдены';
@@ -2125,4 +2146,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hoursShort => 'ч';
+
+  @override
+  String get tournamentDurationTitle => 'Длительность турнира';
+
+  @override
+  String get tournamentDurationSubtitle =>
+      'У турнира не указана длительность. Выберите, на сколько добавить его в календарь.';
 }
