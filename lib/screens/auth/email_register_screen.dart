@@ -25,7 +25,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
   String _phone = '';
   String? _city;
 
-  static const _cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Костанай'];
+  static const _cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Актау', 'Атырау', 'Костанай'];
 
   @override
   void dispose() {

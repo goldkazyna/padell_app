@@ -6,6 +6,7 @@ import '../models/club.dart';
 import '../theme/app_theme.dart';
 import '../utils/city_l10n.dart';
 import '../widgets/app_back_button.dart';
+import 'club_cards_screen.dart' show ClubCardLogo;
 import 'court_schedule_screen.dart';
 
 class ClubSelectScreen extends StatefulWidget {
@@ -64,7 +65,7 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
                   decoration: BoxDecoration(
                     color: AppTheme.card,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+                    border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -167,7 +168,8 @@ class _ClubSelectScreenState extends State<ClubSelectScreen> {
       onRefresh: () => provider.loadClubs(),
       color: AppTheme.accent,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.fromLTRB(
+            16, 0, 16, MediaQuery.of(context).padding.bottom + 78),
         itemCount: provider.clubs.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
@@ -235,77 +237,52 @@ class _ClubCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppTheme.card,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            // Лого клуба
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Container(color: const Color(0xFF1E1E1E)),
-                    if (club.logo != null)
-                      Image.network(
-                        club.logo!,
-                        fit: BoxFit.cover,
-                      )
-                    else
-                      const Center(
-                        child: Icon(Icons.sports_tennis, size: 40, color: Color(0xFF3F3F46)),
-                      ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: 50,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              AppTheme.card,
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Информация
-            Padding(
-              padding: const EdgeInsets.all(14),
+            ClubCardLogo(name: club.name, logo: club.logo, size: 60),
+            const SizedBox(width: 12),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     club.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       color: AppTheme.textPrimary,
                     ),
                   ),
-                  if (club.address != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      club.address!,
-                      style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                  if ((club.address ?? '').isNotEmpty) ...[
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on_outlined,
+                            size: 13, color: Color(0xFF7A857E)),
+                        const SizedBox(width: 3),
+                        Expanded(
+                          child: Text(
+                            club.address!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 12.5, color: AppTheme.textSecondary),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       _Tag(
@@ -324,6 +301,8 @@ class _ClubCard extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, color: Color(0xFF5C665F), size: 22),
           ],
         ),
       ),
@@ -349,8 +328,8 @@ class _Tag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withAlpha(25),
-        borderRadius: BorderRadius.circular(4),
+        color: color.withAlpha(36),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         text,

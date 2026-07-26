@@ -430,6 +430,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     ],
                   ),
                 ),
+                if (u.isRatingLocked) ...[
+                  Icon(Icons.lock_outline,
+                      color: AppTheme.amber, size: 16),
+                  const SizedBox(width: 6),
+                ],
                 Icon(Icons.chevron_right,
                     color: AppTheme.textDim, size: 20),
               ],
@@ -543,8 +548,14 @@ class _EditUserSheetState extends State<_EditUserSheet> {
       TextEditingController(text: widget.initial.name);
   late double? _level = widget.initial.level;
 
+  /// Кулдаун 2 месяца: уровень/рейтинг менять нельзя до этой даты.
+  late final bool _ratingLocked = widget.initial.isRatingLocked;
+
   bool _saving = false;
   String? _error;
+
+  String _fmtDate(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 
   @override
   void dispose() {
@@ -571,7 +582,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
             widget.clubId,
             widget.initial.id,
             name: name,
-            level: _level,
+            // При активной блокировке уровень не отправляем — меняем только имя.
+            level: _ratingLocked ? null : _level,
           );
       if (!mounted) return;
       Navigator.of(context).pop(updated);
@@ -654,53 +666,90 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 ),
               ),
               const SizedBox(height: 12),
+              if (_ratingLocked && widget.initial.ratingLockedUntil != null) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppTheme.amber.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(8),
+                    border:
+                        Border.all(color: AppTheme.amber.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.lock_outline,
+                          color: AppTheme.amber, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Рейтинг недавно менялся вручную. Изменить уровень и рейтинг можно с ${_fmtDate(widget.initial.ratingLockedUntil!)} — не чаще раза в 2 месяца.',
+                          style: TextStyle(
+                              color: AppTheme.amber,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              height: 1.3),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               Padding(
                 padding: EdgeInsets.only(bottom: 4),
                 child: Text('Уровень',
                     style: TextStyle(
                         color: AppTheme.textSecondary, fontSize: 12)),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.card,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => _stepLevel(-0.25),
-                      icon: Icon(Icons.remove,
-                          color: AppTheme.textPrimary),
-                    ),
-                    Expanded(
-                      child: Text(
-                        _level != null
-                            ? _level!.toStringAsFixed(2)
-                            : '—',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700),
+              Opacity(
+                opacity: _ratingLocked ? 0.5 : 1.0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed:
+                            _ratingLocked ? null : () => _stepLevel(-0.25),
+                        icon: Icon(Icons.remove,
+                            color: AppTheme.textPrimary),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () => _stepLevel(0.25),
-                      icon: Icon(Icons.add,
-                          color: AppTheme.textPrimary),
-                    ),
-                  ],
+                      Expanded(
+                        child: Text(
+                          _level != null
+                              ? _level!.toStringAsFixed(2)
+                              : '—',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed:
+                            _ratingLocked ? null : () => _stepLevel(0.25),
+                        icon: Icon(Icons.add,
+                            color: AppTheme.textPrimary),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
-                'Рейтинг пересчитается автоматически (level × 1000 + 125).',
-                style: TextStyle(
-                    color: AppTheme.textDim, fontSize: 11),
-              ),
+              if (!_ratingLocked)
+                Text(
+                  'Рейтинг пересчитается автоматически (level × 1000 + 125).',
+                  style: TextStyle(
+                      color: AppTheme.textDim, fontSize: 11),
+                ),
               const SizedBox(height: 12),
+              if (!_ratingLocked)
               Builder(
                 builder: (_) {
                   final hasAvatar =

@@ -69,7 +69,7 @@ class _OtpCodeInputState extends State<OtpCodeInput> {
                       ? widget.activeColor
                       : (filled
                           ? widget.activeColor.withValues(alpha: 0.4)
-                          : const Color(0xFF2A2A2A)),
+                          : const Color(0xFF2A3330)),
                   width: isActive ? 2 : 1,
                 ),
               ),

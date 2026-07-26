@@ -37,6 +37,17 @@ class AdminTournamentDetail {
   final String pairingMode; // 'self' | 'admin' — кто собирает пары (team)
   final bool isPersonal; // личный турнир игрока (без клуба)
   final String? creatorName; // организатор личного турнира
+  // Поля для редактирования (как при создании)
+  final String? playoffType; // 'final_only' | 'semifinal_final'
+  final String? playoffFormat; // 'mix' | 'group_vs' | 'tops' | 'cross' | 'balanced'
+  final int? durationHours;
+  final bool isRated;
+  final int reserveCount;
+  final int waitlistSize;
+  final int? groupsCount;
+  final int? roundsCount;
+  final int? teamsAdvance;
+  final int? pointsToWin;
 
   const AdminTournamentDetail({
     required this.id,
@@ -75,6 +86,16 @@ class AdminTournamentDetail {
     this.pairingMode = 'self',
     this.isPersonal = false,
     this.creatorName,
+    this.playoffType,
+    this.playoffFormat,
+    this.durationHours,
+    this.isRated = true,
+    this.reserveCount = 0,
+    this.waitlistSize = 0,
+    this.groupsCount,
+    this.roundsCount,
+    this.teamsAdvance,
+    this.pointsToWin,
   });
 
   factory AdminTournamentDetail.fromJson(Map<String, dynamic> json) {
@@ -122,6 +143,16 @@ class AdminTournamentDetail {
       moderationMinutes: (json['moderation_minutes'] as num?)?.toInt(),
       tournamentsFullAccess:
           json['tournaments_full_access'] as bool? ?? true,
+      playoffType: json['playoff_type'] as String?,
+      playoffFormat: json['playoff_format'] as String?,
+      durationHours: (json['duration_hours'] as num?)?.toInt(),
+      isRated: json['is_rated'] as bool? ?? true,
+      reserveCount: (json['reserve_count'] as num?)?.toInt() ?? 0,
+      waitlistSize: (json['waitlist_size'] as num?)?.toInt() ?? 0,
+      groupsCount: (json['groups_count'] as num?)?.toInt(),
+      roundsCount: (json['rounds_count'] as num?)?.toInt(),
+      teamsAdvance: (json['teams_advance'] as num?)?.toInt(),
+      pointsToWin: (json['points_to_win'] as num?)?.toInt(),
     );
   }
 }
@@ -129,13 +160,15 @@ class AdminTournamentDetail {
 class AdminClubBrief {
   final int id;
   final String name;
+  final String? logo;
 
-  const AdminClubBrief({required this.id, required this.name});
+  const AdminClubBrief({required this.id, required this.name, this.logo});
 
   factory AdminClubBrief.fromJson(Map<String, dynamic> json) {
     return AdminClubBrief(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
+      logo: json['logo'] as String?,
     );
   }
 }

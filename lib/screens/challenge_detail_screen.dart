@@ -95,7 +95,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         color: AppTheme.background,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: const Color(0xFF2A2A2A),
+                          color: const Color(0xFF2A3330),
                           width: 0.5,
                         ),
                       ),
@@ -471,7 +471,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF2A2A2A),
+          color: const Color(0xFF2A3330),
           width: 0.5,
         ),
       ),
@@ -723,7 +723,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           decoration: BoxDecoration(
             color: AppTheme.card,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+            border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
           ),
           child: Column(
             children: [
@@ -759,7 +759,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: player.scoreConfirmed ? AppTheme.accent : const Color(0xFF2A2A2A),
+                        color: player.scoreConfirmed ? AppTheme.accent : const Color(0xFF2A3330),
                         borderRadius: BorderRadius.circular(7),
                       ),
                       clipBehavior: Clip.antiAlias,
@@ -881,7 +881,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF2A2A2A),
+          color: const Color(0xFF2A3330),
           width: 0.5,
         ),
       ),

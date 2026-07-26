@@ -148,7 +148,7 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
                 border: Border.all(
                   color: isActive
                       ? AppTheme.accent.withAlpha(120)
-                      : const Color(0xFF2A2A2A),
+                      : const Color(0xFF2A3330),
                 ),
               ),
               child: Row(
@@ -363,7 +363,7 @@ class _TournamentCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppTheme.card,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF2A2A2A)),
+            border: Border.all(color: const Color(0xFF2A3330)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

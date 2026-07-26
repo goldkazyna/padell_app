@@ -89,7 +89,7 @@ class PaymentFailedScreen extends StatelessWidget {
                       color: AppTheme.card,
                       borderRadius: BorderRadius.circular(14),
                       border:
-                          Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+                          Border.all(color: const Color(0xFF2A3330), width: 0.5),
                     ),
                     child: Center(
                       child: Text(l10n.goHome,

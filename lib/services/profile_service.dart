@@ -185,6 +185,35 @@ class ProfileService {
     }
   }
 
+  /// AI-разбор выступления в турнире. Возвращает объект `analysis`
+  /// (headline/summary/factors/best_match/worst_match/tips). Бросает
+  /// ApiException с сообщением бэкенда при недоступности/ошибке.
+  Future<Map<String, dynamic>> getTournamentAiAnalysis(
+    int tournamentId, {
+    int? playerId,
+    String lang = 'ru',
+  }) async {
+    final token = await _storage.getToken();
+    if (token == null) {
+      throw ApiException('Не авторизован');
+    }
+    var endpoint = '/tournaments/$tournamentId/ai-analysis?lang=$lang';
+    if (playerId != null) endpoint += '&player_id=$playerId';
+    debugPrint('AI analysis request: $endpoint');
+    final response = await _api.get(endpoint, token).timeout(
+      const Duration(seconds: 120),
+      onTimeout: () => throw ApiException(
+          'Разбор не пришёл вовремя. Попробуйте ещё раз.'),
+    );
+    debugPrint('AI analysis response success=${response['success']}');
+    if (response['success'] != true) {
+      throw ApiException(
+          (response['message'] as String?) ?? 'Не удалось получить разбор');
+    }
+    // Полный ответ: analysis (AI) + matches (поматчевая разбивка).
+    return response;
+  }
+
   Future<MatchHistoryResult> getMatchHistory({int page = 1}) async {
     try {
       final token = await _storage.getToken();

@@ -25,7 +25,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
   String? _gender; // 'male' | 'female'
   bool _isSaving = false;
 
-  static const _cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Костанай'];
+  static const _cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Актау', 'Атырау', 'Костанай'];
 
   @override
   void dispose() {

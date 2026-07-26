@@ -10,6 +10,8 @@ import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/verified_badge.dart';
+import '../widgets/flex_standings_table.dart';
+import 'tournament_ai_analysis_screen.dart';
 
 class TournamentResultsScreen extends StatefulWidget {
   final Tournament tournament;
@@ -107,6 +109,56 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
     );
   }
 
+  /// Свой ли это турнир: разбор AI показываем и делаем ТОЛЬКО от лица текущего
+  /// пользователя. В чужом профиле кнопки быть не должно.
+  bool _isOwnResults(BuildContext context) {
+    final myId = context.read<HomeProvider>().user?.id;
+    return widget.playerId == null || widget.playerId == myId;
+  }
+
+  /// Кнопка «Разбор AI» — акцентная (в палитре), ведёт на экран AI-разбора.
+  Widget _buildAiButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TournamentAiAnalysisScreen(
+              tournamentId: widget.tournament.id,
+              tournamentName: widget.tournament.name,
+              // Всегда от лица текущего пользователя (не владельца профиля).
+              playerId: null,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: AppTheme.accent.withOpacity(0.14),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.accent.withOpacity(0.4), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.auto_awesome, color: AppTheme.accent, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              l10n.aiAnalysisButton,
+              style: TextStyle(
+                color: AppTheme.accent,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -116,7 +168,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
         decoration: BoxDecoration(
           color: AppTheme.card,
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
         child: Icon(icon, color: AppTheme.textPrimary, size: 22),
       ),
@@ -138,9 +190,17 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const AppBackButton(),
-              _buildCircleButton(
-                icon: Icons.ios_share,
-                onTap: () {},
+              Row(
+                children: [
+                  if (_isRated && _isOwnResults(context)) ...[
+                    _buildAiButton(context),
+                    const SizedBox(width: 10),
+                  ],
+                  _buildCircleButton(
+                    icon: Icons.ios_share,
+                    onTap: () {},
+                  ),
+                ],
               ),
             ],
           ),
@@ -215,7 +275,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
               color: isMe ? AppTheme.accent.withAlpha(15) : AppTheme.card,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isMe ? AppTheme.accent.withAlpha(60) : const Color(0xFF2A2A2A),
+                color: isMe ? AppTheme.accent.withAlpha(60) : const Color(0xFF2A3330),
                 width: 0.5,
               ),
             ),
@@ -238,7 +298,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: isMe ? AppTheme.accent : const Color(0xFF2A2A2A),
+                    color: isMe ? AppTheme.accent : const Color(0xFF2A3330),
                     shape: BoxShape.circle,
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -389,6 +449,33 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
     final currentUserId = widget.playerId ?? context.read<HomeProvider>().user?.id;
 
     final playoff = _data?['playoff'] as List<dynamic>? ?? [];
+
+    // Americano Flex — своя таблица (Забито/Пропущено/Разница/Матчей/Среднее).
+    final format = (_data?['tournament'] as Map<String, dynamic>?)?['format'] as String?;
+    if (format == 'americano_flex') {
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+        children: [
+          FlexStandingsTable(
+            leaderboard: leaderboard.cast<Map<String, dynamic>>(),
+            currentUserId: currentUserId,
+          ),
+          if (playoff.isNotEmpty) ...[
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text('ПЛЕЙ-ОФФ',
+                  style: TextStyle(
+                      color: Color(0xFF8A968F),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5)),
+            ),
+            for (final m in playoff)
+              _buildPlayoffMatch(m as Map<String, dynamic>),
+          ],
+        ],
+      );
+    }
 
     return Column(
       children: [
@@ -583,7 +670,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
         child: Column(
           children: [
@@ -677,7 +764,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Column(
         children: [
@@ -834,7 +921,7 @@ class _TournamentResultsScreenState extends State<TournamentResultsScreen> {
       width: 28,
       height: 28,
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
+        color: const Color(0xFF2A3330),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(

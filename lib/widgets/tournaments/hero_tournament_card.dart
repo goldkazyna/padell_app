@@ -140,6 +140,15 @@ class HeroTournamentCard extends StatelessWidget {
 
   Widget _buildActionButton(BuildContext context, bool full) {
     final l = AppLocalizations.of(context)!;
+    // Заявка ещё не подтверждена — оранжевый статус (как на экране деталей).
+    if (tournament.registrationStatus == 'pending') {
+      return _pillButton(
+        text: l.pendingModeration,
+        bg: const Color(0xFFF59E0B).withValues(alpha: 0.16),
+        fg: const Color(0xFFF59E0B),
+        icon: Icons.access_time,
+      );
+    }
     if (tournament.isRegistered) {
       return _pillButton(
         text: l.youAreParticipating,
@@ -174,7 +183,7 @@ class HeroTournamentCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

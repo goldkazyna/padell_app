@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/flex_standings_table.dart';
 import 'player_profile_screen.dart';
 
 class TournamentStatsScreen extends StatefulWidget {
@@ -111,7 +112,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
         decoration: BoxDecoration(
           color: AppTheme.card,
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
         child: Icon(icon, color: AppTheme.textPrimary, size: 22),
       ),
@@ -268,7 +269,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Column(
         children: [
@@ -317,7 +318,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Column(
         children: [
@@ -396,7 +397,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
       width: 28,
       height: 28,
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
+        color: const Color(0xFF2A3330),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
@@ -451,7 +452,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.card,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+                border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
               ),
               child: Row(
                 children: [
@@ -466,7 +467,7 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
                   const SizedBox(width: 10),
                   Container(
                     width: 36, height: 36,
-                    decoration: const BoxDecoration(color: Color(0xFF2A2A2A), shape: BoxShape.circle),
+                    decoration: const BoxDecoration(color: Color(0xFF2A3330), shape: BoxShape.circle),
                     clipBehavior: Clip.antiAlias,
                     child: avatar != null
                         ? Image.network(avatar, fit: BoxFit.cover,
@@ -515,6 +516,32 @@ class _TournamentStatsScreenState extends State<TournamentStatsScreen> {
 
     if (teamStandings.isNotEmpty) {
       return _buildTeamLeaderboard(teamStandings, playoff);
+    }
+
+    // Americano Flex — своя таблица (Забито/Пропущено/Разница/Матчей/Среднее).
+    final format = (_data?['tournament'] as Map<String, dynamic>?)?['format'] as String?;
+    if (format == 'americano_flex') {
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+        children: [
+          FlexStandingsTable(
+            leaderboard: leaderboard.cast<Map<String, dynamic>>(),
+          ),
+          if (playoff.isNotEmpty) ...[
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text('ПЛЕЙ-ОФФ',
+                  style: TextStyle(
+                      color: Color(0xFF8A968F),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5)),
+            ),
+            for (final m in playoff)
+              _buildPlayoffMatchCard(m as Map<String, dynamic>),
+          ],
+        ],
+      );
     }
 
     return _buildPlayerLeaderboard(leaderboard, playoff);

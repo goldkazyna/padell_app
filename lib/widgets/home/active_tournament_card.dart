@@ -49,7 +49,7 @@ class _ActiveTournamentCardState extends State<ActiveTournamentCard>
           border: Border.all(
             color: isLive
                 ? AppTheme.accent.withAlpha(60)
-                : const Color(0xFF2A2A2A),
+                : const Color(0xFF2A3330),
             width: isLive ? 1.0 : 0.5,
           ),
         ),
@@ -239,7 +239,7 @@ class _ActiveTournamentCardState extends State<ActiveTournamentCard>
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Center(
         child: Column(

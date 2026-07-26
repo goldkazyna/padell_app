@@ -2105,6 +2105,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatYesterday => 'Вчера';
 
   @override
+  String get notifyBookingReminders => 'Напоминать о брони';
+
+  @override
+  String get notifyBookingRemindersDesc =>
+      'Пуш за сутки, за 2 часа и за час до начала брони корта';
+
+  @override
   String get notifyOrganizerChat => 'Чат организатора';
 
   @override
@@ -2153,4 +2160,221 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get tournamentDurationSubtitle =>
       'У турнира не указана длительность. Выберите, на сколько добавить его в календарь.';
+
+  @override
+  String get aiAnalysisButton => 'Разбор AI';
+
+  @override
+  String get aiAnalysisTitle => 'Разбор турнира';
+
+  @override
+  String get aiAnalysisLoading => 'AI анализирует ваше выступление…';
+
+  @override
+  String get aiAnalysisErrorTitle => 'Не удалось получить разбор';
+
+  @override
+  String get aiAnalysisRetry => 'Повторить';
+
+  @override
+  String get aiAnalysisFactorsTitle => 'Что повлияло на рейтинг';
+
+  @override
+  String get aiAnalysisBestMatch => 'Лучший матч';
+
+  @override
+  String get aiAnalysisWorstMatch => 'Слабый матч';
+
+  @override
+  String get aiAnalysisTipsTitle => 'Советы, как расти';
+
+  @override
+  String get aiAnalysisFootnote =>
+      'Разбор сгенерирован ИИ на основе ваших матчей';
+
+  @override
+  String get aiMatchesTitle => 'Разбор по матчам';
+
+  @override
+  String get aiYourPair => 'Ваша пара';
+
+  @override
+  String get aiOpponents => 'Соперники';
+
+  @override
+  String get aiWinChance => 'Шанс на победу';
+
+  @override
+  String get aiResultWin => 'Победа';
+
+  @override
+  String get aiResultLoss => 'Поражение';
+
+  @override
+  String get aiMatchNoEffect => 'Матч не повлиял на рейтинг (0:0)';
+
+  @override
+  String get aiMatchWinStrong =>
+      'Победа над более сильной парой — максимум очков';
+
+  @override
+  String get aiMatchWinExpected => 'Ожидаемая победа — прибавка небольшая';
+
+  @override
+  String get aiMatchLossFavorite => 'Проигрыш фавориту — потеря небольшая';
+
+  @override
+  String get aiMatchLossWeak => 'Проигрыш более слабой паре — потеря больше';
+
+  @override
+  String get servicesTitle => 'Сервисы';
+
+  @override
+  String get serviceBooking => 'Бронирование';
+
+  @override
+  String get serviceClubs => 'Клубы';
+
+  @override
+  String get serviceCommunity => 'Комьюнити';
+
+  @override
+  String get serviceShop => 'Магазин';
+
+  @override
+  String get serviceCreateGame => 'Создать игру';
+
+  @override
+  String get serviceGames => 'Игры';
+
+  @override
+  String get serviceClubCards => 'Клубные карты';
+
+  @override
+  String get serviceTournaments => 'Турниры';
+
+  @override
+  String get serviceComingSoon => 'Раздел в разработке';
+
+  @override
+  String get clubCardsTitle => 'Клубные карты';
+
+  @override
+  String get clubCardsEmptyTitle => 'У вас пока нет клубных карт';
+
+  @override
+  String get clubCardsEmptyHint =>
+      'Карта появится здесь автоматически, если клуб оформил её на ваш номер';
+
+  @override
+  String get clubCardsActive => 'Активные';
+
+  @override
+  String get clubCardsArchive => 'Архив';
+
+  @override
+  String get clubCardsNoActive => 'Нет активных карт';
+
+  @override
+  String get clubCardsArchiveEmpty => 'В архиве пусто';
+
+  @override
+  String clubCardActiveTotal(int active, int total) {
+    return '$active активные · $total всего';
+  }
+
+  @override
+  String clubCardRemaining(int balance, int initial) {
+    return 'Осталось $balance из $initial';
+  }
+
+  @override
+  String clubCardBalanceAfter(int balance) {
+    return 'остаток $balance';
+  }
+
+  @override
+  String get clubCardUnlimited => 'Бессрочная';
+
+  @override
+  String get clubCardExpired => 'Истекла';
+
+  @override
+  String get clubCardValidUntilShort => 'до';
+
+  @override
+  String get clubCardKindVisits => 'Занятия';
+
+  @override
+  String get clubCardKindTrainer => 'Тренер';
+
+  @override
+  String get clubCardKindDiscountCourt => 'Скидка на корт';
+
+  @override
+  String get clubCardKindDiscountTrainer => 'Скидка на тренера';
+
+  @override
+  String get clubCardCodeLabel => 'Код карты';
+
+  @override
+  String get clubCardValidUntilLabel => 'Действует до';
+
+  @override
+  String get clubCardHistoryTitle => 'История операций';
+
+  @override
+  String get clubCardHistoryEmpty => 'Пока нет операций';
+
+  @override
+  String get clubCardCharge => 'Списание';
+
+  @override
+  String get clubCardChargeBooking => 'Списание за бронь';
+
+  @override
+  String get clubCardBookingsButton => 'Записи по карте';
+
+  @override
+  String get clubCardBookingsEmpty => 'Нет предстоящих записей по этой карте';
+
+  @override
+  String clubCardBookingCancelHint(int hours) {
+    return 'Отмена не позднее чем за $hours ч до начала';
+  }
+
+  @override
+  String clubCardsCountShort(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'карты',
+      many: 'карт',
+      few: 'карты',
+      one: 'карта',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String get minutesShort => 'мин';
+
+  @override
+  String get bookingToday => 'сегодня';
+
+  @override
+  String get bookingTomorrow => 'завтра';
+
+  @override
+  String bookingInDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'дня',
+      many: 'дней',
+      few: 'дня',
+      one: 'день',
+    );
+    return 'через $days $_temp0';
+  }
 }

@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
 import 'tournament_detail_screen.dart';
 import 'tournament_invitations_screen.dart';
+import 'my_bookings_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   final String? category;
@@ -123,6 +124,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         MaterialPageRoute(
           builder: (_) => const TournamentInvitationsScreen(),
         ),
+      );
+      return;
+    }
+
+    // Брони корта → «Мои бронирования»
+    const bookingTypes = {
+      'booking_reminder',
+      'booking_created',
+      'booking_confirmed',
+      'booking_cancelled',
+    };
+    if (bookingTypes.contains(type)) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
       );
       return;
     }
@@ -283,6 +299,16 @@ class _NotificationCard extends StatelessWidget {
         iconData = Icons.notification_important_outlined;
         iconColor = AppTheme.accent;
         break;
+      case 'booking_reminder':
+      case 'booking_created':
+      case 'booking_confirmed':
+        iconData = Icons.event_available_outlined;
+        iconColor = AppTheme.accent;
+        break;
+      case 'booking_cancelled':
+        iconData = Icons.event_busy_outlined;
+        iconColor = AppTheme.error;
+        break;
       default:
         iconData = Icons.notifications_outlined;
         iconColor = AppTheme.accent;
@@ -297,7 +323,7 @@ class _NotificationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isRead
-              ? const Color(0xFF2A2A2A)
+              ? const Color(0xFF2A3330)
               : AppTheme.accent.withAlpha(80),
           width: 0.5,
         ),

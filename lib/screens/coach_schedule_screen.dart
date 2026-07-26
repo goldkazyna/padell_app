@@ -334,7 +334,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
           border: Border.all(
             color: isToday && !active
                 ? AppTheme.accent
-                : (active ? AppTheme.accent : const Color(0xFF2A2A2A)),
+                : (active ? AppTheme.accent : const Color(0xFF2A3330)),
             width: active ? 1.5 : 0.5,
           ),
         ),
@@ -377,7 +377,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
               decoration: BoxDecoration(
                 color: active
                     ? Colors.black.withValues(alpha: 0.12)
-                    : const Color(0xFF2A2A2A),
+                    : const Color(0xFF2A3330),
                 borderRadius: BorderRadius.circular(2),
               ),
               child: Align(

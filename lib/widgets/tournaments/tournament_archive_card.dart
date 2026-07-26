@@ -58,7 +58,7 @@ class TournamentArchiveCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +129,7 @@ class TournamentArchiveCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2A2A2A),
+                        color: const Color(0xFF2A3330),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(

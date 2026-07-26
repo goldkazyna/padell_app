@@ -36,6 +36,8 @@ class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
     'Шымкент',
     'Караганда',
     'Актобе',
+    'Актау',
+    'Атырау',
     'Костанай',
   ];
 

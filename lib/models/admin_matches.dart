@@ -116,6 +116,7 @@ class AdminLeaderboardRow {
   final int id;
   final String name;
   final String? avatarUrl;
+  final bool verified;
   final int totalPoints;
   final int wins;
   final int losses;
@@ -147,6 +148,7 @@ class AdminLeaderboardRow {
     required this.id,
     required this.name,
     required this.avatarUrl,
+    this.verified = false,
     required this.totalPoints,
     required this.wins,
     required this.losses,
@@ -170,6 +172,7 @@ class AdminLeaderboardRow {
       id: (json['id'] as num).toInt(),
       name: json['name'] as String? ?? '',
       avatarUrl: json['avatar'] as String?,
+      verified: json['verified'] as bool? ?? false,
       totalPoints: (json['total_points'] as num?)?.toInt() ?? 0,
       wins: (json['wins'] as num?)?.toInt() ?? 0,
       losses: (json['losses'] as num?)?.toInt() ?? 0,

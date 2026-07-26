@@ -664,7 +664,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
           color: isSelected ? AppTheme.accent.withAlpha(25) : AppTheme.card,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
+            color: isSelected ? AppTheme.accent : const Color(0xFF2A3330),
             width: isSelected ? 1.5 : 0.5,
           ),
         ),
@@ -705,7 +705,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     ? AppTheme.accent
                     : isDisabled
                         ? const Color(0xFF1E1E1E)
-                        : const Color(0xFF2A2A2A),
+                        : const Color(0xFF2A3330),
                 width: isSelected ? 1.5 : 0.5,
               ),
             ),

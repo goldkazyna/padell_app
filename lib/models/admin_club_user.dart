@@ -7,6 +7,10 @@ class AdminClubUser {
   final bool levelVerified;
   final String? avatarUrl;
 
+  /// Дата, до которой запрещено менять уровень/рейтинг (кулдаун 2 месяца).
+  /// null — ограничения нет.
+  final DateTime? ratingLockedUntil;
+
   const AdminClubUser({
     required this.id,
     required this.name,
@@ -14,7 +18,12 @@ class AdminClubUser {
     required this.rating,
     required this.levelVerified,
     required this.avatarUrl,
+    this.ratingLockedUntil,
   });
+
+  /// Активна ли блокировка смены рейтинга прямо сейчас.
+  bool get isRatingLocked =>
+      ratingLockedUntil != null && ratingLockedUntil!.isAfter(DateTime.now());
 
   factory AdminClubUser.fromJson(Map<String, dynamic> json) {
     return AdminClubUser(
@@ -24,6 +33,9 @@ class AdminClubUser {
       rating: (json['rating'] as num?)?.toInt() ?? 0,
       levelVerified: json['level_verified'] as bool? ?? false,
       avatarUrl: json['avatar_url'] as String?,
+      ratingLockedUntil: json['rating_locked_until'] != null
+          ? DateTime.tryParse(json['rating_locked_until'] as String)
+          : null,
     );
   }
 }

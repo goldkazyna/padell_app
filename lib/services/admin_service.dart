@@ -313,6 +313,18 @@ class AdminService {
     bool? hasLowerBracket,
     bool? hasBronzeMatch,
     int? courtsCount,
+    // Доп. поля (как при создании) — до старта менять безопасно.
+    int? durationHours,
+    bool? isRated,
+    int? reserveCount,
+    int? waitlistSize,
+    int? groupsCount,
+    int? roundsCount,
+    int? teamsAdvance,
+    String? playoffType,
+    String? playoffFormat,
+    bool? isPaired,
+    List<String?>? courts,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -332,11 +344,23 @@ class AdminService {
       if (status != null) 'status': status,
       // Кто собирает пары (командный турнир): self / admin.
       if (pairingMode != null) 'pairing_mode': pairingMode,
-      // Плей-офф командного турнира (шлём только когда переданы).
+      // Плей-офф (шлём только когда переданы).
       if (hasPlayoff != null) 'has_playoff': hasPlayoff,
       if (hasLowerBracket != null) 'has_lower_bracket': hasLowerBracket,
       if (hasBronzeMatch != null) 'has_bronze_match': hasBronzeMatch,
       if (courtsCount != null) 'courts_count': courtsCount,
+      // Доп. поля формата/записей (шлём только когда переданы).
+      if (durationHours != null) 'duration_hours': durationHours,
+      if (isRated != null) 'is_rated': isRated,
+      if (reserveCount != null) 'reserve_count': reserveCount,
+      if (waitlistSize != null) 'waitlist_size': waitlistSize,
+      if (groupsCount != null) 'groups_count': groupsCount,
+      if (roundsCount != null) 'rounds_count': roundsCount,
+      if (teamsAdvance != null) 'teams_advance': teamsAdvance,
+      if (playoffType != null) 'playoff_type': playoffType,
+      if (playoffFormat != null) 'playoff_format': playoffFormat,
+      if (isPaired != null) 'is_paired': isPaired,
+      if (courts != null) 'courts': courts,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(

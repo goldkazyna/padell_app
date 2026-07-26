@@ -537,7 +537,7 @@ class _InviteTournamentTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppTheme.background,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF2A2A2A)),
+          border: Border.all(color: const Color(0xFF2A3330)),
         ),
         child: Row(
           children: [

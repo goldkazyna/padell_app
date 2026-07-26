@@ -38,6 +38,8 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
     'Шымкент',
     'Караганда',
     'Актобе',
+    'Актау',
+    'Атырау',
     'Костанай',
   ];
 
@@ -287,7 +289,7 @@ class _ClubTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
         child: Row(
           children: [

@@ -441,7 +441,7 @@ class _RatingScreenState extends State<RatingScreen> {
                 color: isSelected ? AppTheme.accent : AppTheme.card,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
+                  color: isSelected ? AppTheme.accent : const Color(0xFF2A3330),
                   width: 0.5,
                 ),
               ),
@@ -502,12 +502,18 @@ class _RatingScreenState extends State<RatingScreen> {
       return Center(child: Text(l10n.ratingPlayersNotFound, style: TextStyle(color: AppTheme.textSecondary)));
     }
 
+    // Когда снизу висит бар «моя позиция», он сам отступает от плавающего
+    // меню; иначе список должен очистить таблетку сам.
+    final showMyBar = rating.myCard != null &&
+        rating.levelFilter == 'all' &&
+        rating.searchQuery.isEmpty;
+
     return RefreshIndicator(
       onRefresh: () => rating.refresh(),
       color: AppTheme.accent,
       child: ListView.builder(
         controller: _ratingScrollController,
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: EdgeInsets.only(bottom: showMyBar ? 12 : 90),
         itemCount: rating.players.length + (rating.hasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == rating.players.length) {
@@ -660,7 +666,8 @@ class _RatingScreenState extends State<RatingScreen> {
 
   Widget _buildMyPositionBar(MyRatingCard card) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      // Отступ снизу очищает плавающую «таблетку» меню (высота ~60 + зазор).
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 78),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: AppTheme.accent.withAlpha(15),
@@ -791,7 +798,7 @@ class _RatingScreenState extends State<RatingScreen> {
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.accent : AppTheme.card,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: isSelected ? AppTheme.accent : const Color(0xFF2A3330), width: 0.5),
         ),
         child: Text(
           label,
@@ -833,7 +840,7 @@ class _RatingScreenState extends State<RatingScreen> {
       color: AppTheme.accent,
       child: ListView.builder(
         controller: _growthScrollController,
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.only(bottom: 90),
         itemCount: _growthPlayers.length + (_growthHasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _growthPlayers.length) {
@@ -991,7 +998,7 @@ class _RatingScreenState extends State<RatingScreen> {
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.accent : AppTheme.card,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: isSelected ? AppTheme.accent : const Color(0xFF2A3330), width: 0.5),
         ),
         child: Text(
           label,
@@ -1026,7 +1033,7 @@ class _RatingScreenState extends State<RatingScreen> {
       color: AppTheme.accent,
       child: ListView.builder(
         controller: _tournamentsScrollController,
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.only(bottom: 90),
         itemCount: _tournamentsPlayers.length + (_tournamentsHasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _tournamentsPlayers.length) {

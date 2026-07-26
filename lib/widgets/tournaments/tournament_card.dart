@@ -15,6 +15,7 @@ class TournamentCard extends StatelessWidget {
   final String price;
   final String level;
   final bool isRegistered;
+  final String? registrationStatus;
   final bool isFull;
   final bool isRated;
   final bool verifiedOnly;
@@ -33,6 +34,7 @@ class TournamentCard extends StatelessWidget {
     required this.price,
     required this.level,
     this.isRegistered = false,
+    this.registrationStatus,
     this.isFull = false,
     this.isRated = true,
     this.verifiedOnly = false,
@@ -52,6 +54,7 @@ class TournamentCard extends StatelessWidget {
       price: t.priceText,
       level: t.levelText,
       isRegistered: t.isRegistered,
+      registrationStatus: t.registrationStatus,
       isFull: t.isFull,
       isRated: t.isRated,
       verifiedOnly: t.verifiedOnly,
@@ -279,6 +282,31 @@ class TournamentCard extends StatelessWidget {
 
   Widget _buildActionButton(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // Заявка ещё не подтверждена — оранжевый статус (как на экране деталей).
+    if (registrationStatus == 'pending') {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFF59E0B), width: 1.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.access_time, color: Color(0xFFF59E0B), size: 14),
+            const SizedBox(width: 5),
+            Text(
+              l10n.pendingModeration,
+              style: const TextStyle(
+                color: Color(0xFFF59E0B),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     if (isRegistered) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -326,7 +354,7 @@ class TournamentCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
       decoration: BoxDecoration(
         color: AppTheme.accent,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: AppTheme.accent.withAlpha(76),

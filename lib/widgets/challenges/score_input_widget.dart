@@ -90,7 +90,7 @@ class _ScoreInputWidgetState extends State<ScoreInputWidget> {
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFF2A2A2A),
+          color: const Color(0xFF2A3330),
           width: 0.5,
         ),
       ),
@@ -284,7 +284,7 @@ class _ScoreInputWidgetState extends State<ScoreInputWidget> {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(
-              color: Color(0xFF2A2A2A),
+              color: Color(0xFF2A3330),
               width: 1,
             ),
           ),
@@ -316,7 +316,7 @@ class _ScoreInputWidgetState extends State<ScoreInputWidget> {
         color: AppTheme.background,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isWinning ? AppTheme.accent.withAlpha(77) : const Color(0xFF2A2A2A),
+          color: isWinning ? AppTheme.accent.withAlpha(77) : const Color(0xFF2A3330),
           width: 1,
         ),
       ),

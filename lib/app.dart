@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -237,6 +238,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
     return Expanded(
       child: InkWell(
+        borderRadius: BorderRadius.circular(22),
         onTap: () {
           if (locked) {
             _showProfileIncompleteDialog();
@@ -250,7 +252,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         child: Opacity(
           opacity: locked ? 0.35 : 1.0,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -292,42 +294,70 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       builder: (_, home, __) {
         final incomplete = home.user?.isProfileIncomplete ?? false;
 
+        final bottomInset = MediaQuery.of(context).padding.bottom;
+
         return Scaffold(
-          body: screens[_currentIndex],
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              color: AppTheme.card,
-              border: Border(
-                top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
+          backgroundColor: AppTheme.background,
+          // Контент — на всю высоту; меню НЕ резервирует полосу снизу, а висит
+          // оверлеем поверх ленты (как в инстаграме).
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: screens[_currentIndex],
               ),
-            ),
-            // Кастомный нав-бар: подпись авто-ужимается (FittedBox), поэтому
-            // всегда влезает целиком — даже при крупном системном шрифте/масштабе.
-            child: MediaQuery.withClampedTextScaling(
-              maxScaleFactor: 1.0,
-              child: SafeArea(
-                top: false,
-                child: SizedBox(
-                  height: 58,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _navItem(0, Icons.home_outlined, Icons.home,
-                          AppLocalizations.of(context)!.navHome, incomplete),
-                      _navItem(1, Icons.emoji_events_outlined, Icons.emoji_events,
-                          AppLocalizations.of(context)!.navTournaments, incomplete),
-                      _navItem(2, Icons.calendar_month_outlined,
-                          Icons.calendar_month,
-                          AppLocalizations.of(context)!.navBooking, incomplete),
-                      _navItem(3, Icons.leaderboard_outlined, Icons.leaderboard,
-                          AppLocalizations.of(context)!.navRating, incomplete),
-                      _navItem(4, Icons.person_outline, Icons.person,
-                          AppLocalizations.of(context)!.navProfile, incomplete),
-                    ],
+              // Плавающая «таблетка» — только она и есть меню; вокруг ничего.
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: bottomInset > 0 ? bottomInset : 12,
+                child: ClipRRect(
+              borderRadius: BorderRadius.circular(28),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.background.withOpacity(0.30), // цвет фона
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(
+                        color: const Color(0xFF2A3330), width: 0.5),
+                  ),
+                  // Подпись авто-ужимается (FittedBox), всегда влезает целиком.
+                  child: MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: 1.0,
+                    // ВАЖНО: высота меню фиксированная — не меняется при
+                    // сворачивании, иначе пересчёт раскладки дёргает ленту при
+                    // скролле. Иконки/подписи анимируются ВНУТРИ этой высоты.
+                    child: SizedBox(
+                      height: 60,
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _navItem(0, Icons.home_outlined, Icons.home,
+                                AppLocalizations.of(context)!.navHome, incomplete),
+                            _navItem(1, Icons.emoji_events_outlined,
+                                Icons.emoji_events,
+                                AppLocalizations.of(context)!.navTournaments,
+                                incomplete),
+                            _navItem(2, Icons.calendar_month_outlined,
+                                Icons.calendar_month,
+                                AppLocalizations.of(context)!.navBooking,
+                                incomplete),
+                            _navItem(3, Icons.leaderboard_outlined,
+                                Icons.leaderboard,
+                                AppLocalizations.of(context)!.navRating,
+                                incomplete),
+                            _navItem(4, Icons.person_outline, Icons.person,
+                                AppLocalizations.of(context)!.navProfile,
+                                incomplete),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              ),
+            ],
           ),
         );
       },

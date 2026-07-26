@@ -69,7 +69,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.card,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+                  border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
                 ),
                 child: Column(
                   children: [
@@ -80,14 +80,14 @@ class BookingConfirmationScreen extends StatelessWidget {
                     if (coachName != null) _row(l10n.summaryCoach, coachName, color: const Color(0xFFA78BFA)),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Divider(color: Color(0xFF2A2A2A), height: 1),
+                      child: Divider(color: Color(0xFF2A3330), height: 1),
                     ),
                     _row(l10n.summaryCourt, '${_fmtPrice(courtPrice)} ₸', color: AppTheme.accent),
                     if (coachName != null && coachPrice > 0)
                       _row(l10n.summaryCoach, '${_fmtPrice(coachPrice)} ₸', color: const Color(0xFFA78BFA)),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Divider(color: Color(0xFF2A2A2A), height: 1),
+                      child: Divider(color: Color(0xFF2A3330), height: 1),
                     ),
                     _row(l10n.summaryTotal, '${_fmtPrice(totalPrice)} ₸',
                         color: AppTheme.accent, bold: true, big: true),
@@ -130,7 +130,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppTheme.card,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+                      border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
                     ),
                     child: Center(
                       child: Text(l10n.goHome,

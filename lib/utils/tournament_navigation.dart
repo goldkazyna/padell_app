@@ -24,7 +24,10 @@ void openTournamentLiveByType(
   Widget target;
   switch (tournamentType) {
     case 'mexicano':
-      target = TournamentLiveMexicanoScreen(tournamentId: tournamentId);
+      target = TournamentLiveMexicanoScreen(
+        tournamentId: tournamentId,
+        highlightPlayerId: highlightPlayerId,
+      );
       break;
     case 'team':
       target = TournamentLiveTeamScreen(

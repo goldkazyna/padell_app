@@ -60,7 +60,7 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
                     decoration: BoxDecoration(
                       color: AppTheme.card,
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+                      border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
                     ),
                     child: IconButton(
                       icon: Icon(Icons.chevron_left, color: AppTheme.textPrimary, size: 24),

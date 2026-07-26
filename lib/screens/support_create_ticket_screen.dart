@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../services/support_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/app_primary_button.dart';
 import '../widgets/support/attachment_picker.dart';
 
 class SupportCreateTicketScreen extends StatefulWidget {
@@ -122,37 +123,11 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _sending ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accent,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: _sending
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Color(0xFF06251A)),
-                        )
-                      : const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.send_rounded,
-                                color: Color(0xFF06251A), size: 18),
-                            SizedBox(width: 8),
-                            Text('Отправить обращение',
-                                style: TextStyle(
-                                    color: Color(0xFF06251A),
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 16)),
-                          ],
-                        ),
-                ),
+              child: AppPrimaryButton(
+                label: 'Отправить обращение',
+                onPressed: _submit,
+                icon: Icons.send_rounded,
+                loading: _sending,
               ),
             ),
           ],
@@ -178,7 +153,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                   decoration: BoxDecoration(
                     color: AppTheme.card,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF2A2A2A)),
+                    border: Border.all(color: const Color(0xFF2A3330)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -227,7 +202,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.card,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF2A2A2A)),
+                border: Border.all(color: const Color(0xFF2A3330)),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -275,7 +250,7 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
                 border: Border.all(
                   color: _category == c
                       ? AppTheme.accent
-                      : const Color(0xFF2A2A2A),
+                      : const Color(0xFF2A3330),
                 ),
               ),
               child: Row(
@@ -330,11 +305,11 @@ class _SupportCreateTicketScreenState extends State<SupportCreateTicketScreen> {
           fillColor: AppTheme.card,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
+            borderSide: const BorderSide(color: Color(0xFF2A3330)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
+            borderSide: const BorderSide(color: Color(0xFF2A3330)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

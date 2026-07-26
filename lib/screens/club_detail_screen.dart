@@ -151,7 +151,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   ),
                 ),
               ),
-              const Divider(height: 0, thickness: 0.5, color: Color(0xFF2A2A2A)),
+              const Divider(height: 0, thickness: 0.5, color: Color(0xFF2A3330)),
               // Row 1: Профиль клуба — always present
               _ShareRow(
                 icon: const Icon(Icons.link, color: AppTheme.accent, size: 20),
@@ -992,7 +992,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Column(
         children: [
@@ -1002,7 +1002,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               const Divider(
                 height: 0,
                 thickness: 0.5,
-                color: Color(0xFF2A2A2A),
+                color: Color(0xFF2A3330),
                 indent: 16,
                 endIndent: 16,
               ),
@@ -1020,7 +1020,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
         child: Row(
           children: [
@@ -1155,7 +1155,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

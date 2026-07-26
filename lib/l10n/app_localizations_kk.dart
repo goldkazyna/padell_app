@@ -2084,6 +2084,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get chatYesterday => 'Кеше';
 
   @override
+  String get notifyBookingReminders => 'Брондау туралы еске салу';
+
+  @override
+  String get notifyBookingRemindersDesc =>
+      'Корт бронынан бір тәулік, 2 сағат және бір сағат бұрын push';
+
+  @override
   String get notifyOrganizerChat => 'Ұйымдастырушы чаты';
 
   @override
@@ -2132,4 +2139,203 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get tournamentDurationSubtitle =>
       'Турнирдің ұзақтығы көрсетілмеген. Күнтізбеге қанша уақытқа қосуды таңдаңыз.';
+
+  @override
+  String get aiAnalysisButton => 'AI талдау';
+
+  @override
+  String get aiAnalysisTitle => 'Турнир талдауы';
+
+  @override
+  String get aiAnalysisLoading => 'AI сіздің ойыныңызды талдап жатыр…';
+
+  @override
+  String get aiAnalysisErrorTitle => 'Талдауды алу мүмкін болмады';
+
+  @override
+  String get aiAnalysisRetry => 'Қайталау';
+
+  @override
+  String get aiAnalysisFactorsTitle => 'Рейтингке не әсер етті';
+
+  @override
+  String get aiAnalysisBestMatch => 'Үздік матч';
+
+  @override
+  String get aiAnalysisWorstMatch => 'Әлсіз матч';
+
+  @override
+  String get aiAnalysisTipsTitle => 'Өсу үшін кеңестер';
+
+  @override
+  String get aiAnalysisFootnote => 'Матчтарыңыз негізінде AI жасаған';
+
+  @override
+  String get aiMatchesTitle => 'Матч бойынша талдау';
+
+  @override
+  String get aiYourPair => 'Сіздің жұбыңыз';
+
+  @override
+  String get aiOpponents => 'Қарсыластар';
+
+  @override
+  String get aiWinChance => 'Жеңу мүмкіндігі';
+
+  @override
+  String get aiResultWin => 'Жеңіс';
+
+  @override
+  String get aiResultLoss => 'Жеңіліс';
+
+  @override
+  String get aiMatchNoEffect => 'Матч рейтингке әсер етпеді (0:0)';
+
+  @override
+  String get aiMatchWinStrong => 'Күштірек жұпты жеңу — максимум ұпай';
+
+  @override
+  String get aiMatchWinExpected => 'Күтілген жеңіс — қосымша аз';
+
+  @override
+  String get aiMatchLossFavorite => 'Фаворитке жеңілу — жоғалту аз';
+
+  @override
+  String get aiMatchLossWeak => 'Әлсіз жұпқа жеңілу — жоғалту көбірек';
+
+  @override
+  String get servicesTitle => 'Сервистер';
+
+  @override
+  String get serviceBooking => 'Брондау';
+
+  @override
+  String get serviceClubs => 'Клубтар';
+
+  @override
+  String get serviceCommunity => 'Қауымдастық';
+
+  @override
+  String get serviceShop => 'Дүкен';
+
+  @override
+  String get serviceCreateGame => 'Ойын құру';
+
+  @override
+  String get serviceGames => 'Ойындар';
+
+  @override
+  String get serviceClubCards => 'Клуб карталары';
+
+  @override
+  String get serviceTournaments => 'Турнирлер';
+
+  @override
+  String get serviceComingSoon => 'Бөлім әзірленуде';
+
+  @override
+  String get clubCardsTitle => 'Клуб карталары';
+
+  @override
+  String get clubCardsEmptyTitle => 'Сізде әзірге клуб карталары жоқ';
+
+  @override
+  String get clubCardsEmptyHint =>
+      'Клуб картаны сіздің нөміріңізге рәсімдесе, ол осында автоматты түрде пайда болады';
+
+  @override
+  String get clubCardsActive => 'Белсенді';
+
+  @override
+  String get clubCardsArchive => 'Мұрағат';
+
+  @override
+  String get clubCardsNoActive => 'Белсенді карта жоқ';
+
+  @override
+  String get clubCardsArchiveEmpty => 'Мұрағат бос';
+
+  @override
+  String clubCardActiveTotal(int active, int total) {
+    return '$active белсенді · барлығы $total';
+  }
+
+  @override
+  String clubCardRemaining(int balance, int initial) {
+    return '$initial ішінен $balance қалды';
+  }
+
+  @override
+  String clubCardBalanceAfter(int balance) {
+    return 'қалдық $balance';
+  }
+
+  @override
+  String get clubCardUnlimited => 'Мерзімсіз';
+
+  @override
+  String get clubCardExpired => 'Мерзімі бітті';
+
+  @override
+  String get clubCardValidUntilShort => 'дейін';
+
+  @override
+  String get clubCardKindVisits => 'Сабақтар';
+
+  @override
+  String get clubCardKindTrainer => 'Жаттықтырушы';
+
+  @override
+  String get clubCardKindDiscountCourt => 'Кортқа жеңілдік';
+
+  @override
+  String get clubCardKindDiscountTrainer => 'Жаттықтырушыға жеңілдік';
+
+  @override
+  String get clubCardCodeLabel => 'Карта коды';
+
+  @override
+  String get clubCardValidUntilLabel => 'Дейін жарамды';
+
+  @override
+  String get clubCardHistoryTitle => 'Операциялар тарихы';
+
+  @override
+  String get clubCardHistoryEmpty => 'Әзірге операциялар жоқ';
+
+  @override
+  String get clubCardCharge => 'Есептен шығару';
+
+  @override
+  String get clubCardChargeBooking => 'Бронь үшін есептен шығару';
+
+  @override
+  String get clubCardBookingsButton => 'Карта бойынша брондар';
+
+  @override
+  String get clubCardBookingsEmpty => 'Бұл карта бойынша алдағы брондар жоқ';
+
+  @override
+  String clubCardBookingCancelHint(int hours) {
+    return 'Басталуға $hours сағат қалғанша ғана болдырмауға болады';
+  }
+
+  @override
+  String clubCardsCountShort(int count) {
+    return '$count карта';
+  }
+
+  @override
+  String get minutesShort => 'мин';
+
+  @override
+  String get bookingToday => 'бүгін';
+
+  @override
+  String get bookingTomorrow => 'ертең';
+
+  @override
+  String bookingInDays(int days) {
+    return '$days күннен кейін';
+  }
 }

@@ -11,6 +11,8 @@ import '../screens/challenge_detail_screen.dart';
 import '../screens/tournament_live_kingofcourt_screen.dart';
 import '../screens/tournament_live_bali_koc_screen.dart';
 import '../screens/tournament_invitations_screen.dart';
+import '../screens/my_bookings_screen.dart';
+import '../screens/admin/admin_tournament_detail_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -360,6 +362,33 @@ class PushNotificationService {
     // Приглашение на турнир → экран приглашений (принять/отклонить)
     if (type == 'tournament_invite') {
       _navigateWhenReady(() => const TournamentInvitationsScreen());
+      return;
+    }
+
+    // Организатору: участник вышел из турнира → админ-экран, Журнал → «отписались»
+    if (type == 'tournament_participant_left' && tournamentId.isNotEmpty) {
+      final id = int.tryParse(tournamentId);
+      if (id != null) {
+        _navigateWhenReady(
+          () => AdminTournamentDetailScreen(
+            tournamentId: id,
+            tournamentName: '',
+            initialTab: 4,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Брони корта → «Мои бронирования»
+    const bookingTypes = {
+      'booking_reminder',
+      'booking_created',
+      'booking_confirmed',
+      'booking_cancelled',
+    };
+    if (bookingTypes.contains(type)) {
+      _navigateWhenReady(() => const MyBookingsScreen());
       return;
     }
 

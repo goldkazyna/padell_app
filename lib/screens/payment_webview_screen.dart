@@ -92,7 +92,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                         color: AppTheme.card,
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: const Color(0xFF2A2A2A), width: 0.5),
+                            color: const Color(0xFF2A3330), width: 0.5),
                       ),
                       child: IconButton(
                         icon: Icon(Icons.close,

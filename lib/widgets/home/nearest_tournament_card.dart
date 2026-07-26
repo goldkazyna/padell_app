@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../app_primary_button.dart';
 import '../tournaments/club_logo.dart';
 
 class NearestTournamentCard extends StatelessWidget {
@@ -30,7 +31,7 @@ class NearestTournamentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -149,29 +150,12 @@ class NearestTournamentCard extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              GestureDetector(
-                onTap: onTap,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.details,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_forward, color: Colors.white, size: 16),
-                    ],
-                  ),
-                ),
+              AppPrimaryButton(
+                label: AppLocalizations.of(context)!.details,
+                onPressed: onTap,
+                trailingIcon: Icons.arrow_forward,
+                compact: true,
+                expand: false,
               ),
             ],
           ),
@@ -209,7 +193,7 @@ class NearestTournamentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Center(
         child: Column(
@@ -222,32 +206,12 @@ class NearestTournamentCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            GestureDetector(
-              onTap: onBrowse,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: AppTheme.accent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.chooseTournament,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.arrow_forward,
-                        color: Colors.white, size: 16),
-                  ],
-                ),
-              ),
+            AppPrimaryButton(
+              label: AppLocalizations.of(context)!.chooseTournament,
+              onPressed: onBrowse,
+              trailingIcon: Icons.arrow_forward,
+              compact: true,
+              expand: false,
             ),
           ],
         ),

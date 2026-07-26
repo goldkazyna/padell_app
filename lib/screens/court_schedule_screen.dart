@@ -268,7 +268,7 @@ class _CourtScheduleScreenState extends State<CourtScheduleScreen> {
                   border: Border.all(
                     color: isActive
                         ? const Color(0xFF3B82F6)
-                        : const Color(0xFF2A2A2A),
+                        : const Color(0xFF2A3330),
                     width: 0.5,
                   ),
                 ),
@@ -477,7 +477,7 @@ class _DayChip extends StatelessWidget {
           border: Border.all(
             color: day.isToday && !isSelected
                 ? AppTheme.accent
-                : (isSelected ? AppTheme.accent : const Color(0xFF2A2A2A)),
+                : (isSelected ? AppTheme.accent : const Color(0xFF2A3330)),
             width: isSelected ? 1.5 : 0.5,
           ),
         ),
@@ -521,7 +521,7 @@ class _DayChip extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isSelected
                     ? Colors.black.withAlpha(30)
-                    : const Color(0xFF2A2A2A),
+                    : const Color(0xFF2A3330),
                 borderRadius: BorderRadius.circular(2),
               ),
               child: Align(

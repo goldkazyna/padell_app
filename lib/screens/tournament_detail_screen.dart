@@ -8,6 +8,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_primary_button.dart';
 import '../utils/tournament_type_l10n.dart';
 import '../utils/app_alert.dart';
 import '../utils/rating_formatter.dart';
@@ -298,7 +299,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         decoration: BoxDecoration(
           color: AppTheme.card,
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
         child: Icon(icon, color: AppTheme.textPrimary, size: 22),
       ),
@@ -647,7 +648,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+          border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -769,7 +770,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             decoration: BoxDecoration(
               color: AppTheme.card,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+              border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
             ),
             child: Center(
               child: Text(
@@ -869,7 +870,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   }) {
     final Color primaryColor = isMe ? AppTheme.blue : AppTheme.textPrimary;
     final Color secondaryColor = isMe ? AppTheme.blue.withAlpha(180) : AppTheme.textSecondary;
-    final Color avatarBg = isMe ? AppTheme.blue : const Color(0xFF2A2A2A);
+    final Color avatarBg = isMe ? AppTheme.blue : const Color(0xFF2A3330);
 
     return GestureDetector(
       onTap: () => _openPlayerProfile(participant.id, participant.name),
@@ -1163,7 +1164,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   }) {
     final Color primaryColor = isMe ? AppTheme.accent : AppTheme.textPrimary;
     final Color secondaryColor = isMe ? AppTheme.accent.withAlpha(180) : AppTheme.textSecondary;
-    final Color avatarBg = isMe ? AppTheme.accent : const Color(0xFF2A2A2A);
+    final Color avatarBg = isMe ? AppTheme.accent : const Color(0xFF2A3330);
 
     return GestureDetector(
       onTap: () => _openPlayerProfile(participant.id, participant.name),
@@ -1174,7 +1175,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         color: isMe ? AppTheme.accent.withAlpha(15) : AppTheme.card,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isMe ? AppTheme.accent.withAlpha(60) : const Color(0xFF2A2A2A),
+          color: isMe ? AppTheme.accent.withAlpha(60) : const Color(0xFF2A3330),
           width: 0.5,
         ),
       ),
@@ -1309,7 +1310,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(height: 0.5, color: const Color(0xFF2A2A2A)),
+        Container(height: 0.5, color: const Color(0xFF2A3330)),
         const SizedBox(height: 20),
         Text(
           AppLocalizations.of(context)!.organizer,
@@ -1325,7 +1326,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           decoration: BoxDecoration(
             color: AppTheme.card,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+            border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1487,7 +1488,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         height: 52,
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2A2A),
+            color: const Color(0xFF2A3330),
             borderRadius: BorderRadius.circular(14),
           ),
           child: const Center(
@@ -1546,26 +1547,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: () => _onRegister(t.id),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accent,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                elevation: 0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.add, size: 20),
-                  const SizedBox(width: 6),
-                  Text(AppLocalizations.of(context)!.registerButton, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                ],
-              ),
-            ),
+          AppPrimaryButton(
+            label: AppLocalizations.of(context)!.registerButton,
+            onPressed: () => _onRegister(t.id),
+            icon: Icons.add,
           ),
           const SizedBox(height: 10),
           SizedBox(
@@ -1780,7 +1765,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       onTap: () => _onRefresh(t.id),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2A2A),
+          color: const Color(0xFF2A3330),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Center(
@@ -1800,7 +1785,19 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
-  void _showResultDialog(bool success, String message) {
+  void _showResultDialog(bool success, String message, {bool offerPayment = false}) {
+    // Оплату предлагаем ТОЛЬКО при успешной записи (offerPayment) — не при отмене.
+    // И только если у клуба задана ссылка оплаты и дедлайн оплаты не прошёл.
+    final t = context.read<TournamentProvider>().selectedTournament;
+    final payUrl = (offerPayment &&
+            success &&
+            t != null &&
+            t.club.paymentUrl != null &&
+            t.club.paymentUrl!.isNotEmpty &&
+            !_paymentDeadlinePassed(t))
+        ? t.club.paymentUrl!
+        : null;
+
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -1826,21 +1823,71 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: success ? AppTheme.accent : AppTheme.error,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                  ),
-                  child: Text(AppLocalizations.of(context)!.ok, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              if (payUrl != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Вам нужно оплатить участие в турнире.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                 ),
-              ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      Navigator.of(ctx).pop();
+                      final url = Uri.parse(payUrl);
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url, mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    icon: const Icon(Icons.payment, size: 20),
+                    label: const Text('Оплатить',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.accent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // ОК — приглушённая, но нажимаемая (закрыть без оплаты).
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.cardRaised,
+                      foregroundColor: AppTheme.textSecondary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    child: Text(AppLocalizations.of(context)!.ok,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ] else ...[
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: success ? AppTheme.accent : AppTheme.error,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    child: Text(AppLocalizations.of(context)!.ok,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -1859,7 +1906,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     }
 
     if (mounted) {
-      _showResultDialog(result.isSuccess, result.message);
+      _showResultDialog(result.isSuccess, result.message, offerPayment: true);
     }
   }
 
@@ -2011,7 +2058,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     if (provider.isActionLoading) {
       return Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2A2A),
+          color: const Color(0xFF2A3330),
           borderRadius: BorderRadius.circular(14),
         ),
         child: const Center(
@@ -2169,7 +2216,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       onTap: () => _onRefresh(t.id),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2A2A),
+          color: const Color(0xFF2A3330),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Center(

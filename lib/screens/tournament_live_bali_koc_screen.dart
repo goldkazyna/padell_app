@@ -6,6 +6,7 @@ import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/tournament_ai_button.dart';
 import '../widgets/main_tab_bar.dart';
 import 'player_profile_screen.dart';
 
@@ -233,6 +234,14 @@ class _TournamentLiveBaliKocScreenState
                 _DatePill(date: t['date'] as String? ?? '')
               else
                 const _LivePill(),
+              if (t['status'] == 'completed' && (t['is_rated'] as bool? ?? false)) ...[
+                const Spacer(),
+                TournamentAiButton(
+                  tournamentId: widget.tournamentId,
+                  tournamentName: t['name'] as String? ?? '',
+                  playerId: widget.highlightPlayerId,
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 14),
@@ -609,7 +618,7 @@ class _TournamentLiveBaliKocScreenState
         border: Border.all(
           color: inProgress
               ? AppTheme.accent.withAlpha(60)
-              : const Color(0xFF2A2A2A),
+              : const Color(0xFF2A3330),
           width: inProgress ? 1.0 : 0.5,
         ),
       ),

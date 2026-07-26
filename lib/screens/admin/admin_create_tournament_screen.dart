@@ -1804,7 +1804,7 @@ class _AdminCreateTournamentScreenState
                                                       ? AppTheme.accent
                                                           .withAlpha(60)
                                                       : const Color(
-                                                          0xFF2A2A2A),
+                                                          0xFF2A3330),
                                                   width:
                                                       isSelected ? 1 : 0.5,
                                                 ),

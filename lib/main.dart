@@ -24,6 +24,7 @@ import 'providers/profile_provider.dart';
 import 'providers/challenge_provider.dart';
 import 'services/court_service.dart';
 import 'services/club_service.dart';
+import 'services/club_card_service.dart';
 import 'services/admin_service.dart';
 import 'services/invitation_service.dart';
 import 'services/moderation_service.dart';
@@ -71,6 +72,7 @@ void main() async {
   final challengeService = ChallengeService(apiService);
   final courtService = CourtService(apiService, storageService);
   final clubService = ClubService(apiService, storageService);
+  final clubCardService = ClubCardService(apiService, storageService);
   final adminService = AdminService(apiService, storageService);
   final invitationService = InvitationService(apiService, storageService);
   final moderationService = ModerationService(apiService, storageService);
@@ -130,6 +132,7 @@ void main() async {
         Provider<RatingService>.value(value: ratingService),
         Provider<PushNotificationService>.value(value: pushService),
         Provider<ClubService>.value(value: clubService),
+        Provider<ClubCardService>.value(value: clubCardService),
         Provider<AdminService>.value(value: adminService),
         Provider<InvitationService>.value(value: invitationService),
         Provider<ModerationService>.value(value: moderationService),

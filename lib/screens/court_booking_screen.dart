@@ -297,7 +297,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Column(
         children: [
@@ -353,7 +353,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
                 color: isActive ? AppTheme.accent : AppTheme.card,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: isActive ? AppTheme.accent : const Color(0xFF2A2A2A),
+                  color: isActive ? AppTheme.accent : const Color(0xFF2A3330),
                   width: 0.5,
                 ),
               ),
@@ -529,7 +529,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Row(
         children: [
@@ -585,7 +585,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             color: isSelected ? AppTheme.accent.withAlpha(24) : AppTheme.card,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
+              color: isSelected ? AppTheme.accent : const Color(0xFF2A3330),
               width: isSelected ? 1.5 : 0.5,
             ),
           ),
@@ -674,7 +674,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: TextField(
         controller: controller,
@@ -694,7 +694,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: TextField(
         controller: _commentController,

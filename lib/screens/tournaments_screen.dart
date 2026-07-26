@@ -471,7 +471,7 @@ class _OpenTab extends StatelessWidget {
           onRefresh: () => provider.loadOpenTournaments(),
           color: AppTheme.accent,
           child: ListView(
-            padding: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.only(bottom: 90),
             children: [
               if (forYou.isNotEmpty) ...[
                 _buildForYouHeader(context, forYou.length),
@@ -503,7 +503,6 @@ class _OpenTab extends StatelessWidget {
               if (rest.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.only(top: 12),
-                  color: forYou.isNotEmpty ? const Color(0x2E000000) : null,
                   child: Column(
                     children: [
                       for (final clubId in restClubOrder)
@@ -690,7 +689,7 @@ class _MyTab extends StatelessWidget {
           onRefresh: () => provider.loadMyTournaments(),
           color: AppTheme.accent,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
             children: [
               for (final clubId in clubIds) ...[
                 const SizedBox(height: 8),
@@ -834,7 +833,7 @@ class _ArchiveTabState extends State<_ArchiveTab> {
                 onRefresh: () async => _applyPeriod(),
                 color: AppTheme.accent,
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
                   children: [
                     for (final clubId in clubIds) ...[
                       const SizedBox(height: 8),
@@ -877,7 +876,7 @@ class _ArchiveTabState extends State<_ArchiveTab> {
                   color: _period == ArchivePeriod.custom ? AppTheme.accent : AppTheme.card,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _period == ArchivePeriod.custom ? AppTheme.accent : const Color(0xFF2A2A2A),
+                    color: _period == ArchivePeriod.custom ? AppTheme.accent : const Color(0xFF2A3330),
                     width: 0.5,
                   ),
                 ),
@@ -921,7 +920,7 @@ class _ArchiveTabState extends State<_ArchiveTab> {
           color: selected ? AppTheme.accent : AppTheme.card,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: selected ? AppTheme.accent : const Color(0xFF2A2A2A),
+            color: selected ? AppTheme.accent : const Color(0xFF2A3330),
             width: 0.5,
           ),
         ),
@@ -1059,7 +1058,7 @@ class _CancelledTabState extends State<_CancelledTab> {
           onRefresh: () => provider.loadCancelledTournaments(),
           color: AppTheme.accent,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
             children: [
               for (final clubId in clubIds) ...[
                 const SizedBox(height: 8),

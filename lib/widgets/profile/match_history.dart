@@ -41,7 +41,7 @@ class MatchHistory extends StatelessWidget {
                   color: AppTheme.card,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                      color: const Color(0xFF2A2A2A), width: 0.5),
+                      color: const Color(0xFF2A3330), width: 0.5),
                 ),
                 child: Text(
                   AppLocalizations.of(context)!.noMatchesYet,
@@ -73,7 +73,7 @@ class MatchHistory extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: const BorderSide(
-                          color: Color(0xFF2A2A2A), width: 0.5),
+                          color: Color(0xFF2A3330), width: 0.5),
                     ),
                   ),
                   child: profile.isLoadingMatches
@@ -119,7 +119,7 @@ class _MatchCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
       ),
       child: Row(
         children: [

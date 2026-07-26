@@ -14,6 +14,7 @@ import '../../models/admin_participants_response.dart';
 import '../../models/registration_log_entry.dart';
 import '../../models/admin_team.dart';
 import '../../models/admin_tournament_detail.dart';
+import 'tournament_standings_share_screen.dart';
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
@@ -34,10 +35,16 @@ class AdminTournamentDetailScreen extends StatefulWidget {
   final int tournamentId;
   final String tournamentName;
 
+  /// Вкладка, открываемая при входе: 0 = Инфо, 1 = Участники, 2 = Приглашения,
+  /// 3 = Матчи, 4 = Журнал. По умолчанию 0. Используется, напр., при переходе
+  /// из пуша «участник вышел из турнира» — открываем Журнал на «отписались».
+  final int initialTab;
+
   const AdminTournamentDetailScreen({
     super.key,
     required this.tournamentId,
     required this.tournamentName,
+    this.initialTab = 0,
   });
 
   @override
@@ -71,6 +78,25 @@ class _AdminTournamentDetailScreenState
   bool _teamHasLowerBracket = false;
   bool _teamHasBronzeMatch = false;
   final _teamCourts = TextEditingController(); // пусто = авто
+
+  // Доп. поля редактирования (как при создании) — до старта менять безопасно
+  final _durationHours = TextEditingController();
+  final _reserveCount = TextEditingController();
+  final _waitlistSize = TextEditingController();
+  bool _isRated = true;
+  // Формат: Американо
+  int _amGroups = 1;
+  final _amRounds = TextEditingController();
+  bool _amHasPlayoff = false;
+  String _amPlayoffType = 'final_only'; // final_only | semifinal_final
+  String _amPlayoffFormat = 'mix';
+  bool _amHasLower = false;
+  bool _amHasBronze = false;
+  // Формат: командный
+  int _teamGroups = 2;
+  int _teamsAdvance = 2;
+  // Парный режим (King of Court / Flex / Just Padel It)
+  bool _isPaired = false;
 
   bool _saving = false;
   bool _starting = false;
@@ -108,7 +134,15 @@ class _AdminTournamentDetailScreenState
   @override
   void initState() {
     super.initState();
+    _currentTab = widget.initialTab;
     _load();
+    // Если открыли сразу на конкретной вкладке (напр. из пуша) — грузим её данные.
+    if (widget.initialTab == 1) {
+      _loadParticipants();
+    } else if (widget.initialTab == 4) {
+      _journalSubTab = 1; // «отписались» — открыто из пуша о выходе участника
+      _loadJournal();
+    }
   }
 
   @override
@@ -120,6 +154,10 @@ class _AdminTournamentDetailScreenState
     _price.dispose();
     _moderationHours.dispose();
     _moderationMinutes.dispose();
+    _durationHours.dispose();
+    _reserveCount.dispose();
+    _waitlistSize.dispose();
+    _amRounds.dispose();
     super.dispose();
   }
 
@@ -167,6 +205,21 @@ class _AdminTournamentDetailScreenState
     _status = (t.status == 'draft' || t.status == 'open') ? t.status : _status;
     _moderationHours.text = (t.moderationHours ?? 0) > 0 ? '${t.moderationHours}' : '';
     _moderationMinutes.text = (t.moderationMinutes ?? 0) > 0 ? '${t.moderationMinutes}' : '';
+    // Доп. поля
+    _durationHours.text = t.durationHours != null ? '${t.durationHours}' : '';
+    _reserveCount.text = t.reserveCount > 0 ? '${t.reserveCount}' : '';
+    _waitlistSize.text = t.waitlistSize > 0 ? '${t.waitlistSize}' : '';
+    _isRated = t.isRated;
+    _amGroups = t.groupsCount == 2 ? 2 : 1;
+    _amRounds.text = t.roundsCount != null ? '${t.roundsCount}' : '';
+    _amHasPlayoff = t.hasPlayoff;
+    _amPlayoffType = t.playoffType ?? 'final_only';
+    _amPlayoffFormat = t.playoffFormat ?? 'mix';
+    _amHasLower = t.hasLowerBracket;
+    _amHasBronze = t.hasBronzeMatch;
+    _teamGroups = t.groupsCount ?? 2;
+    _teamsAdvance = t.teamsAdvance ?? 2;
+    _isPaired = t.isPaired;
   }
 
   // ---------------------------------------------------------------------------
@@ -225,14 +278,41 @@ class _AdminTournamentDetailScreenState
             moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
             status: _status,
             pairingMode: t.type == 'team' ? _pairingMode : null,
-            hasPlayoff: t.type == 'team' ? _teamHasPlayoff : null,
-            hasLowerBracket: t.type == 'team' ? _teamHasLowerBracket : null,
-            hasBronzeMatch: t.type == 'team' ? _teamHasBronzeMatch : null,
+            hasPlayoff: t.type == 'team'
+                ? _teamHasPlayoff
+                : (t.type == 'americano' ? _amHasPlayoff : null),
+            hasLowerBracket: t.type == 'team'
+                ? _teamHasLowerBracket
+                : (t.type == 'americano' ? _amHasLower : null),
+            hasBronzeMatch: t.type == 'team'
+                ? _teamHasBronzeMatch
+                : (t.type == 'americano' ? _amHasBronze : null),
+            playoffType:
+                t.type == 'americano' && _amHasPlayoff ? _amPlayoffType : null,
+            playoffFormat:
+                t.type == 'americano' && _amHasPlayoff ? _amPlayoffFormat : null,
             courtsCount: (t.type == 'team' ||
                         t.type == 'americano_flex' ||
                         (t.type == 'just_padel_it' && !t.isPaired)) &&
                     _teamCourts.text.trim().isNotEmpty
                 ? int.tryParse(_teamCourts.text.trim())
+                : null,
+            durationHours: int.tryParse(_durationHours.text.trim()),
+            isRated: _isRated,
+            reserveCount: int.tryParse(_reserveCount.text.trim()) ?? 0,
+            waitlistSize: int.tryParse(_waitlistSize.text.trim()) ?? 0,
+            groupsCount: t.type == 'americano'
+                ? _amGroups
+                : (t.type == 'team' ? _teamGroups : null),
+            roundsCount:
+                t.type == 'americano' && _amRounds.text.trim().isNotEmpty
+                    ? int.tryParse(_amRounds.text.trim())
+                    : null,
+            teamsAdvance: t.type == 'team' ? _teamsAdvance : null,
+            isPaired: (t.type == 'king_of_court' ||
+                    t.type == 'americano_flex' ||
+                    t.type == 'just_padel_it')
+                ? _isPaired
                 : null,
           );
       if (!mounted) return;
@@ -273,6 +353,33 @@ class _AdminTournamentDetailScreenState
               fontSize: 13,
               fontWeight: active ? FontWeight.w700 : FontWeight.w500,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Универсальный чип выбора (группы, формат плей-офф и т.п.).
+  Widget _fmtChip(String label, bool active, bool disabled, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: disabled ? null : onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 14),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: active ? AppTheme.accent.withOpacity(0.15) : AppTheme.card,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: active ? AppTheme.accent : AppTheme.border,
+            width: 1.2,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? AppTheme.accent : AppTheme.textPrimary,
+            fontSize: 13,
+            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
       ),
@@ -1016,6 +1123,13 @@ class _AdminTournamentDetailScreenState
               const SizedBox(height: 12),
               _label('Дата и время старта'),
               _dateField(disabled: disabled),
+              const SizedBox(height: 12),
+              _label('Длительность, часов'),
+              _textField(_durationHours,
+                  hint: 'Необязательно',
+                  keyboardType: TextInputType.number,
+                  enabled: !disabled,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly]),
             ],
           ),
           const SizedBox(height: 16),
@@ -1059,6 +1173,48 @@ class _AdminTournamentDetailScreenState
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _label('Забронировать мест'),
+                        _textField(_reserveCount,
+                            hint: '0',
+                            keyboardType: TextInputType.number,
+                            enabled: !disabled,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ]),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _label('Лист ожидания'),
+                        _textField(_waitlistSize,
+                            hint: '0',
+                            keyboardType: TextInputType.number,
+                            enabled: !disabled,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ]),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              _boolTile(
+                label: 'Рейтинговый турнир',
+                subtitle: 'Результаты повлияют на рейтинг игроков.',
+                value: _isRated,
+                onChanged: disabled ? null : (v) => setState(() => _isRated = v),
               ),
               const SizedBox(height: 14),
               _label('Таймер модерации'),
@@ -1341,6 +1497,114 @@ class _AdminTournamentDetailScreenState
               ],
             ],
           ),
+          if (t.type == 'americano' ||
+              t.type == 'team' ||
+              t.type == 'king_of_court' ||
+              t.type == 'americano_flex' ||
+              t.type == 'just_padel_it') ...[
+            const SizedBox(height: 16),
+            _buildSection(
+              title: 'Настройка формата',
+              children: [
+                // Американо
+                if (t.type == 'americano') ...[
+                  _label('Количество групп'),
+                  const SizedBox(height: 6),
+                  Row(children: [
+                    _fmtChip('1 группа', _amGroups == 1, disabled,
+                        () => setState(() => _amGroups = 1)),
+                    const SizedBox(width: 8),
+                    _fmtChip('2 группы', _amGroups == 2, disabled,
+                        () => setState(() => _amGroups = 2)),
+                  ]),
+                  const SizedBox(height: 12),
+                  _label('Количество раундов'),
+                  _textField(_amRounds,
+                      hint: 'Авто (игроков в группе − 1)',
+                      keyboardType: TextInputType.number,
+                      enabled: !disabled,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly
+                      ]),
+                  _boolTile(
+                    label: 'С плей-офф',
+                    subtitle: 'Стадия навылет после группового этапа.',
+                    value: _amHasPlayoff,
+                    onChanged: disabled
+                        ? null
+                        : (v) => setState(() => _amHasPlayoff = v),
+                  ),
+                  if (_amHasPlayoff) ...[
+                    const SizedBox(height: 4),
+                    _label('Тип плей-офф'),
+                    const SizedBox(height: 6),
+                    Wrap(spacing: 8, runSpacing: 8, children: [
+                      _fmtChip('Только финал', _amPlayoffType == 'final_only',
+                          disabled,
+                          () => setState(() => _amPlayoffType = 'final_only')),
+                      _fmtChip(
+                          'Полуфинал + финал',
+                          _amPlayoffType == 'semifinal_final',
+                          disabled,
+                          () => setState(
+                              () => _amPlayoffType = 'semifinal_final')),
+                    ]),
+                    _boolTile(
+                      label: 'Нижняя сетка',
+                      value: _amHasLower,
+                      onChanged: disabled
+                          ? null
+                          : (v) => setState(() => _amHasLower = v),
+                    ),
+                    _boolTile(
+                      label: 'Матч за 3-е место',
+                      value: _amHasBronze,
+                      onChanged: disabled
+                          ? null
+                          : (v) => setState(() => _amHasBronze = v),
+                    ),
+                  ],
+                ],
+                // Командный
+                if (t.type == 'team') ...[
+                  _label('Количество групп'),
+                  const SizedBox(height: 6),
+                  Wrap(spacing: 8, children: [
+                    for (final n in [1, 2, 3, 4])
+                      _fmtChip('$n', _teamGroups == n, disabled,
+                          () => setState(() => _teamGroups = n)),
+                  ]),
+                  const SizedBox(height: 12),
+                  _label('Выходят из группы (в плей-офф)'),
+                  const SizedBox(height: 6),
+                  Wrap(spacing: 8, children: [
+                    for (final n in [1, 2, 3, 4])
+                      _fmtChip('$n', _teamsAdvance == n, disabled,
+                          () => setState(() => _teamsAdvance = n)),
+                  ]),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Кто собирает пары, плей-офф и корты — в разделе «Параметры» выше.',
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                  ),
+                ],
+                // Парный режим (KoC / Flex / Just Padel It)
+                if (t.type == 'king_of_court' ||
+                    t.type == 'americano_flex' ||
+                    t.type == 'just_padel_it')
+                  _boolTile(
+                    label: 'Фиксированные пары',
+                    subtitle: t.participantsCount > 0
+                        ? 'Нельзя менять — уже есть записи.'
+                        : 'Игроки играют постоянными парами (создаются перед стартом). Выкл — очередь/ротация.',
+                    value: _isPaired,
+                    onChanged: (disabled || t.participantsCount > 0)
+                        ? null
+                        : (v) => setState(() => _isPaired = v),
+                  ),
+              ],
+            ),
+          ],
           const SizedBox(height: 16),
           _buildSection(
             title: 'Сводка',
@@ -2691,7 +2955,7 @@ class _AdminTournamentDetailScreenState
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
+        border: Border.all(color: const Color(0xFF2A3330)),
       ),
       child: Row(
         children: [
@@ -3692,10 +3956,55 @@ class _AdminTournamentDetailScreenState
                 : (_matches?.type == 'round_robin'
                     ? _buildRoundRobinLeaderboard(g.leaderboard)
                     : _buildLeaderboard(g.leaderboard)),
+            const SizedBox(height: 10),
+            _buildShareStandingsButton(g.leaderboard),
             const SizedBox(height: 12),
           ],
           ...g.rounds.map(_buildRoundBlock),
         ],
+      ),
+    );
+  }
+
+  /// Кнопка «Выгрузить картинкой» — открывает превью таблицы для соцсетей.
+  Widget _buildShareStandingsButton(List<AdminLeaderboardRow> rows) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => TournamentStandingsShareScreen(
+            tournamentId: widget.tournamentId,
+            tournamentName: _t?.name ?? widget.tournamentName,
+            type: _matches?.type ?? _t?.type ?? 'americano',
+            typeName: _t?.typeName ?? '',
+            startDate: _t?.startDate,
+            clubName: _t?.club?.name,
+            clubLogo: _t?.club?.logo,
+            rows: rows,
+          ),
+        ),
+      ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        decoration: BoxDecoration(
+          color: AppTheme.accent.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+              color: AppTheme.accent.withValues(alpha: 0.4), width: 0.5),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.ios_share, color: AppTheme.accent, size: 17),
+            const SizedBox(width: 8),
+            Text('Выгрузить картинкой',
+                style: TextStyle(
+                    color: AppTheme.accent,
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800)),
+          ],
+        ),
       ),
     );
   }
@@ -3722,6 +4031,7 @@ class _AdminTournamentDetailScreenState
                 4: IntrinsicColumnWidth(),
                 5: IntrinsicColumnWidth(),
                 6: IntrinsicColumnWidth(),
+                7: IntrinsicColumnWidth(),
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -3733,10 +4043,11 @@ class _AdminTournamentDetailScreenState
                   _flexHdr('ИГРОК',
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
-                  _flexHdr('В'),
-                  _flexHdr('П'),
-                  _flexHdr('З'),
-                  _flexHdr('Пр',
+                  _flexHdr('Забито'),
+                  _flexHdr('Пропущено'),
+                  _flexHdr('Разница'),
+                  _flexHdr('Матчей'),
+                  _flexHdr('Среднее',
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
                 ]),
@@ -3774,6 +4085,10 @@ class _AdminTournamentDetailScreenState
       3 => const Color(0xFFF97316),
       _ => const Color(0xFF52525B),
     };
+    final diff = p.pointsFor - p.pointsAgainst;
+    final matches = p.matchesPlayed ?? 0;
+    // Среднее = забито ÷ матчей (как в вебе).
+    final avg = p.avgPoints ?? (matches > 0 ? p.pointsFor / matches : 0.0);
     Widget cell(Widget child,
         {EdgeInsets? padding,
         AlignmentGeometry alignment = Alignment.center}) {
@@ -3803,32 +4118,55 @@ class _AdminTournamentDetailScreenState
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       ),
       cell(
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 150),
-          child: Text(p.name,
-              softWrap: true,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600)),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 150),
+              child: Text(p.name,
+                  softWrap: true,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600)),
+            ),
+            if (p.verified) ...[
+              const SizedBox(width: 5),
+              VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
+            ],
+          ],
         ),
         alignment: Alignment.centerLeft,
       ),
-      cell(Text('${p.wins}',
+      // Забито
+      cell(Text('${p.pointsFor}',
           style: const TextStyle(
               color: Color(0xFF22C55E), fontSize: 13, fontWeight: FontWeight.w700))),
-      cell(Text('${p.losses}',
+      // Пропущено
+      cell(Text('${p.pointsAgainst}',
           style: const TextStyle(
               color: Color(0xFFEF4444), fontSize: 13, fontWeight: FontWeight.w700))),
-      cell(Text('${p.pointsFor}', style: numStyle)),
+      // Разница
+      cell(Text(diff > 0 ? '+$diff' : '$diff',
+          style: TextStyle(
+              color: diff > 0
+                  ? const Color(0xFF22C55E)
+                  : diff < 0
+                      ? const Color(0xFFEF4444)
+                      : AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700))),
+      // Матчей
+      cell(Text('$matches', style: numStyle)),
+      // Среднее
       cell(
-        Text('${p.pointsAgainst}',
-            style: TextStyle(
-                color: AppTheme.textSecondary,
+        Text(avg.toStringAsFixed(2),
+            style: const TextStyle(
+                color: Color(0xFF22C55E),
                 fontSize: 13,
-                fontWeight: FontWeight.w600)),
+                fontWeight: FontWeight.w800)),
         padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
         alignment: Alignment.centerRight,
       ),
@@ -3943,15 +4281,26 @@ class _AdminTournamentDetailScreenState
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         ),
         cell(
-          Text(p.name,
-              softWrap: true,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  height: 1.2)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(p.name,
+                    softWrap: true,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1.2)),
+              ),
+              if (p.verified) ...[
+                const SizedBox(width: 5),
+                VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
+              ],
+            ],
+          ),
           padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
           alignment: Alignment.centerLeft,
         ),
@@ -4104,15 +4453,26 @@ class _AdminTournamentDetailScreenState
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         ),
         cell(
-          Text(p.name,
-              softWrap: true,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  height: 1.2)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(p.name,
+                    softWrap: true,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1.2)),
+              ),
+              if (p.verified) ...[
+                const SizedBox(width: 5),
+                VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
+              ],
+            ],
+          ),
           padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
           alignment: Alignment.centerLeft,
         ),
@@ -4404,7 +4764,7 @@ class _AdminTournamentDetailScreenState
       decoration: BoxDecoration(
         color: AppTheme.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
+        border: Border.all(color: const Color(0xFF2A3330)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -4513,7 +4873,7 @@ class _AdminTournamentDetailScreenState
           decoration: BoxDecoration(
             color: AppTheme.cardRaised,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF2A2A2A)),
+            border: Border.all(color: const Color(0xFF2A3330)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

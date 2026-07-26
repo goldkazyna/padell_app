@@ -22,7 +22,7 @@ class ChallengeCard extends StatelessWidget {
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF2A2A2A),
+            color: const Color(0xFF2A3330),
             width: 0.5,
           ),
         ),
@@ -153,7 +153,7 @@ class ChallengeCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: isFilled
                   ? AppTheme.accent
-                  : const Color(0xFF2A2A2A),
+                  : const Color(0xFF2A3330),
               borderRadius: BorderRadius.circular(10),
             ),
             clipBehavior: Clip.antiAlias,

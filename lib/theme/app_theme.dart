@@ -38,9 +38,11 @@ class AppTheme {
   static Brightness brightness = Brightness.dark;
 
   // ---- Тёмная палитра (V3) ----
-  static const Color _dBackground = Color(0xFF131317);
-  static const Color _dCard = Color(0xFF1C1C21);
-  static const Color _dCardRaised = Color(0xFF23232A);
+  static const Color _dBackground = Color(0xFF0E1512);
+  static const Color _dCard = Color(0xFF1C2421);
+  // Зелёно-тёмный «поднятый» тон в одной гамме с фоном/карточками
+  // (был холодный серо-фиолетовый #23232A, выбивался из темы).
+  static const Color _dCardRaised = Color(0xFF232D29);
   static const Color _dAmber = Color(0xFFEAB34E);
   static const Color _dBlue = Color(0xFF4A8BF5);
   static const Color _dPurple = Color(0xFFA89CF5);

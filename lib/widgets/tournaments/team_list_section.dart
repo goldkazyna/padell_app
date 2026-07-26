@@ -88,7 +88,7 @@ class TeamListSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppTheme.card,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF2A2A2A), width: 0.5),
+              border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
             ),
             child: Center(
               child: Text(
@@ -203,7 +203,7 @@ class TeamListSection extends StatelessWidget {
       borderColor = AppTheme.accent.withAlpha(60);
     } else {
       bgColor = AppTheme.card;
-      borderColor = const Color(0xFF2A2A2A);
+      borderColor = const Color(0xFF2A3330);
     }
 
     final Color primaryColor = isPending
@@ -220,7 +220,7 @@ class TeamListSection extends StatelessWidget {
         ? _pendingColor
         : isWaitlist
             ? _waitlistColor
-            : (isMyTeam ? AppTheme.accent : const Color(0xFF2A2A2A));
+            : (isMyTeam ? AppTheme.accent : const Color(0xFF2A3330));
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

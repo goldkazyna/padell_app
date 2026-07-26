@@ -114,7 +114,7 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
+              color: const Color(0xFF2A3330),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -158,11 +158,11 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
                 fillColor: AppTheme.card,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
+                  borderSide: const BorderSide(color: Color(0xFF2A3330), width: 0.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
+                  borderSide: const BorderSide(color: Color(0xFF2A3330), width: 0.5),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -277,7 +277,7 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
           color: isSelected ? AppTheme.accent.withAlpha(15) : AppTheme.card,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppTheme.accent.withAlpha(60) : const Color(0xFF2A2A2A),
+            color: isSelected ? AppTheme.accent.withAlpha(60) : const Color(0xFF2A3330),
             width: isSelected ? 1 : 0.5,
           ),
         ),
@@ -287,7 +287,7 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.accent : const Color(0xFF2A2A2A),
+                color: isSelected ? AppTheme.accent : const Color(0xFF2A3330),
                 shape: BoxShape.circle,
               ),
               child: Center(

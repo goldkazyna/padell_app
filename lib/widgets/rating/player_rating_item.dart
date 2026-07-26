@@ -25,7 +25,7 @@ class PlayerRatingItem extends StatelessWidget {
         color: isMe ? AppTheme.accent.withAlpha(15) : AppTheme.card,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isMe ? AppTheme.accent.withAlpha(80) : const Color(0xFF2A2A2A),
+          color: isMe ? AppTheme.accent.withAlpha(80) : const Color(0xFF2A3330),
           width: isMe ? 1 : 0.5,
         ),
       ),
@@ -43,7 +43,7 @@ class PlayerRatingItem extends StatelessWidget {
             decoration: BoxDecoration(
               color: isMe
                   ? AppTheme.accent.withAlpha(40)
-                  : const Color(0xFF2A2A2A),
+                  : const Color(0xFF2A3330),
               borderRadius: BorderRadius.circular(12),
             ),
             clipBehavior: Clip.antiAlias,

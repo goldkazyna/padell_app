@@ -342,7 +342,7 @@ class _BookingCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(top: 10),
                   decoration: const BoxDecoration(
-                    border: Border(top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+                    border: Border(top: BorderSide(color: Color(0xFF2A3330), width: 0.5)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

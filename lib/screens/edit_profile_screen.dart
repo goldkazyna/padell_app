@@ -314,7 +314,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickCity() async {
-    final cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Костанай'];
+    final cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Актау', 'Атырау', 'Костанай'];
     await showModalBottomSheet(
       context: context,
       backgroundColor: _T.card,

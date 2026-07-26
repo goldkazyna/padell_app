@@ -1,0 +1,239 @@
+import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import 'verified_badge.dart';
+
+/// Таблица лидеров для Americano Flex: Забито / Пропущено / Разница / Матчей /
+/// Среднее, с горизонтальным скроллом (данные не сжимаются). Ранжирование —
+/// по среднему за матч (у игроков разное число игр из-за отдыхов).
+///
+/// Данные из `getLeaderboard` (одинаковы для /live, /results, /stats):
+/// points_for, points_against, matches_played, total_points, position, ...
+class FlexStandingsTable extends StatelessWidget {
+  final List<Map<String, dynamic>> leaderboard;
+  final int? currentUserId;
+  final void Function(int? id, String? name)? onPlayerTap;
+
+  const FlexStandingsTable({
+    super.key,
+    required this.leaderboard,
+    this.currentUserId,
+    this.onPlayerTap,
+  });
+
+  static const _hdrStyle = TextStyle(
+    color: Color(0xFF8A968F),
+    fontSize: 10,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.4,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, c) => SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: c.maxWidth),
+          child: Table(
+            columnWidths: const {
+              0: IntrinsicColumnWidth(), // #
+              1: IntrinsicColumnWidth(), // avatar
+              2: IntrinsicColumnWidth(), // имя
+              3: IntrinsicColumnWidth(), // Забито
+              4: IntrinsicColumnWidth(), // Пропущено
+              5: IntrinsicColumnWidth(), // Разница
+              6: IntrinsicColumnWidth(), // Матчей
+              7: IntrinsicColumnWidth(), // Среднее
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              _headerRow(),
+              for (final p in leaderboard) _row(p),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  TableRow _headerRow() {
+    Widget hdr(String t,
+            {AlignmentGeometry alignment = Alignment.center,
+            EdgeInsets? padding}) =>
+        Padding(
+          padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 6),
+          child: Align(alignment: alignment, child: Text(t, style: _hdrStyle)),
+        );
+    return TableRow(children: [
+      hdr('#',
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.fromLTRB(2, 8, 6, 6)),
+      const SizedBox(),
+      hdr('Игрок', alignment: Alignment.centerLeft),
+      hdr('Забито'),
+      hdr('Пропущено'),
+      hdr('Разница'),
+      hdr('Матчей'),
+      hdr('Среднее'),
+    ]);
+  }
+
+  TableRow _row(Map<String, dynamic> p) {
+    final position = (p['position'] as num?)?.toInt() ?? 0;
+    final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
+    final playerName = p['name'] as String?;
+    final isMe = p['is_me'] == true ||
+        (currentUserId != null && playerId == currentUserId);
+
+    final pointsFor = (p['points_for'] as num?)?.toInt() ?? 0;
+    final pointsAgainst = (p['points_against'] as num?)?.toInt() ?? 0;
+    // /live отдаёт число матчей как games_played, /results и /stats — matches_played.
+    final matches = (p['matches_played'] as num?)?.toInt() ??
+        (p['games_played'] as num?)?.toInt() ??
+        0;
+    final diff = pointsFor - pointsAgainst;
+    // Среднее = забито ÷ матчей (как в вебе: 113/6 = 18.83).
+    final avg = matches > 0 ? pointsFor / matches : 0.0;
+
+    Color rankColor = AppTheme.textDim;
+    if (position == 1) rankColor = const Color(0xFFFFD700);
+    if (position == 2) rankColor = const Color(0xFFC0C0C0);
+    if (position == 3) rankColor = const Color(0xFFCD7F32);
+
+    Widget cell(Widget child,
+            {EdgeInsets? padding,
+            AlignmentGeometry alignment = Alignment.center}) =>
+        InkWell(
+          onTap: onPlayerTap == null
+              ? null
+              : () => onPlayerTap!(playerId, playerName),
+          child: Container(
+            padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 8),
+            alignment: alignment,
+            child: child,
+          ),
+        );
+
+    return TableRow(
+      decoration: BoxDecoration(
+        color: isMe ? AppTheme.accent.withAlpha(20) : null,
+        border: Border(top: BorderSide(color: AppTheme.divider, width: 0.5)),
+      ),
+      children: [
+        cell(
+          Text('$position',
+              style: TextStyle(
+                  color: rankColor,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13)),
+          padding: const EdgeInsets.fromLTRB(2, 8, 6, 8),
+          alignment: Alignment.centerLeft,
+        ),
+        cell(
+          _Avatar(url: p['avatar'] as String?, name: playerName ?? ''),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+        ),
+        cell(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 150),
+                child: Text(
+                  playerName ?? '—',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                    fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
+                    fontSize: 13,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+              if (p['verified'] == true) ...[
+                const SizedBox(width: 5),
+                VerifiedBadge(size: 12, userId: playerId, playerName: playerName),
+              ],
+            ],
+          ),
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
+          alignment: Alignment.centerLeft,
+        ),
+        // Забито
+        cell(Text('$pointsFor',
+            style: const TextStyle(
+                color: Color(0xFF22C55E),
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
+        // Пропущено
+        cell(Text('$pointsAgainst',
+            style: const TextStyle(
+                color: Color(0xFFEF4444),
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
+        // Разница
+        cell(Text(diff > 0 ? '+$diff' : '$diff',
+            style: TextStyle(
+                color: diff > 0
+                    ? const Color(0xFF22C55E)
+                    : diff < 0
+                        ? const Color(0xFFEF4444)
+                        : AppTheme.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
+        // Матчей
+        cell(Text('$matches',
+            style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600))),
+        // Среднее
+        cell(
+          Text(avg.toStringAsFixed(2),
+              style: const TextStyle(
+                  color: Color(0xFF22C55E),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800)),
+          padding: const EdgeInsets.fromLTRB(6, 8, 4, 8),
+          alignment: Alignment.centerRight,
+        ),
+      ],
+    );
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  final String? url;
+  final String name;
+  const _Avatar({this.url, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    final initials = parts.length >= 2
+        ? '${parts[0][0]}${parts[1][0]}'.toUpperCase()
+        : (name.isNotEmpty ? name[0].toUpperCase() : '?');
+    return Container(
+      width: 24,
+      height: 24,
+      clipBehavior: Clip.antiAlias,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFF27302B),
+      ),
+      child: url != null && url!.isNotEmpty
+          ? Image.network(url!, fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => _fallback(initials))
+          : _fallback(initials),
+    );
+  }
+
+  Widget _fallback(String t) => Center(
+        child: Text(t,
+            style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 10,
+                fontWeight: FontWeight.w700)),
+      );
+}

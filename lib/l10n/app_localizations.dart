@@ -3976,6 +3976,18 @@ abstract class AppLocalizations {
   /// **'Вчера'**
   String get chatYesterday;
 
+  /// No description provided for @notifyBookingReminders.
+  ///
+  /// In ru, this message translates to:
+  /// **'Напоминать о брони'**
+  String get notifyBookingReminders;
+
+  /// No description provided for @notifyBookingRemindersDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пуш за сутки, за 2 часа и за час до начала брони корта'**
+  String get notifyBookingRemindersDesc;
+
   /// No description provided for @notifyOrganizerChat.
   ///
   /// In ru, this message translates to:
@@ -4071,6 +4083,378 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'У турнира не указана длительность. Выберите, на сколько добавить его в календарь.'**
   String get tournamentDurationSubtitle;
+
+  /// No description provided for @aiAnalysisButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разбор AI'**
+  String get aiAnalysisButton;
+
+  /// No description provided for @aiAnalysisTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разбор турнира'**
+  String get aiAnalysisTitle;
+
+  /// No description provided for @aiAnalysisLoading.
+  ///
+  /// In ru, this message translates to:
+  /// **'AI анализирует ваше выступление…'**
+  String get aiAnalysisLoading;
+
+  /// No description provided for @aiAnalysisErrorTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось получить разбор'**
+  String get aiAnalysisErrorTitle;
+
+  /// No description provided for @aiAnalysisRetry.
+  ///
+  /// In ru, this message translates to:
+  /// **'Повторить'**
+  String get aiAnalysisRetry;
+
+  /// No description provided for @aiAnalysisFactorsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что повлияло на рейтинг'**
+  String get aiAnalysisFactorsTitle;
+
+  /// No description provided for @aiAnalysisBestMatch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лучший матч'**
+  String get aiAnalysisBestMatch;
+
+  /// No description provided for @aiAnalysisWorstMatch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Слабый матч'**
+  String get aiAnalysisWorstMatch;
+
+  /// No description provided for @aiAnalysisTipsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Советы, как расти'**
+  String get aiAnalysisTipsTitle;
+
+  /// No description provided for @aiAnalysisFootnote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разбор сгенерирован ИИ на основе ваших матчей'**
+  String get aiAnalysisFootnote;
+
+  /// No description provided for @aiMatchesTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разбор по матчам'**
+  String get aiMatchesTitle;
+
+  /// No description provided for @aiYourPair.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваша пара'**
+  String get aiYourPair;
+
+  /// No description provided for @aiOpponents.
+  ///
+  /// In ru, this message translates to:
+  /// **'Соперники'**
+  String get aiOpponents;
+
+  /// No description provided for @aiWinChance.
+  ///
+  /// In ru, this message translates to:
+  /// **'Шанс на победу'**
+  String get aiWinChance;
+
+  /// No description provided for @aiResultWin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Победа'**
+  String get aiResultWin;
+
+  /// No description provided for @aiResultLoss.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поражение'**
+  String get aiResultLoss;
+
+  /// No description provided for @aiMatchNoEffect.
+  ///
+  /// In ru, this message translates to:
+  /// **'Матч не повлиял на рейтинг (0:0)'**
+  String get aiMatchNoEffect;
+
+  /// No description provided for @aiMatchWinStrong.
+  ///
+  /// In ru, this message translates to:
+  /// **'Победа над более сильной парой — максимум очков'**
+  String get aiMatchWinStrong;
+
+  /// No description provided for @aiMatchWinExpected.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидаемая победа — прибавка небольшая'**
+  String get aiMatchWinExpected;
+
+  /// No description provided for @aiMatchLossFavorite.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проигрыш фавориту — потеря небольшая'**
+  String get aiMatchLossFavorite;
+
+  /// No description provided for @aiMatchLossWeak.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проигрыш более слабой паре — потеря больше'**
+  String get aiMatchLossWeak;
+
+  /// No description provided for @servicesTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сервисы'**
+  String get servicesTitle;
+
+  /// No description provided for @serviceBooking.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бронирование'**
+  String get serviceBooking;
+
+  /// No description provided for @serviceClubs.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клубы'**
+  String get serviceClubs;
+
+  /// No description provided for @serviceCommunity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Комьюнити'**
+  String get serviceCommunity;
+
+  /// No description provided for @serviceShop.
+  ///
+  /// In ru, this message translates to:
+  /// **'Магазин'**
+  String get serviceShop;
+
+  /// No description provided for @serviceCreateGame.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создать игру'**
+  String get serviceCreateGame;
+
+  /// No description provided for @serviceGames.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игры'**
+  String get serviceGames;
+
+  /// No description provided for @serviceClubCards.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клубные карты'**
+  String get serviceClubCards;
+
+  /// No description provided for @serviceTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турниры'**
+  String get serviceTournaments;
+
+  /// No description provided for @serviceComingSoon.
+  ///
+  /// In ru, this message translates to:
+  /// **'Раздел в разработке'**
+  String get serviceComingSoon;
+
+  /// No description provided for @clubCardsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клубные карты'**
+  String get clubCardsTitle;
+
+  /// No description provided for @clubCardsEmptyTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'У вас пока нет клубных карт'**
+  String get clubCardsEmptyTitle;
+
+  /// No description provided for @clubCardsEmptyHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Карта появится здесь автоматически, если клуб оформил её на ваш номер'**
+  String get clubCardsEmptyHint;
+
+  /// No description provided for @clubCardsActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Активные'**
+  String get clubCardsActive;
+
+  /// No description provided for @clubCardsArchive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Архив'**
+  String get clubCardsArchive;
+
+  /// No description provided for @clubCardsNoActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет активных карт'**
+  String get clubCardsNoActive;
+
+  /// No description provided for @clubCardsArchiveEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'В архиве пусто'**
+  String get clubCardsArchiveEmpty;
+
+  /// No description provided for @clubCardActiveTotal.
+  ///
+  /// In ru, this message translates to:
+  /// **'{active} активные · {total} всего'**
+  String clubCardActiveTotal(int active, int total);
+
+  /// No description provided for @clubCardRemaining.
+  ///
+  /// In ru, this message translates to:
+  /// **'Осталось {balance} из {initial}'**
+  String clubCardRemaining(int balance, int initial);
+
+  /// No description provided for @clubCardBalanceAfter.
+  ///
+  /// In ru, this message translates to:
+  /// **'остаток {balance}'**
+  String clubCardBalanceAfter(int balance);
+
+  /// No description provided for @clubCardUnlimited.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бессрочная'**
+  String get clubCardUnlimited;
+
+  /// No description provided for @clubCardExpired.
+  ///
+  /// In ru, this message translates to:
+  /// **'Истекла'**
+  String get clubCardExpired;
+
+  /// No description provided for @clubCardValidUntilShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'до'**
+  String get clubCardValidUntilShort;
+
+  /// No description provided for @clubCardKindVisits.
+  ///
+  /// In ru, this message translates to:
+  /// **'Занятия'**
+  String get clubCardKindVisits;
+
+  /// No description provided for @clubCardKindTrainer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тренер'**
+  String get clubCardKindTrainer;
+
+  /// No description provided for @clubCardKindDiscountCourt.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скидка на корт'**
+  String get clubCardKindDiscountCourt;
+
+  /// No description provided for @clubCardKindDiscountTrainer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скидка на тренера'**
+  String get clubCardKindDiscountTrainer;
+
+  /// No description provided for @clubCardCodeLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Код карты'**
+  String get clubCardCodeLabel;
+
+  /// No description provided for @clubCardValidUntilLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Действует до'**
+  String get clubCardValidUntilLabel;
+
+  /// No description provided for @clubCardHistoryTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'История операций'**
+  String get clubCardHistoryTitle;
+
+  /// No description provided for @clubCardHistoryEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет операций'**
+  String get clubCardHistoryEmpty;
+
+  /// No description provided for @clubCardCharge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Списание'**
+  String get clubCardCharge;
+
+  /// No description provided for @clubCardChargeBooking.
+  ///
+  /// In ru, this message translates to:
+  /// **'Списание за бронь'**
+  String get clubCardChargeBooking;
+
+  /// No description provided for @clubCardBookingsButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записи по карте'**
+  String get clubCardBookingsButton;
+
+  /// No description provided for @clubCardBookingsEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет предстоящих записей по этой карте'**
+  String get clubCardBookingsEmpty;
+
+  /// No description provided for @clubCardBookingCancelHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отмена не позднее чем за {hours} ч до начала'**
+  String clubCardBookingCancelHint(int hours);
+
+  /// No description provided for @clubCardsCountShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} {count, plural, one{карта} few{карты} many{карт} other{карты}}'**
+  String clubCardsCountShort(int count);
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'мин'**
+  String get minutesShort;
+
+  /// No description provided for @bookingToday.
+  ///
+  /// In ru, this message translates to:
+  /// **'сегодня'**
+  String get bookingToday;
+
+  /// No description provided for @bookingTomorrow.
+  ///
+  /// In ru, this message translates to:
+  /// **'завтра'**
+  String get bookingTomorrow;
+
+  /// No description provided for @bookingInDays.
+  ///
+  /// In ru, this message translates to:
+  /// **'через {days} {days, plural, one{день} few{дня} many{дней} other{дня}}'**
+  String bookingInDays(int days);
 }
 
 class _AppLocalizationsDelegate

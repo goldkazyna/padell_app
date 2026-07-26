@@ -11,12 +11,11 @@ import '../widgets/home/nearest_tournament_card.dart';
 import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
-import '../widgets/home/court_booking_banner.dart';
+import '../widgets/home/services_block.dart';
 import '../widgets/home/home_banner_card.dart';
 import '../widgets/home/personal_creator_block.dart';
 import '../widgets/pressable_card.dart';
 import '../widgets/home/admin_club_block.dart';
-import 'clubs_list_screen.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/verification_blockers_banner.dart';
 import '../theme/app_theme.dart';
@@ -24,9 +23,6 @@ import '../utils/profile_incomplete_guard.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
 import '../utils/tournament_navigation.dart';
-import 'club_select_screen.dart';
-import 'create_challenge_screen.dart';
-import 'challenges_screen.dart';
 import 'coach_schedule_screen.dart';
 import 'calendar_screen.dart';
 
@@ -90,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: AppTheme.accent,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 90),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -111,59 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTournamentsTap: () => widget.onNavigateToTab?.call(1),
                     ),
                   ],
-                  const SizedBox(height: 12),
-                  CourtBookingBanner(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const ClubSelectScreen()),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _HalfBanner(
-                          title: AppLocalizations.of(context)!.bannerClubsTitle,
-                          subtitle: AppLocalizations.of(context)!.bannerClubsSubtitle,
-                          icon: Icons.apartment_rounded,
-                          gradient: const [Color(0xFF3B82F6), Color(0xFF1E40AF)],
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ClubsListScreen(
-                                  title: AppLocalizations.of(context)!
-                                      .bannerClubsTitle,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _HalfBanner(
-                          title: AppLocalizations.of(context)!.bannerCommunityTitle,
-                          subtitle: AppLocalizations.of(context)!.bannerCommunitySubtitle,
-                          icon: Icons.groups_rounded,
-                          gradient: const [Color(0xFFA855F7), Color(0xFF581C87)],
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ClubsListScreen(
-                                  type: 'community',
-                                  title: AppLocalizations.of(context)!
-                                      .bannerCommunityTitle,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 16),
+                  ServicesBlock(
+                    onOpenTournaments: () => widget.onNavigateToTab?.call(1),
                   ),
                   const SizedBox(height: 12),
                   // Для admin клуба — блок управления, для остальных —
@@ -282,39 +228,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  // Игры: создать + список
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildActionCard(
-                          title: AppLocalizations.of(context)!.challengeCreateButton,
-                          subtitle: AppLocalizations.of(context)!.challengeCreateSubtitle,
-                          icon: Icons.add_circle_outline,
-                          gradient: const [Color(0xFF3B82F6), Color(0xFF1E40AF)],
-                          shadowColor: const Color(0xFF3B82F6),
-                          onTap: () {
-                            if (!ensureProfileComplete(context)) return;
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateChallengeScreen()));
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _buildActionCard(
-                          title: AppLocalizations.of(context)!.challengesCardTitle,
-                          subtitle: AppLocalizations.of(context)!.challengesCardSubtitle,
-                          icon: Icons.sports_tennis,
-                          gradient: const [Color(0xFFF97316), Color(0xFF9A3412)],
-                          shadowColor: const Color(0xFFF97316),
-                          onTap: () {
-                            if (!ensureProfileComplete(context)) return;
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ChallengesScreen()));
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
                   if (home.banner != null) ...[
                     HomeBannerCard(banner: home.banner!),
                     const SizedBox(height: 12),
@@ -397,59 +310,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActionCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required List<Color> gradient,
-    required Color shadowColor,
-    required VoidCallback onTap,
-  }) {
-    final accent = gradient.first;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: GradientCardStyle.decoration(accent, radius: 14),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GradientCardStyle.glassChip(icon,
-                      size: 32, iconSize: 18, radius: 8),
-                  const SizedBox(height: 10),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white.withValues(alpha: 0.78),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            GradientCardStyle.gloss(),
-          ],
-        ),
       ),
     );
   }
@@ -747,70 +607,6 @@ class _CoachScheduleCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Половинчатая кнопка для размещения в Row 2×1 (Клубы / Комьюнити).
-class _HalfBanner extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final List<Color> gradient;
-  final VoidCallback onTap;
-
-  const _HalfBanner({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.gradient,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = gradient.first;
-    return PressableCard(
-      onTap: onTap,
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: GradientCardStyle.decoration(accent),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GradientCardStyle.glassChip(icon,
-                      size: 36, iconSize: 20, radius: 10),
-                  const SizedBox(height: 14),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white.withValues(alpha: 0.78),
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            GradientCardStyle.gloss(),
-          ],
-        ),
       ),
     );
   }

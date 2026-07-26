@@ -23,7 +23,7 @@ class MainTabBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.card,
         border: Border(
-          top: BorderSide(color: Color(0xFF2A2A2A), width: 0.5),
+          top: BorderSide(color: Color(0xFF2A3330), width: 0.5),
         ),
       ),
       child: BottomNavigationBar(
