@@ -11,6 +11,9 @@ class GamePlayer {
   final double level;
   final bool isMe;
   final bool scoreConfirmed;
+  final int? ratingBefore;
+  final int? ratingAfter;
+  final int? ratingChange;
 
   GamePlayer({
     required this.id,
@@ -25,6 +28,9 @@ class GamePlayer {
     required this.level,
     this.isMe = false,
     this.scoreConfirmed = false,
+    this.ratingBefore,
+    this.ratingAfter,
+    this.ratingChange,
   });
 
   factory GamePlayer.fromJson(Map<String, dynamic> json) {
@@ -49,6 +55,9 @@ class GamePlayer {
       level: parsedLevel,
       isMe: json['is_me'] as bool? ?? false,
       scoreConfirmed: json['score_confirmed'] as bool? ?? false,
+      ratingBefore: json['rating_before'] as int?,
+      ratingAfter: json['rating_after'] as int?,
+      ratingChange: json['rating_change'] as int?,
     );
   }
 
