@@ -4959,6 +4959,84 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Удалить раунд?'**
   String get gameRoundDeleteConfirm;
+
+  /// No description provided for @gameActionFinish.
+  ///
+  /// In ru, this message translates to:
+  /// **'Завершить'**
+  String get gameActionFinish;
+
+  /// No description provided for @gameFinishConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Завершить игру и зафиксировать счёт?'**
+  String get gameFinishConfirm;
+
+  /// No description provided for @gameConfirmTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтверждение счёта'**
+  String get gameConfirmTitle;
+
+  /// No description provided for @gameConfirmBtn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтверждаю счёт'**
+  String get gameConfirmBtn;
+
+  /// No description provided for @gameConfirmed.
+  ///
+  /// In ru, this message translates to:
+  /// **'подтвердил'**
+  String get gameConfirmed;
+
+  /// No description provided for @gameNotConfirmed.
+  ///
+  /// In ru, this message translates to:
+  /// **'ожидает'**
+  String get gameNotConfirmed;
+
+  /// No description provided for @gameResultTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Итог'**
+  String get gameResultTitle;
+
+  /// No description provided for @gameRankingTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ранжирование'**
+  String get gameRankingTitle;
+
+  /// No description provided for @gameRankPlace.
+  ///
+  /// In ru, this message translates to:
+  /// **'Место'**
+  String get gameRankPlace;
+
+  /// No description provided for @gameRankPoints.
+  ///
+  /// In ru, this message translates to:
+  /// **'Очки'**
+  String get gameRankPoints;
+
+  /// No description provided for @gameRankWins.
+  ///
+  /// In ru, this message translates to:
+  /// **'Победы'**
+  String get gameRankWins;
+
+  /// No description provided for @gameRatingChange.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинг'**
+  String get gameRatingChange;
+
+  /// No description provided for @gameResultPlace.
+  ///
+  /// In ru, this message translates to:
+  /// **'{place} место'**
+  String gameResultPlace(int place);
 }
 
 class _AppLocalizationsDelegate

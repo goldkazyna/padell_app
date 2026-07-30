@@ -2624,4 +2624,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameRoundDeleteConfirm => 'Delete round?';
+
+  @override
+  String get gameActionFinish => 'Finish';
+
+  @override
+  String get gameFinishConfirm => 'Finish the game and lock the score?';
+
+  @override
+  String get gameConfirmTitle => 'Score confirmation';
+
+  @override
+  String get gameConfirmBtn => 'Confirm score';
+
+  @override
+  String get gameConfirmed => 'confirmed';
+
+  @override
+  String get gameNotConfirmed => 'pending';
+
+  @override
+  String get gameResultTitle => 'Result';
+
+  @override
+  String get gameRankingTitle => 'Ranking';
+
+  @override
+  String get gameRankPlace => 'Place';
+
+  @override
+  String get gameRankPoints => 'Points';
+
+  @override
+  String get gameRankWins => 'Wins';
+
+  @override
+  String get gameRatingChange => 'Rating';
+
+  @override
+  String gameResultPlace(int place) {
+    return 'Place $place';
+  }
 }

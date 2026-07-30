@@ -2594,4 +2594,45 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get gameRoundDeleteConfirm => 'Раундты жою керек пе?';
+
+  @override
+  String get gameActionFinish => 'Аяқтау';
+
+  @override
+  String get gameFinishConfirm => 'Ойынды аяқтап, есепті бекіту керек пе?';
+
+  @override
+  String get gameConfirmTitle => 'Есепті растау';
+
+  @override
+  String get gameConfirmBtn => 'Есепті растаймын';
+
+  @override
+  String get gameConfirmed => 'растады';
+
+  @override
+  String get gameNotConfirmed => 'күтуде';
+
+  @override
+  String get gameResultTitle => 'Қорытынды';
+
+  @override
+  String get gameRankingTitle => 'Рейтинг кестесі';
+
+  @override
+  String get gameRankPlace => 'Орын';
+
+  @override
+  String get gameRankPoints => 'Ұпай';
+
+  @override
+  String get gameRankWins => 'Жеңістер';
+
+  @override
+  String get gameRatingChange => 'Рейтинг';
+
+  @override
+  String gameResultPlace(int place) {
+    return '$place-орын';
+  }
 }

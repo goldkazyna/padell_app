@@ -944,5 +944,20 @@
   "gameRoundScoreA": "Счёт A",
   "gameRoundScoreB": "Счёт B",
   "gamePickTeamA": "Выберите команду A (2 игрока)",
-  "gameRoundDeleteConfirm": "Удалить раунд?"
+  "gameRoundDeleteConfirm": "Удалить раунд?",
+
+  "gameActionFinish": "Завершить",
+  "gameFinishConfirm": "Завершить игру и зафиксировать счёт?",
+  "gameConfirmTitle": "Подтверждение счёта",
+  "gameConfirmBtn": "Подтверждаю счёт",
+  "gameConfirmed": "подтвердил",
+  "gameNotConfirmed": "ожидает",
+  "gameResultTitle": "Итог",
+  "gameRankingTitle": "Ранжирование",
+  "gameRankPlace": "Место",
+  "gameRankPoints": "Очки",
+  "gameRankWins": "Победы",
+  "gameRatingChange": "Рейтинг",
+  "gameResultPlace": "{place} место",
+  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } }
 }

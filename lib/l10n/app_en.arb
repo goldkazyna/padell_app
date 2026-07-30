@@ -918,5 +918,20 @@
   "gameRoundScoreA": "Score A",
   "gameRoundScoreB": "Score B",
   "gamePickTeamA": "Choose Team A (2 players)",
-  "gameRoundDeleteConfirm": "Delete round?"
+  "gameRoundDeleteConfirm": "Delete round?",
+
+  "gameActionFinish": "Finish",
+  "gameFinishConfirm": "Finish the game and lock the score?",
+  "gameConfirmTitle": "Score confirmation",
+  "gameConfirmBtn": "Confirm score",
+  "gameConfirmed": "confirmed",
+  "gameNotConfirmed": "pending",
+  "gameResultTitle": "Result",
+  "gameRankingTitle": "Ranking",
+  "gameRankPlace": "Place",
+  "gameRankPoints": "Points",
+  "gameRankWins": "Wins",
+  "gameRatingChange": "Rating",
+  "gameResultPlace": "Place {place}",
+  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } }
 }

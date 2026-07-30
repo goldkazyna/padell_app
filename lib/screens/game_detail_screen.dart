@@ -8,6 +8,7 @@ import '../models/game.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/games/game_players_list.dart';
 import '../widgets/games/game_rounds_section.dart';
+import '../widgets/games/game_result_section.dart';
 import '../l10n/app_localizations.dart';
 
 class GameDetailScreen extends StatefulWidget {
@@ -116,6 +117,40 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
 
   Future<void> _startCancel(int id) async {
     final result = await context.read<GameProvider>().startCancel(id);
+    await _handleResult(result);
+  }
+
+  Future<void> _finish(int id) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l10n.gameFinishConfirm,
+          style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w700),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.gameActionFinish, style: TextStyle(color: AppTheme.accent)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final result = await context.read<GameProvider>().finish(id);
+    await _handleResult(result);
+  }
+
+  Future<void> _confirmScore(int id) async {
+    final result = await context.read<GameProvider>().confirmScore(id);
     await _handleResult(result);
   }
 
@@ -378,6 +413,14 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                             const SizedBox(height: 16),
                             GameRoundsSection(game: game),
                           ],
+                          if (game.isInProgress && game.scoreLocked) ...[
+                            const SizedBox(height: 16),
+                            _buildConfirmationSection(context, game, provider),
+                          ],
+                          if (game.isFinished) ...[
+                            const SizedBox(height: 16),
+                            GameResultSection(game: game),
+                          ],
                           const SizedBox(height: 16),
                           _buildActions(context, game, provider),
                           const SizedBox(height: 32),
@@ -630,6 +673,85 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     );
   }
 
+  Widget _buildConfirmationSection(BuildContext context, Game game, GameProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
+    final isLoading = provider.isActionLoading;
+    final accepted = game.players.where((p) => p.isAccepted).toList();
+    final showConfirmBtn = game.myStatus == 'accepted' && !game.myScoreConfirmed;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF2A3330),
+          width: 0.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.gameConfirmTitle,
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(accepted.length, (index) {
+            final player = accepted[index];
+            return Padding(
+              padding: EdgeInsets.only(bottom: index < accepted.length - 1 ? 10 : 0),
+              child: Row(
+                children: [
+                  Icon(
+                    player.scoreConfirmed ? Icons.check_circle : Icons.radio_button_unchecked,
+                    color: player.scoreConfirmed ? AppTheme.accent : AppTheme.textSecondary,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      player.fullName,
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    player.scoreConfirmed ? l10n.gameConfirmed : l10n.gameNotConfirmed,
+                    style: TextStyle(
+                      color: player.scoreConfirmed ? AppTheme.accent : AppTheme.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          if (showConfirmBtn) ...[
+            const SizedBox(height: 14),
+            _buildPrimaryButton(
+              label: l10n.gameConfirmBtn,
+              onTap: isLoading ? null : () => _confirmScore(game.id),
+              isLoading: isLoading,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildActions(BuildContext context, Game game, GameProvider provider) {
     final l10n = AppLocalizations.of(context)!;
     final isLoading = provider.isActionLoading;
@@ -736,6 +858,19 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
             label: l10n.gameActionStartCancel,
             color: AppTheme.error,
             onTap: isLoading ? null : () => _startCancel(game.id),
+          ),
+        );
+      }
+
+      if (game.isInProgress &&
+          !game.scoreLocked &&
+          game.rounds.any((r) => r.isPlayed)) {
+        buttons.add(const SizedBox(height: 10));
+        buttons.add(
+          _buildPrimaryButton(
+            label: l10n.gameActionFinish,
+            onTap: isLoading ? null : () => _finish(game.id),
+            isLoading: isLoading,
           ),
         );
       }
