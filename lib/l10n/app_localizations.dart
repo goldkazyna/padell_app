@@ -4455,6 +4455,72 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'через {days} {days, plural, one{день} few{дня} many{дней} other{дня}}'**
   String bookingInDays(int days);
+
+  /// No description provided for @gameDetailTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Детали игры'**
+  String get gameDetailTitle;
+
+  /// No description provided for @gameCreateTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создать игру'**
+  String get gameCreateTitle;
+
+  /// No description provided for @gameSoon.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скоро'**
+  String get gameSoon;
+
+  /// No description provided for @gameTitleFallback.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игра'**
+  String get gameTitleFallback;
+
+  /// No description provided for @gameTypeRated.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинговая'**
+  String get gameTypeRated;
+
+  /// No description provided for @gameTypeFriendly.
+  ///
+  /// In ru, this message translates to:
+  /// **'Товарищеская'**
+  String get gameTypeFriendly;
+
+  /// No description provided for @gameFormatSets.
+  ///
+  /// In ru, this message translates to:
+  /// **'По сетам'**
+  String get gameFormatSets;
+
+  /// No description provided for @gameFormatPoints.
+  ///
+  /// In ru, this message translates to:
+  /// **'До очков'**
+  String get gameFormatPoints;
+
+  /// No description provided for @gameFormatAmericano.
+  ///
+  /// In ru, this message translates to:
+  /// **'Американо'**
+  String get gameFormatAmericano;
+
+  /// No description provided for @gameJoinSlot.
+  ///
+  /// In ru, this message translates to:
+  /// **'Занять место'**
+  String get gameJoinSlot;
+
+  /// No description provided for @gameDetails.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подробнее'**
+  String get gameDetails;
 }
 
 class _AppLocalizationsDelegate

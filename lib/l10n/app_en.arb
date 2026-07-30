@@ -827,5 +827,17 @@
   "minutesShort": "min",
   "bookingToday": "today",
   "bookingTomorrow": "tomorrow",
-  "bookingInDays": "in {days} {days, plural, one{day} other{days}}"
+  "bookingInDays": "in {days} {days, plural, one{day} other{days}}",
+
+  "gameDetailTitle": "Game details",
+  "gameCreateTitle": "Create game",
+  "gameSoon": "Coming soon",
+  "gameTitleFallback": "Game",
+  "gameTypeRated": "Rated",
+  "gameTypeFriendly": "Friendly",
+  "gameFormatSets": "By sets",
+  "gameFormatPoints": "To points",
+  "gameFormatAmericano": "Americano",
+  "gameJoinSlot": "Take a slot",
+  "gameDetails": "Details"
 }

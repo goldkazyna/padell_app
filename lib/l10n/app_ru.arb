@@ -853,5 +853,17 @@
   "bookingToday": "сегодня",
   "bookingTomorrow": "завтра",
   "bookingInDays": "через {days} {days, plural, one{день} few{дня} many{дней} other{дня}}",
-  "@bookingInDays": { "placeholders": { "days": { "type": "int" } } }
+  "@bookingInDays": { "placeholders": { "days": { "type": "int" } } },
+
+  "gameDetailTitle": "Детали игры",
+  "gameCreateTitle": "Создать игру",
+  "gameSoon": "Скоро",
+  "gameTitleFallback": "Игра",
+  "gameTypeRated": "Рейтинговая",
+  "gameTypeFriendly": "Товарищеская",
+  "gameFormatSets": "По сетам",
+  "gameFormatPoints": "До очков",
+  "gameFormatAmericano": "Американо",
+  "gameJoinSlot": "Занять место",
+  "gameDetails": "Подробнее"
 }

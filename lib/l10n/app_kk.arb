@@ -827,5 +827,17 @@
   "minutesShort": "мин",
   "bookingToday": "бүгін",
   "bookingTomorrow": "ертең",
-  "bookingInDays": "{days} күннен кейін"
+  "bookingInDays": "{days} күннен кейін",
+
+  "gameDetailTitle": "Ойын мәліметтері",
+  "gameCreateTitle": "Ойын құру",
+  "gameSoon": "Жақында",
+  "gameTitleFallback": "Ойын",
+  "gameTypeRated": "Рейтингтік",
+  "gameTypeFriendly": "Достық",
+  "gameFormatSets": "Сеттер бойынша",
+  "gameFormatPoints": "Ұпайға дейін",
+  "gameFormatAmericano": "Американо",
+  "gameJoinSlot": "Орын алу",
+  "gameDetails": "Толығырақ"
 }

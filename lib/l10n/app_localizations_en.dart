@@ -2368,4 +2368,37 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return 'in $days $_temp0';
   }
+
+  @override
+  String get gameDetailTitle => 'Game details';
+
+  @override
+  String get gameCreateTitle => 'Create game';
+
+  @override
+  String get gameSoon => 'Coming soon';
+
+  @override
+  String get gameTitleFallback => 'Game';
+
+  @override
+  String get gameTypeRated => 'Rated';
+
+  @override
+  String get gameTypeFriendly => 'Friendly';
+
+  @override
+  String get gameFormatSets => 'By sets';
+
+  @override
+  String get gameFormatPoints => 'To points';
+
+  @override
+  String get gameFormatAmericano => 'Americano';
+
+  @override
+  String get gameJoinSlot => 'Take a slot';
+
+  @override
+  String get gameDetails => 'Details';
 }

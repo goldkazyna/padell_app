@@ -2377,4 +2377,37 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return 'через $days $_temp0';
   }
+
+  @override
+  String get gameDetailTitle => 'Детали игры';
+
+  @override
+  String get gameCreateTitle => 'Создать игру';
+
+  @override
+  String get gameSoon => 'Скоро';
+
+  @override
+  String get gameTitleFallback => 'Игра';
+
+  @override
+  String get gameTypeRated => 'Рейтинговая';
+
+  @override
+  String get gameTypeFriendly => 'Товарищеская';
+
+  @override
+  String get gameFormatSets => 'По сетам';
+
+  @override
+  String get gameFormatPoints => 'До очков';
+
+  @override
+  String get gameFormatAmericano => 'Американо';
+
+  @override
+  String get gameJoinSlot => 'Занять место';
+
+  @override
+  String get gameDetails => 'Подробнее';
 }

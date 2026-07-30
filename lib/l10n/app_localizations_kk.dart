@@ -2338,4 +2338,37 @@ class AppLocalizationsKk extends AppLocalizations {
   String bookingInDays(int days) {
     return '$days күннен кейін';
   }
+
+  @override
+  String get gameDetailTitle => 'Ойын мәліметтері';
+
+  @override
+  String get gameCreateTitle => 'Ойын құру';
+
+  @override
+  String get gameSoon => 'Жақында';
+
+  @override
+  String get gameTitleFallback => 'Ойын';
+
+  @override
+  String get gameTypeRated => 'Рейтингтік';
+
+  @override
+  String get gameTypeFriendly => 'Достық';
+
+  @override
+  String get gameFormatSets => 'Сеттер бойынша';
+
+  @override
+  String get gameFormatPoints => 'Ұпайға дейін';
+
+  @override
+  String get gameFormatAmericano => 'Американо';
+
+  @override
+  String get gameJoinSlot => 'Орын алу';
+
+  @override
+  String get gameDetails => 'Толығырақ';
 }
