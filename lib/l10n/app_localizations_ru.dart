@@ -2425,4 +2425,87 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gameEmptyMy => 'У вас пока нет игр';
+
+  @override
+  String get gameCreateSubmit => 'Создать';
+
+  @override
+  String get gameFieldClub => 'Клуб';
+
+  @override
+  String get gameFieldDate => 'Дата';
+
+  @override
+  String get gameFieldTime => 'Время';
+
+  @override
+  String get gameFieldDuration => 'Длительность';
+
+  @override
+  String get gameFieldType => 'Тип';
+
+  @override
+  String get gameFieldVisibility => 'Видимость';
+
+  @override
+  String get gameVisibilityPublic => 'Открытая';
+
+  @override
+  String get gameVisibilityPrivate => 'Приватная';
+
+  @override
+  String get gameFieldFormat => 'Формат';
+
+  @override
+  String get gameFieldTiebreak => 'Тай-брейк';
+
+  @override
+  String get gamePointsMode => 'Режим очков';
+
+  @override
+  String get gamePointsFirstTo => 'До N очков';
+
+  @override
+  String get gamePointsTotal => 'На сумму';
+
+  @override
+  String get gamePointsTarget => 'Очков до победы';
+
+  @override
+  String get gamePointsCap => 'Лимит очков';
+
+  @override
+  String get gameAmSub => 'Подформат';
+
+  @override
+  String get gameAmBySets => 'По сетам';
+
+  @override
+  String get gameAmByTiebreak => 'По тай-брейку';
+
+  @override
+  String get gameAmByPoints => 'По очкам';
+
+  @override
+  String get gameAmTarget => 'Значение';
+
+  @override
+  String get gameFieldRatingRange => 'Диапазон уровня';
+
+  @override
+  String get gameRatingAny => 'Любой';
+
+  @override
+  String get gameFieldPrice => 'Цена, ₸';
+
+  @override
+  String get gameFieldDescription => 'Описание';
+
+  @override
+  String get gameCreateValidationError => 'Заполните обязательные поля';
+
+  @override
+  String gameDurationMin(int min) {
+    return '$min мин';
+  }
 }

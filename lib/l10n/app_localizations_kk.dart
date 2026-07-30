@@ -2386,4 +2386,87 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get gameEmptyMy => 'Сізде әлі ойындар жоқ';
+
+  @override
+  String get gameCreateSubmit => 'Құру';
+
+  @override
+  String get gameFieldClub => 'Клуб';
+
+  @override
+  String get gameFieldDate => 'Күні';
+
+  @override
+  String get gameFieldTime => 'Уақыты';
+
+  @override
+  String get gameFieldDuration => 'Ұзақтығы';
+
+  @override
+  String get gameFieldType => 'Түрі';
+
+  @override
+  String get gameFieldVisibility => 'Көрінуі';
+
+  @override
+  String get gameVisibilityPublic => 'Ашық';
+
+  @override
+  String get gameVisibilityPrivate => 'Жеке';
+
+  @override
+  String get gameFieldFormat => 'Формат';
+
+  @override
+  String get gameFieldTiebreak => 'Тай-брейк';
+
+  @override
+  String get gamePointsMode => 'Ұпай режимі';
+
+  @override
+  String get gamePointsFirstTo => 'N ұпайға дейін';
+
+  @override
+  String get gamePointsTotal => 'Жалпы сомаға';
+
+  @override
+  String get gamePointsTarget => 'Жеңіске дейінгі ұпай';
+
+  @override
+  String get gamePointsCap => 'Ұпай шегі';
+
+  @override
+  String get gameAmSub => 'Қосымша формат';
+
+  @override
+  String get gameAmBySets => 'Сеттер бойынша';
+
+  @override
+  String get gameAmByTiebreak => 'Тай-брейк бойынша';
+
+  @override
+  String get gameAmByPoints => 'Ұпай бойынша';
+
+  @override
+  String get gameAmTarget => 'Мәні';
+
+  @override
+  String get gameFieldRatingRange => 'Деңгей диапазоны';
+
+  @override
+  String get gameRatingAny => 'Кез келген';
+
+  @override
+  String get gameFieldPrice => 'Бағасы, ₸';
+
+  @override
+  String get gameFieldDescription => 'Сипаттама';
+
+  @override
+  String get gameCreateValidationError => 'Міндетті өрістерді толтырыңыз';
+
+  @override
+  String gameDurationMin(int min) {
+    return '$min мин';
+  }
 }

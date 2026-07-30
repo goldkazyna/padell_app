@@ -4551,6 +4551,168 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'У вас пока нет игр'**
   String get gameEmptyMy;
+
+  /// No description provided for @gameCreateSubmit.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создать'**
+  String get gameCreateSubmit;
+
+  /// No description provided for @gameFieldClub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Клуб'**
+  String get gameFieldClub;
+
+  /// No description provided for @gameFieldDate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата'**
+  String get gameFieldDate;
+
+  /// No description provided for @gameFieldTime.
+  ///
+  /// In ru, this message translates to:
+  /// **'Время'**
+  String get gameFieldTime;
+
+  /// No description provided for @gameFieldDuration.
+  ///
+  /// In ru, this message translates to:
+  /// **'Длительность'**
+  String get gameFieldDuration;
+
+  /// No description provided for @gameFieldType.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тип'**
+  String get gameFieldType;
+
+  /// No description provided for @gameFieldVisibility.
+  ///
+  /// In ru, this message translates to:
+  /// **'Видимость'**
+  String get gameFieldVisibility;
+
+  /// No description provided for @gameVisibilityPublic.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открытая'**
+  String get gameVisibilityPublic;
+
+  /// No description provided for @gameVisibilityPrivate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приватная'**
+  String get gameVisibilityPrivate;
+
+  /// No description provided for @gameFieldFormat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Формат'**
+  String get gameFieldFormat;
+
+  /// No description provided for @gameFieldTiebreak.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тай-брейк'**
+  String get gameFieldTiebreak;
+
+  /// No description provided for @gamePointsMode.
+  ///
+  /// In ru, this message translates to:
+  /// **'Режим очков'**
+  String get gamePointsMode;
+
+  /// No description provided for @gamePointsFirstTo.
+  ///
+  /// In ru, this message translates to:
+  /// **'До N очков'**
+  String get gamePointsFirstTo;
+
+  /// No description provided for @gamePointsTotal.
+  ///
+  /// In ru, this message translates to:
+  /// **'На сумму'**
+  String get gamePointsTotal;
+
+  /// No description provided for @gamePointsTarget.
+  ///
+  /// In ru, this message translates to:
+  /// **'Очков до победы'**
+  String get gamePointsTarget;
+
+  /// No description provided for @gamePointsCap.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лимит очков'**
+  String get gamePointsCap;
+
+  /// No description provided for @gameAmSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подформат'**
+  String get gameAmSub;
+
+  /// No description provided for @gameAmBySets.
+  ///
+  /// In ru, this message translates to:
+  /// **'По сетам'**
+  String get gameAmBySets;
+
+  /// No description provided for @gameAmByTiebreak.
+  ///
+  /// In ru, this message translates to:
+  /// **'По тай-брейку'**
+  String get gameAmByTiebreak;
+
+  /// No description provided for @gameAmByPoints.
+  ///
+  /// In ru, this message translates to:
+  /// **'По очкам'**
+  String get gameAmByPoints;
+
+  /// No description provided for @gameAmTarget.
+  ///
+  /// In ru, this message translates to:
+  /// **'Значение'**
+  String get gameAmTarget;
+
+  /// No description provided for @gameFieldRatingRange.
+  ///
+  /// In ru, this message translates to:
+  /// **'Диапазон уровня'**
+  String get gameFieldRatingRange;
+
+  /// No description provided for @gameRatingAny.
+  ///
+  /// In ru, this message translates to:
+  /// **'Любой'**
+  String get gameRatingAny;
+
+  /// No description provided for @gameFieldPrice.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цена, ₸'**
+  String get gameFieldPrice;
+
+  /// No description provided for @gameFieldDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Описание'**
+  String get gameFieldDescription;
+
+  /// No description provided for @gameCreateValidationError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заполните обязательные поля'**
+  String get gameCreateValidationError;
+
+  /// No description provided for @gameDurationMin.
+  ///
+  /// In ru, this message translates to:
+  /// **'{min} мин'**
+  String gameDurationMin(int min);
 }
 
 class _AppLocalizationsDelegate

@@ -2416,4 +2416,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameEmptyMy => 'You don\'t have any games yet';
+
+  @override
+  String get gameCreateSubmit => 'Create';
+
+  @override
+  String get gameFieldClub => 'Club';
+
+  @override
+  String get gameFieldDate => 'Date';
+
+  @override
+  String get gameFieldTime => 'Time';
+
+  @override
+  String get gameFieldDuration => 'Duration';
+
+  @override
+  String get gameFieldType => 'Type';
+
+  @override
+  String get gameFieldVisibility => 'Visibility';
+
+  @override
+  String get gameVisibilityPublic => 'Public';
+
+  @override
+  String get gameVisibilityPrivate => 'Private';
+
+  @override
+  String get gameFieldFormat => 'Format';
+
+  @override
+  String get gameFieldTiebreak => 'Tiebreak';
+
+  @override
+  String get gamePointsMode => 'Points mode';
+
+  @override
+  String get gamePointsFirstTo => 'First to N points';
+
+  @override
+  String get gamePointsTotal => 'Total points';
+
+  @override
+  String get gamePointsTarget => 'Points to win';
+
+  @override
+  String get gamePointsCap => 'Points cap';
+
+  @override
+  String get gameAmSub => 'Sub-format';
+
+  @override
+  String get gameAmBySets => 'By sets';
+
+  @override
+  String get gameAmByTiebreak => 'By tiebreak';
+
+  @override
+  String get gameAmByPoints => 'By points';
+
+  @override
+  String get gameAmTarget => 'Value';
+
+  @override
+  String get gameFieldRatingRange => 'Level range';
+
+  @override
+  String get gameRatingAny => 'Any';
+
+  @override
+  String get gameFieldPrice => 'Price, ₸';
+
+  @override
+  String get gameFieldDescription => 'Description';
+
+  @override
+  String get gameCreateValidationError => 'Please fill in the required fields';
+
+  @override
+  String gameDurationMin(int min) {
+    return '$min min';
+  }
 }
