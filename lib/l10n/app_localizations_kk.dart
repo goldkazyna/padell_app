@@ -2505,4 +2505,58 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get gameOrganizerLabel => 'Ұйымдастырушы';
+
+  @override
+  String get gameActionAccept => 'Қабылдау';
+
+  @override
+  String get gameActionDecline => 'Бас тарту';
+
+  @override
+  String get gameActionApply => 'Өтінім беру';
+
+  @override
+  String get gameApplied => 'Өтінім жіберілді';
+
+  @override
+  String get gameActionLeave => 'Шығу';
+
+  @override
+  String get gameActionStart => 'Ойынды бастау';
+
+  @override
+  String get gameActionStartCancel => 'Стартты болдырмау';
+
+  @override
+  String get gameActionInvite => 'Шақыру';
+
+  @override
+  String get gameActionApprove => 'Мақұлдау';
+
+  @override
+  String get gameActionReject => 'Бас тарту';
+
+  @override
+  String get gameActionRemove => 'Жою';
+
+  @override
+  String get gameShareRotate => 'Сілтемені жаңарту';
+
+  @override
+  String get gameShareRevoke => 'Кері қайтару';
+
+  @override
+  String get gameShareCopied => 'Сілтеме көшірілді';
+
+  @override
+  String get gameInviteSearchHint => 'Ойыншының телефоны';
+
+  @override
+  String get gameInviteSearchBtn => 'Іздеу';
+
+  @override
+  String get gameInviteEmpty => 'Ешкім табылмады';
+
+  @override
+  String get gameLeaveConfirm => 'Ойыннан шығу керек пе?';
 }

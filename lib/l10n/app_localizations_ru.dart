@@ -2544,4 +2544,58 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gameOrganizerLabel => 'Организатор';
+
+  @override
+  String get gameActionAccept => 'Принять';
+
+  @override
+  String get gameActionDecline => 'Отклонить';
+
+  @override
+  String get gameActionApply => 'Подать заявку';
+
+  @override
+  String get gameApplied => 'Заявка отправлена';
+
+  @override
+  String get gameActionLeave => 'Выйти';
+
+  @override
+  String get gameActionStart => 'Начать игру';
+
+  @override
+  String get gameActionStartCancel => 'Отменить старт';
+
+  @override
+  String get gameActionInvite => 'Пригласить';
+
+  @override
+  String get gameActionApprove => 'Одобрить';
+
+  @override
+  String get gameActionReject => 'Отклонить';
+
+  @override
+  String get gameActionRemove => 'Удалить';
+
+  @override
+  String get gameShareRotate => 'Обновить ссылку';
+
+  @override
+  String get gameShareRevoke => 'Отозвать';
+
+  @override
+  String get gameShareCopied => 'Ссылка скопирована';
+
+  @override
+  String get gameInviteSearchHint => 'Телефон игрока';
+
+  @override
+  String get gameInviteSearchBtn => 'Найти';
+
+  @override
+  String get gameInviteEmpty => 'Никого не найдено';
+
+  @override
+  String get gameLeaveConfirm => 'Выйти из игры?';
 }

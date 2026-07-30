@@ -4785,6 +4785,114 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Организатор'**
   String get gameOrganizerLabel;
+
+  /// No description provided for @gameActionAccept.
+  ///
+  /// In ru, this message translates to:
+  /// **'Принять'**
+  String get gameActionAccept;
+
+  /// No description provided for @gameActionDecline.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отклонить'**
+  String get gameActionDecline;
+
+  /// No description provided for @gameActionApply.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подать заявку'**
+  String get gameActionApply;
+
+  /// No description provided for @gameApplied.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заявка отправлена'**
+  String get gameApplied;
+
+  /// No description provided for @gameActionLeave.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выйти'**
+  String get gameActionLeave;
+
+  /// No description provided for @gameActionStart.
+  ///
+  /// In ru, this message translates to:
+  /// **'Начать игру'**
+  String get gameActionStart;
+
+  /// No description provided for @gameActionStartCancel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отменить старт'**
+  String get gameActionStartCancel;
+
+  /// No description provided for @gameActionInvite.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пригласить'**
+  String get gameActionInvite;
+
+  /// No description provided for @gameActionApprove.
+  ///
+  /// In ru, this message translates to:
+  /// **'Одобрить'**
+  String get gameActionApprove;
+
+  /// No description provided for @gameActionReject.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отклонить'**
+  String get gameActionReject;
+
+  /// No description provided for @gameActionRemove.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить'**
+  String get gameActionRemove;
+
+  /// No description provided for @gameShareRotate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обновить ссылку'**
+  String get gameShareRotate;
+
+  /// No description provided for @gameShareRevoke.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отозвать'**
+  String get gameShareRevoke;
+
+  /// No description provided for @gameShareCopied.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ссылка скопирована'**
+  String get gameShareCopied;
+
+  /// No description provided for @gameInviteSearchHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Телефон игрока'**
+  String get gameInviteSearchHint;
+
+  /// No description provided for @gameInviteSearchBtn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Найти'**
+  String get gameInviteSearchBtn;
+
+  /// No description provided for @gameInviteEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Никого не найдено'**
+  String get gameInviteEmpty;
+
+  /// No description provided for @gameLeaveConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выйти из игры?'**
+  String get gameLeaveConfirm;
 }
 
 class _AppLocalizationsDelegate

@@ -2535,4 +2535,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameOrganizerLabel => 'Organizer';
+
+  @override
+  String get gameActionAccept => 'Accept';
+
+  @override
+  String get gameActionDecline => 'Decline';
+
+  @override
+  String get gameActionApply => 'Apply';
+
+  @override
+  String get gameApplied => 'Application sent';
+
+  @override
+  String get gameActionLeave => 'Leave';
+
+  @override
+  String get gameActionStart => 'Start game';
+
+  @override
+  String get gameActionStartCancel => 'Cancel start';
+
+  @override
+  String get gameActionInvite => 'Invite';
+
+  @override
+  String get gameActionApprove => 'Approve';
+
+  @override
+  String get gameActionReject => 'Reject';
+
+  @override
+  String get gameActionRemove => 'Remove';
+
+  @override
+  String get gameShareRotate => 'Refresh link';
+
+  @override
+  String get gameShareRevoke => 'Revoke';
+
+  @override
+  String get gameShareCopied => 'Link copied';
+
+  @override
+  String get gameInviteSearchHint => 'Player phone';
+
+  @override
+  String get gameInviteSearchBtn => 'Search';
+
+  @override
+  String get gameInviteEmpty => 'Nobody found';
+
+  @override
+  String get gameLeaveConfirm => 'Leave the game?';
 }

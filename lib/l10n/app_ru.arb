@@ -912,5 +912,24 @@
   "gameShareActive": "активна",
   "gameShareInactive": "неактивна",
   "gamePriceLabel": "Цена",
-  "gameOrganizerLabel": "Организатор"
+  "gameOrganizerLabel": "Организатор",
+
+  "gameActionAccept": "Принять",
+  "gameActionDecline": "Отклонить",
+  "gameActionApply": "Подать заявку",
+  "gameApplied": "Заявка отправлена",
+  "gameActionLeave": "Выйти",
+  "gameActionStart": "Начать игру",
+  "gameActionStartCancel": "Отменить старт",
+  "gameActionInvite": "Пригласить",
+  "gameActionApprove": "Одобрить",
+  "gameActionReject": "Отклонить",
+  "gameActionRemove": "Удалить",
+  "gameShareRotate": "Обновить ссылку",
+  "gameShareRevoke": "Отозвать",
+  "gameShareCopied": "Ссылка скопирована",
+  "gameInviteSearchHint": "Телефон игрока",
+  "gameInviteSearchBtn": "Найти",
+  "gameInviteEmpty": "Никого не найдено",
+  "gameLeaveConfirm": "Выйти из игры?"
 }

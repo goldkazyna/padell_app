@@ -886,5 +886,24 @@
   "gameShareActive": "белсенді",
   "gameShareInactive": "белсенді емес",
   "gamePriceLabel": "Бағасы",
-  "gameOrganizerLabel": "Ұйымдастырушы"
+  "gameOrganizerLabel": "Ұйымдастырушы",
+
+  "gameActionAccept": "Қабылдау",
+  "gameActionDecline": "Бас тарту",
+  "gameActionApply": "Өтінім беру",
+  "gameApplied": "Өтінім жіберілді",
+  "gameActionLeave": "Шығу",
+  "gameActionStart": "Ойынды бастау",
+  "gameActionStartCancel": "Стартты болдырмау",
+  "gameActionInvite": "Шақыру",
+  "gameActionApprove": "Мақұлдау",
+  "gameActionReject": "Бас тарту",
+  "gameActionRemove": "Жою",
+  "gameShareRotate": "Сілтемені жаңарту",
+  "gameShareRevoke": "Кері қайтару",
+  "gameShareCopied": "Сілтеме көшірілді",
+  "gameInviteSearchHint": "Ойыншының телефоны",
+  "gameInviteSearchBtn": "Іздеу",
+  "gameInviteEmpty": "Ешкім табылмады",
+  "gameLeaveConfirm": "Ойыннан шығу керек пе?"
 }

@@ -886,5 +886,24 @@
   "gameShareActive": "active",
   "gameShareInactive": "inactive",
   "gamePriceLabel": "Price",
-  "gameOrganizerLabel": "Organizer"
+  "gameOrganizerLabel": "Organizer",
+
+  "gameActionAccept": "Accept",
+  "gameActionDecline": "Decline",
+  "gameActionApply": "Apply",
+  "gameApplied": "Application sent",
+  "gameActionLeave": "Leave",
+  "gameActionStart": "Start game",
+  "gameActionStartCancel": "Cancel start",
+  "gameActionInvite": "Invite",
+  "gameActionApprove": "Approve",
+  "gameActionReject": "Reject",
+  "gameActionRemove": "Remove",
+  "gameShareRotate": "Refresh link",
+  "gameShareRevoke": "Revoke",
+  "gameShareCopied": "Link copied",
+  "gameInviteSearchHint": "Player phone",
+  "gameInviteSearchBtn": "Search",
+  "gameInviteEmpty": "Nobody found",
+  "gameLeaveConfirm": "Leave the game?"
 }
