@@ -7,6 +7,7 @@ import '../providers/game_provider.dart';
 import '../models/game.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/games/game_players_list.dart';
+import '../widgets/games/game_rounds_section.dart';
 import '../l10n/app_localizations.dart';
 
 class GameDetailScreen extends StatefulWidget {
@@ -372,6 +373,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                           if (game.isCreator) ...[
                             const SizedBox(height: 16),
                             _buildShareCard(context, game),
+                          ],
+                          if (game.isInProgress || game.isFinished || game.scoreLocked) ...[
+                            const SizedBox(height: 16),
+                            GameRoundsSection(game: game),
                           ],
                           const SizedBox(height: 16),
                           _buildActions(context, game, provider),

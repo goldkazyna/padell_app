@@ -905,5 +905,18 @@
   "gameInviteSearchHint": "Player phone",
   "gameInviteSearchBtn": "Search",
   "gameInviteEmpty": "Nobody found",
-  "gameLeaveConfirm": "Leave the game?"
+  "gameLeaveConfirm": "Leave the game?",
+
+  "gameRoundsTitle": "Round scores",
+  "gameRoundNo": "Round {n}",
+  "@gameRoundNo": { "placeholders": { "n": { "type": "int" } } },
+  "gameTeamA": "Team A",
+  "gameTeamB": "Team B",
+  "gameAddRound": "Add round",
+  "gameRegenerate": "Regenerate",
+  "gameRoundSave": "Save",
+  "gameRoundScoreA": "Score A",
+  "gameRoundScoreB": "Score B",
+  "gamePickTeamA": "Choose Team A (2 players)",
+  "gameRoundDeleteConfirm": "Delete round?"
 }

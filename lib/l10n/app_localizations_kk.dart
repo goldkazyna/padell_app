@@ -2559,4 +2559,39 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get gameLeaveConfirm => 'Ойыннан шығу керек пе?';
+
+  @override
+  String get gameRoundsTitle => 'Раундтар бойынша есеп';
+
+  @override
+  String gameRoundNo(int n) {
+    return 'Раунд $n';
+  }
+
+  @override
+  String get gameTeamA => 'A командасы';
+
+  @override
+  String get gameTeamB => 'B командасы';
+
+  @override
+  String get gameAddRound => 'Раунд қосу';
+
+  @override
+  String get gameRegenerate => 'Қайта жасау';
+
+  @override
+  String get gameRoundSave => 'Сақтау';
+
+  @override
+  String get gameRoundScoreA => 'A есебі';
+
+  @override
+  String get gameRoundScoreB => 'B есебі';
+
+  @override
+  String get gamePickTeamA => 'A командасын таңдаңыз (2 ойыншы)';
+
+  @override
+  String get gameRoundDeleteConfirm => 'Раундты жою керек пе?';
 }

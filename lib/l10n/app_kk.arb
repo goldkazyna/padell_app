@@ -905,5 +905,18 @@
   "gameInviteSearchHint": "Ойыншының телефоны",
   "gameInviteSearchBtn": "Іздеу",
   "gameInviteEmpty": "Ешкім табылмады",
-  "gameLeaveConfirm": "Ойыннан шығу керек пе?"
+  "gameLeaveConfirm": "Ойыннан шығу керек пе?",
+
+  "gameRoundsTitle": "Раундтар бойынша есеп",
+  "gameRoundNo": "Раунд {n}",
+  "@gameRoundNo": { "placeholders": { "n": { "type": "int" } } },
+  "gameTeamA": "A командасы",
+  "gameTeamB": "B командасы",
+  "gameAddRound": "Раунд қосу",
+  "gameRegenerate": "Қайта жасау",
+  "gameRoundSave": "Сақтау",
+  "gameRoundScoreA": "A есебі",
+  "gameRoundScoreB": "B есебі",
+  "gamePickTeamA": "A командасын таңдаңыз (2 ойыншы)",
+  "gameRoundDeleteConfirm": "Раундты жою керек пе?"
 }

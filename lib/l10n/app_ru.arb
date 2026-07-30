@@ -931,5 +931,18 @@
   "gameInviteSearchHint": "Телефон игрока",
   "gameInviteSearchBtn": "Найти",
   "gameInviteEmpty": "Никого не найдено",
-  "gameLeaveConfirm": "Выйти из игры?"
+  "gameLeaveConfirm": "Выйти из игры?",
+
+  "gameRoundsTitle": "Счёт по раундам",
+  "gameRoundNo": "Раунд {n}",
+  "@gameRoundNo": { "placeholders": { "n": { "type": "int" } } },
+  "gameTeamA": "Команда A",
+  "gameTeamB": "Команда B",
+  "gameAddRound": "Добавить раунд",
+  "gameRegenerate": "Перегенерировать",
+  "gameRoundSave": "Сохранить",
+  "gameRoundScoreA": "Счёт A",
+  "gameRoundScoreB": "Счёт B",
+  "gamePickTeamA": "Выберите команду A (2 игрока)",
+  "gameRoundDeleteConfirm": "Удалить раунд?"
 }

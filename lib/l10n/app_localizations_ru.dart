@@ -2598,4 +2598,39 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gameLeaveConfirm => 'Выйти из игры?';
+
+  @override
+  String get gameRoundsTitle => 'Счёт по раундам';
+
+  @override
+  String gameRoundNo(int n) {
+    return 'Раунд $n';
+  }
+
+  @override
+  String get gameTeamA => 'Команда A';
+
+  @override
+  String get gameTeamB => 'Команда B';
+
+  @override
+  String get gameAddRound => 'Добавить раунд';
+
+  @override
+  String get gameRegenerate => 'Перегенерировать';
+
+  @override
+  String get gameRoundSave => 'Сохранить';
+
+  @override
+  String get gameRoundScoreA => 'Счёт A';
+
+  @override
+  String get gameRoundScoreB => 'Счёт B';
+
+  @override
+  String get gamePickTeamA => 'Выберите команду A (2 игрока)';
+
+  @override
+  String get gameRoundDeleteConfirm => 'Удалить раунд?';
 }

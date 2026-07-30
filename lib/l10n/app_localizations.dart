@@ -4893,6 +4893,72 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Выйти из игры?'**
   String get gameLeaveConfirm;
+
+  /// No description provided for @gameRoundsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Счёт по раундам'**
+  String get gameRoundsTitle;
+
+  /// No description provided for @gameRoundNo.
+  ///
+  /// In ru, this message translates to:
+  /// **'Раунд {n}'**
+  String gameRoundNo(int n);
+
+  /// No description provided for @gameTeamA.
+  ///
+  /// In ru, this message translates to:
+  /// **'Команда A'**
+  String get gameTeamA;
+
+  /// No description provided for @gameTeamB.
+  ///
+  /// In ru, this message translates to:
+  /// **'Команда B'**
+  String get gameTeamB;
+
+  /// No description provided for @gameAddRound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить раунд'**
+  String get gameAddRound;
+
+  /// No description provided for @gameRegenerate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перегенерировать'**
+  String get gameRegenerate;
+
+  /// No description provided for @gameRoundSave.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сохранить'**
+  String get gameRoundSave;
+
+  /// No description provided for @gameRoundScoreA.
+  ///
+  /// In ru, this message translates to:
+  /// **'Счёт A'**
+  String get gameRoundScoreA;
+
+  /// No description provided for @gameRoundScoreB.
+  ///
+  /// In ru, this message translates to:
+  /// **'Счёт B'**
+  String get gameRoundScoreB;
+
+  /// No description provided for @gamePickTeamA.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите команду A (2 игрока)'**
+  String get gamePickTeamA;
+
+  /// No description provided for @gameRoundDeleteConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить раунд?'**
+  String get gameRoundDeleteConfirm;
 }
 
 class _AppLocalizationsDelegate

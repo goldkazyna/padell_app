@@ -2589,4 +2589,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameLeaveConfirm => 'Leave the game?';
+
+  @override
+  String get gameRoundsTitle => 'Round scores';
+
+  @override
+  String gameRoundNo(int n) {
+    return 'Round $n';
+  }
+
+  @override
+  String get gameTeamA => 'Team A';
+
+  @override
+  String get gameTeamB => 'Team B';
+
+  @override
+  String get gameAddRound => 'Add round';
+
+  @override
+  String get gameRegenerate => 'Regenerate';
+
+  @override
+  String get gameRoundSave => 'Save';
+
+  @override
+  String get gameRoundScoreA => 'Score A';
+
+  @override
+  String get gameRoundScoreB => 'Score B';
+
+  @override
+  String get gamePickTeamA => 'Choose Team A (2 players)';
+
+  @override
+  String get gameRoundDeleteConfirm => 'Delete round?';
 }
