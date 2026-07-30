@@ -165,52 +165,68 @@ class Game {
   final int creatorId;
   final bool isCreator;
   final GameClub? club;
+  final int? courtId;
   final DateTime? startsAt;
   final DateTime? endsAt;
+  final String type;
+  final String typeName;
   final String format;
   final String formatName;
   final Map<String, dynamic>? formatMeta;
-  final double minLevel;
-  final double maxLevel;
+  final String visibility;
+  final double? ratingMin;
+  final double? ratingMax;
+  final int capacity;
+  final int? price;
+  final String? description;
   final String status;
   final String statusName;
-  final bool isPrivate;
   final bool scoreLocked;
   final List<GamePlayer> players;
-  final int confirmedCount;
+  final int acceptedCount;
   final List<int> availablePositions;
   final List<GameRound> rounds;
   final List<GameRankingRow> americanoRanking;
   final bool isParticipant;
   final String? myStatus;
   final int? myPosition;
-  final int? myRatingChange;
+  final String? shareToken;
+  final bool shareActive;
+  final bool myScoreConfirmed;
 
   Game({
     required this.id,
     required this.creatorId,
     required this.isCreator,
     this.club,
+    this.courtId,
     this.startsAt,
     this.endsAt,
+    required this.type,
+    required this.typeName,
     required this.format,
     required this.formatName,
     this.formatMeta,
-    required this.minLevel,
-    required this.maxLevel,
+    required this.visibility,
+    this.ratingMin,
+    this.ratingMax,
+    this.capacity = 0,
+    this.price,
+    this.description,
     required this.status,
     required this.statusName,
-    this.isPrivate = false,
     this.scoreLocked = false,
     this.players = const [],
-    this.confirmedCount = 0,
+    this.acceptedCount = 0,
     this.availablePositions = const [],
     this.rounds = const [],
     this.americanoRanking = const [],
     this.isParticipant = false,
     this.myStatus,
     this.myPosition,
-    this.myRatingChange,
+    this.shareToken,
+    this.shareActive = false,
+    this.myScoreConfirmed = false,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -260,6 +276,18 @@ class Game {
       // Если парсинг позиций сломался — пустой список
     }
 
+    double? parsedRatingMin;
+    final rawRatingMin = json['rating_min'];
+    if (rawRatingMin != null) {
+      parsedRatingMin = double.tryParse(rawRatingMin.toString());
+    }
+
+    double? parsedRatingMax;
+    final rawRatingMax = json['rating_max'];
+    if (rawRatingMax != null) {
+      parsedRatingMax = double.tryParse(rawRatingMax.toString());
+    }
+
     return Game(
       id: json['id'] as int,
       creatorId: json['creator_id'] as int? ?? 0,
@@ -267,26 +295,34 @@ class Game {
       club: json['club'] != null
           ? GameClub.fromJson(json['club'] as Map<String, dynamic>)
           : null,
+      courtId: json['court_id'] as int?,
       startsAt: DateTime.tryParse(json['starts_at'] as String? ?? ''),
       endsAt: DateTime.tryParse(json['ends_at'] as String? ?? ''),
+      type: json['type'] as String? ?? '',
+      typeName: json['type_name'] as String? ?? '',
       format: json['format'] as String? ?? '',
       formatName: json['format_name'] as String? ?? '',
       formatMeta: json['format_meta'] as Map<String, dynamic>?,
-      minLevel: (json['min_level'] as num?)?.toDouble() ?? 0.0,
-      maxLevel: (json['max_level'] as num?)?.toDouble() ?? 0.0,
+      visibility: json['visibility'] as String? ?? '',
+      ratingMin: parsedRatingMin,
+      ratingMax: parsedRatingMax,
+      capacity: json['capacity'] as int? ?? 0,
+      price: json['price'] as int?,
+      description: json['description'] as String?,
       status: json['status'] as String? ?? '',
       statusName: json['status_name'] as String? ?? '',
-      isPrivate: json['is_private'] as bool? ?? false,
       scoreLocked: json['score_locked'] as bool? ?? false,
       players: parsedPlayers,
-      confirmedCount: json['confirmed_count'] as int? ?? 0,
+      acceptedCount: json['accepted_count'] as int? ?? 0,
       availablePositions: parsedPositions,
       rounds: parsedRounds,
       americanoRanking: parsedRanking,
       isParticipant: json['is_participant'] as bool? ?? false,
       myStatus: json['my_status'] as String?,
       myPosition: json['my_position'] as int?,
-      myRatingChange: json['my_rating_change'] as int?,
+      shareToken: json['share_token'] as String?,
+      shareActive: json['share_active'] as bool? ?? false,
+      myScoreConfirmed: json['my_score_confirmed'] as bool? ?? false,
     );
   }
 
@@ -298,16 +334,19 @@ class Game {
   bool get isFinished => status == 'finished';
   bool get isCancelled => status == 'cancelled';
 
-  bool get isRated => format == 'rated';
-  bool get isFriendly => format == 'friendly';
+  bool get isRated => type == 'rated';
+  bool get isFriendly => type == 'friendly';
 
   bool get isSets => format == 'sets';
   bool get isPoints => format == 'points';
   bool get isAmericano => format == 'americano';
 
+  bool get isPrivate => visibility == 'private';
+
   bool get isPendingConfirmation => isInProgress && scoreLocked;
 
-  String get levelText => '${minLevel.toString()} – ${maxLevel.toString()}';
+  String get levelText =>
+      '${ratingMin?.toString() ?? ''} – ${ratingMax?.toString() ?? ''}';
 
   String get dateFormatted {
     const months = [
@@ -356,12 +395,14 @@ class GameInvitationItem {
   });
 
   factory GameInvitationItem.fromJson(Map<String, dynamic> json) {
+    final inviter = json['inviter'] as Map<String, dynamic>?;
+
     return GameInvitationItem(
       invitationId: json['invitation_id'] as int? ?? 0,
       status: json['status'] as String? ?? '',
       expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? ''),
-      inviterId: json['inviter_id'] as int? ?? 0,
-      inviterName: json['inviter_name'] as String? ?? '',
+      inviterId: inviter?['id'] as int? ?? 0,
+      inviterName: inviter?['name'] as String? ?? '',
       game: Game.fromJson(json['game'] as Map<String, dynamic>),
     );
   }
