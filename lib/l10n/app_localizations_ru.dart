@@ -2410,4 +2410,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gameDetails => 'Подробнее';
+
+  @override
+  String get gameScreenTitle => 'Игры';
+
+  @override
+  String get gameOpenTab => 'Открытые';
+
+  @override
+  String get gameMyTab => 'Мои';
+
+  @override
+  String get gameEmptyOpen => 'Пока нет открытых игр';
+
+  @override
+  String get gameEmptyMy => 'У вас пока нет игр';
 }

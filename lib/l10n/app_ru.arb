@@ -865,5 +865,10 @@
   "gameFormatPoints": "До очков",
   "gameFormatAmericano": "Американо",
   "gameJoinSlot": "Занять место",
-  "gameDetails": "Подробнее"
+  "gameDetails": "Подробнее",
+  "gameScreenTitle": "Игры",
+  "gameOpenTab": "Открытые",
+  "gameMyTab": "Мои",
+  "gameEmptyOpen": "Пока нет открытых игр",
+  "gameEmptyMy": "У вас пока нет игр"
 }

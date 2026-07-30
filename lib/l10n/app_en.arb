@@ -839,5 +839,10 @@
   "gameFormatPoints": "To points",
   "gameFormatAmericano": "Americano",
   "gameJoinSlot": "Take a slot",
-  "gameDetails": "Details"
+  "gameDetails": "Details",
+  "gameScreenTitle": "Games",
+  "gameOpenTab": "Open",
+  "gameMyTab": "Mine",
+  "gameEmptyOpen": "No open games yet",
+  "gameEmptyMy": "You don't have any games yet"
 }

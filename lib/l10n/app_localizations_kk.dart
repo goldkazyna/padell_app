@@ -2371,4 +2371,19 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get gameDetails => 'Толығырақ';
+
+  @override
+  String get gameScreenTitle => 'Ойындар';
+
+  @override
+  String get gameOpenTab => 'Ашық';
+
+  @override
+  String get gameMyTab => 'Менікі';
+
+  @override
+  String get gameEmptyOpen => 'Әзірге ашық ойындар жоқ';
+
+  @override
+  String get gameEmptyMy => 'Сізде әлі ойындар жоқ';
 }

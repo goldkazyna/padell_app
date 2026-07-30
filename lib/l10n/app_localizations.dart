@@ -4521,6 +4521,36 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Подробнее'**
   String get gameDetails;
+
+  /// No description provided for @gameScreenTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игры'**
+  String get gameScreenTitle;
+
+  /// No description provided for @gameOpenTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открытые'**
+  String get gameOpenTab;
+
+  /// No description provided for @gameMyTab.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои'**
+  String get gameMyTab;
+
+  /// No description provided for @gameEmptyOpen.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет открытых игр'**
+  String get gameEmptyOpen;
+
+  /// No description provided for @gameEmptyMy.
+  ///
+  /// In ru, this message translates to:
+  /// **'У вас пока нет игр'**
+  String get gameEmptyMy;
 }
 
 class _AppLocalizationsDelegate

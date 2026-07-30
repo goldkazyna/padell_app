@@ -839,5 +839,10 @@
   "gameFormatPoints": "Ұпайға дейін",
   "gameFormatAmericano": "Американо",
   "gameJoinSlot": "Орын алу",
-  "gameDetails": "Толығырақ"
+  "gameDetails": "Толығырақ",
+  "gameScreenTitle": "Ойындар",
+  "gameOpenTab": "Ашық",
+  "gameMyTab": "Менікі",
+  "gameEmptyOpen": "Әзірге ашық ойындар жоқ",
+  "gameEmptyMy": "Сізде әлі ойындар жоқ"
 }

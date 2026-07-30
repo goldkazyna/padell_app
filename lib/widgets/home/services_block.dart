@@ -6,8 +6,8 @@ import '../../utils/profile_incomplete_guard.dart';
 import '../../screens/club_select_screen.dart';
 import '../../screens/clubs_list_screen.dart';
 import '../../screens/club_cards_screen.dart';
-import '../../screens/create_challenge_screen.dart';
-import '../../screens/challenges_screen.dart';
+import '../../screens/create_game_screen.dart';
+import '../../screens/games_screen.dart';
 
 /// Блок «Сервисы» на главной — сетка 4×2 быстрых входов.
 /// Иконки монохромные (единый цвет). [onOpenTournaments] переключает нижнюю
@@ -55,7 +55,7 @@ class ServicesBlock extends StatelessWidget {
         onTap: () {
           if (!ensureProfileComplete(context)) return;
           Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const CreateChallengeScreen()));
+              MaterialPageRoute(builder: (_) => const CreateGameScreen()));
         },
       ),
       _ServiceData(
@@ -64,7 +64,7 @@ class ServicesBlock extends StatelessWidget {
         onTap: () {
           if (!ensureProfileComplete(context)) return;
           Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const ChallengesScreen()));
+              MaterialPageRoute(builder: (_) => const GamesScreen()));
         },
       ),
       _ServiceData(

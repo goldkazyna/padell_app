@@ -2401,4 +2401,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameDetails => 'Details';
+
+  @override
+  String get gameScreenTitle => 'Games';
+
+  @override
+  String get gameOpenTab => 'Open';
+
+  @override
+  String get gameMyTab => 'Mine';
+
+  @override
+  String get gameEmptyOpen => 'No open games yet';
+
+  @override
+  String get gameEmptyMy => 'You don\'t have any games yet';
 }
