@@ -2635,4 +2635,15 @@ class AppLocalizationsKk extends AppLocalizations {
   String gameResultPlace(int place) {
     return '$place-орын';
   }
+
+  @override
+  String get gameInvitationsTitle => 'Шақырулар';
+
+  @override
+  String get gameInvitationsEmpty => 'Шақырулар жоқ';
+
+  @override
+  String gameInvitedBy(String name) {
+    return 'Шақырған: $name';
+  }
 }

@@ -2665,4 +2665,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String gameResultPlace(int place) {
     return 'Place $place';
   }
+
+  @override
+  String get gameInvitationsTitle => 'Invitations';
+
+  @override
+  String get gameInvitationsEmpty => 'No invitations';
+
+  @override
+  String gameInvitedBy(String name) {
+    return 'Invited by: $name';
+  }
 }

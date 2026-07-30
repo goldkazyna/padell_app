@@ -933,5 +933,10 @@
   "gameRankWins": "Wins",
   "gameRatingChange": "Rating",
   "gameResultPlace": "Place {place}",
-  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } }
+  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } },
+
+  "gameInvitationsTitle": "Invitations",
+  "gameInvitationsEmpty": "No invitations",
+  "gameInvitedBy": "Invited by: {name}",
+  "@gameInvitedBy": { "placeholders": { "name": { "type": "String" } } }
 }

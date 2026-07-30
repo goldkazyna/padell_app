@@ -933,5 +933,10 @@
   "gameRankWins": "Жеңістер",
   "gameRatingChange": "Рейтинг",
   "gameResultPlace": "{place}-орын",
-  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } }
+  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } },
+
+  "gameInvitationsTitle": "Шақырулар",
+  "gameInvitationsEmpty": "Шақырулар жоқ",
+  "gameInvitedBy": "Шақырған: {name}",
+  "@gameInvitedBy": { "placeholders": { "name": { "type": "String" } } }
 }

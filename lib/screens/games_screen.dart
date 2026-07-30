@@ -7,6 +7,7 @@ import '../widgets/games/game_card.dart';
 import '../l10n/app_localizations.dart';
 import 'create_game_screen.dart';
 import 'game_detail_screen.dart';
+import 'game_invitations_screen.dart';
 
 class GamesScreen extends StatefulWidget {
   const GamesScreen({super.key});
@@ -44,6 +45,15 @@ class _GamesScreenState extends State<GamesScreen> {
     );
   }
 
+  void _openInvitations() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const GameInvitationsScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +76,26 @@ class _GamesScreenState extends State<GamesScreen> {
                         color: AppTheme.textPrimary,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: _openInvitations,
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: AppTheme.card,
+                          shape: BoxShape.circle,
+                          border: Border.fromBorderSide(
+                            BorderSide(color: AppTheme.border),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.mail_outline,
+                          size: 18,
+                          color: AppTheme.textPrimary,
+                        ),
                       ),
                     ),
                   ],

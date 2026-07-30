@@ -2674,4 +2674,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String gameResultPlace(int place) {
     return '$place место';
   }
+
+  @override
+  String get gameInvitationsTitle => 'Приглашения';
+
+  @override
+  String get gameInvitationsEmpty => 'Нет приглашений';
+
+  @override
+  String gameInvitedBy(String name) {
+    return 'Пригласил: $name';
+  }
 }

@@ -959,5 +959,10 @@
   "gameRankWins": "Победы",
   "gameRatingChange": "Рейтинг",
   "gameResultPlace": "{place} место",
-  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } }
+  "@gameResultPlace": { "placeholders": { "place": { "type": "int" } } },
+
+  "gameInvitationsTitle": "Приглашения",
+  "gameInvitationsEmpty": "Нет приглашений",
+  "gameInvitedBy": "Пригласил: {name}",
+  "@gameInvitedBy": { "placeholders": { "name": { "type": "String" } } }
 }

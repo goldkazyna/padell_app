@@ -5037,6 +5037,24 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'{place} место'**
   String gameResultPlace(int place);
+
+  /// No description provided for @gameInvitationsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приглашения'**
+  String get gameInvitationsTitle;
+
+  /// No description provided for @gameInvitationsEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет приглашений'**
+  String get gameInvitationsEmpty;
+
+  /// No description provided for @gameInvitedBy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пригласил: {name}'**
+  String gameInvitedBy(String name);
 }
 
 class _AppLocalizationsDelegate
