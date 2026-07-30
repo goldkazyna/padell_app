@@ -1,5 +1,6 @@
 class GamePlayer {
-  final int id;
+  final int id; // user id
+  final int playerId; // GamePlayer row id — для approve/reject/remove
   final int position;
   final String status;
   final String source;
@@ -13,6 +14,7 @@ class GamePlayer {
 
   GamePlayer({
     required this.id,
+    this.playerId = 0,
     required this.position,
     required this.status,
     required this.source,
@@ -36,6 +38,7 @@ class GamePlayer {
 
     return GamePlayer(
       id: json['id'] as int? ?? 0,
+      playerId: json['player_id'] as int? ?? 0,
       position: json['position'] as int? ?? 0,
       status: json['status'] as String? ?? 'pending',
       source: json['source'] as String? ?? '',
