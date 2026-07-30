@@ -873,5 +873,18 @@
   "gameFieldDescription": "Description",
   "gameCreateValidationError": "Please fill in the required fields",
   "gameDurationMin": "{min} min",
-  "@gameDurationMin": { "placeholders": { "min": { "type": "int" } } }
+  "@gameDurationMin": { "placeholders": { "min": { "type": "int" } } },
+
+  "gameStatusLabel": "Status",
+  "gamePlayersTitle": "Players",
+  "gameSlotFree": "Free",
+  "gamePlayerYou": "you",
+  "gameStatusAccepted": "Confirmed",
+  "gameStatusCandidate": "Pending",
+  "gameStatusInvited": "Invited",
+  "gameShareTitle": "Invite link",
+  "gameShareActive": "active",
+  "gameShareInactive": "inactive",
+  "gamePriceLabel": "Price",
+  "gameOrganizerLabel": "Organizer"
 }

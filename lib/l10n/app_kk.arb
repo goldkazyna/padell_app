@@ -873,5 +873,18 @@
   "gameFieldDescription": "Сипаттама",
   "gameCreateValidationError": "Міндетті өрістерді толтырыңыз",
   "gameDurationMin": "{min} мин",
-  "@gameDurationMin": { "placeholders": { "min": { "type": "int" } } }
+  "@gameDurationMin": { "placeholders": { "min": { "type": "int" } } },
+
+  "gameStatusLabel": "Мәртебесі",
+  "gamePlayersTitle": "Қатысушылар",
+  "gameSlotFree": "Бос",
+  "gamePlayerYou": "сіз",
+  "gameStatusAccepted": "Құрамда",
+  "gameStatusCandidate": "Өтінім",
+  "gameStatusInvited": "Шақырылды",
+  "gameShareTitle": "Шақыру сілтемесі",
+  "gameShareActive": "белсенді",
+  "gameShareInactive": "белсенді емес",
+  "gamePriceLabel": "Бағасы",
+  "gameOrganizerLabel": "Ұйымдастырушы"
 }

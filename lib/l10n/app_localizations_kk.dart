@@ -2469,4 +2469,40 @@ class AppLocalizationsKk extends AppLocalizations {
   String gameDurationMin(int min) {
     return '$min мин';
   }
+
+  @override
+  String get gameStatusLabel => 'Мәртебесі';
+
+  @override
+  String get gamePlayersTitle => 'Қатысушылар';
+
+  @override
+  String get gameSlotFree => 'Бос';
+
+  @override
+  String get gamePlayerYou => 'сіз';
+
+  @override
+  String get gameStatusAccepted => 'Құрамда';
+
+  @override
+  String get gameStatusCandidate => 'Өтінім';
+
+  @override
+  String get gameStatusInvited => 'Шақырылды';
+
+  @override
+  String get gameShareTitle => 'Шақыру сілтемесі';
+
+  @override
+  String get gameShareActive => 'белсенді';
+
+  @override
+  String get gameShareInactive => 'белсенді емес';
+
+  @override
+  String get gamePriceLabel => 'Бағасы';
+
+  @override
+  String get gameOrganizerLabel => 'Ұйымдастырушы';
 }

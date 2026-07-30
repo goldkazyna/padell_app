@@ -4713,6 +4713,78 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'{min} мин'**
   String gameDurationMin(int min);
+
+  /// No description provided for @gameStatusLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Статус'**
+  String get gameStatusLabel;
+
+  /// No description provided for @gamePlayersTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Участники'**
+  String get gamePlayersTitle;
+
+  /// No description provided for @gameSlotFree.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободно'**
+  String get gameSlotFree;
+
+  /// No description provided for @gamePlayerYou.
+  ///
+  /// In ru, this message translates to:
+  /// **'вы'**
+  String get gamePlayerYou;
+
+  /// No description provided for @gameStatusAccepted.
+  ///
+  /// In ru, this message translates to:
+  /// **'В составе'**
+  String get gameStatusAccepted;
+
+  /// No description provided for @gameStatusCandidate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заявка'**
+  String get gameStatusCandidate;
+
+  /// No description provided for @gameStatusInvited.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приглашён'**
+  String get gameStatusInvited;
+
+  /// No description provided for @gameShareTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ссылка-приглашение'**
+  String get gameShareTitle;
+
+  /// No description provided for @gameShareActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'активна'**
+  String get gameShareActive;
+
+  /// No description provided for @gameShareInactive.
+  ///
+  /// In ru, this message translates to:
+  /// **'неактивна'**
+  String get gameShareInactive;
+
+  /// No description provided for @gamePriceLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цена'**
+  String get gamePriceLabel;
+
+  /// No description provided for @gameOrganizerLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организатор'**
+  String get gameOrganizerLabel;
 }
 
 class _AppLocalizationsDelegate

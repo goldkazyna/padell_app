@@ -899,5 +899,18 @@
   "gameFieldDescription": "Описание",
   "gameCreateValidationError": "Заполните обязательные поля",
   "gameDurationMin": "{min} мин",
-  "@gameDurationMin": { "placeholders": { "min": { "type": "int" } } }
+  "@gameDurationMin": { "placeholders": { "min": { "type": "int" } } },
+
+  "gameStatusLabel": "Статус",
+  "gamePlayersTitle": "Участники",
+  "gameSlotFree": "Свободно",
+  "gamePlayerYou": "вы",
+  "gameStatusAccepted": "В составе",
+  "gameStatusCandidate": "Заявка",
+  "gameStatusInvited": "Приглашён",
+  "gameShareTitle": "Ссылка-приглашение",
+  "gameShareActive": "активна",
+  "gameShareInactive": "неактивна",
+  "gamePriceLabel": "Цена",
+  "gameOrganizerLabel": "Организатор"
 }

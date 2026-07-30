@@ -2508,4 +2508,40 @@ class AppLocalizationsRu extends AppLocalizations {
   String gameDurationMin(int min) {
     return '$min мин';
   }
+
+  @override
+  String get gameStatusLabel => 'Статус';
+
+  @override
+  String get gamePlayersTitle => 'Участники';
+
+  @override
+  String get gameSlotFree => 'Свободно';
+
+  @override
+  String get gamePlayerYou => 'вы';
+
+  @override
+  String get gameStatusAccepted => 'В составе';
+
+  @override
+  String get gameStatusCandidate => 'Заявка';
+
+  @override
+  String get gameStatusInvited => 'Приглашён';
+
+  @override
+  String get gameShareTitle => 'Ссылка-приглашение';
+
+  @override
+  String get gameShareActive => 'активна';
+
+  @override
+  String get gameShareInactive => 'неактивна';
+
+  @override
+  String get gamePriceLabel => 'Цена';
+
+  @override
+  String get gameOrganizerLabel => 'Организатор';
 }

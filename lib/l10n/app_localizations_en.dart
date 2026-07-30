@@ -2499,4 +2499,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String gameDurationMin(int min) {
     return '$min min';
   }
+
+  @override
+  String get gameStatusLabel => 'Status';
+
+  @override
+  String get gamePlayersTitle => 'Players';
+
+  @override
+  String get gameSlotFree => 'Free';
+
+  @override
+  String get gamePlayerYou => 'you';
+
+  @override
+  String get gameStatusAccepted => 'Confirmed';
+
+  @override
+  String get gameStatusCandidate => 'Pending';
+
+  @override
+  String get gameStatusInvited => 'Invited';
+
+  @override
+  String get gameShareTitle => 'Invite link';
+
+  @override
+  String get gameShareActive => 'active';
+
+  @override
+  String get gameShareInactive => 'inactive';
+
+  @override
+  String get gamePriceLabel => 'Price';
+
+  @override
+  String get gameOrganizerLabel => 'Organizer';
 }
