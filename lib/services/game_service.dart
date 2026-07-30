@@ -83,12 +83,11 @@ class GameService {
   }
 
   Future<List<Map<String, dynamic>>> searchPartner(
-    int gameId,
     String phone,
     String token,
   ) async {
     final response =
-        await _api.post('/games/$gameId/search-player', {'phone': phone}, token);
+        await _api.post('/games/search-player', {'phone': phone}, token);
     final list = response['partners'] as List<dynamic>? ??
         (response['data'] as Map<String, dynamic>?)?['partners'] as List<dynamic>? ??
         [];
@@ -151,7 +150,7 @@ class GameService {
   }
 
   Future<Game> startCancel(int id, String token) async {
-    final response = await _api.post('/games/$id/start-cancel', {}, token);
+    final response = await _api.post('/games/$id/start/cancel', {}, token);
     return Game.fromJson(response['data'] as Map<String, dynamic>);
   }
 
