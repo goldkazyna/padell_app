@@ -35,6 +35,8 @@ class _AdminCreateTournamentScreenState
     extends State<AdminCreateTournamentScreen> {
   final _name = TextEditingController();
   final _description = TextEditingController();
+  final _prizes = TextEditingController();
+  bool _hasPrizes = false;
   final _telegramUrl = TextEditingController();
   final _maxParticipants = TextEditingController(text: '16');
   final _price = TextEditingController();
@@ -137,6 +139,10 @@ class _AdminCreateTournamentScreenState
   }
 
   void _updateRoundsCount() {
+    if (_type == 'mexicano') {
+      if (_roundsCount.text.trim().isEmpty) _roundsCount.text = '7';
+      return;
+    }
     if (_type != 'americano') return;
     final maxP = int.tryParse(_maxParticipants.text.trim()) ?? 0;
     if (maxP <= 0 || _groupsCount <= 0) return;
@@ -150,6 +156,7 @@ class _AdminCreateTournamentScreenState
     _maxParticipants.removeListener(_onMaxOrGroupsChanged);
     _name.dispose();
     _description.dispose();
+    _prizes.dispose();
     _telegramUrl.dispose();
     _maxParticipants.dispose();
     _price.dispose();
@@ -251,6 +258,9 @@ class _AdminCreateTournamentScreenState
       'name': name,
       'description':
           _description.text.trim().isEmpty ? null : _description.text.trim(),
+      'has_prizes': _hasPrizes,
+      if (_hasPrizes && _prizes.text.trim().isNotEmpty)
+        'prizes': _prizes.text.trim(),
       'telegram_registration_url': tgUrl.isEmpty ? null : tgUrl,
       'start_date': _startDate!.toIso8601String(),
       if (_durationHours != null) 'duration_hours': _durationHours,
@@ -293,6 +303,19 @@ class _AdminCreateTournamentScreenState
         body['has_lower_bracket'] = _hasLowerBracket;
         body['has_bronze_match'] = _hasBronzeMatch;
       }
+    }
+
+    if (_type == 'mexicano') {
+      final rounds = int.tryParse(_roundsCount.text.trim()) ?? 0;
+      if (rounds < 1 || rounds > 30) {
+        _ensureOpen('format');
+        await showAppAlert(context,
+            'Количество раундов: целое число от 1 до 30',
+            title: 'Ошибка', isError: true);
+        return;
+      }
+      body['rounds_count'] = rounds;
+      body['has_playoff'] = _hasPlayoff;
     }
 
     if (_type == 'team') {
@@ -503,6 +526,18 @@ class _AdminCreateTournamentScreenState
             _label('Описание'),
             _textField(_description,
                 hint: 'Можно оставить пустым', maxLines: 3),
+            const SizedBox(height: 12),
+            _checkboxTile(
+              value: _hasPrizes,
+              label: 'Призовой турнир',
+              onChanged: (v) => setState(() => _hasPrizes = v),
+            ),
+            if (_hasPrizes) ...[
+              const SizedBox(height: 8),
+              _label('Призы'),
+              _textField(_prizes,
+                  hint: 'Например: 1 место — …, 2 место — …', maxLines: 3),
+            ],
             const SizedBox(height: 12),
             _label('Дата и время старта'),
             _dateField(),
@@ -772,6 +807,12 @@ class _AdminCreateTournamentScreenState
               icon: Icons.shuffle_rounded,
             ),
             card(
+              value: 'mexicano',
+              title: 'Мексикано',
+              subtitle: 'Пары по очкам, все вместе',
+              icon: Icons.trending_up_rounded,
+            ),
+            card(
               value: 'king_of_court',
               title: 'Король корта',
               subtitle: 'Ротация по кортам',
@@ -965,6 +1006,29 @@ class _AdminCreateTournamentScreenState
         ),
         const SizedBox(height: 12),
         _playoffSettings(),
+        Divider(color: AppTheme.border, height: 28),
+      ]);
+    } else if (_type == 'mexicano') {
+      children.addAll([
+        _label('Количество раундов'),
+        _textField(
+          _roundsCount,
+          hint: '7',
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Сколько раундов сыграть (обычно 5–9). Пары каждый раунд '
+          'составляются по текущим очкам — все играют вместе, без групп.',
+          style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+        ),
+        const SizedBox(height: 12),
+        _checkboxTile(
+          value: _hasPlayoff,
+          label: 'С плей-офф (после основных раундов)',
+          onChanged: (v) => setState(() => _hasPlayoff = v),
+        ),
         Divider(color: AppTheme.border, height: 28),
       ]);
     } else if (_type == 'team') {
