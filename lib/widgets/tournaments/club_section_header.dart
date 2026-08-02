@@ -11,6 +11,7 @@ class ClubSectionHeader extends StatelessWidget {
   final int openCount;
   final int totalCount;
   final VoidCallback? onTap;
+  final bool collapsed;
 
   const ClubSectionHeader({
     super.key,
@@ -20,6 +21,7 @@ class ClubSectionHeader extends StatelessWidget {
     required this.openCount,
     required this.totalCount,
     this.onTap,
+    this.collapsed = false,
   });
 
   @override
@@ -67,6 +69,12 @@ class ClubSectionHeader extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            Icon(
+              collapsed ? Icons.expand_more : Icons.expand_less,
+              size: 20,
+              color: AppTheme.textSecondary,
+            ),
           ],
         ),
       ),
@@ -81,6 +89,7 @@ class ClubSubHeader extends StatelessWidget {
   final String? logoUrl;
   final int count;
   final VoidCallback? onTap;
+  final bool collapsed;
 
   const ClubSubHeader({
     super.key,
@@ -89,6 +98,7 @@ class ClubSubHeader extends StatelessWidget {
     required this.logoUrl,
     required this.count,
     this.onTap,
+    this.collapsed = false,
   });
 
   @override
@@ -137,6 +147,12 @@ class ClubSubHeader extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontFeatures: [FontFeature.tabularFigures()],
               ),
+            ),
+            const SizedBox(width: 6),
+            Icon(
+              collapsed ? Icons.expand_more : Icons.expand_less,
+              size: 16,
+              color: AppTheme.textDim,
             ),
           ],
         ),

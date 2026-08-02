@@ -475,28 +475,11 @@ class _OpenTab extends StatelessWidget {
             children: [
               if (forYou.isNotEmpty) ...[
                 _buildForYouHeader(context, forYou.length),
-                for (final clubId in forYouClubOrder) ...[
-                  const SizedBox(height: 4),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ClubSubHeader(
-                      clubName: forYouByClub[clubId]!.first.club.name,
-                      city: forYouByClub[clubId]!.first.club.city,
-                      logoUrl: forYouByClub[clubId]!.first.club.logo,
-                      count: forYouByClub[clubId]!.length,
-                      onTap: () => _openClubDetail(context, clubId),
-                    ),
+                for (final clubId in forYouClubOrder)
+                  _ForYouClubBlock(
+                    tournaments: forYouByClub[clubId]!,
+                    userLevel: userLevel,
                   ),
-                  for (final t in forYouByClub[clubId]!)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                      child: HeroTournamentCard(
-                        tournament: t,
-                        userLevel: userLevel,
-                        onTap: () => _openTournamentDetail(context, t.id),
-                      ),
-                    ),
-                ],
               ],
               if (forYou.isNotEmpty && rest.isNotEmpty)
                 _buildSectionDivider(),
@@ -617,15 +600,73 @@ int _compareOpenFirstThenDate(Tournament a, Tournament b) {
   return a.datetime.compareTo(b.datetime);
 }
 
-/// Блок клуба: большой хедер + карточка со строками.
-class _ClubBlock extends StatelessWidget {
+/// Под-блок клуба в секции «Для вас».
+/// По тапу на под-хедер сворачивается/разворачивается.
+class _ForYouClubBlock extends StatefulWidget {
+  final List<Tournament> tournaments;
+  final double? userLevel;
+
+  const _ForYouClubBlock({required this.tournaments, required this.userLevel});
+
+  @override
+  State<_ForYouClubBlock> createState() => _ForYouClubBlockState();
+}
+
+class _ForYouClubBlockState extends State<_ForYouClubBlock> {
+  bool _collapsed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tournaments = widget.tournaments;
+    final club = tournaments.first.club;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ClubSubHeader(
+            clubName: club.name,
+            city: club.city,
+            logoUrl: club.logo,
+            count: tournaments.length,
+            collapsed: _collapsed,
+            onTap: () => setState(() => _collapsed = !_collapsed),
+          ),
+        ),
+        if (!_collapsed)
+          for (final t in tournaments)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              child: HeroTournamentCard(
+                tournament: t,
+                userLevel: widget.userLevel,
+                onTap: () => _openTournamentDetail(context, t.id),
+              ),
+            ),
+      ],
+    );
+  }
+}
+
+/// Блок клуба: большой хедер + карточки со строками.
+/// По тапу на хедер сворачивается/разворачивается.
+class _ClubBlock extends StatefulWidget {
   final List<Tournament> tournaments;
   final double? userLevel;
 
   const _ClubBlock({required this.tournaments, required this.userLevel});
 
   @override
+  State<_ClubBlock> createState() => _ClubBlockState();
+}
+
+class _ClubBlockState extends State<_ClubBlock> {
+  bool _collapsed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final tournaments = widget.tournaments;
     final first = tournaments.first;
     final openCount = tournaments.where((t) => !t.isFull).length;
     return Column(
@@ -637,18 +678,21 @@ class _ClubBlock extends StatelessWidget {
           logoUrl: first.club.logo,
           openCount: openCount,
           totalCount: tournaments.length,
-          onTap: () => _openClubDetail(context, first.club.id),
+          collapsed: _collapsed,
+          onTap: () => setState(() => _collapsed = !_collapsed),
         ),
-        const SizedBox(height: 6),
-        for (final t in tournaments)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: HeroTournamentCard(
-              tournament: t,
-              userLevel: userLevel,
-              onTap: () => _openTournamentDetail(context, t.id),
+        if (!_collapsed) ...[
+          const SizedBox(height: 6),
+          for (final t in tournaments)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: HeroTournamentCard(
+                tournament: t,
+                userLevel: widget.userLevel,
+                onTap: () => _openTournamentDetail(context, t.id),
+              ),
             ),
-          ),
+        ],
       ],
     );
   }
