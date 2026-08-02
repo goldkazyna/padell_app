@@ -574,8 +574,6 @@ class _AdminCreateTournamentScreenState
             ],
             if (_type == 'just_padel_it') ...[
               const SizedBox(height: 12),
-              _scoreTypeControl(),
-              const SizedBox(height: 12),
               _jpiRankControl(),
             ],
           ],
@@ -2339,55 +2337,6 @@ class _AdminCreateTournamentScreenState
               active: _jpiRankByWins,
               onTap: () => setState(() => _jpiRankByWins = true),
             ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _scoreTypeControl() {
-    Widget pill({
-      required String text,
-      required bool active,
-      required bool enabled,
-    }) {
-      return Expanded(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active
-                ? AppTheme.accent.withOpacity(0.15)
-                : AppTheme.cardRaised,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: active ? AppTheme.accent : AppTheme.border,
-              width: active ? 1.4 : 1,
-            ),
-          ),
-          child: Text(
-            text,
-            style: TextStyle(
-              color: enabled
-                  ? (active ? AppTheme.accent : AppTheme.textPrimary)
-                  : AppTheme.textDim,
-              fontSize: 13,
-              fontWeight: active ? FontWeight.w600 : FontWeight.w500,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _label('Тип подсчёта'),
-        Row(
-          children: [
-            pill(text: 'По очкам', active: true, enabled: true),
-            const SizedBox(width: 10),
-            pill(text: 'По сетам · скоро', active: false, enabled: false),
           ],
         ),
       ],
