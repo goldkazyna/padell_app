@@ -54,6 +54,9 @@ dependencies:
   # Share content
   share_plus: ^10.0.0
 
+  # PDF generation (share certificate as PDF)
+  pdf: ^3.11.0
+
   # Add tournament to native calendar (iOS/Android add-event UI)
   add_2_calendar: ^3.0.1
 

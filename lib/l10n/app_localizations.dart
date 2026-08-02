@@ -4348,6 +4348,12 @@ abstract class AppLocalizations {
   /// **'Предъявителю'**
   String get certBearer;
 
+  /// No description provided for @certShare.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поделиться'**
+  String get certShare;
+
   /// No description provided for @certIssued.
   ///
   /// In ru, this message translates to:

@@ -2293,6 +2293,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get certBearer => 'Bearer';
 
   @override
+  String get certShare => 'Share';
+
+  @override
   String get certIssued => 'Issued';
 
   @override

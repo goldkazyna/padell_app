@@ -1,21 +1,37 @@
+import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../models/certificate.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
 
-/// Экран сертификата — рендер по дизайну конструктора клуба (цвета/лого/тексты),
-/// как формальный документ. Ниже — статус и подсказка.
-class CertificateDetailScreen extends StatelessWidget {
+/// Экран сертификата — рендер по дизайну конструктора клуба (картинка-фон или
+/// классический документ). Тап — полноэкранный просмотр, «Поделиться» — PDF.
+class CertificateDetailScreen extends StatefulWidget {
   final Certificate certificate;
   const CertificateDetailScreen({super.key, required this.certificate});
 
+  @override
+  State<CertificateDetailScreen> createState() =>
+      _CertificateDetailScreenState();
+}
+
+class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
   static const _serif = ['Georgia', 'Times New Roman', 'serif'];
+  final GlobalKey _docKey = GlobalKey();
+  bool _sharing = false;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final c = certificate;
+    final c = widget.certificate;
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
@@ -37,6 +53,8 @@ class CertificateDetailScreen extends StatelessWidget {
                       letterSpacing: -0.2,
                     ),
                   ),
+                  const Spacer(),
+                  _shareButton(l),
                 ],
               ),
             ),
@@ -44,7 +62,13 @@ class CertificateDetailScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
                 children: [
-                  _document(c, l),
+                  GestureDetector(
+                    onTap: () => _openFullscreen(c, l),
+                    child: RepaintBoundary(
+                      key: _docKey,
+                      child: _document(c, l),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   _status(c, l),
                   const SizedBox(height: 12),
@@ -438,6 +462,117 @@ class CertificateDetailScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _shareButton(AppLocalizations l) {
+    return GestureDetector(
+      onTap: _sharing ? null : _share,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.accent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: _sharing
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Color(0xFF06210F)))
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.ios_share, size: 15, color: Color(0xFF06210F)),
+                  const SizedBox(width: 5),
+                  Text(
+                    l.certShare,
+                    style: const TextStyle(
+                        color: Color(0xFF06210F),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  /// Захват сертификата → PDF → системный шэринг (WhatsApp/Telegram/…).
+  Future<void> _share() async {
+    setState(() => _sharing = true);
+    try {
+      final boundary =
+          _docKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) throw Exception('capture failed');
+      final bytes = byteData.buffer.asUint8List();
+
+      final pdf = pw.Document();
+      final img = pw.MemoryImage(bytes);
+      const pageW = 800.0;
+      final pageH = pageW * image.height / image.width;
+      pdf.addPage(pw.Page(
+        pageFormat: PdfPageFormat(pageW, pageH),
+        margin: pw.EdgeInsets.zero,
+        build: (_) => pw.Image(img, fit: pw.BoxFit.fill),
+      ));
+
+      final dir = await getTemporaryDirectory();
+      final safe = widget.certificate.number
+          .replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '');
+      final file = File('${dir.path}/certificate_$safe.pdf');
+      await file.writeAsBytes(await pdf.save());
+
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Сертификат · ${widget.certificate.club.name}',
+      );
+    } catch (_) {
+      if (mounted) {
+        showAppAlert(context, AppLocalizations.of(context)!.loadError);
+      }
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  /// Полноэкранный просмотр сертификата с зумом.
+  void _openFullscreen(Certificate c, AppLocalizations l) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => Scaffold(
+          backgroundColor: Colors.black,
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Center(
+                  child: InteractiveViewer(
+                    minScale: 0.8,
+                    maxScale: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: _document(c, l),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

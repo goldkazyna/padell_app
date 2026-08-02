@@ -2275,6 +2275,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get certBearer => 'Ұсынушыға';
 
   @override
+  String get certShare => 'Бөлісу';
+
+  @override
   String get certIssued => 'Берілген';
 
   @override

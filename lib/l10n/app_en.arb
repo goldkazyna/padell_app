@@ -809,6 +809,7 @@
   "certDetailTitle": "Certificate",
   "certOwner": "Owner",
   "certBearer": "Bearer",
+  "certShare": "Share",
   "certIssued": "Issued",
   "certRedeemed": "Redeemed",
   "certStamp": "REDEEMED",

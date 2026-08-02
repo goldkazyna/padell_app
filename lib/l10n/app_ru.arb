@@ -830,6 +830,7 @@
   "certDetailTitle": "Сертификат",
   "certOwner": "Владелец",
   "certBearer": "Предъявителю",
+  "certShare": "Поделиться",
   "certIssued": "Выдан",
   "certRedeemed": "Использован",
   "certStamp": "ПОГАШЕН",

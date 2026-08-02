@@ -2298,6 +2298,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get certBearer => 'Предъявителю';
 
   @override
+  String get certShare => 'Поделиться';
+
+  @override
   String get certIssued => 'Выдан';
 
   @override
