@@ -28,8 +28,14 @@ class ClubSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(2, 4, 2, 12),
+      borderRadius: BorderRadius.circular(12),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.border),
+        ),
+        padding: const EdgeInsets.fromLTRB(10, 9, 12, 9),
         child: Row(
           children: [
             ClubLogoTile(url: logoUrl, name: clubName, size: 38, radius: 9),
@@ -105,8 +111,14 @@ class ClubSubHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(2, 2, 2, 10),
+      borderRadius: BorderRadius.circular(10),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: const Color(0x0AFFFFFF),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppTheme.border),
+        ),
+        padding: const EdgeInsets.fromLTRB(8, 7, 10, 7),
         child: Row(
           children: [
             ClubLogoTile(url: logoUrl, name: clubName, size: 30, radius: 8),

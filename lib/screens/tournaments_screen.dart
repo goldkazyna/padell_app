@@ -634,7 +634,8 @@ class _ForYouClubBlockState extends State<_ForYouClubBlock> {
             onTap: () => setState(() => _collapsed = !_collapsed),
           ),
         ),
-        if (!_collapsed)
+        if (!_collapsed) ...[
+          const SizedBox(height: 8),
           for (final t in tournaments)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
@@ -644,6 +645,7 @@ class _ForYouClubBlockState extends State<_ForYouClubBlock> {
                 onTap: () => _openTournamentDetail(context, t.id),
               ),
             ),
+        ],
       ],
     );
   }
