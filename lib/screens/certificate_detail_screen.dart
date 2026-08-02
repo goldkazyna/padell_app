@@ -61,6 +61,22 @@ class CertificateDetailScreen extends StatelessWidget {
   Widget _document(Certificate c, AppLocalizations l) {
     final d = c.design;
     final grayscale = c.used;
+
+    // Режим v2 — картинка-фон + поля поверх.
+    if (d.hasImage) {
+      final doc = _imageDocument(c, l);
+      if (!grayscale) return doc;
+      return ColorFiltered(
+        colorFilter: const ColorFilter.matrix(<double>[
+          0.5, 0.35, 0.15, 0, 0,
+          0.5, 0.35, 0.15, 0, 0,
+          0.5, 0.35, 0.15, 0, 0,
+          0, 0, 0, 0.85, 0,
+        ]),
+        child: doc,
+      );
+    }
+
     final doc = AspectRatio(
       aspectRatio: 0.74,
       child: Container(
@@ -236,6 +252,70 @@ class CertificateDetailScreen extends StatelessWidget {
         0, 0, 0, 0.85, 0,
       ]),
       child: doc,
+    );
+  }
+
+  /// Рендер по картинке-фону: картинка + поля name/value/number поверх.
+  Widget _imageDocument(Certificate c, AppLocalizations l) {
+    final d = c.design;
+    final texts = <String, String?>{
+      'name': c.isNamed ? c.recipientName : null,
+      'value': (c.title != null && c.title!.isNotEmpty) ? c.title : c.valueLabel,
+      'number': c.number,
+    };
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Stack(
+        children: [
+          Image.network(
+            d.backgroundImage!,
+            width: double.infinity,
+            fit: BoxFit.fitWidth,
+            errorBuilder: (_, __, ___) => AspectRatio(
+              aspectRatio: 1.4,
+              child: Container(color: const Color(0xFF1C252B)),
+            ),
+          ),
+          Positioned.fill(
+            child: LayoutBuilder(
+              builder: (ctx, cons) {
+                final w = cons.maxWidth;
+                final h = cons.maxHeight;
+                if (!w.isFinite || !h.isFinite || h == 0) {
+                  return const SizedBox.shrink();
+                }
+                final fields = <Widget>[];
+                d.layout!.forEach((key, f) {
+                  final text = texts[key];
+                  if (text == null || text.isEmpty) return;
+                  final dx = f.align == 'center'
+                      ? -0.5
+                      : f.align == 'right'
+                          ? -1.0
+                          : 0.0;
+                  fields.add(Positioned(
+                    left: f.x / 100 * w,
+                    top: f.y / 100 * h,
+                    child: FractionalTranslation(
+                      translation: Offset(dx, -0.5),
+                      child: Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: (f.size * w / 1000).clamp(6.0, 200.0),
+                          color: f.color,
+                          fontWeight: FontWeight.w700,
+                          height: 1.1,
+                        ),
+                      ),
+                    ),
+                  ));
+                });
+                return Stack(children: fields);
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 

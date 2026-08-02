@@ -78,8 +78,46 @@ class CertificateClub {
   }
 }
 
+/// Позиция/стиль одного поля поверх картинки-фона (конструктор v2).
+class CertField {
+  final double x; // % ширины
+  final double y; // % высоты
+  final double size; // px при ширине 1000
+  final Color color;
+  final String align; // left / center / right
+
+  const CertField({
+    required this.x,
+    required this.y,
+    required this.size,
+    required this.color,
+    required this.align,
+  });
+
+  factory CertField.fromJson(Map<String, dynamic> json) {
+    Color parse(String? hex) {
+      if (hex == null || hex.isEmpty) return const Color(0xFF1E2A44);
+      var h = hex.replaceAll('#', '').trim();
+      if (h.length == 6) h = 'FF$h';
+      return Color(int.tryParse(h, radix: 16) ?? 0xFF1E2A44);
+    }
+
+    return CertField(
+      x: (json['x'] as num?)?.toDouble() ?? 0,
+      y: (json['y'] as num?)?.toDouble() ?? 0,
+      size: (json['size'] as num?)?.toDouble() ?? 30,
+      color: parse(json['color'] as String?),
+      align: json['align'] as String? ?? 'left',
+    );
+  }
+}
+
 /// Поля дизайна из конструктора клуба (цвета/лого/тексты/ориентация).
 class CertificateDesign {
+  /// Режим v2: картинка-фон + позиции полей (name/value/number).
+  final String? backgroundImage;
+  final Map<String, CertField>? layout;
+
   final String heading;
   final String subtitleNamed;
   final String subtitleGeneric;
@@ -92,6 +130,8 @@ class CertificateDesign {
   final bool portrait;
 
   const CertificateDesign({
+    required this.backgroundImage,
+    required this.layout,
     required this.heading,
     required this.subtitleNamed,
     required this.subtitleGeneric,
@@ -104,6 +144,10 @@ class CertificateDesign {
     required this.portrait,
   });
 
+  /// Клуб загрузил свою картинку-фон и разложил поля (режим v2).
+  bool get hasImage =>
+      backgroundImage != null && backgroundImage!.isNotEmpty && layout != null;
+
   factory CertificateDesign.fromJson(Map<String, dynamic> json) {
     Color parseColor(String? hex, Color fallback) {
       if (hex == null || hex.isEmpty) return fallback;
@@ -113,7 +157,21 @@ class CertificateDesign {
       return v == null ? fallback : Color(v);
     }
 
+    Map<String, CertField>? parseLayout(dynamic raw) {
+      if (raw is! Map) return null;
+      final out = <String, CertField>{};
+      raw.forEach((k, v) {
+        if (v is Map) {
+          out[k as String] =
+              CertField.fromJson(Map<String, dynamic>.from(v));
+        }
+      });
+      return out.isEmpty ? null : out;
+    }
+
     return CertificateDesign(
+      backgroundImage: json['background_image'] as String?,
+      layout: parseLayout(json['layout']),
       heading: json['heading'] as String? ?? 'Сертификат',
       subtitleNamed:
           json['subtitle_named'] as String? ?? 'Настоящий сертификат выдан',
