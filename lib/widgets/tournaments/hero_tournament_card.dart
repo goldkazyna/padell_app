@@ -186,15 +186,14 @@ class HeroTournamentCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(11, 10, 11, 10),
       decoration: BoxDecoration(
-        color: const Color(0x0DFFFFFF),
+        color: AppTheme.amber.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.35)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.emoji_events_outlined,
-              size: 14, color: AppTheme.textSecondary),
+          Icon(Icons.emoji_events, size: 14, color: AppTheme.amber),
           const SizedBox(width: 8),
           Expanded(
             child: RichText(
@@ -202,7 +201,7 @@ class HeroTournamentCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
                 style: TextStyle(
-                  color: AppTheme.textSecondary,
+                  color: AppTheme.textPrimary,
                   fontSize: 12,
                   height: 1.4,
                 ),
@@ -210,7 +209,7 @@ class HeroTournamentCard extends StatelessWidget {
                   TextSpan(
                     text: '${l.prizesLabel}: ',
                     style: TextStyle(
-                      color: AppTheme.textPrimary,
+                      color: AppTheme.amber,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
