@@ -311,11 +311,20 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
   /// Порядок — по дате добавления клуба (новый сверху).
   Widget _buildClubChips(List<Tournament> tournaments) {
     final byId = <int, Club>{};
+    // clubId → дата самого свежесозданного турнира клуба
+    final latest = <int, DateTime>{};
     for (final t in tournaments) {
-      if (t.club.id != 0) byId.putIfAbsent(t.club.id, () => t.club);
+      if (t.club.id == 0) continue;
+      byId.putIfAbsent(t.club.id, () => t.club);
+      final c = t.createdAt;
+      if (c != null) {
+        final cur = latest[t.club.id];
+        if (cur == null || c.isAfter(cur)) latest[t.club.id] = c;
+      }
     }
     if (byId.length < 2) return const SizedBox.shrink();
-    final clubs = byId.values.toList()..sort(_compareClubByAdded);
+    final clubs = byId.values.toList()
+      ..sort((a, b) => _compareClubByLatestTournament(a, b, latest));
 
     return SizedBox(
       height: 40,
@@ -640,13 +649,13 @@ int _compareOpenFirstThenDate(Tournament a, Tournament b) {
   return a.datetime.compareTo(b.datetime);
 }
 
-/// Порядок клубов: по дате добавления клуба, новый — сверху.
-/// Клубы без даты — в конце, между собой по имени.
-int _compareClubByAdded(Club a, Club b) {
-  final da = a.createdAt;
-  final db = b.createdAt;
+/// Порядок клубов: по дате последнего добавленного турнира — кто последним
+/// создал турнир, тот первым. Клубы без даты — в конце, между собой по имени.
+int _compareClubByLatestTournament(Club a, Club b, Map<int, DateTime> latest) {
+  final da = latest[a.id];
+  final db = latest[b.id];
   if (da != null && db != null) {
-    final c = db.compareTo(da); // desc — новый клуб первым
+    final c = db.compareTo(da); // desc — свежий турнир первым
     if (c != 0) return c;
   } else if (da != null) {
     return -1;

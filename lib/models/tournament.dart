@@ -285,6 +285,7 @@ class Tournament {
   final String date;
   final String time;
   final DateTime datetime;
+  final DateTime? createdAt; // дата создания турнира (для сортировки)
   final int? durationHours; // длительность турнира в часах (необязательное поле)
   final String type;
   final String typeName;
@@ -330,6 +331,7 @@ class Tournament {
     required this.date,
     required this.time,
     required this.datetime,
+    this.createdAt,
     this.durationHours,
     required this.type,
     required this.typeName,
@@ -429,6 +431,9 @@ class Tournament {
       date: json['date'] as String,
       time: json['time'] as String,
       datetime: DateTime.parse(json['datetime'] as String),
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'] as String)
+          : null,
       durationHours: (json['duration_hours'] as num?)?.toInt(),
       type: json['type'] as String,
       typeName: json['type_name'] as String,
