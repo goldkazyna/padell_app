@@ -74,6 +74,7 @@ class _AdminCreateTournamentScreenState
   // Поле Американо
   int _groupsCount = 1;
   bool _hasPlayoff = false;
+  bool _jpiRankByWins = false;
   String _playoffType = 'final_only'; // final_only / semifinal_final
   String _playoffFormat = 'cross';
   bool _hasLowerBracket = false;
@@ -349,6 +350,10 @@ class _AdminCreateTournamentScreenState
       body['is_paired'] = true;
     }
 
+    if (_type == 'just_padel_it') {
+      body['jpi_rank_by_wins'] = _jpiRankByWins;
+    }
+
     setState(() {
       _saving = true;
       _saveLabel = 'Создаём турнир...';
@@ -570,6 +575,12 @@ class _AdminCreateTournamentScreenState
             if (_type == 'just_padel_it') ...[
               const SizedBox(height: 12),
               _scoreTypeControl(),
+              const SizedBox(height: 12),
+              _checkboxTile(
+                value: _jpiRankByWins,
+                label: 'Таблицу считать по победам (иначе по очкам)',
+                onChanged: (v) => setState(() => _jpiRankByWins = v),
+              ),
             ],
           ],
         ),
