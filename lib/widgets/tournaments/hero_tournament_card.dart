@@ -32,7 +32,6 @@ class HeroTournamentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final full = tournament.isFull;
     final inRange = userLevel != null && tournament.isInLevelRange(userLevel);
-    final prize = tournament.hasPrizes;
 
     return GestureDetector(
       onTap: onTap,
@@ -44,83 +43,51 @@ class HeroTournamentCard extends StatelessWidget {
           border: Border.all(
             color: full
                 ? AppTheme.error.withValues(alpha: 0.18)
-                : prize
-                    ? AppTheme.amber.withValues(alpha: 0.55)
-                    : AppTheme.border,
-            width: prize && !full ? 1.5 : 1,
+                : AppTheme.border,
           ),
         ),
-        clipBehavior: Clip.antiAlias,
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1) Header: date+day+time + action button.
-            //    Для призовых — позолоченный фон во всю ширину.
-            Container(
-              decoration: prize
-                  ? BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppTheme.amber.withValues(alpha: 0.22),
-                          AppTheme.amber.withValues(alpha: 0.06),
-                        ],
-                      ),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: AppTheme.amber.withValues(alpha: 0.28),
-                        ),
-                      ),
-                    )
-                  : null,
-              padding: EdgeInsets.fromLTRB(14, prize ? 12 : 14, 14, prize ? 12 : 0),
-              child: _buildTopRow(context, full, prize),
-            ),
+            // 1) Date+day+time row + action button
+            _buildTopRow(context, full),
+            const SizedBox(height: 10),
 
-            // 2) Body
-            Padding(
-              padding: EdgeInsets.fromLTRB(14, prize ? 12 : 10, 14, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Title
-                  Text(
-                    tournament.name,
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.2,
-                      height: 1.25,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Format · price
-                  _buildMetaRow(context),
-
-                  const SizedBox(height: 10),
-
-                  // Level fit indicator (с шкалой 1.0–5.0)
-                  _buildLevelFit(context, inRange),
-
-                  // Prizes block (только для призовых с описанием)
-                  if (prize &&
-                      (tournament.prizes?.trim().isNotEmpty ?? false)) ...[
-                    const SizedBox(height: 8),
-                    _buildPrizesBlock(context),
-                  ],
-
-                  const SizedBox(height: 8),
-
-                  // Spots bar + text
-                  _buildSpotsRow(full),
-                ],
+            // 2) Title
+            Text(
+              tournament.name,
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
+                height: 1.25,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 4),
+
+            // 3) Format · price
+            _buildMetaRow(context),
+
+            const SizedBox(height: 10),
+
+            // 4) Level fit indicator (с шкалой 1.0–5.0)
+            _buildLevelFit(context, inRange),
+
+            // 4b) Prizes block (только для призовых с описанием)
+            if (tournament.hasPrizes &&
+                (tournament.prizes?.trim().isNotEmpty ?? false)) ...[
+              const SizedBox(height: 8),
+              _buildPrizesBlock(context),
+            ],
+
+            const SizedBox(height: 8),
+
+            // 5) Spots bar + text
+            _buildSpotsRow(full),
           ],
         ),
       ),
@@ -128,7 +95,7 @@ class HeroTournamentCard extends StatelessWidget {
   }
 
   // ===== Top row: date+day+time + button =====
-  Widget _buildTopRow(BuildContext context, bool full, bool prize) {
+  Widget _buildTopRow(BuildContext context, bool full) {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final dateShort = DateFormat('d MMM', locale).format(tournament.datetime);
     final dowShort = DateFormat.E(locale).format(tournament.datetime);
@@ -162,14 +129,13 @@ class HeroTournamentCard extends StatelessWidget {
               ),
               Text(
                 tournament.time,
-                style: TextStyle(
-                  color: prize ? AppTheme.amber : AppTheme.accent,
+                style: const TextStyle(
+                  color: AppTheme.accent,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
-              if (prize) _buildPrizeChip(context),
             ],
           ),
         ),
@@ -214,47 +180,21 @@ class HeroTournamentCard extends StatelessWidget {
     );
   }
 
-  // ===== Prize chip «🏆 Призовой» =====
-  Widget _buildPrizeChip(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.amber,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.emoji_events, size: 12, color: Color(0xFF3D2C05)),
-          const SizedBox(width: 4),
-          Text(
-            l.prizeTournament,
-            style: const TextStyle(
-              color: Color(0xFF3D2C05),
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // ===== Prizes description block =====
   Widget _buildPrizesBlock(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(11, 10, 11, 10),
       decoration: BoxDecoration(
-        color: AppTheme.amber.withValues(alpha: 0.12),
+        color: const Color(0x0DFFFFFF),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.35)),
+        border: Border.all(color: AppTheme.border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.emoji_events, size: 14, color: AppTheme.amber),
+          Icon(Icons.emoji_events_outlined,
+              size: 14, color: AppTheme.textSecondary),
           const SizedBox(width: 8),
           Expanded(
             child: RichText(
@@ -262,7 +202,7 @@ class HeroTournamentCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
                 style: TextStyle(
-                  color: AppTheme.textPrimary,
+                  color: AppTheme.textSecondary,
                   fontSize: 12,
                   height: 1.4,
                 ),
@@ -270,7 +210,7 @@ class HeroTournamentCard extends StatelessWidget {
                   TextSpan(
                     text: '${l.prizesLabel}: ',
                     style: TextStyle(
-                      color: AppTheme.amber,
+                      color: AppTheme.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
