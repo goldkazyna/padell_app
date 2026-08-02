@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../models/tournament.dart';
 import '../providers/home_provider.dart';
 import '../providers/tournament_provider.dart';
+import '../widgets/tournaments/club_logo.dart';
 import '../widgets/tournaments/club_section_header.dart';
 import '../widgets/tournaments/filter_pills.dart';
 import '../widgets/tournaments/hero_tournament_card.dart';
@@ -284,6 +285,10 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
               ),
             ),
             const SizedBox(height: 8),
+            Consumer<TournamentProvider>(
+              builder: (_, provider, __) =>
+                  _buildClubChips(provider.openTournaments),
+            ),
           ],
           Expanded(
             child: IndexedStack(
@@ -297,6 +302,41 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Строка иконок клубов/комьюнити под фильтрами.
+  /// Тап — фильтрует список только по этому клубу (повторный тап — сброс).
+  /// Порядок — по дате добавления клуба (новый сверху).
+  Widget _buildClubChips(List<Tournament> tournaments) {
+    final byId = <int, Club>{};
+    for (final t in tournaments) {
+      if (t.club.id != 0) byId.putIfAbsent(t.club.id, () => t.club);
+    }
+    if (byId.length < 2) return const SizedBox.shrink();
+    final clubs = byId.values.toList()..sort(_compareClubByAdded);
+
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: clubs.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (_, i) {
+          final c = clubs[i];
+          final selected = _filter.clubIds.contains(c.id);
+          return _ClubChip(
+            club: c,
+            selected: selected,
+            onTap: () => setState(() {
+              _filter = _filter.copyWith(
+                clubIds: selected ? <int>{} : {c.id},
+              );
+            }),
+          );
+        },
       ),
     );
   }
@@ -407,29 +447,14 @@ List<Tournament> _applyFilter(
 
 // === Open tab: For you + Others ===
 
-class _OpenTab extends StatefulWidget {
+class _OpenTab extends StatelessWidget {
   final double? userLevel;
   final TournamentsFilter filter;
 
   const _OpenTab({required this.userLevel, required this.filter});
 
   @override
-  State<_OpenTab> createState() => _OpenTabState();
-}
-
-class _OpenTabState extends State<_OpenTab> {
-  // Эксклюзивный аккордеон: одновременно раскрыт максимум один клуб.
-  // Ключ вида 'foryou-<clubId>' / 'rest-<clubId>' — секции независимы.
-  String? _openClubKey;
-
-  void _toggleClub(String key) {
-    setState(() => _openClubKey = _openClubKey == key ? null : key);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final userLevel = widget.userLevel;
-    final filter = widget.filter;
     return Consumer<TournamentProvider>(
       builder: (_, provider, __) {
         if (provider.isLoadingOpen) {
@@ -456,23 +481,31 @@ class _OpenTabState extends State<_OpenTab> {
         final rest = all.where((t) => !forYou.contains(t)).toList()
           ..sort(_compareOpenFirstThenDate);
 
-        // Группируем по клубам; порядок клубов — по дате добавления клуба
-        // (новый клуб сверху), см. _compareClubByAdded.
+        // Для «Для вас» группируем по клубам (в порядке появления)
         final forYouByClub = <int, List<Tournament>>{};
+        final forYouClubOrder = <int>[];
         for (final t in forYou) {
-          forYouByClub.putIfAbsent(t.club.id, () => []).add(t);
+          if (!forYouByClub.containsKey(t.club.id)) {
+            forYouByClub[t.club.id] = [];
+            forYouClubOrder.add(t.club.id);
+          }
+          forYouByClub[t.club.id]!.add(t);
         }
-        final forYouClubOrder = forYouByClub.keys.toList()
-          ..sort((a, b) => _compareClubByAdded(
-              forYouByClub[a]!.first.club, forYouByClub[b]!.first.club));
 
+        // Для «Остальные» группируем по клубам; клубы с open-турнирами наверху
         final restByClub = <int, List<Tournament>>{};
         for (final t in rest) {
           restByClub.putIfAbsent(t.club.id, () => []).add(t);
         }
         final restClubOrder = restByClub.keys.toList()
-          ..sort((a, b) => _compareClubByAdded(
-              restByClub[a]!.first.club, restByClub[b]!.first.club));
+          ..sort((a, b) {
+            final aHasOpen = restByClub[a]!.any((t) => !t.isFull);
+            final bHasOpen = restByClub[b]!.any((t) => !t.isFull);
+            if (aHasOpen != bHasOpen) return aHasOpen ? -1 : 1;
+            final aFirst = restByClub[a]!.first;
+            final bFirst = restByClub[b]!.first;
+            return aFirst.club.name.compareTo(bFirst.club.name);
+          });
 
         return RefreshIndicator(
           onRefresh: () => provider.loadOpenTournaments(),
@@ -486,8 +519,6 @@ class _OpenTabState extends State<_OpenTab> {
                   _ForYouClubBlock(
                     tournaments: forYouByClub[clubId]!,
                     userLevel: userLevel,
-                    expanded: _openClubKey == 'foryou-$clubId',
-                    onToggle: () => _toggleClub('foryou-$clubId'),
                   ),
               ],
               if (forYou.isNotEmpty && rest.isNotEmpty)
@@ -503,8 +534,6 @@ class _OpenTabState extends State<_OpenTab> {
                           child: _ClubBlock(
                             tournaments: restByClub[clubId]!,
                             userLevel: userLevel,
-                            expanded: _openClubKey == 'rest-$clubId',
-                            onToggle: () => _toggleClub('rest-$clubId'),
                           ),
                         ),
                     ],
@@ -532,7 +561,7 @@ class _OpenTabState extends State<_OpenTab> {
               letterSpacing: -0.2,
             ),
           ),
-          if (widget.userLevel != null) ...[
+          if (userLevel != null) ...[
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -541,7 +570,7 @@ class _OpenTabState extends State<_OpenTab> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'Уровень ${widget.userLevel!.toStringAsFixed(2)}',
+                'Уровень ${userLevel!.toStringAsFixed(2)}',
                 style: const TextStyle(
                   color: AppTheme.accent,
                   fontSize: 11,
@@ -627,23 +656,71 @@ int _compareClubByAdded(Club a, Club b) {
   return a.name.compareTo(b.name);
 }
 
-/// Под-блок клуба в секции «Для вас».
-/// Состояние раскрытия управляется извне (эксклюзивный аккордеон).
-class _ForYouClubBlock extends StatelessWidget {
-  final List<Tournament> tournaments;
-  final double? userLevel;
-  final bool expanded;
-  final VoidCallback onToggle;
+/// Иконка-чип клуба/комьюнити в строке быстрого фильтра.
+class _ClubChip extends StatelessWidget {
+  final Club club;
+  final bool selected;
+  final VoidCallback onTap;
 
-  const _ForYouClubBlock({
-    required this.tournaments,
-    required this.userLevel,
-    required this.expanded,
-    required this.onToggle,
+  const _ClubChip({
+    required this.club,
+    required this.selected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.accentSoft : AppTheme.card,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? AppTheme.accent : AppTheme.border,
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(5, 5, 12, 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClubLogoTile(url: club.logo, name: club.name, size: 26, radius: 7),
+            const SizedBox(width: 8),
+            Text(
+              club.name,
+              style: TextStyle(
+                color: selected ? AppTheme.accent : AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Под-блок клуба в секции «Для вас».
+/// По тапу на под-хедер сворачивается/разворачивается.
+class _ForYouClubBlock extends StatefulWidget {
+  final List<Tournament> tournaments;
+  final double? userLevel;
+
+  const _ForYouClubBlock({required this.tournaments, required this.userLevel});
+
+  @override
+  State<_ForYouClubBlock> createState() => _ForYouClubBlockState();
+}
+
+class _ForYouClubBlockState extends State<_ForYouClubBlock> {
+  bool _collapsed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tournaments = widget.tournaments;
     final club = tournaments.first.club;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -656,18 +733,18 @@ class _ForYouClubBlock extends StatelessWidget {
             city: club.city,
             logoUrl: club.logo,
             count: tournaments.length,
-            collapsed: !expanded,
-            onTap: onToggle,
+            collapsed: _collapsed,
+            onTap: () => setState(() => _collapsed = !_collapsed),
           ),
         ),
-        if (expanded) ...[
+        if (!_collapsed) ...[
           const SizedBox(height: 8),
           for (final t in tournaments)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
               child: HeroTournamentCard(
                 tournament: t,
-                userLevel: userLevel,
+                userLevel: widget.userLevel,
                 onTap: () => _openTournamentDetail(context, t.id),
               ),
             ),
@@ -678,28 +755,25 @@ class _ForYouClubBlock extends StatelessWidget {
 }
 
 /// Блок клуба: большой хедер + карточки со строками.
-///
-/// Два режима:
-///  • аккордеон (передан [onToggle]) — шапка сворачивает/разворачивает, шеврон;
-///  • статичный (без [onToggle]) — всегда раскрыт, тап по шапке открывает клуб.
-class _ClubBlock extends StatelessWidget {
+/// По тапу на хедер сворачивается/разворачивается.
+class _ClubBlock extends StatefulWidget {
   final List<Tournament> tournaments;
   final double? userLevel;
-  final bool expanded;
-  final VoidCallback? onToggle;
 
-  const _ClubBlock({
-    required this.tournaments,
-    required this.userLevel,
-    this.expanded = true,
-    this.onToggle,
-  });
+  const _ClubBlock({required this.tournaments, required this.userLevel});
+
+  @override
+  State<_ClubBlock> createState() => _ClubBlockState();
+}
+
+class _ClubBlockState extends State<_ClubBlock> {
+  bool _collapsed = false;
 
   @override
   Widget build(BuildContext context) {
+    final tournaments = widget.tournaments;
     final first = tournaments.first;
     final openCount = tournaments.where((t) => !t.isFull).length;
-    final accordion = onToggle != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -709,18 +783,17 @@ class _ClubBlock extends StatelessWidget {
           logoUrl: first.club.logo,
           openCount: openCount,
           totalCount: tournaments.length,
-          collapsed: !expanded,
-          showChevron: accordion,
-          onTap: onToggle ?? () => _openClubDetail(context, first.club.id),
+          collapsed: _collapsed,
+          onTap: () => setState(() => _collapsed = !_collapsed),
         ),
-        if (expanded) ...[
+        if (!_collapsed) ...[
           const SizedBox(height: 6),
           for (final t in tournaments)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: HeroTournamentCard(
                 tournament: t,
-                userLevel: userLevel,
+                userLevel: widget.userLevel,
                 onTap: () => _openTournamentDetail(context, t.id),
               ),
             ),

@@ -12,7 +12,6 @@ class ClubSectionHeader extends StatelessWidget {
   final int totalCount;
   final VoidCallback? onTap;
   final bool collapsed;
-  final bool showChevron;
 
   const ClubSectionHeader({
     super.key,
@@ -23,7 +22,6 @@ class ClubSectionHeader extends StatelessWidget {
     required this.totalCount,
     this.onTap,
     this.collapsed = false,
-    this.showChevron = true,
   });
 
   @override
@@ -77,14 +75,12 @@ class ClubSectionHeader extends StatelessWidget {
                 ],
               ),
             ),
-            if (showChevron) ...[
-              const SizedBox(width: 8),
-              Icon(
-                collapsed ? Icons.expand_more : Icons.expand_less,
-                size: 20,
-                color: AppTheme.textSecondary,
-              ),
-            ],
+            const SizedBox(width: 8),
+            Icon(
+              collapsed ? Icons.expand_more : Icons.expand_less,
+              size: 20,
+              color: AppTheme.textSecondary,
+            ),
           ],
         ),
       ),
