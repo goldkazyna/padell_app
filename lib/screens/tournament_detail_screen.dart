@@ -167,6 +167,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                             const SizedBox(height: 16),
                             _DescriptionBlock(text: tournament.description!),
                           ],
+                          if (tournament.hasPrizes &&
+                              (tournament.prizes?.trim().isNotEmpty ?? false)) ...[
+                            const SizedBox(height: 12),
+                            _PrizesBlock(text: tournament.prizes!.trim()),
+                          ],
                           if (tournament.registrationStatus == 'pending' &&
                               tournament.club.paymentUrl != null &&
                               !_paymentDeadlinePassed(tournament))
@@ -2285,6 +2290,54 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     if (mounted) {
       _showResultDialog(result.success, result.message);
     }
+  }
+}
+
+/// Блок «Призы» — золотой, показывается для призовых турниров с описанием призов.
+class _PrizesBlock extends StatelessWidget {
+  final String text;
+  const _PrizesBlock({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.emoji_events, size: 15, color: AppTheme.amber),
+              const SizedBox(width: 6),
+              Text(
+                l.prizesLabel,
+                style: TextStyle(
+                  color: AppTheme.amber,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            text,
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 14,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
