@@ -327,6 +327,59 @@ class _StandingsCard extends StatelessWidget {
     );
   }
 
+  /// Имя игрока/пары в строке таблицы. Для пар — оба игрока на двух строках.
+  Widget _shareIdentity(AdminLeaderboardRow p) {
+    final pair = (p.players != null && p.players!.length == 2) ? p.players! : null;
+    Widget line({
+      required String? url,
+      required String name,
+      required bool verified,
+      required int id,
+      double avatarSize = 26,
+    }) {
+      return Row(
+        children: [
+          _CardAvatar(url: url, name: name, size: avatarSize),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700)),
+          ),
+          if (verified) ...[
+            const SizedBox(width: 4),
+            VerifiedBadge(size: 11, userId: id, playerName: name),
+          ],
+        ],
+      );
+    }
+
+    if (pair == null) {
+      return line(
+          url: p.avatarUrl, name: p.name, verified: p.verified, id: p.id);
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < 2; i++) ...[
+          if (i > 0) const SizedBox(height: 4),
+          line(
+            url: pair[i].avatarUrl,
+            name: pair[i].name,
+            verified: pair[i].verified,
+            id: pair[i].id,
+            avatarSize: 22,
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _playerRow(AdminLeaderboardRow p, List<_Col> cols) {
     final isTop = p.position <= 3;
 
@@ -371,21 +424,7 @@ class _StandingsCard extends StatelessWidget {
                           fontWeight: FontWeight.w900)),
                 ),
                 const SizedBox(width: 8),
-                _CardAvatar(url: p.avatarUrl, name: p.name),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(p.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700)),
-                ),
-                if (p.verified) ...[
-                  const SizedBox(width: 4),
-                  VerifiedBadge(size: 11, userId: p.id, playerName: p.name),
-                ],
+                Expanded(child: _shareIdentity(p)),
               ],
             ),
           ),
@@ -474,7 +513,8 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
 class _CardAvatar extends StatelessWidget {
   final String? url;
   final String name;
-  const _CardAvatar({this.url, required this.name});
+  final double size;
+  const _CardAvatar({this.url, required this.name, this.size = 26});
 
   @override
   Widget build(BuildContext context) {
@@ -490,8 +530,8 @@ class _CardAvatar extends StatelessWidget {
               fontWeight: FontWeight.w800)),
     );
     return Container(
-      width: 26,
-      height: 26,
+      width: size,
+      height: size,
       clipBehavior: Clip.antiAlias,
       decoration:
           const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF27302B)),

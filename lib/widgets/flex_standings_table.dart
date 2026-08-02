@@ -84,6 +84,11 @@ class FlexStandingsTable extends StatelessWidget {
     final playerName = p['name'] as String?;
     final isMe = p['is_me'] == true ||
         (currentUserId != null && playerId == currentUserId);
+    // Парная строка: оба игрока с аватарами на двух строках.
+    final rawPlayers = p['players'] as List?;
+    final pair = (rawPlayers != null && rawPlayers.length == 2)
+        ? rawPlayers.cast<Map<String, dynamic>>()
+        : null;
 
     final pointsFor = (p['points_for'] as num?)?.toInt() ?? 0;
     final pointsAgainst = (p['points_against'] as num?)?.toInt() ?? 0;
@@ -130,33 +135,88 @@ class FlexStandingsTable extends StatelessWidget {
           alignment: Alignment.centerLeft,
         ),
         cell(
-          _Avatar(url: p['avatar'] as String?, name: playerName ?? ''),
+          pair == null
+              ? _Avatar(url: p['avatar'] as String?, name: playerName ?? '')
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final pl in pair)
+                      SizedBox(
+                        height: 26,
+                        child: Center(
+                          child: _Avatar(
+                              url: pl['avatar'] as String?,
+                              name: (pl['name'] as String?) ?? '',
+                              size: 20),
+                        ),
+                      ),
+                  ],
+                ),
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         ),
         cell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 150),
-                child: Text(
-                  playerName ?? '—',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-                    fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
-                    fontSize: 13,
-                    height: 1.2,
-                  ),
+          pair == null
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 150),
+                      child: Text(
+                        playerName ?? '—',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isMe ? AppTheme.accent : AppTheme.textPrimary,
+                          fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
+                          fontSize: 13,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                    if (p['verified'] == true) ...[
+                      const SizedBox(width: 5),
+                      VerifiedBadge(
+                          size: 12, userId: playerId, playerName: playerName),
+                    ],
+                  ],
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final pl in pair)
+                      SizedBox(
+                        height: 26,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 150),
+                              child: Text(
+                                (pl['name'] as String?) ?? '—',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isMe
+                                      ? AppTheme.accent
+                                      : AppTheme.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            if (pl['verified'] == true) ...[
+                              const SizedBox(width: 5),
+                              VerifiedBadge(
+                                  size: 12,
+                                  userId: (pl['id'] as num?)?.toInt(),
+                                  playerName: pl['name'] as String?),
+                            ],
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
-              ),
-              if (p['verified'] == true) ...[
-                const SizedBox(width: 5),
-                VerifiedBadge(size: 12, userId: playerId, playerName: playerName),
-              ],
-            ],
-          ),
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
           alignment: Alignment.centerLeft,
         ),
@@ -206,7 +266,8 @@ class FlexStandingsTable extends StatelessWidget {
 class _Avatar extends StatelessWidget {
   final String? url;
   final String name;
-  const _Avatar({this.url, required this.name});
+  final double size;
+  const _Avatar({this.url, required this.name, this.size = 24});
 
   @override
   Widget build(BuildContext context) {
@@ -215,8 +276,8 @@ class _Avatar extends StatelessWidget {
         ? '${parts[0][0]}${parts[1][0]}'.toUpperCase()
         : (name.isNotEmpty ? name[0].toUpperCase() : '?');
     return Container(
-      width: 24,
-      height: 24,
+      width: size,
+      height: size,
       clipBehavior: Clip.antiAlias,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,

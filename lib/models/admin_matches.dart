@@ -111,12 +111,40 @@ class AdminMatchRound {
   }
 }
 
+/// Игрок пары в таблице лидеров (парные форматы: показываем обоих с аватарами).
+class AdminLeaderboardPlayer {
+  final int id;
+  final String name;
+  final String? avatarUrl;
+  final bool verified;
+
+  const AdminLeaderboardPlayer({
+    required this.id,
+    required this.name,
+    required this.avatarUrl,
+    this.verified = false,
+  });
+
+  factory AdminLeaderboardPlayer.fromJson(Map<String, dynamic> json) {
+    return AdminLeaderboardPlayer(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      name: json['name'] as String? ?? '',
+      avatarUrl: json['avatar'] as String?,
+      verified: json['verified'] as bool? ?? false,
+    );
+  }
+}
+
 class AdminLeaderboardRow {
   final int position;
   final int id;
   final String name;
   final String? avatarUrl;
   final bool verified;
+
+  /// Парные форматы: оба игрока пары (для отображения на двух строках).
+  /// null/пусто — обычная одиночная строка.
+  final List<AdminLeaderboardPlayer>? players;
   final int totalPoints;
   final int wins;
   final int losses;
@@ -149,6 +177,7 @@ class AdminLeaderboardRow {
     required this.name,
     required this.avatarUrl,
     this.verified = false,
+    this.players,
     required this.totalPoints,
     required this.wins,
     required this.losses,
@@ -173,6 +202,10 @@ class AdminLeaderboardRow {
       name: json['name'] as String? ?? '',
       avatarUrl: json['avatar'] as String?,
       verified: json['verified'] as bool? ?? false,
+      players: (json['players'] as List?)
+          ?.map((e) =>
+              AdminLeaderboardPlayer.fromJson(e as Map<String, dynamic>))
+          .toList(),
       totalPoints: (json['total_points'] as num?)?.toInt() ?? 0,
       wins: (json['wins'] as num?)?.toInt() ?? 0,
       losses: (json['losses'] as num?)?.toInt() ?? 0,
@@ -287,6 +320,7 @@ class AdminMatchesSummary {
   final bool canFinish;
   final bool canGeneratePlayoff;
   final bool canGenerateNextRound;
+  final bool canFinishEarly;
 
   const AdminMatchesSummary({
     required this.matchesTotal,
@@ -295,6 +329,7 @@ class AdminMatchesSummary {
     required this.canFinish,
     required this.canGeneratePlayoff,
     required this.canGenerateNextRound,
+    this.canFinishEarly = false,
   });
 
   factory AdminMatchesSummary.fromJson(Map<String, dynamic> json) {
@@ -306,6 +341,7 @@ class AdminMatchesSummary {
       canGeneratePlayoff: json['can_generate_playoff'] as bool? ?? false,
       canGenerateNextRound:
           json['can_generate_next_round'] as bool? ?? false,
+      canFinishEarly: json['can_finish_early'] as bool? ?? false,
     );
   }
 }

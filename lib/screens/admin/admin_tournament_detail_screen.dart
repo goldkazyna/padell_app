@@ -3786,9 +3786,76 @@ class _AdminTournamentDetailScreenState
               ),
             ),
           ],
+          if (s.canFinishEarly) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: OutlinedButton.icon(
+                onPressed: _actionBusy ? null : _finishEarly,
+                icon: Icon(
+                    (_matches?.playoff?.hasPlayoff ?? false)
+                        ? Icons.emoji_events_outlined
+                        : Icons.flag_outlined,
+                    size: 18),
+                label: Text((_matches?.playoff?.hasPlayoff ?? false)
+                    ? 'Перейти в плей-офф'
+                    : 'Закончить турнир сейчас'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.accent,
+                  side: const BorderSide(color: AppTheme.accent),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  textStyle: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  /// Мексикано: досрочно завершить / перейти в плей-офф (не доигрывая раунды).
+  Future<void> _finishEarly() async {
+    if (_actionBusy) return;
+    final hasPlayoff = _matches?.playoff?.hasPlayoff ?? false;
+    final ok = await _confirm(
+      title: hasPlayoff ? 'Перейти в плей-офф?' : 'Закончить турнир?',
+      message: hasPlayoff
+          ? 'Отборочный этап завершится досрочно, оставшиеся раунды не будут сыграны. Плей-офф соберётся по текущей таблице.'
+          : 'Турнир завершится сейчас. Оставшиеся раунды не будут сыграны, рейтинг начислится по текущей таблице.',
+      okText: hasPlayoff ? 'В плей-офф' : 'Завершить',
+    );
+    if (!ok) return;
+    setState(() {
+      _actionBusy = true;
+      _actionLabel =
+          hasPlayoff ? 'Генерируем плей-офф...' : 'Завершаем турнир...';
+    });
+    try {
+      await context
+          .read<AdminService>()
+          .mexicanoFinishEarly(widget.tournamentId);
+      if (!mounted) return;
+      try {
+        final t = await context
+            .read<AdminService>()
+            .getTournamentDetail(widget.tournamentId);
+        if (mounted) {
+          _applyToForm(t);
+          setState(() => _t = t);
+        }
+      } catch (_) {}
+      _matches = null;
+      await _loadMatches();
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
   }
 
   Future<void> _generateNextRound() async {
@@ -4103,6 +4170,9 @@ class _AdminTournamentDetailScreenState
     final numStyle = TextStyle(
         color: AppTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.w600);
 
+    // Парная строка: показываем обоих игроков с аватарами на двух строках.
+    final pair = (p.players != null && p.players!.length == 2) ? p.players! : null;
+
     return TableRow(children: [
       cell(
         Text('${p.position}',
@@ -4114,30 +4184,77 @@ class _AdminTournamentDetailScreenState
         alignment: Alignment.centerLeft,
       ),
       cell(
-        _AdminLeaderAvatar(url: p.avatarUrl, name: p.name, size: 24),
+        pair == null
+            ? _AdminLeaderAvatar(url: p.avatarUrl, name: p.name, size: 24)
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final pl in pair)
+                    SizedBox(
+                      height: 26,
+                      child: Center(
+                        child: _AdminLeaderAvatar(
+                            url: pl.avatarUrl, name: pl.name, size: 20),
+                      ),
+                    ),
+                ],
+              ),
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       ),
       cell(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 150),
-              child: Text(p.name,
-                  softWrap: true,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600)),
-            ),
-            if (p.verified) ...[
-              const SizedBox(width: 5),
-              VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
-            ],
-          ],
-        ),
+        pair == null
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 150),
+                    child: Text(p.name,
+                        softWrap: true,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600)),
+                  ),
+                  if (p.verified) ...[
+                    const SizedBox(width: 5),
+                    VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
+                  ],
+                ],
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final pl in pair)
+                    SizedBox(
+                      height: 26,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 150),
+                            child: Text(pl.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: AppTheme.textPrimary,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                          if (pl.verified) ...[
+                            const SizedBox(width: 5),
+                            VerifiedBadge(
+                                size: 12,
+                                userId: pl.id,
+                                playerName: pl.name),
+                          ],
+                        ],
+                      ),
+                    ),
+                ],
+              ),
         alignment: Alignment.centerLeft,
       ),
       // Забито
@@ -5011,6 +5128,7 @@ class _AdminTournamentDetailScreenState
     final isFlex = _matches?.type == 'americano_flex';
     final isRoundRobin = _matches?.type == 'round_robin';
     final isJpi = _matches?.type == 'just_padel_it';
+    final isMexicano = _matches?.type == 'mexicano';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -5069,13 +5187,22 @@ class _AdminTournamentDetailScreenState
               );
         }
       } else if (isPlayoff) {
-        await context.read<AdminService>().saveAmericanoPlayoffScore(
-              tournamentId,
-              matchId,
-              team1Score: result.score1,
-              team2Score: result.score2,
-              isUpdate: isUpdate,
-            );
+        if (isMexicano) {
+          await context.read<AdminService>().saveMexicanoPlayoffScore(
+                tournamentId,
+                matchId,
+                team1Score: result.score1,
+                team2Score: result.score2,
+              );
+        } else {
+          await context.read<AdminService>().saveAmericanoPlayoffScore(
+                tournamentId,
+                matchId,
+                team1Score: result.score1,
+                team2Score: result.score2,
+                isUpdate: isUpdate,
+              );
+        }
       } else if (isKoc) {
         await context.read<AdminService>().saveKocScore(
               tournamentId,
@@ -5110,6 +5237,14 @@ class _AdminTournamentDetailScreenState
               matchId,
               team1Score: result.score1,
               team2Score: result.score2,
+            );
+      } else if (isMexicano) {
+        await context.read<AdminService>().saveMexicanoScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+              isUpdate: isUpdate,
             );
       } else {
         await context.read<AdminService>().saveAmericanoScore(
