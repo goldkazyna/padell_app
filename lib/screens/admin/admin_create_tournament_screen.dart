@@ -576,11 +576,7 @@ class _AdminCreateTournamentScreenState
               const SizedBox(height: 12),
               _scoreTypeControl(),
               const SizedBox(height: 12),
-              _checkboxTile(
-                value: _jpiRankByWins,
-                label: 'Таблицу считать по победам (иначе по очкам)',
-                onChanged: (v) => setState(() => _jpiRankByWins = v),
-              ),
+              _jpiRankControl(),
             ],
           ],
         ),
@@ -2289,6 +2285,66 @@ class _AdminCreateTournamentScreenState
 
   // Тип подсчёта результата. v1: активна только «По очкам»; «По сетам» — заглушка.
   // Значение не отправляется — бэкенд по умолчанию считает по очкам.
+  /// Ранжирование таблицы Just Padel It: по очкам (по умолчанию) / по победам.
+  Widget _jpiRankControl() {
+    Widget pill({
+      required String text,
+      required bool active,
+      required VoidCallback onTap,
+    }) {
+      return Expanded(
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: active
+                  ? AppTheme.accent.withOpacity(0.15)
+                  : AppTheme.cardRaised,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: active ? AppTheme.accent : AppTheme.border,
+                width: active ? 1.4 : 1,
+              ),
+            ),
+            child: Text(
+              text,
+              style: TextStyle(
+                color: active ? AppTheme.accent : AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Ранжирование таблицы'),
+        Row(
+          children: [
+            pill(
+              text: 'По очкам',
+              active: !_jpiRankByWins,
+              onTap: () => setState(() => _jpiRankByWins = false),
+            ),
+            const SizedBox(width: 10),
+            pill(
+              text: 'По победам',
+              active: _jpiRankByWins,
+              onTap: () => setState(() => _jpiRankByWins = true),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _scoreTypeControl() {
     Widget pill({
       required String text,
