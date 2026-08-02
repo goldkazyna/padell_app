@@ -12,6 +12,7 @@ class Club {
   final String? logo;
   final bool isCommunity;
   final String? telegramUrl;
+  final DateTime? createdAt;
 
   Club({
     required this.id,
@@ -23,6 +24,7 @@ class Club {
     this.logo,
     this.isCommunity = false,
     this.telegramUrl,
+    this.createdAt,
   });
 
   factory Club.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,9 @@ class Club {
       logo: json['logo'] as String?,
       isCommunity: json['is_community'] as bool? ?? false,
       telegramUrl: json['telegram_url'] as String?,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'] as String)
+          : null,
     );
   }
 

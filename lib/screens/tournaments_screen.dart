@@ -407,14 +407,29 @@ List<Tournament> _applyFilter(
 
 // === Open tab: For you + Others ===
 
-class _OpenTab extends StatelessWidget {
+class _OpenTab extends StatefulWidget {
   final double? userLevel;
   final TournamentsFilter filter;
 
   const _OpenTab({required this.userLevel, required this.filter});
 
   @override
+  State<_OpenTab> createState() => _OpenTabState();
+}
+
+class _OpenTabState extends State<_OpenTab> {
+  // Эксклюзивный аккордеон: одновременно раскрыт максимум один клуб.
+  // Ключ вида 'foryou-<clubId>' / 'rest-<clubId>' — секции независимы.
+  String? _openClubKey;
+
+  void _toggleClub(String key) {
+    setState(() => _openClubKey = _openClubKey == key ? null : key);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userLevel = widget.userLevel;
+    final filter = widget.filter;
     return Consumer<TournamentProvider>(
       builder: (_, provider, __) {
         if (provider.isLoadingOpen) {
@@ -441,31 +456,23 @@ class _OpenTab extends StatelessWidget {
         final rest = all.where((t) => !forYou.contains(t)).toList()
           ..sort(_compareOpenFirstThenDate);
 
-        // Для «Для вас» группируем по клубам (в порядке появления)
+        // Группируем по клубам; порядок клубов — по дате добавления клуба
+        // (новый клуб сверху), см. _compareClubByAdded.
         final forYouByClub = <int, List<Tournament>>{};
-        final forYouClubOrder = <int>[];
         for (final t in forYou) {
-          if (!forYouByClub.containsKey(t.club.id)) {
-            forYouByClub[t.club.id] = [];
-            forYouClubOrder.add(t.club.id);
-          }
-          forYouByClub[t.club.id]!.add(t);
+          forYouByClub.putIfAbsent(t.club.id, () => []).add(t);
         }
+        final forYouClubOrder = forYouByClub.keys.toList()
+          ..sort((a, b) => _compareClubByAdded(
+              forYouByClub[a]!.first.club, forYouByClub[b]!.first.club));
 
-        // Для «Остальные» группируем по клубам; клубы с open-турнирами наверху
         final restByClub = <int, List<Tournament>>{};
         for (final t in rest) {
           restByClub.putIfAbsent(t.club.id, () => []).add(t);
         }
         final restClubOrder = restByClub.keys.toList()
-          ..sort((a, b) {
-            final aHasOpen = restByClub[a]!.any((t) => !t.isFull);
-            final bHasOpen = restByClub[b]!.any((t) => !t.isFull);
-            if (aHasOpen != bHasOpen) return aHasOpen ? -1 : 1;
-            final aFirst = restByClub[a]!.first;
-            final bFirst = restByClub[b]!.first;
-            return aFirst.club.name.compareTo(bFirst.club.name);
-          });
+          ..sort((a, b) => _compareClubByAdded(
+              restByClub[a]!.first.club, restByClub[b]!.first.club));
 
         return RefreshIndicator(
           onRefresh: () => provider.loadOpenTournaments(),
@@ -479,6 +486,8 @@ class _OpenTab extends StatelessWidget {
                   _ForYouClubBlock(
                     tournaments: forYouByClub[clubId]!,
                     userLevel: userLevel,
+                    expanded: _openClubKey == 'foryou-$clubId',
+                    onToggle: () => _toggleClub('foryou-$clubId'),
                   ),
               ],
               if (forYou.isNotEmpty && rest.isNotEmpty)
@@ -494,6 +503,8 @@ class _OpenTab extends StatelessWidget {
                           child: _ClubBlock(
                             tournaments: restByClub[clubId]!,
                             userLevel: userLevel,
+                            expanded: _openClubKey == 'rest-$clubId',
+                            onToggle: () => _toggleClub('rest-$clubId'),
                           ),
                         ),
                     ],
@@ -521,7 +532,7 @@ class _OpenTab extends StatelessWidget {
               letterSpacing: -0.2,
             ),
           ),
-          if (userLevel != null) ...[
+          if (widget.userLevel != null) ...[
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -530,7 +541,7 @@ class _OpenTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'Уровень ${userLevel!.toStringAsFixed(2)}',
+                'Уровень ${widget.userLevel!.toStringAsFixed(2)}',
                 style: const TextStyle(
                   color: AppTheme.accent,
                   fontSize: 11,
@@ -600,24 +611,39 @@ int _compareOpenFirstThenDate(Tournament a, Tournament b) {
   return a.datetime.compareTo(b.datetime);
 }
 
-/// Под-блок клуба в секции «Для вас».
-/// По тапу на под-хедер сворачивается/разворачивается.
-class _ForYouClubBlock extends StatefulWidget {
-  final List<Tournament> tournaments;
-  final double? userLevel;
-
-  const _ForYouClubBlock({required this.tournaments, required this.userLevel});
-
-  @override
-  State<_ForYouClubBlock> createState() => _ForYouClubBlockState();
+/// Порядок клубов: по дате добавления клуба, новый — сверху.
+/// Клубы без даты — в конце, между собой по имени.
+int _compareClubByAdded(Club a, Club b) {
+  final da = a.createdAt;
+  final db = b.createdAt;
+  if (da != null && db != null) {
+    final c = db.compareTo(da); // desc — новый клуб первым
+    if (c != 0) return c;
+  } else if (da != null) {
+    return -1;
+  } else if (db != null) {
+    return 1;
+  }
+  return a.name.compareTo(b.name);
 }
 
-class _ForYouClubBlockState extends State<_ForYouClubBlock> {
-  bool _collapsed = false;
+/// Под-блок клуба в секции «Для вас».
+/// Состояние раскрытия управляется извне (эксклюзивный аккордеон).
+class _ForYouClubBlock extends StatelessWidget {
+  final List<Tournament> tournaments;
+  final double? userLevel;
+  final bool expanded;
+  final VoidCallback onToggle;
+
+  const _ForYouClubBlock({
+    required this.tournaments,
+    required this.userLevel,
+    required this.expanded,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final tournaments = widget.tournaments;
     final club = tournaments.first.club;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -630,18 +656,18 @@ class _ForYouClubBlockState extends State<_ForYouClubBlock> {
             city: club.city,
             logoUrl: club.logo,
             count: tournaments.length,
-            collapsed: _collapsed,
-            onTap: () => setState(() => _collapsed = !_collapsed),
+            collapsed: !expanded,
+            onTap: onToggle,
           ),
         ),
-        if (!_collapsed) ...[
+        if (expanded) ...[
           const SizedBox(height: 8),
           for (final t in tournaments)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
               child: HeroTournamentCard(
                 tournament: t,
-                userLevel: widget.userLevel,
+                userLevel: userLevel,
                 onTap: () => _openTournamentDetail(context, t.id),
               ),
             ),
@@ -652,25 +678,28 @@ class _ForYouClubBlockState extends State<_ForYouClubBlock> {
 }
 
 /// Блок клуба: большой хедер + карточки со строками.
-/// По тапу на хедер сворачивается/разворачивается.
-class _ClubBlock extends StatefulWidget {
+///
+/// Два режима:
+///  • аккордеон (передан [onToggle]) — шапка сворачивает/разворачивает, шеврон;
+///  • статичный (без [onToggle]) — всегда раскрыт, тап по шапке открывает клуб.
+class _ClubBlock extends StatelessWidget {
   final List<Tournament> tournaments;
   final double? userLevel;
+  final bool expanded;
+  final VoidCallback? onToggle;
 
-  const _ClubBlock({required this.tournaments, required this.userLevel});
-
-  @override
-  State<_ClubBlock> createState() => _ClubBlockState();
-}
-
-class _ClubBlockState extends State<_ClubBlock> {
-  bool _collapsed = false;
+  const _ClubBlock({
+    required this.tournaments,
+    required this.userLevel,
+    this.expanded = true,
+    this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final tournaments = widget.tournaments;
     final first = tournaments.first;
     final openCount = tournaments.where((t) => !t.isFull).length;
+    final accordion = onToggle != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -680,17 +709,18 @@ class _ClubBlockState extends State<_ClubBlock> {
           logoUrl: first.club.logo,
           openCount: openCount,
           totalCount: tournaments.length,
-          collapsed: _collapsed,
-          onTap: () => setState(() => _collapsed = !_collapsed),
+          collapsed: !expanded,
+          showChevron: accordion,
+          onTap: onToggle ?? () => _openClubDetail(context, first.club.id),
         ),
-        if (!_collapsed) ...[
+        if (expanded) ...[
           const SizedBox(height: 6),
           for (final t in tournaments)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: HeroTournamentCard(
                 tournament: t,
-                userLevel: widget.userLevel,
+                userLevel: userLevel,
                 onTap: () => _openTournamentDetail(context, t.id),
               ),
             ),
