@@ -80,6 +80,8 @@
   "filterCommunity": "Community",
   "forYouSection": "For you",
   "tournamentLevelLabel": "Tournament level",
+  "prizeTournament": "Prize",
+  "prizesLabel": "Prizes",
   "levelSuits": "Suits",
   "levelDoesNotSuit": "Doesn't suit",
   "yourLevelMark": "you {level}",

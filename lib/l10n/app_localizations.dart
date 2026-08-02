@@ -490,6 +490,18 @@ abstract class AppLocalizations {
   /// **'Уровень турнира'**
   String get tournamentLevelLabel;
 
+  /// No description provided for @prizeTournament.
+  ///
+  /// In ru, this message translates to:
+  /// **'Призовой'**
+  String get prizeTournament;
+
+  /// No description provided for @prizesLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Призы'**
+  String get prizesLabel;
+
   /// No description provided for @levelSuits.
   ///
   /// In ru, this message translates to:

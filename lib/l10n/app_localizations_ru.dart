@@ -216,6 +216,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tournamentLevelLabel => 'Уровень турнира';
 
   @override
+  String get prizeTournament => 'Призовой';
+
+  @override
+  String get prizesLabel => 'Призы';
+
+  @override
   String get levelSuits => 'Подходит';
 
   @override

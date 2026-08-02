@@ -273,6 +273,8 @@ class Tournament {
   final int id;
   final String name;
   final String? description;
+  final bool hasPrizes;
+  final String? prizes;
   final String? telegramRegistrationUrl;
   final Club club;
   final String date;
@@ -316,6 +318,8 @@ class Tournament {
     required this.id,
     required this.name,
     this.description,
+    this.hasPrizes = false,
+    this.prizes,
     this.telegramRegistrationUrl,
     required this.club,
     required this.date,
@@ -413,6 +417,8 @@ class Tournament {
       id: json['id'] as int,
       name: json['name'] as String,
       description: json['description'] as String?,
+      hasPrizes: json['has_prizes'] == true || json['has_prizes'] == 1,
+      prizes: json['prizes'] as String?,
       telegramRegistrationUrl: json['telegram_registration_url'] as String?,
       club: Club.fromJson(json['club'] as Map<String, dynamic>),
       date: json['date'] as String,

@@ -82,6 +82,8 @@
   "filterCommunity": "Комьюнити",
   "forYouSection": "Сіз үшін",
   "tournamentLevelLabel": "Турнир деңгейі",
+  "prizeTournament": "Жүлделі",
+  "prizesLabel": "Жүлделер",
   "levelSuits": "Сай келеді",
   "levelDoesNotSuit": "Сай емес",
   "yourLevelMark": "сіз {level}",

@@ -216,6 +216,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tournamentLevelLabel => 'Tournament level';
 
   @override
+  String get prizeTournament => 'Prize';
+
+  @override
+  String get prizesLabel => 'Prizes';
+
+  @override
   String get levelSuits => 'Suits';
 
   @override

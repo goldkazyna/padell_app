@@ -32,6 +32,7 @@ class HeroTournamentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final full = tournament.isFull;
     final inRange = userLevel != null && tournament.isInLevelRange(userLevel);
+    final prize = tournament.hasPrizes;
 
     return GestureDetector(
       onTap: onTap,
@@ -43,7 +44,10 @@ class HeroTournamentCard extends StatelessWidget {
           border: Border.all(
             color: full
                 ? AppTheme.error.withValues(alpha: 0.18)
-                : AppTheme.border,
+                : prize
+                    ? AppTheme.amber.withValues(alpha: 0.55)
+                    : AppTheme.border,
+            width: prize && !full ? 1.5 : 1,
           ),
         ),
         padding: const EdgeInsets.all(14),
@@ -76,6 +80,13 @@ class HeroTournamentCard extends StatelessWidget {
 
             // 4) Level fit indicator (с шкалой 1.0–5.0)
             _buildLevelFit(context, inRange),
+
+            // 4b) Prizes block (только для призовых с описанием)
+            if (tournament.hasPrizes &&
+                (tournament.prizes?.trim().isNotEmpty ?? false)) ...[
+              const SizedBox(height: 8),
+              _buildPrizesBlock(context),
+            ],
 
             const SizedBox(height: 8),
 
@@ -129,6 +140,7 @@ class HeroTournamentCard extends StatelessWidget {
                   fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
+              if (tournament.hasPrizes) _buildPrizeChip(context),
             ],
           ),
         ),
@@ -170,6 +182,77 @@ class HeroTournamentCard extends StatelessWidget {
       text: l.registerButton,
       bg: AppTheme.accent,
       fg: const Color(0xFF0A0A0D),
+    );
+  }
+
+  // ===== Prize chip «🏆 Призовой» =====
+  Widget _buildPrizeChip(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.emoji_events, size: 12, color: AppTheme.amber),
+          const SizedBox(width: 4),
+          Text(
+            l.prizeTournament,
+            style: TextStyle(
+              color: AppTheme.amber,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===== Prizes description block =====
+  Widget _buildPrizesBlock(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(11, 9, 11, 9),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.emoji_events, size: 14, color: AppTheme.amber),
+          const SizedBox(width: 8),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  height: 1.35,
+                ),
+                children: [
+                  TextSpan(
+                    text: '${l.prizesLabel}: ',
+                    style: TextStyle(
+                      color: AppTheme.amber,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  TextSpan(text: tournament.prizes!.trim()),
+                ],
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

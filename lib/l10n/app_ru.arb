@@ -82,6 +82,8 @@
   "filterCommunity": "Комьюнити",
   "forYouSection": "Для вас",
   "tournamentLevelLabel": "Уровень турнира",
+  "prizeTournament": "Призовой",
+  "prizesLabel": "Призы",
   "levelSuits": "Подходит",
   "levelDoesNotSuit": "Не подходит",
   "yourLevelMark": "вы {level}",

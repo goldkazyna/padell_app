@@ -216,6 +216,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get tournamentLevelLabel => 'Турнир деңгейі';
 
   @override
+  String get prizeTournament => 'Жүлделі';
+
+  @override
+  String get prizesLabel => 'Жүлделер';
+
+  @override
   String get levelSuits => 'Сай келеді';
 
   @override
