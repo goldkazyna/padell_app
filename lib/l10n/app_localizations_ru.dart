@@ -2268,7 +2268,61 @@ class AppLocalizationsRu extends AppLocalizations {
   String get serviceTournaments => 'Турниры';
 
   @override
+  String get serviceCertificates => 'Сертификаты';
+
+  @override
   String get serviceComingSoon => 'Раздел в разработке';
+
+  @override
+  String get certificatesTitle => 'Мои сертификаты';
+
+  @override
+  String get certActive => 'Активные';
+
+  @override
+  String get certUsed => 'Использованные';
+
+  @override
+  String get certStatusActive => 'Активен';
+
+  @override
+  String get certStatusUsed => 'Использован';
+
+  @override
+  String get certDetailTitle => 'Сертификат';
+
+  @override
+  String get certOwner => 'Владелец';
+
+  @override
+  String get certBearer => 'Предъявителю';
+
+  @override
+  String get certIssued => 'Выдан';
+
+  @override
+  String get certRedeemed => 'Использован';
+
+  @override
+  String get certStamp => 'ПОГАШЕН';
+
+  @override
+  String get certActiveUsable => 'Активен — можно использовать';
+
+  @override
+  String get certActiveHint =>
+      'Покажите номер администратору клуба при бронировании — он спишет сертификат.';
+
+  @override
+  String get certUsedHint =>
+      'Сертификат уже погашен и недоступен для использования.';
+
+  @override
+  String get certEmptyTitle => 'Пока нет сертификатов';
+
+  @override
+  String get certEmptyText =>
+      'Когда клуб выдаст сертификат на ваш номер телефона — он появится здесь.';
 
   @override
   String get clubCardsTitle => 'Клубные карты';

@@ -8,6 +8,7 @@ import '../../screens/clubs_list_screen.dart';
 import '../../screens/club_cards_screen.dart';
 import '../../screens/create_game_screen.dart';
 import '../../screens/games_screen.dart';
+import '../../screens/certificates_screen.dart';
 
 /// Блок «Сервисы» на главной — сетка 4×2 быстрых входов.
 /// Иконки монохромные (единый цвет). [onOpenTournaments] переключает нижнюю
@@ -74,9 +75,10 @@ class ServicesBlock extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const ClubCardsScreen())),
       ),
       _ServiceData(
-        icon: Icons.emoji_events_outlined,
-        label: l.serviceTournaments,
-        onTap: onOpenTournaments,
+        icon: Icons.workspace_premium_outlined,
+        label: l.serviceCertificates,
+        onTap: () => Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const CertificatesScreen())),
       ),
     ];
 

@@ -2263,7 +2263,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceTournaments => 'Tournaments';
 
   @override
+  String get serviceCertificates => 'Certificates';
+
+  @override
   String get serviceComingSoon => 'Section under development';
+
+  @override
+  String get certificatesTitle => 'My certificates';
+
+  @override
+  String get certActive => 'Active';
+
+  @override
+  String get certUsed => 'Used';
+
+  @override
+  String get certStatusActive => 'Active';
+
+  @override
+  String get certStatusUsed => 'Used';
+
+  @override
+  String get certDetailTitle => 'Certificate';
+
+  @override
+  String get certOwner => 'Owner';
+
+  @override
+  String get certBearer => 'Bearer';
+
+  @override
+  String get certIssued => 'Issued';
+
+  @override
+  String get certRedeemed => 'Redeemed';
+
+  @override
+  String get certStamp => 'REDEEMED';
+
+  @override
+  String get certActiveUsable => 'Active — ready to use';
+
+  @override
+  String get certActiveHint =>
+      'Show this number to the club admin when booking — they will redeem the certificate.';
+
+  @override
+  String get certUsedHint =>
+      'This certificate has already been redeemed and can no longer be used.';
+
+  @override
+  String get certEmptyTitle => 'No certificates yet';
+
+  @override
+  String get certEmptyText =>
+      'When a club issues a certificate to your phone number, it will appear here.';
 
   @override
   String get clubCardsTitle => 'Club cards';

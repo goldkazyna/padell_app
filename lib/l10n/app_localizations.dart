@@ -4288,11 +4288,113 @@ abstract class AppLocalizations {
   /// **'Турниры'**
   String get serviceTournaments;
 
+  /// No description provided for @serviceCertificates.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сертификаты'**
+  String get serviceCertificates;
+
   /// No description provided for @serviceComingSoon.
   ///
   /// In ru, this message translates to:
   /// **'Раздел в разработке'**
   String get serviceComingSoon;
+
+  /// No description provided for @certificatesTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои сертификаты'**
+  String get certificatesTitle;
+
+  /// No description provided for @certActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Активные'**
+  String get certActive;
+
+  /// No description provided for @certUsed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Использованные'**
+  String get certUsed;
+
+  /// No description provided for @certStatusActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Активен'**
+  String get certStatusActive;
+
+  /// No description provided for @certStatusUsed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Использован'**
+  String get certStatusUsed;
+
+  /// No description provided for @certDetailTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сертификат'**
+  String get certDetailTitle;
+
+  /// No description provided for @certOwner.
+  ///
+  /// In ru, this message translates to:
+  /// **'Владелец'**
+  String get certOwner;
+
+  /// No description provided for @certBearer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Предъявителю'**
+  String get certBearer;
+
+  /// No description provided for @certIssued.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выдан'**
+  String get certIssued;
+
+  /// No description provided for @certRedeemed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Использован'**
+  String get certRedeemed;
+
+  /// No description provided for @certStamp.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПОГАШЕН'**
+  String get certStamp;
+
+  /// No description provided for @certActiveUsable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Активен — можно использовать'**
+  String get certActiveUsable;
+
+  /// No description provided for @certActiveHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Покажите номер администратору клуба при бронировании — он спишет сертификат.'**
+  String get certActiveHint;
+
+  /// No description provided for @certUsedHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сертификат уже погашен и недоступен для использования.'**
+  String get certUsedHint;
+
+  /// No description provided for @certEmptyTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет сертификатов'**
+  String get certEmptyTitle;
+
+  /// No description provided for @certEmptyText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда клуб выдаст сертификат на ваш номер телефона — он появится здесь.'**
+  String get certEmptyText;
 
   /// No description provided for @clubCardsTitle.
   ///

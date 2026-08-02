@@ -2245,7 +2245,61 @@ class AppLocalizationsKk extends AppLocalizations {
   String get serviceTournaments => 'Турнирлер';
 
   @override
+  String get serviceCertificates => 'Сертификаттар';
+
+  @override
   String get serviceComingSoon => 'Бөлім әзірленуде';
+
+  @override
+  String get certificatesTitle => 'Менің сертификаттарым';
+
+  @override
+  String get certActive => 'Белсенді';
+
+  @override
+  String get certUsed => 'Пайдаланылған';
+
+  @override
+  String get certStatusActive => 'Белсенді';
+
+  @override
+  String get certStatusUsed => 'Пайдаланылған';
+
+  @override
+  String get certDetailTitle => 'Сертификат';
+
+  @override
+  String get certOwner => 'Иесі';
+
+  @override
+  String get certBearer => 'Ұсынушыға';
+
+  @override
+  String get certIssued => 'Берілген';
+
+  @override
+  String get certRedeemed => 'Пайдаланылған';
+
+  @override
+  String get certStamp => 'ӨТЕЛГЕН';
+
+  @override
+  String get certActiveUsable => 'Белсенді — пайдалануға болады';
+
+  @override
+  String get certActiveHint =>
+      'Брондау кезінде осы нөмірді клуб әкімшісіне көрсетіңіз — ол сертификатты есептен шығарады.';
+
+  @override
+  String get certUsedHint =>
+      'Бұл сертификат өтелген және енді пайдалануға болмайды.';
+
+  @override
+  String get certEmptyTitle => 'Әзірге сертификаттар жоқ';
+
+  @override
+  String get certEmptyText =>
+      'Клуб сіздің телефон нөміріңізге сертификат бергенде, ол осы жерде пайда болады.';
 
   @override
   String get clubCardsTitle => 'Клуб карталары';
