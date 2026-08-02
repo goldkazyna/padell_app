@@ -210,6 +210,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filterCommunity => 'Комьюнити';
 
   @override
+  String get filterCity => 'Город';
+
+  @override
+  String filterCityWithCount(int count) {
+    return 'Город · $count';
+  }
+
+  @override
   String get forYouSection => 'Для вас';
 
   @override

@@ -210,6 +210,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterCommunity => 'Community';
 
   @override
+  String get filterCity => 'City';
+
+  @override
+  String filterCityWithCount(int count) {
+    return 'City · $count';
+  }
+
+  @override
   String get forYouSection => 'For you';
 
   @override

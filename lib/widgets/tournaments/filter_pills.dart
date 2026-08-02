@@ -10,6 +10,7 @@ class TournamentsFilter {
   final DateTime? dateFrom; // свой диапазон (начало), взаимоисключим с dateFilter
   final DateTime? dateTo; // свой диапазон (конец)
   final Set<int> clubIds;
+  final Set<String> cities;
   final bool onlyCommunity;
 
   const TournamentsFilter({
@@ -19,6 +20,7 @@ class TournamentsFilter {
     this.dateFrom,
     this.dateTo,
     this.clubIds = const {},
+    this.cities = const {},
     this.onlyCommunity = false,
   });
 
@@ -28,6 +30,7 @@ class TournamentsFilter {
       dateFilter == null &&
       dateFrom == null &&
       clubIds.isEmpty &&
+      cities.isEmpty &&
       !onlyCommunity;
 
   bool get hasDateRange => dateFrom != null && dateTo != null;
@@ -39,6 +42,7 @@ class TournamentsFilter {
     Object? dateFrom = _unset,
     Object? dateTo = _unset,
     Set<int>? clubIds,
+    Set<String>? cities,
     bool? onlyCommunity,
   }) {
     return TournamentsFilter(
@@ -49,6 +53,7 @@ class TournamentsFilter {
       dateFrom: dateFrom == _unset ? this.dateFrom : dateFrom as DateTime?,
       dateTo: dateTo == _unset ? this.dateTo : dateTo as DateTime?,
       clubIds: clubIds ?? this.clubIds,
+      cities: cities ?? this.cities,
       onlyCommunity: onlyCommunity ?? this.onlyCommunity,
     );
   }
@@ -65,6 +70,7 @@ class FilterPills extends StatelessWidget {
   final VoidCallback onDateTap;
   final VoidCallback onClubTap;
   final VoidCallback onToggleCommunity;
+  final VoidCallback onCityTap;
 
   const FilterPills({
     super.key,
@@ -75,6 +81,7 @@ class FilterPills extends StatelessWidget {
     required this.onDateTap,
     required this.onClubTap,
     required this.onToggleCommunity,
+    required this.onCityTap,
   });
 
   @override
@@ -128,6 +135,14 @@ class FilterPills extends StatelessWidget {
             l.filterCommunity,
             active: filter.onlyCommunity,
             onTap: onToggleCommunity,
+          ),
+          const SizedBox(width: 6),
+          _pill(
+            filter.cities.isEmpty
+                ? l.filterCity
+                : l.filterCityWithCount(filter.cities.length),
+            active: filter.cities.isNotEmpty,
+            onTap: onCityTap,
           ),
         ],
       ),

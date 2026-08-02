@@ -210,6 +210,14 @@ class AppLocalizationsKk extends AppLocalizations {
   String get filterCommunity => 'Комьюнити';
 
   @override
+  String get filterCity => 'Қала';
+
+  @override
+  String filterCityWithCount(int count) {
+    return 'Қала · $count';
+  }
+
+  @override
   String get forYouSection => 'Сіз үшін';
 
   @override

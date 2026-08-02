@@ -178,6 +178,60 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
     }
   }
 
+  Future<void> _openCityFilter(List<Tournament> allTournaments) async {
+    // Доступные города — только те, что реально есть у клубов турниров.
+    final cities = <String>{};
+    for (final t in allTournaments) {
+      final c = t.club.city?.trim();
+      if (c != null && c.isNotEmpty) cities.add(c);
+    }
+    final sorted = cities.toList()..sort();
+    final current = Set<String>.from(_filter.cities);
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.card,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return _FilterSheet(
+              title: AppLocalizations.of(context)!.filterCity,
+              onReset: () {
+                setState(() => _filter = _filter.copyWith(cities: {}));
+                Navigator.pop(ctx);
+              },
+              onApply: () {
+                setState(() =>
+                    _filter = _filter.copyWith(cities: Set<String>.from(current)));
+                Navigator.pop(ctx);
+              },
+              children: sorted.map((city) {
+                final checked = current.contains(city);
+                return _CheckboxRow(
+                  label: city,
+                  checked: checked,
+                  onTap: () => setSheetState(() {
+                    if (checked) {
+                      current.remove(city);
+                    } else {
+                      current.add(city);
+                    }
+                  }),
+                );
+              }).toList(),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> _openClubFilter(List<Tournament> allTournaments) async {
     final clubs = <int, String>{};
     for (final t in allTournaments) {
@@ -282,6 +336,7 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 onClubTap: () => _openClubFilter(provider.openTournaments),
                 onToggleCommunity: () => setState(() =>
                     _filter = _filter.copyWith(onlyCommunity: !_filter.onlyCommunity)),
+                onCityTap: () => _openCityFilter(provider.openTournaments),
               ),
             ),
             const SizedBox(height: 8),
@@ -447,6 +502,11 @@ List<Tournament> _applyFilter(
   }
   if (filter.clubIds.isNotEmpty) {
     list = list.where((t) => filter.clubIds.contains(t.club.id)).toList();
+  }
+  if (filter.cities.isNotEmpty) {
+    list = list
+        .where((t) => t.club.city != null && filter.cities.contains(t.club.city))
+        .toList();
   }
   if (filter.onlyCommunity) {
     list = list.where((t) => t.club.isCommunity).toList();

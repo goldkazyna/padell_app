@@ -478,6 +478,18 @@ abstract class AppLocalizations {
   /// **'Комьюнити'**
   String get filterCommunity;
 
+  /// No description provided for @filterCity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Город'**
+  String get filterCity;
+
+  /// No description provided for @filterCityWithCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Город · {count}'**
+  String filterCityWithCount(int count);
+
   /// No description provided for @forYouSection.
   ///
   /// In ru, this message translates to:
