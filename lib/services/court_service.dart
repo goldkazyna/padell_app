@@ -31,6 +31,12 @@ class CourtService {
     return response;
   }
 
+  /// Клубные карты-счётчики игрока в этом клубе (для оплаты брони).
+  Future<Map<String, dynamic>> getClubCards(int clubId) async {
+    final token = await _getToken();
+    return await _api.get('/courts/clubs/$clubId/cards', token);
+  }
+
   /// Забронировать корт
   Future<Map<String, dynamic>> book({
     required int clubId,
@@ -43,6 +49,7 @@ class CourtService {
     int? coachId,
     String? comment,
     bool needsCoach = false,
+    int? clubCardId,
   }) async {
     final token = await _getToken();
     final body = <String, dynamic>{
@@ -56,6 +63,7 @@ class CourtService {
     if (coachId != null) body['coach_id'] = coachId;
     if (comment != null && comment.isNotEmpty) body['comment'] = comment;
     if (needsCoach) body['needs_coach'] = true;
+    if (clubCardId != null) body['club_card_id'] = clubCardId;
     final response = await _api.post('/courts/clubs/$clubId/book', body, token);
     return response;
   }

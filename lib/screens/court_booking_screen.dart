@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../models/club.dart';
+import '../models/club_card.dart';
 import '../providers/court_provider.dart';
 import '../providers/home_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/club_card_visual.dart';
 import '../widgets/secure_payment_badge.dart';
 import 'booking_confirmation_screen.dart';
 import 'club_detail_screen.dart';
@@ -53,6 +55,79 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
   bool _initialized = false;
   bool _agreedToDocs = false;
 
+  // Клубные карты-счётчики игрока в этом клубе + выбранная карта для оплаты.
+  List<ClubCard> _clubCards = [];
+  int? _selectedCardId;
+  // Способ оплаты: 'online' | 'card' | 'none' (null — авто-выбор первого доступного).
+  String? _payMethod;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadClubCards());
+  }
+
+  Future<void> _loadClubCards() async {
+    final raw = await context.read<CourtProvider>().getClubCards(widget.club.id);
+    if (!mounted) return;
+    setState(() {
+      _clubCards = raw.map(ClubCard.fromJson).toList();
+      // Если карта — способ по умолчанию, заранее выбираем подходящую карту,
+      // чтобы кнопка «по клубной карте» не ушла с пустым club_card_id.
+      if (_method == 'card' && _selectedCardId == null && _clubCards.isNotEmpty) {
+        final ok = _clubCards.where((c) => (c.balance ?? 0) >= _selectedSlots);
+        _selectedCardId = (ok.isNotEmpty ? ok.first : _clubCards.first).id;
+      }
+    });
+  }
+
+  ClubCard? get _selectedCard {
+    if (_selectedCardId == null) return null;
+    for (final c in _clubCards) {
+      if (c.id == _selectedCardId) return c;
+    }
+    return null;
+  }
+
+  bool get _canOnline => widget.club.onlinePaymentEnabled;
+  bool get _canCard => _clubCards.isNotEmpty;
+  bool get _canNone => widget.club.allowBookingWithoutPayment;
+
+  List<String> get _availableMethods => [
+        if (_canOnline) 'online',
+        if (_canCard) 'card',
+        if (_canNone) 'none',
+      ];
+
+  /// Действующий способ оплаты (выбранный или первый доступный).
+  String get _method {
+    final avail = _availableMethods;
+    if (avail.isEmpty) return 'none';
+    if (_payMethod != null && avail.contains(_payMethod)) return _payMethod!;
+    return avail.first;
+  }
+
+  void _selectMethod(String key) {
+    setState(() {
+      _payMethod = key;
+      if (key == 'card') {
+        _selectedCardId ??= _clubCards.isNotEmpty ? _clubCards.first.id : null;
+      } else {
+        _selectedCardId = null;
+      }
+    });
+  }
+
+  /// Стандартная цена корта (без карты) — для онлайн/без оплаты.
+  double get _courtStandardTotal {
+    double total = 0;
+    for (int i = 0; i < _selectedSlots && (widget.slotIndex + i) < widget.slots.length; i++) {
+      final s = widget.slots[widget.slotIndex + i] as Map<String, dynamic>;
+      total += (s['price'] as num?)?.toDouble() ?? widget.price;
+    }
+    return total;
+  }
+
   /// Тренеры с фото — только их показываем при выборе.
   List<dynamic> get _coachesWithPhoto => widget.coaches
       .where((c) => ((c['photo'] as String?) ?? '').isNotEmpty)
@@ -72,12 +147,11 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
   }
 
   double get _courtTotal {
-    double total = 0;
-    for (int i = 0; i < _selectedSlots && (widget.slotIndex + i) < widget.slots.length; i++) {
-      final s = widget.slots[widget.slotIndex + i] as Map<String, dynamic>;
-      total += (s['price'] as num?)?.toDouble() ?? widget.price;
+    if (_method == 'card') {
+      final card = _selectedCard;
+      if (card != null) return (card.hourPrice ?? 0).toDouble() * _selectedSlots;
     }
-    return total;
+    return _courtStandardTotal;
   }
 
   double get _coachTotal {
@@ -149,6 +223,7 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
       comment: _commentController.text.isNotEmpty ? _commentController.text : null,
       // «Нужен тренер» без конкретного выбора — клуб подберёт сам.
       needsCoach: _needsCoach && _selectedCoachId == null,
+      clubCardId: _selectedCardId,
     );
 
     setState(() => _isBooking = false);
@@ -262,11 +337,14 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
             _sectionLabel(AppLocalizations.of(context)!.comment),
             const SizedBox(height: 8),
             _buildCommentField(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 22),
+
+            // Способ оплаты (радио) + выбор клубной карты
+            _buildPaymentSection(),
 
             // Кнопка
             _buildBookButton(),
-            if (widget.club.onlinePaymentEnabled) ...[
+            if (_method == 'online') ...[
               const SizedBox(height: 14),
               _buildDocsAgreement(),
               const SizedBox(height: 20),
@@ -710,124 +788,278 @@ class _CourtBookingScreenState extends State<CourtBookingScreen> {
     );
   }
 
-  Widget _buildBookButton() {
-    final l10n = AppLocalizations.of(context)!;
+  /// Секция «Способ оплаты»: радио (онлайн / карта / без оплаты) + мини-карты.
+  Widget _buildPaymentSection() {
+    final avail = _availableMethods;
+    if (avail.isEmpty) return const SizedBox.shrink();
+    final m = _method;
 
-    // Клуб с онлайн-оплатой — две кнопки: оплатить онлайн (пока заглушка)
-    // и забронировать без оплаты (обычная бронь). Кнопка онлайн-оплаты
-    // неактивна, пока не отмечено согласие с документами (если они есть).
-    if (widget.club.onlinePaymentEnabled) {
-      final hasDocs = _docLinks(l10n).isNotEmpty;
-      final canPayOnline = !hasDocs || _agreedToDocs;
-      return Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: GestureDetector(
-              onTap: (_isBooking || !canPayOnline) ? null : _payOnline,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: canPayOnline
-                      ? AppTheme.accent
-                      : AppTheme.accent.withAlpha(70),
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: canPayOnline
-                      ? [
-                          BoxShadow(
-                            color: AppTheme.accent.withAlpha(50),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Center(
-                  child: Text(
-                    l10n.payOnlineButton(_fmtPrice(_total)),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: canPayOnline
-                          ? Colors.black
-                          : Colors.black.withAlpha(120),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (widget.club.allowBookingWithoutPayment) ...[
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: GestureDetector(
-              onTap: _isBooking ? null : _book,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: AppTheme.card,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.accent.withAlpha(120)),
-                ),
-                child: Center(
-                  child: _isBooking
-                      ? const SizedBox(
-                          width: 22, height: 22,
-                          child: CircularProgressIndicator(
-                              color: AppTheme.accent, strokeWidth: 2.5))
-                      : Text(
-                          l10n.bookWithoutPaymentButton,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppTheme.accent,
-                          ),
-                        ),
-                ),
-              ),
-            ),
-          ),
+    // Единственный доступный способ — радио не нужны; если это карта, показываем выбор.
+    if (avail.length < 2) {
+      if (m == 'card') {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _sectionLabel('Клубная карта'),
+            const SizedBox(height: 8),
+            _buildCardPicker(),
+            const SizedBox(height: 12),
           ],
-        ],
-      );
+        );
+      }
+      return const SizedBox.shrink();
     }
 
-    return SizedBox(
-      width: double.infinity,
-      child: GestureDetector(
-        onTap: _isBooking ? null : _book,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: _isBooking ? AppTheme.accent.withAlpha(150) : AppTheme.accent,
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.accent.withAlpha(50),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _sectionLabel('Способ оплаты'),
+        const SizedBox(height: 8),
+        if (_canOnline)
+          _methodRow('online', m == 'online', Icons.payments_outlined,
+              'Оплата онлайн',
+              'Картой в приложении · ${_fmtPrice(_courtStandardTotal)} ₸'),
+        if (_canCard)
+          _methodRow(
+              'card',
+              m == 'card',
+              Icons.credit_card_rounded,
+              'Клубная карта',
+              _clubCards.length > 1
+                  ? '${_clubCards.length} карты — выберите одну'
+                  : 'Оплата занятиями по карте'),
+        if (m == 'card') _buildCardPicker(),
+        if (_canNone)
+          _methodRow('none', m == 'none', Icons.storefront_outlined,
+              'Без оплаты', 'Оплата на месте в клубе'),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Widget _methodRow(String key, bool selected, IconData icon, String title,
+      String subtitle) {
+    return GestureDetector(
+      onTap: () => _selectMethod(key),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 9),
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF131D16) : AppTheme.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+              color: selected ? AppTheme.accent : const Color(0x14FFFFFF),
+              width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: (selected ? AppTheme.accent : AppTheme.textSecondary)
+                    .withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(icon,
+                  size: 18,
+                  color: selected ? AppTheme.accent : AppTheme.textSecondary),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.textPrimary)),
+                  const SizedBox(height: 1),
+                  Text(subtitle,
+                      style:
+                          TextStyle(fontSize: 11.5, color: AppTheme.textDim)),
+                ],
+              ),
+            ),
+            _radioDot(selected),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _radioDot(bool on) => Container(
+        width: 22,
+        height: 22,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+              color: on ? AppTheme.accent : const Color(0xFF3A433D), width: 2),
+        ),
+        child: on
+            ? Center(
+                child: Container(
+                    width: 11,
+                    height: 11,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: AppTheme.accent)))
+            : null,
+      );
+
+  /// Выбор клубной карты — наши премиум-карты (ClubCardVisual) с выделением.
+  Widget _buildCardPicker() {
+    return Column(
+      children: [for (final c in _clubCards) _cardOption(c)],
+    );
+  }
+
+  Widget _cardOption(ClubCard c) {
+    final selected = _selectedCardId == c.id;
+    final enough = (c.balance ?? 0) >= _selectedSlots;
+    final brief = c.club ??
+        ClubCardClubBrief(id: widget.club.id, name: widget.club.name);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Opacity(
+        opacity: enough ? 1 : 0.5,
+        child: GestureDetector(
+          onTap: enough ? () => setState(() => _selectedCardId = c.id) : null,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 160),
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                        color: selected ? AppTheme.accent : Colors.transparent,
+                        width: 2.5,
+                      ),
+                      boxShadow: selected
+                          ? [
+                              BoxShadow(
+                                  color: AppTheme.accent.withValues(alpha: 0.4),
+                                  blurRadius: 22,
+                                  spreadRadius: -6)
+                            ]
+                          : null,
+                    ),
+                    child: ClubCardVisual(card: c, club: brief),
+                  ),
+                  if (selected)
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: Container(
+                        width: 26,
+                        height: 26,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppTheme.accent,
+                          border: Border.all(
+                              color: Colors.black.withValues(alpha: 0.25),
+                              width: 1),
+                        ),
+                        child: const Icon(Icons.check_rounded,
+                            size: 16, color: Colors.black),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 7),
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Text(
+                  enough
+                      ? 'Спишется $_selectedSlots ч · час ${_fmtPrice((c.hourPrice ?? 0).toDouble())} ₸'
+                      : 'Недостаточно часов на карте',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: enough ? AppTheme.textDim : AppTheme.orange,
+                  ),
+                ),
               ),
             ],
-          ),
-          child: Center(
-            child: _isBooking
-                ? const SizedBox(
-                    width: 22, height: 22,
-                    child: CircularProgressIndicator(
-                        color: Colors.black, strokeWidth: 2.5))
-                : Text(
-                    l10n.bookButton(_fmtPrice(_total)),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                    ),
-                  ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildBookButton() {
+    final l10n = AppLocalizations.of(context)!;
+    final m = _method;
+
+    Widget primary(String title, String? subtitle, VoidCallback? onTap,
+        {bool enabled = true}) {
+      return SizedBox(
+        width: double.infinity,
+        child: GestureDetector(
+          onTap: (_isBooking || !enabled) ? null : onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              color: (enabled && !_isBooking)
+                  ? AppTheme.accent
+                  : AppTheme.accent.withAlpha(90),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: (enabled && !_isBooking)
+                  ? [
+                      BoxShadow(
+                          color: AppTheme.accent.withAlpha(50),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6))
+                    ]
+                  : null,
+            ),
+            child: Center(
+              child: _isBooking
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                          color: Colors.black, strokeWidth: 2.5))
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(title,
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black)),
+                        if (subtitle != null)
+                          Text(subtitle,
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Colors.black.withValues(alpha: 0.55))),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (m == 'card') {
+      return primary('Забронировать по клубной карте',
+          'Спишется $_selectedSlots ч занятий', _book);
+    }
+    if (m == 'online') {
+      final hasDocs = _docLinks(l10n).isNotEmpty;
+      final canPay = !hasDocs || _agreedToDocs;
+      return primary(l10n.payOnlineButton(_fmtPrice(_total)), null, _payOnline,
+          enabled: canPay);
+    }
+    // 'none' — обычная бронь без оплаты.
+    return primary(l10n.bookButton(_fmtPrice(_total)), null, _book);
   }
 
   Future<void> _payOnline() async {

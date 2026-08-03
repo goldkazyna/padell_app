@@ -40,6 +40,7 @@ class Match {
   });
 
   bool get isWin => result == 'win';
+  bool get isDraw => result == 'draw';
 
   String get formatName {
     switch (format) {

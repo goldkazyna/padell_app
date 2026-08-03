@@ -45,6 +45,7 @@ class ClubCard {
   final bool isActual;
   final String status;
   final ClubCardClubBrief? club;
+  final int? hourPrice; // цена часа по карте (для оплаты брони)
 
   const ClubCard({
     required this.id,
@@ -61,6 +62,7 @@ class ClubCard {
     this.isActual = false,
     this.status = 'active',
     this.club,
+    this.hourPrice,
   });
 
   bool get isDiscount =>
@@ -83,6 +85,7 @@ class ClubCard {
         club: j['club'] != null
             ? ClubCardClubBrief.fromJson(j['club'] as Map<String, dynamic>)
             : null,
+        hourPrice: (j['hour_price'] as num?)?.toInt(),
       );
 }
 

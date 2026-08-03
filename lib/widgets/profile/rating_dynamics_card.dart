@@ -60,6 +60,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
   static const _dim = Color(0xFF6A6A73);
   static const _green = Color(0xFF22C47A);
   static const _red = Color(0xFFEF4444);
+  static const _yellow = Color(0xFFEAB308);
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +280,8 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
     // слева самые старые, справа — последний сыгранный.
     final ordered = matches.reversed.toList();
     final wins = ordered.where((m) => m.isWin).length;
-    final losses = ordered.length - wins;
+    final draws = ordered.where((m) => m.isDraw).length;
+    final losses = ordered.length - wins - draws;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -297,7 +299,7 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
               ),
             ),
             Text(
-              '$wins В · $losses П',
+              draws > 0 ? '$wins В · $losses П · $draws Н' : '$wins В · $losses П',
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -318,16 +320,21 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
                     right: i == ordered.length - 1 ? 0 : 3,
                   ),
                   decoration: BoxDecoration(
-                    color: (ordered[i].isWin ? _green : _red).withAlpha(220),
+                    color: (ordered[i].isDraw
+                            ? _yellow
+                            : (ordered[i].isWin ? _green : _red))
+                        .withAlpha(220),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    ordered[i].isWin ? 'В' : 'П',
+                    ordered[i].isDraw
+                        ? 'Н'
+                        : (ordered[i].isWin ? 'В' : 'П'),
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
-                      color: ordered[i].isWin
+                      color: ordered[i].isWin || ordered[i].isDraw
                           ? const Color(0xFF06281A)
                           : Colors.white,
                     ),

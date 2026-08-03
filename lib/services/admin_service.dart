@@ -685,6 +685,51 @@ class AdminService {
     }
   }
 
+  // === Мексикано ===
+
+  Future<void> saveMexicanoScore(
+    int tournamentId,
+    int matchId, {
+    required int team1Score,
+    required int team2Score,
+    required bool isUpdate,
+  }) async {
+    final token = await _storage.getToken();
+    final endpoint =
+        '/admin/tournaments/$tournamentId/mexicano/matches/$matchId/score';
+    final body = {'team1_score': team1Score, 'team2_score': team2Score};
+    if (isUpdate) {
+      await _api.put(endpoint, body, token);
+    } else {
+      await _api.post(endpoint, body, token);
+    }
+  }
+
+  Future<void> saveMexicanoPlayoffScore(
+    int tournamentId,
+    int matchId, {
+    required int team1Score,
+    required int team2Score,
+  }) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/mexicano/playoff/$matchId/score',
+      {'team1_score': team1Score, 'team2_score': team2Score},
+      token,
+    );
+  }
+
+  /// Досрочно завершить Мексикано / перейти в плей-офф. Возвращает свежий /matches.
+  Future<AdminMatchesResponse> mexicanoFinishEarly(int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/tournaments/$tournamentId/mexicano/finish-early',
+      const {},
+      token,
+    );
+    return AdminMatchesResponse.fromJson(response);
+  }
+
   // ---------------------------------------------------------------------------
   // Этап 3d — генерация плей-офф и завершение турнира
   // ---------------------------------------------------------------------------

@@ -115,6 +115,7 @@ class CourtProvider extends ChangeNotifier {
     int? coachId,
     String? comment,
     bool needsCoach = false,
+    int? clubCardId,
   }) async {
     try {
       final response = await _courtService.book(
@@ -128,12 +129,24 @@ class CourtProvider extends ChangeNotifier {
         coachId: coachId,
         comment: comment,
         needsCoach: needsCoach,
+        clubCardId: clubCardId,
       );
       return response;
     } on ApiException catch (e) {
       return {'success': false, 'message': e.message};
     } catch (e) {
       return {'success': false, 'message': 'Ошибка бронирования'};
+    }
+  }
+
+  /// Клубные карты-счётчики игрока в клубе (для оплаты брони).
+  Future<List<Map<String, dynamic>>> getClubCards(int clubId) async {
+    try {
+      final res = await _courtService.getClubCards(clubId);
+      final list = (res['cards'] as List?) ?? const [];
+      return list.whereType<Map<String, dynamic>>().toList();
+    } catch (_) {
+      return const [];
     }
   }
 
