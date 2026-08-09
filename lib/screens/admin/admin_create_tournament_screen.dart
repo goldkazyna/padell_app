@@ -112,11 +112,10 @@ class _AdminCreateTournamentScreenState
       return _flexMaxCourts;
     }
     final maxP = int.tryParse(_maxParticipants.text.trim()) ?? 16;
-    if (_type == 'team') {
-      // Ручной ввод кортов; пусто = авто ceil(игроки/4).
-      final manual = int.tryParse(_teamCourts.text.trim());
-      if (manual != null && manual >= 1) return manual.clamp(1, 32);
-    }
+    // Ручной ввод кортов доступен всем типам, кроме Flex; пусто = авто.
+    final manual = int.tryParse(_teamCourts.text.trim());
+    if (manual != null && manual >= 1) return manual.clamp(1, 32);
+
     final n = (maxP / 4).ceil();
     return n.clamp(1, 32);
   }
@@ -1057,20 +1056,8 @@ class _AdminCreateTournamentScreenState
         _label('Количество групп'),
         _teamGroupsSelector(),
         const SizedBox(height: 12),
-        _label('Количество кортов'),
-        _textField(
-          _teamCourts,
-          hint: 'оставьте пустым для авто',
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Если заполнено — матчи группового этапа идут волнами, не более N '
-          'одновременно. Пусто — авто (по числу игроков).',
-          style: TextStyle(color: AppTheme.textDim, fontSize: 11),
-        ),
-        const SizedBox(height: 12),
+        // Поле «Количество кортов» — общее для всех типов (кроме Flex),
+        // выводится ниже в блоке «Корты», здесь не дублируем.
         _checkboxTile(
           value: _teamHasPlayoff,
           label: 'С плей-офф (на вылет после групп)',
@@ -1123,11 +1110,38 @@ class _AdminCreateTournamentScreenState
         const SizedBox(height: 12),
       ]);
     } else {
+      // Ручной ввод кортов доступен всем типам, кроме Flex; пусто = авто.
       children.addAll([
-        Text(
-          'Кол-во кортов: $_courtsCount  (автоматически: участников ÷ 4)',
-          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        _textField(
+          _teamCourts,
+          hint: '$_courtsCount',
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
+        const SizedBox(height: 4),
+        Text(
+          'Пусто — автоматически по числу участников (1 корт = 4 игрока): $_courtsCount.',
+          style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+        ),
+        if (_type == 'team') ...[
+          const SizedBox(height: 4),
+          Text(
+            'Если заполнено — матчи группового этапа идут волнами, не более N '
+            'одновременно.',
+            style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+          ),
+        ],
+        // Solo Just Padel It: экран посева строит сетку courtsCount × 4
+        // и заполняет её только по этому лимиту — если кортов меньше,
+        // чем нужно, лишние участники в посев молча не попадут.
+        if (_type == 'just_padel_it' && !_flexIsPaired) ...[
+          const SizedBox(height: 4),
+          Text(
+            'Участников должно быть ровно кортов × 4 — иначе лишние '
+            'не попадут в посев.',
+            style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+          ),
+        ],
         const SizedBox(height: 12),
       ]);
     }
