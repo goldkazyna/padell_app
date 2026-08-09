@@ -370,6 +370,11 @@ class AdminMatchesResponse {
   /// Сколько пар нужно создать (для bali_koc, когда pairs_required=true).
   final int expectedPairsCount;
 
+  /// Только для эскалеры: по чему считается место — 'raw_points' (сумма
+  /// забитых) или 'points' (баллы за позиции). От этого зависит подпись
+  /// колонки очков в таблице.
+  final String? standingsMode;
+
   const AdminMatchesResponse({
     required this.type,
     required this.unsupported,
@@ -380,6 +385,7 @@ class AdminMatchesResponse {
     this.pairsRequired = false,
     this.participantsCount = 0,
     this.expectedPairsCount = 0,
+    this.standingsMode,
   });
 
   factory AdminMatchesResponse.fromJson(Map<String, dynamic> json) {
@@ -388,6 +394,7 @@ class AdminMatchesResponse {
       type: json['type'] as String? ?? '',
       unsupported: unsupported,
       unsupportedMessage: json['message'] as String?,
+      standingsMode: json['standings_mode'] as String?,
       groups: !unsupported
           ? ((json['groups'] as List?) ?? const [])
               .whereType<Map<String, dynamic>>()

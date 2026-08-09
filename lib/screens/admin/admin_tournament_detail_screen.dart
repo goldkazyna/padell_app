@@ -4402,6 +4402,15 @@ class _AdminTournamentDetailScreenState
     );
   }
 
+  /// Подпись последней колонки таблицы.
+  ///
+  /// У эскалеры зачёт бывает двух видов, и «ОЧКИ» не объясняет, что за
+  /// число показано: сумму забитых или баллы за позиции на кортах.
+  String _pointsColumnLabel() {
+    if (_matches?.type != 'escalera') return 'ОЧКИ';
+    return _matches?.standingsMode == 'points' ? 'БАЛЛЫ' : 'ЗАБИТО';
+  }
+
   TableRow _leaderboardHeaderRow() {
     final hdrStyle = TextStyle(
       color: AppTheme.textSecondary,
@@ -4441,7 +4450,7 @@ class _AdminTournamentDetailScreenState
         hdr('П'),
         hdr('Р'),
         hdr('%'),
-        hdr('ОЧКИ',
+        hdr(_pointsColumnLabel(),
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
       ],
