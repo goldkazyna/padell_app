@@ -329,6 +329,15 @@ class _TournamentLiveKingOfCourtScreenState
   /// параметрам: вместо РП/%/Очки — З (забито геймов) · ПР (пропущено) · ± (разница).
   bool get _isRoundRobin => _data?['tournament']?['format'] == 'round_robin';
 
+  /// Эскалера: колонки таблицы те же, что в админском экране турнира —
+  /// забито:пропущено вместо разницы, и подпись зачётной колонки по режиму.
+  bool get _isEscalera => _data?['tournament']?['format'] == 'escalera';
+
+  /// Эскалера: по чему считается место — 'points' (баллы за позиции) или
+  /// 'raw_points' (сумма забитых).
+  String get _escaleraMode =>
+      _data?['tournament']?['standings_mode'] as String? ?? 'raw_points';
+
   /// Король корта с фиксированными парами — таблица показывается по парам.
   bool get _isPaired => _data?['tournament']?['is_paired'] == true;
 
@@ -357,9 +366,16 @@ class _TournamentLiveKingOfCourtScreenState
               Expanded(child: Text(_isPaired ? 'ПАРА' : 'ИГРОК', style: hdrStyle)),
               hdr('В', 28),
               hdr('П', 28),
-              hdr(isRR ? 'З' : 'РП', 36),
+              hdr(isRR ? 'З' : (_isEscalera ? 'Р' : 'РП'), _isEscalera ? 46 : 36),
               hdr(isRR ? 'ПР' : '%', 36),
-              hdr(isRR ? '±' : 'ОЧКИ', 40, align: TextAlign.right),
+              hdr(
+                  isRR
+                      ? '±'
+                      : (_isEscalera && _escaleraMode == 'points'
+                          ? 'БАЛЛЫ'
+                          : 'ОЧКИ'),
+                  _isEscalera ? 48 : 40,
+                  align: TextAlign.right),
             ],
           ),
         ),
@@ -502,12 +518,16 @@ class _TournamentLiveKingOfCourtScreenState
               ),
             ] else ...[
               SizedBox(
-                width: 36,
+                width: _isEscalera ? 46 : 36,
                 child: Text(
-                  diffStr,
+                  // В эскалере показываем забито:пропущено — так же, как в
+                  // админском экране турнира. Разница там не выводится.
+                  _isEscalera ? '$pointsFor:$pointsAgainst' : diffStr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: isMe ? AppTheme.accent : diffColor,
+                    color: isMe
+                        ? AppTheme.accent
+                        : (_isEscalera ? AppTheme.textSecondary : diffColor),
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
