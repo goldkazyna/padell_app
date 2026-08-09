@@ -193,6 +193,7 @@ class _StandingsCard extends StatelessWidget {
     ];
 
     return Container(
+      width: 360,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -213,6 +214,7 @@ class _StandingsCard extends StatelessWidget {
               // Лого клуба слева (со-брендинг).
               if ((clubLogo ?? '').isNotEmpty)
                 Container(
+                  width: 40,
                   height: 40,
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
@@ -233,7 +235,8 @@ class _StandingsCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(9),
-                    child: Image.asset('assets/app_icon.png', height: 34, fit: BoxFit.cover),
+                    child: Image.asset('assets/app_icon.png',
+                        width: 34, height: 34, fit: BoxFit.cover),
                   ),
                   const SizedBox(width: 9),
                   const Text.rich(TextSpan(children: [
@@ -443,6 +446,7 @@ class _StandingsCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
+                  width: 22,
                   height: 22,
                   decoration:
                       BoxDecoration(color: rankBg, shape: BoxShape.circle),
