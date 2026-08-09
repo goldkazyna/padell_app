@@ -779,14 +779,11 @@ class _AdminCreateTournamentScreenState
   }
 
   Widget _typeSelector() {
-    // Плитки раскладываются сеткой по три в ряд: форматов девять, и при
-    // горизонтальном свайпе половина из них оставалась за краем экрана.
     Widget card({
       required String value,
       required String title,
       required String subtitle,
       required IconData icon,
-      required double width,
     }) {
       final active = _type == value;
       return GestureDetector(
@@ -795,11 +792,9 @@ class _AdminCreateTournamentScreenState
           _updateRoundsCount();
         },
         child: Container(
-          width: width,
-          // Высота фиксирована, иначе плитки в ряду разъезжаются: у одних
-          // название в одну строку, у других в две.
-          height: 104,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          width: 152,
+          margin: const EdgeInsets.only(right: 10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: active ? AppTheme.accent.withOpacity(0.12) : AppTheme.card,
             borderRadius: BorderRadius.circular(12),
@@ -813,21 +808,18 @@ class _AdminCreateTournamentScreenState
             children: [
               Icon(icon,
                   color: active ? AppTheme.accent : AppTheme.textSecondary,
-                  size: 18),
-              const SizedBox(height: 6),
+                  size: 20),
+              const SizedBox(height: 8),
               Text(title,
                   style: TextStyle(
                     color: active ? AppTheme.accent : AppTheme.textPrimary,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    height: 1.15,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
+                  )),
               const SizedBox(height: 2),
               Text(subtitle,
                   style: TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 10, height: 1.2),
+                      color: AppTheme.textSecondary, fontSize: 11),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis),
             ],
@@ -836,84 +828,71 @@ class _AdminCreateTournamentScreenState
       );
     }
 
-    const gap = 8.0;
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Три плитки в ряд: девять форматов ложатся ровно в три ряда и
-        // помещаются на экран целиком, без прокрутки.
-        final w = (constraints.maxWidth - gap * 2) / 3;
-
-        return Wrap(
-          spacing: gap,
-          runSpacing: gap,
+    // Горизонтальный свайп: видно край следующей карточки — намёк, что листается.
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             card(
               value: 'americano',
               title: 'Американо',
               subtitle: 'Группы, ротация партнёров',
               icon: Icons.shuffle_rounded,
-              width: w,
             ),
             card(
               value: 'mexicano',
               title: 'Мексикано',
               subtitle: 'Пары по очкам, все вместе',
               icon: Icons.trending_up_rounded,
-              width: w,
             ),
             card(
               value: 'king_of_court',
               title: 'Король корта',
               subtitle: 'Ротация по кортам',
               icon: Icons.emoji_events_outlined,
-              width: w,
             ),
             card(
               value: 'just_padel_it',
               title: 'Just Padel It',
               subtitle: 'Движение по кортам + бонусы',
               icon: Icons.local_fire_department_outlined,
-              width: w,
             ),
             card(
               value: 'round_robin',
               title: 'Round Robin',
               subtitle: 'Каждый с каждым, зачёт по победам',
               icon: Icons.sync_alt_rounded,
-              width: w,
             ),
             card(
               value: 'bali_koc',
               title: 'Король Корта (Bali)',
               subtitle: 'Фикс. пары, очки от корта',
               icon: Icons.groups_rounded,
-              width: w,
             ),
             card(
               value: 'escalera',
               title: 'Эскалера',
               subtitle: 'Лестница из кортов',
               icon: Icons.stairs_rounded,
-              width: w,
             ),
             card(
               value: 'team',
               title: 'Групповой + Плей-офф',
               subtitle: 'Парный, выход в плей-офф',
               icon: Icons.account_tree_outlined,
-              width: w,
             ),
             card(
               value: 'americano_flex',
               title: 'Americano Flex',
               subtitle: 'Очередь, любое число игроков',
               icon: Icons.swap_horiz_rounded,
-              width: w,
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 
