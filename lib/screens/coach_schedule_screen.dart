@@ -162,19 +162,33 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                       ],
                     ),
                   ),
-                  // Вход в тренировки: их тренер ведёт отдельно от расписания
-                  // кортов, поэтому это соседний экран, а не вкладка.
-                  IconButton(
-                    tooltip: 'Мои тренировки',
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const CoachTrainingsScreen(),
-                      ),
-                    ),
-                    icon: Icon(Icons.fitness_center_outlined,
-                        color: AppTheme.accent),
-                  ),
                 ],
+              ),
+            ),
+            // Тренировки тренер ведёт отдельно от расписания кортов — это
+            // соседний экран. Кнопка на виду: иконкой в шапке её не находили.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+              child: SizedBox(
+                height: 46,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CoachTrainingsScreen(),
+                    ),
+                  ),
+                  icon: const Icon(Icons.fitness_center_outlined, size: 18),
+                  label: const Text('Мои тренировки'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    textStyle: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w700),
+                  ),
+                ),
               ),
             ),
             // Лента дат (скролл в прошлое/будущее).
