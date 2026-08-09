@@ -299,6 +299,8 @@ class AdminService {
     int id, {
     required String name,
     String? description,
+    bool? hasPrizes,
+    String? prizes,
     required DateTime startDate,
     required double minLevel,
     required double maxLevel,
@@ -330,6 +332,10 @@ class AdminService {
     final body = <String, dynamic>{
       'name': name,
       'description': description,
+      // Призы отправляем только когда экран их прислал: иначе сервер оставит
+      // настройку как была.
+      if (hasPrizes != null) 'has_prizes': hasPrizes,
+      if (hasPrizes == true && (prizes ?? '').isNotEmpty) 'prizes': prizes,
       'start_date': startDate.toIso8601String(),
       'min_level': minLevel,
       'max_level': maxLevel,

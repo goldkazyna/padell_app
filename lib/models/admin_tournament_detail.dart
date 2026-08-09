@@ -4,6 +4,12 @@ class AdminTournamentDetail {
   final int id;
   final String name;
   final String? description;
+
+  /// Призовой турнир и текст призов — задаются при создании и правятся
+  /// в редактировании.
+  final bool hasPrizes;
+  final String? prizes;
+
   final String type;
   final String typeName;
   final String status;
@@ -53,6 +59,8 @@ class AdminTournamentDetail {
     required this.id,
     required this.name,
     required this.description,
+    this.hasPrizes = false,
+    this.prizes,
     required this.type,
     required this.typeName,
     required this.status,
@@ -103,6 +111,8 @@ class AdminTournamentDetail {
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
       description: json['description'] as String?,
+      hasPrizes: json['has_prizes'] as bool? ?? false,
+      prizes: json['prizes'] as String?,
       type: json['type'] as String? ?? '',
       typeName: json['type_name'] as String? ?? '',
       status: json['status'] as String? ?? '',

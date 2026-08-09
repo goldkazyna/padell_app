@@ -63,6 +63,10 @@ class _AdminTournamentDetailScreenState
   // Контроллеры формы — создаём один раз и переиспользуем
   final _name = TextEditingController();
   final _description = TextEditingController();
+
+  /// Призовой турнир: флаг и текст призов.
+  final _prizes = TextEditingController();
+  bool _hasPrizes = false;
   final _maxParticipants = TextEditingController();
   final _price = TextEditingController();
   final _moderationHours = TextEditingController();
@@ -157,6 +161,7 @@ class _AdminTournamentDetailScreenState
   void dispose() {
     _name.dispose();
     _description.dispose();
+    _prizes.dispose();
     _maxParticipants.dispose();
     _teamCourts.dispose();
     _price.dispose();
@@ -196,6 +201,8 @@ class _AdminTournamentDetailScreenState
   void _applyToForm(AdminTournamentDetail t) {
     _name.text = t.name;
     _description.text = t.description ?? '';
+    _hasPrizes = t.hasPrizes;
+    _prizes.text = t.prizes ?? '';
     _maxParticipants.text = t.maxParticipants.toString();
     _price.text = t.price != null
         ? (t.price! % 1 == 0 ? t.price!.toInt().toString() : t.price.toString())
@@ -285,6 +292,8 @@ class _AdminTournamentDetailScreenState
             description: _description.text.trim().isEmpty
                 ? null
                 : _description.text.trim(),
+            hasPrizes: _hasPrizes,
+            prizes: _prizes.text.trim(),
             startDate: _startDate!,
             minLevel: _minLevel,
             maxLevel: _maxLevel,
@@ -1185,6 +1194,22 @@ class _AdminTournamentDetailScreenState
               _label('Описание'),
               _textField(_description, hint: 'Можно оставить пустым',
                   maxLines: 3, enabled: !disabled),
+              // Призовой турнир — та же настройка, что при создании.
+              _boolTile(
+                label: 'Призовой турнир',
+                subtitle: 'Покажем призы в карточке турнира',
+                value: _hasPrizes,
+                onChanged:
+                    disabled ? null : (v) => setState(() => _hasPrizes = v),
+              ),
+              if (_hasPrizes) ...[
+                const SizedBox(height: 12),
+                _label('Призы'),
+                _textField(_prizes,
+                    hint: 'Например: 1 место — …, 2 место — …',
+                    maxLines: 3,
+                    enabled: !disabled),
+              ],
               const SizedBox(height: 12),
               _label('Дата и время старта'),
               _dateField(disabled: disabled),
