@@ -753,6 +753,25 @@ class AdminService {
     );
   }
 
+  /// Сохранить счёт короткого матча «Эскалеры». POST и PUT одинаковы —
+  /// у формата сохранение и правка это одна операция.
+  Future<void> saveEscaleraScore(
+    int tournamentId,
+    int matchId, {
+    required int team1Score,
+    required int team2Score,
+  }) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/escalera/matches/$matchId/score',
+      {
+        'team1_score': team1Score,
+        'team2_score': team2Score,
+      },
+      token,
+    );
+  }
+
   /// Сохранить счёт матча Round Robin. POST/PUT одинаковы — RoundRobinService
   /// сам откатит старые статы если матч уже completed.
   Future<void> saveRoundRobinScore(

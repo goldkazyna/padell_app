@@ -503,6 +503,11 @@ class _AdminTournamentDetailScreenState
     return t != null && t.type == 'americano_flex';
   }
 
+  bool get _isEscalera {
+    final t = _t;
+    return t != null && t.type == 'escalera';
+  }
+
   /// Авто-расчёт числа кортов от количества участников: 1 корт = 4 игрока,
   /// диапазон 1-32. Только арифметика, без проверок «можно ли подставлять» —
   /// те проверки разные в разных местах вызова (см. `_autofillCourts` и
@@ -533,7 +538,9 @@ class _AdminTournamentDetailScreenState
   /// участников ничего бы не меняла. Не трогает поле, если админ правил корты
   /// руками в этой сессии, или это Flex — у Flex собственный блок кортов.
   void _autofillCourts(String _) {
-    if (_isFlex || _courtsTouchedManually) return;
+    // У эскалеры участники считаются из кортов, а не наоборот — подставлять
+    // корты по числу участников здесь нельзя, иначе поля перетирают друг друга.
+    if (_isFlex || _isEscalera || _courtsTouchedManually) return;
 
     final maxP = int.tryParse(_maxParticipants.text.trim());
     if (maxP == null || maxP <= 0) return;
@@ -1208,13 +1215,24 @@ class _AdminTournamentDetailScreenState
                         _textField(_maxParticipants,
                             hint: '8',
                             keyboardType: TextInputType.number,
-                            enabled: !disabled,
+                            // Эскалера: участников считает сервер как корты × 4,
+                            // руками это поле не меняют.
+                            enabled: !disabled && !_isEscalera,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             // Ручная правка числа участников подставляет корты,
                             // но только если они ещё не заданы.
                             onChanged: _autofillCourts),
+                        if (_isEscalera)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              'Считается из кортов: корты × 4.',
+                              style: TextStyle(
+                                  color: AppTheme.textDim, fontSize: 11),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -3815,7 +3833,7 @@ class _AdminTournamentDetailScreenState
               child: ElevatedButton.icon(
                 onPressed: _actionBusy ? null : _generateNextRound,
                 icon: const Icon(Icons.skip_next_rounded, size: 18),
-                label: const Text('Сгенерировать следующий раунд'),
+                label: Text(_nextRoundLabel()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.accent,
                   disabledBackgroundColor:
@@ -4685,6 +4703,16 @@ class _AdminTournamentDetailScreenState
     );
   }
 
+  /// Подпись кнопки генерации. У эскалеры называем номер раунда — так админ
+  /// понимает, что получит, а не просто «следующий».
+  String _nextRoundLabel() {
+    if (_matches?.type != 'escalera') return 'Сгенерировать следующий раунд';
+    final rounds = _matches?.groups.isNotEmpty == true
+        ? _matches!.groups.first.rounds.length
+        : 0;
+    return 'Сгенерировать раунд ${rounds + 1}';
+  }
+
   Widget _buildRoundBlock(AdminMatchRound round) {
     // Round Robin, Americano Flex, Король корта и Bali — раундов много,
     // сворачиваем завершённые, чтобы не листать «газету». Активный («идёт»)
@@ -4694,7 +4722,8 @@ class _AdminTournamentDetailScreenState
         || _matches?.type == 'americano_flex'
         || _matches?.type == 'king_of_court'
         || _matches?.type == 'bali_koc'
-        || _matches?.type == 'just_padel_it';
+        || _matches?.type == 'just_padel_it'
+        || _matches?.type == 'escalera';
     final expanded = !collapsible
         ? true
         : (_rrRoundExpanded[round.id] ?? (round.status == 'in_progress'));
@@ -5196,6 +5225,7 @@ class _AdminTournamentDetailScreenState
     final isRoundRobin = _matches?.type == 'round_robin';
     final isJpi = _matches?.type == 'just_padel_it';
     final isMexicano = _matches?.type == 'mexicano';
+    final isEscalera = _matches?.type == 'escalera';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -5300,6 +5330,13 @@ class _AdminTournamentDetailScreenState
             );
       } else if (isJpi) {
         await context.read<AdminService>().saveJpiScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+            );
+      } else if (isEscalera) {
+        await context.read<AdminService>().saveEscaleraScore(
               tournamentId,
               matchId,
               team1Score: result.score1,

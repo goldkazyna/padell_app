@@ -52,7 +52,10 @@ class _AdminCreateTournamentScreenState
   // Парный Americano Flex (фиксированные пары, собирает админ).
   bool _flexIsPaired = false;
 
-  String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex / just_padel_it
+  /// Эскалера: зачёт по баллам за позиции либо по сумме забитых очков.
+  String _escaleraStandingsMode = 'points';
+
+  String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex / just_padel_it / escalera
   DateTime? _startDate;
   double _minLevel = 1.5;
   double _maxLevel = 4.0;
@@ -105,6 +108,12 @@ class _AdminCreateTournamentScreenState
   }
 
   int get _courtsCount {
+    if (_type == 'escalera') {
+      // У эскалеры зависимость обратная: корты задаёт админ, а участники
+      // считаются из них. Автоподстановка «участники ÷ 4» здесь не нужна.
+      final manual = int.tryParse(_teamCourts.text.trim());
+      return (manual ?? 3).clamp(2, 10);
+    }
     if (_type == 'americano_flex') {
       // Flex: ручной ввод, иначе авто floor(игроки/4). Корт = 4 игрока.
       final manual = int.tryParse(_flexCourts.text.trim());
@@ -275,6 +284,7 @@ class _AdminCreateTournamentScreenState
       'chat_write_mode': _chatWriteMode,
       'courts': courts,
       'courts_count': _courtsCount,
+      if (_type == 'escalera') 'escalera_standings_mode': _escaleraStandingsMode,
       'reserve_count': reserve,
       'waitlist_size': waitlistSize,
       if (_venueClubId != null) 'venue_club_id': _venueClubId,
@@ -596,13 +606,35 @@ class _AdminCreateTournamentScreenState
             _label('Уровень игроков'),
             _levelSliders(),
             const SizedBox(height: 12),
-            _label('Макс. участников (2–128)'),
-            _textField(
-              _maxParticipants,
-              hint: '16',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
+            if (_type != 'escalera') ...[
+              _label('Макс. участников (2–128)'),
+              _textField(
+                _maxParticipants,
+                hint: '16',
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              ),
+            ],
+            // Эскалера: число участников задаётся кортами, а не наоборот.
+            if (_type == 'escalera') ...[
+              _label('Количество кортов (2–10)'),
+              _textField(
+                _teamCourts,
+                hint: '3',
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                onChanged: (_) => setState(() {}),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Участников будет ${_courtsCount * 4}: на каждом корте четверо.',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _escaleraModeControl(),
+            ],
             const SizedBox(height: 12),
             _label('Резервных игроков (0–10)'),
             _textField(
@@ -839,6 +871,12 @@ class _AdminCreateTournamentScreenState
               title: 'Король Корта (Bali)',
               subtitle: 'Фикс. пары, очки от корта',
               icon: Icons.groups_rounded,
+            ),
+            card(
+              value: 'escalera',
+              title: 'Эскалера',
+              subtitle: 'Лестница из кортов',
+              icon: Icons.stairs_rounded,
             ),
             card(
               value: 'team',
@@ -1540,12 +1578,14 @@ class _AdminCreateTournamentScreenState
     int maxLines = 1,
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
+    ValueChanged<String>? onChanged,
   }) {
     return TextField(
       controller: c,
       maxLines: maxLines,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
+      onChanged: onChanged,
       style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
@@ -2363,6 +2403,73 @@ class _AdminCreateTournamentScreenState
               onTap: () => setState(() => _jpiRankByWins = true),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  /// Эскалера: по чему считается итоговое место.
+  Widget _escaleraModeControl() {
+    Widget pill({
+      required String text,
+      required bool active,
+      required VoidCallback onTap,
+    }) {
+      return Expanded(
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: active
+                  ? AppTheme.accent.withOpacity(0.15)
+                  : AppTheme.cardRaised,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: active ? AppTheme.accent : AppTheme.border,
+                width: active ? 1.4 : 1,
+              ),
+            ),
+            child: Text(
+              text,
+              style: TextStyle(
+                color: active ? AppTheme.accent : AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Итоговая таблица'),
+        Row(
+          children: [
+            pill(
+              text: 'По баллам',
+              active: _escaleraStandingsMode == 'points',
+              onTap: () => setState(() => _escaleraStandingsMode = 'points'),
+            ),
+            const SizedBox(width: 10),
+            pill(
+              text: 'По очкам',
+              active: _escaleraStandingsMode == 'raw_points',
+              onTap: () => setState(() => _escaleraStandingsMode = 'raw_points'),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            'Баллы за позиции — родной зачёт формата: номер корта уже учтён.',
+            style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+          ),
         ),
       ],
     );
