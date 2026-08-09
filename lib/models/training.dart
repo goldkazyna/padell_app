@@ -55,6 +55,17 @@ class Training {
   bool get isCancelled => status == 'cancelled';
   bool get isCompleted => status == 'completed';
 
+  /// Цена для показа: «20 000 ₸» или «Бесплатно».
+  /// Тысячи разделяем пробелом — тот же формат, что в выборе клуба.
+  String get priceLabel {
+    if (price <= 0) return 'Бесплатно';
+    final digits = price.toString().replaceAllMapped(
+          RegExp(r'(\d)(?=(\d{3})+$)'),
+          (m) => '${m[1]} ',
+        );
+    return '$digits ₸';
+  }
+
   factory Training.fromJson(Map<String, dynamic> json) {
     return Training(
       id: (json['id'] as num).toInt(),

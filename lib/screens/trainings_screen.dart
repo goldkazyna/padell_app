@@ -232,7 +232,7 @@ class TrainingCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  t.price > 0 ? '${t.price} ₸' : 'Бесплатно',
+                  t.priceLabel,
                   style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 15,

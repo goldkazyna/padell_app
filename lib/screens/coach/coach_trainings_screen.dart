@@ -206,7 +206,7 @@ class _CoachTrainingsScreenState extends State<CoachTrainingsScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w600)),
                 const Spacer(),
-                Text(t.price > 0 ? '${t.price} ₸' : 'Бесплатно',
+                Text(t.priceLabel,
                     style: TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 14,

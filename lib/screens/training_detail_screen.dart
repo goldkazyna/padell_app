@@ -127,7 +127,7 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
           if ((t.coach?.name ?? '').isNotEmpty)
             _row(Icons.sports_tennis_outlined, 'Тренер: ${t.coach!.name}'),
           _row(Icons.payments_outlined,
-              t.price > 0 ? '${t.price} ₸' : 'Бесплатно'),
+              t.priceLabel),
           _row(
             Icons.group_outlined,
             t.freeSlots > 0

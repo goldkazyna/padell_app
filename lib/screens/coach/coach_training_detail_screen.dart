@@ -299,7 +299,7 @@ class _CoachTrainingDetailScreenState extends State<CoachTrainingDetailScreen> {
           _row(Icons.place_outlined, t.club.name),
           _row(Icons.timelapse_outlined, '${t.durationMinutes} минут'),
           _row(Icons.payments_outlined,
-              t.price > 0 ? '${t.price} ₸' : 'Бесплатно'),
+              t.priceLabel),
           if ((t.description ?? '').isNotEmpty)
             _row(Icons.notes_outlined, t.description!),
         ],
