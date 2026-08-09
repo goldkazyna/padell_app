@@ -52,8 +52,8 @@ class _AdminCreateTournamentScreenState
   // Парный Americano Flex (фиксированные пары, собирает админ).
   bool _flexIsPaired = false;
 
-  /// Эскалера: зачёт по баллам за позиции либо по сумме забитых очков.
-  String _escaleraStandingsMode = 'points';
+  /// Эскалера: зачёт по сумме забитых очков либо по баллам за позиции.
+  String _escaleraStandingsMode = 'raw_points';
 
   String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex / just_padel_it / escalera
   DateTime? _startDate;
@@ -2452,22 +2452,22 @@ class _AdminCreateTournamentScreenState
         Row(
           children: [
             pill(
-              text: 'По баллам',
-              active: _escaleraStandingsMode == 'points',
-              onTap: () => setState(() => _escaleraStandingsMode = 'points'),
-            ),
-            const SizedBox(width: 10),
-            pill(
               text: 'По очкам',
               active: _escaleraStandingsMode == 'raw_points',
               onTap: () => setState(() => _escaleraStandingsMode = 'raw_points'),
+            ),
+            const SizedBox(width: 10),
+            pill(
+              text: 'По баллам',
+              active: _escaleraStandingsMode == 'points',
+              onTap: () => setState(() => _escaleraStandingsMode = 'points'),
             ),
           ],
         ),
         Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
-            'Баллы за позиции — родной зачёт формата: номер корта уже учтён.',
+            'По очкам — сумма забитых за все матчи. По баллам — родной зачёт формата: номер корта уже учтён в позиции.',
             style: TextStyle(color: AppTheme.textDim, fontSize: 11),
           ),
         ),
