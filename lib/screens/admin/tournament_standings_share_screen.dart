@@ -73,7 +73,8 @@ class _TournamentStandingsShareScreenState
       await Future.delayed(const Duration(milliseconds: 120));
       final boundary = _cardKey.currentContext!.findRenderObject()
           as RenderRepaintBoundary;
-      final image = await boundary.toImage(pixelRatio: 3.0);
+      // Плотность 2: при 3 картинка выходила избыточно тяжёлой.
+      final image = await boundary.toImage(pixelRatio: 2.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final bytes = byteData!.buffer.asUint8List();
 
@@ -185,8 +186,13 @@ class _StandingsCard extends StatelessWidget {
     final cols = def.$1;
     final legend = def.$2;
 
+    // Ширина колонки — по самому длинному значению в ней, а не константой:
+    // иначе столбец с «5» занимает столько же, сколько с «136:105».
+    final widths = <double>[
+      for (final c in cols) _measure(c, rows),
+    ];
+
     return Container(
-      width: 360,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -195,7 +201,7 @@ class _StandingsCard extends StatelessWidget {
           stops: [0.0, 0.55, 1.0],
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(12, 22, 12, 16),
+      padding: const EdgeInsets.fromLTRB(6, 20, 6, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -207,7 +213,6 @@ class _StandingsCard extends StatelessWidget {
               // Лого клуба слева (со-брендинг).
               if ((clubLogo ?? '').isNotEmpty)
                 Container(
-                  width: 40,
                   height: 40,
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
@@ -228,8 +233,7 @@ class _StandingsCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(9),
-                    child: Image.asset('assets/app_icon.png',
-                        width: 34, height: 34, fit: BoxFit.cover),
+                    child: Image.asset('assets/app_icon.png', height: 34, fit: BoxFit.cover),
                   ),
                   const SizedBox(width: 9),
                   const Text.rich(TextSpan(children: [
@@ -275,9 +279,9 @@ class _StandingsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _headerRow(cols),
+          _headerRow(cols, widths),
           const SizedBox(height: 2),
-          for (int i = 0; i < rows.length; i++) _playerRow(rows[i], cols),
+          for (int i = 0; i < rows.length; i++) _playerRow(rows[i], cols, widths),
           const SizedBox(height: 8),
           Text(
             legend,
@@ -315,24 +319,37 @@ class _StandingsCard extends StatelessWidget {
     );
   }
 
-  Widget _headerRow(List<_Col> cols) {
+  /// Сколько места нужно колонке: самое длинное значение плюс небольшой
+  /// запас. Цифра при 11.5 px занимает примерно 7 px.
+  double _measure(_Col c, List<AdminLeaderboardRow> rows) {
+    var longest = c.header.length;
+    for (final r in rows) {
+      final len = c.value(r).length;
+      if (len > longest) longest = len;
+    }
+
+    return (longest * 7.0 + 8).clamp(20.0, 64.0);
+  }
+
+  Widget _headerRow(List<_Col> cols, List<double> widths) {
     const st = TextStyle(
         color: Color(0xFF5C665F),
         fontSize: 9.5,
         fontWeight: FontWeight.w800,
         letterSpacing: 0.3);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(6, 0, 6, 4),
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
       child: Row(
         children: [
           const Expanded(child: Text('#  Игрок', style: st)),
-          for (final c in cols)
+          for (var i = 0; i < cols.length; i++)
             SizedBox(
-              width: c.width,
+              width: widths[i],
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.center,
-                child: Text(c.header, maxLines: 1, softWrap: false, style: st),
+                child:
+                    Text(cols[i].header, maxLines: 1, softWrap: false, style: st),
               ),
             ),
         ],
@@ -348,7 +365,7 @@ class _StandingsCard extends StatelessWidget {
       required String name,
       required bool verified,
       required int id,
-      double avatarSize = 24,
+      double avatarSize = 22,
     }) {
       return Row(
         children: [
@@ -360,7 +377,7 @@ class _StandingsCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700)),
           ),
           if (verified) ...[
@@ -393,7 +410,8 @@ class _StandingsCard extends StatelessWidget {
     );
   }
 
-  Widget _playerRow(AdminLeaderboardRow p, List<_Col> cols) {
+  Widget _playerRow(
+      AdminLeaderboardRow p, List<_Col> cols, List<double> widths) {
     final isTop = p.position <= 3;
 
     Color rankBg = const Color(0xFF2A332E);
@@ -411,7 +429,7 @@ class _StandingsCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 3),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 7),
       decoration: BoxDecoration(
         color: isTop
             ? const Color(0x1022C55E)
@@ -425,7 +443,6 @@ class _StandingsCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 22,
                   height: 22,
                   decoration:
                       BoxDecoration(color: rankBg, shape: BoxShape.circle),
@@ -441,21 +458,21 @@ class _StandingsCard extends StatelessWidget {
               ],
             ),
           ),
-          for (final c in cols)
+          for (var i = 0; i < cols.length; i++)
             SizedBox(
-              width: c.width,
+              width: widths[i],
               // Значение всегда в одну строку: «136:105» переносилось на две
               // и читалось как мусор. Не влезает — ужимаем, а не ломаем.
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.center,
-                child: Text(c.value(p),
+                child: Text(cols[i].value(p),
                     maxLines: 1,
                     softWrap: false,
                     style: TextStyle(
-                        color: c.color(p),
+                        color: cols[i].color(p),
                         fontSize: 11.5,
-                        fontWeight: c.weight)),
+                        fontWeight: cols[i].weight)),
               ),
             ),
         ],
@@ -470,9 +487,10 @@ class _Col {
   final String Function(AdminLeaderboardRow) value;
   final Color Function(AdminLeaderboardRow) color;
   final FontWeight weight;
-  final double width;
+
+  // Ширины у колонки нет: её считает карточка по самому длинному значению.
   const _Col(this.header, this.value, this.color,
-      {this.weight = FontWeight.w700, this.width = 30});
+      {this.weight = FontWeight.w700});
 }
 
 const _green = Color(0xFF22C55E);
@@ -498,17 +516,17 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
             final m = p.matchesPlayed ?? 0;
             final a = p.avgPoints ?? (m > 0 ? p.pointsFor / m : 0.0);
             return a.toStringAsFixed(2);
-          }, (_) => _green, weight: FontWeight.w900, width: 36),
+          }, (_) => _green, weight: FontWeight.w900),
         ],
         'Заб — забито · Проп — пропущено · Разн — разница · Матч — матчей · Сред — среднее'
       );
     case 'round_robin':
       return (
         [
-          _Col('В', (p) => '${p.wins}', (_) => _green, width: 24),
-          _Col('П', (p) => '${p.losses}', (_) => _red, width: 24),
-          _Col('З', (p) => '${p.pointsFor}', (_) => Colors.white, width: 32),
-          _Col('Пр', (p) => '${p.pointsAgainst}', (_) => _dim, width: 32),
+          _Col('В', (p) => '${p.wins}', (_) => _green),
+          _Col('П', (p) => '${p.losses}', (_) => _red),
+          _Col('З', (p) => '${p.pointsFor}', (_) => Colors.white),
+          _Col('Пр', (p) => '${p.pointsAgainst}', (_) => _dim),
           _Col('±', (p) {
             final d = p.pointDiff;
             return d > 0 ? '+$d' : '$d';
@@ -519,13 +537,12 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
     default: // americano / mexicano / king_of_court / just_padel_it / bali_koc
       return (
         [
-          _Col('В', (p) => '${p.wins}', (_) => _green, width: 24),
-          _Col('П', (p) => '${p.losses}', (_) => _red, width: 24),
-          _Col('Р', (p) => '${p.pointsFor}:${p.pointsAgainst}', (_) => _dim,
-              width: 50),
-          _Col('%', (p) => '${p.winPercent}%', (_) => _dim, width: 32),
+          _Col('В', (p) => '${p.wins}', (_) => _green),
+          _Col('П', (p) => '${p.losses}', (_) => _red),
+          _Col('Р', (p) => '${p.pointsFor}:${p.pointsAgainst}', (_) => _dim),
+          _Col('%', (p) => '${p.winPercent}%', (_) => _dim),
           _Col('Очки', (p) => '${p.totalPoints}', (_) => _green,
-              weight: FontWeight.w900, width: 36),
+              weight: FontWeight.w900),
         ],
         'В — победы · П — поражения · Р — счёт мячей · % — процент побед · Очки — сумма очков'
       );
