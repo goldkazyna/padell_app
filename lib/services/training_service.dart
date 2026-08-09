@@ -69,10 +69,12 @@ class TrainingService {
     return Training.fromJson(r['training'] as Map<String, dynamic>);
   }
 
-  /// Клубы для выпадающего списка при создании (комьюнити не приходят).
-  Future<List<TrainingClub>> getCoachClubs() async {
+  /// Клубы для выбора при создании (комьюнити не приходят).
+  /// [query] ищет по названию и городу.
+  Future<List<TrainingClub>> getCoachClubs({String query = ''}) async {
     final token = await _storage.getToken();
-    final r = await _api.get('/coach/clubs', token);
+    final q = Uri.encodeQueryComponent(query.trim());
+    final r = await _api.get('/coach/clubs?search=$q', token);
     return ((r['clubs'] as List?) ?? const [])
         .whereType<Map<String, dynamic>>()
         .map(TrainingClub.fromJson)

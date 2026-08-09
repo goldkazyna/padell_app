@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -23,18 +25,15 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
   final _capacity = TextEditingController(text: '4');
   final _description = TextEditingController();
 
-  List<TrainingClub> _clubs = const [];
-  int? _clubId;
+  TrainingClub? _club;
   DateTime? _startsAt;
   int _duration = 60;
 
-  bool _loadingClubs = true;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _loadClubs();
   }
 
   @override
@@ -43,22 +42,6 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
     _capacity.dispose();
     _description.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadClubs() async {
-    try {
-      final clubs = await context.read<TrainingService>().getCoachClubs();
-      if (!mounted) return;
-      setState(() {
-        _clubs = clubs;
-        _clubId = clubs.isNotEmpty ? clubs.first.id : null;
-        _loadingClubs = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _loadingClubs = false);
-      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
-    }
   }
 
   Future<void> _pickDateTime() async {
@@ -85,7 +68,7 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
   }
 
   Future<void> _save() async {
-    if (_clubId == null) {
+    if (_club?.id == null) {
       await showAppAlert(context, 'Выберите клуб', title: 'Ошибка', isError: true);
       return;
     }
@@ -105,7 +88,7 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
     setState(() => _saving = true);
     try {
       await context.read<TrainingService>().create(
-            clubId: _clubId!,
+            clubId: _club!.id!,
             startsAt: _formatForApi(_startsAt!),
             durationMinutes: _duration,
             price: price,
@@ -152,9 +135,7 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
               ),
             ),
             Expanded(
-              child: _loadingClubs
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView(
+              child: ListView(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                       children: [
                         _label('Клуб'),
@@ -206,36 +187,201 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
                 fontWeight: FontWeight.w600)),
       );
 
+  /// Поле выбора клуба: открывает поиск, как при создании турнира.
   Widget _clubPicker() {
-    if (_clubs.isEmpty) {
-      return Text('Клубы не найдены',
-          style: TextStyle(color: AppTheme.textDim, fontSize: 13));
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.cardRaised,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<int>(
-          value: _clubId,
-          isExpanded: true,
-          dropdownColor: AppTheme.cardRaised,
-          style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
-          items: _clubs
-              .map((c) => DropdownMenuItem(
-                    value: c.id,
-                    child: Text(
-                      (c.city ?? '').isEmpty ? c.name : '${c.name} · ${c.city}',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ))
-              .toList(),
-          onChanged: (v) => setState(() => _clubId = v),
+    final club = _club;
+
+    return GestureDetector(
+      onTap: _showClubPicker,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppTheme.cardRaised,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.apartment_outlined,
+                size: 18, color: AppTheme.textSecondary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                club == null
+                    ? 'Выберите клуб'
+                    : ((club.city ?? '').isEmpty
+                        ? club.name
+                        : '${club.name} · ${club.city}'),
+                style: TextStyle(
+                  color: club == null ? AppTheme.textDim : AppTheme.textPrimary,
+                  fontSize: 14,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Icon(Icons.chevron_right, color: AppTheme.textDim, size: 18),
+          ],
         ),
       ),
     );
+  }
+
+  /// Поиск клуба с задержкой 400 мс — тем же приёмом, что выбор площадки
+  /// при создании турнира.
+  Future<void> _showClubPicker() async {
+    final service = context.read<TrainingService>();
+
+    final picked = await showModalBottomSheet<TrainingClub>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        final searchCtrl = TextEditingController();
+        Timer? debounce;
+        List<TrainingClub> results = const [];
+        bool loading = true;
+        String? error;
+        bool started = false;
+
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            Future<void> runSearch(String query) async {
+              setSheetState(() => loading = true);
+              try {
+                final found = await service.getCoachClubs(query: query);
+                setSheetState(() {
+                  results = found;
+                  loading = false;
+                  error = null;
+                });
+              } catch (e) {
+                setSheetState(() {
+                  loading = false;
+                  error = '$e';
+                });
+              }
+            }
+
+            if (!started) {
+              started = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) => runSearch(''));
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: AppTheme.border,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text('Клуб',
+                          style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: searchCtrl,
+                        autofocus: true,
+                        style: TextStyle(
+                            color: AppTheme.textPrimary, fontSize: 14),
+                        onChanged: (value) {
+                          debounce?.cancel();
+                          debounce = Timer(
+                            const Duration(milliseconds: 400),
+                            () => runSearch(value),
+                          );
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Название или город',
+                          hintStyle:
+                              TextStyle(color: AppTheme.textDim, fontSize: 13),
+                          prefixIcon: Icon(Icons.search,
+                              color: AppTheme.textDim, size: 20),
+                          filled: true,
+                          fillColor: AppTheme.cardRaised,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 320,
+                        child: loading
+                            ? const Center(child: CircularProgressIndicator())
+                            : error != null
+                                ? Center(
+                                    child: Text(error!,
+                                        style: TextStyle(
+                                            color: AppTheme.textSecondary,
+                                            fontSize: 13)),
+                                  )
+                                : results.isEmpty
+                                    ? Center(
+                                        child: Text('Ничего не нашлось',
+                                            style: TextStyle(
+                                                color: AppTheme.textSecondary,
+                                                fontSize: 13)),
+                                      )
+                                    : ListView.separated(
+                                        itemCount: results.length,
+                                        separatorBuilder: (_, __) => Divider(
+                                            height: 1, color: AppTheme.border),
+                                        itemBuilder: (_, i) {
+                                          final c = results[i];
+                                          return ListTile(
+                                            contentPadding: EdgeInsets.zero,
+                                            title: Text(c.name,
+                                                style: TextStyle(
+                                                    color: AppTheme.textPrimary,
+                                                    fontSize: 14)),
+                                            subtitle: (c.city ?? '').isEmpty
+                                                ? null
+                                                : Text(c.city!,
+                                                    style: TextStyle(
+                                                        color: AppTheme.textDim,
+                                                        fontSize: 12)),
+                                            onTap: () => Navigator.of(
+                                                    sheetContext)
+                                                .pop(c),
+                                          );
+                                        },
+                                      ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (picked != null && mounted) {
+      setState(() => _club = picked);
+    }
   }
 
   Widget _dateTimeField() {
