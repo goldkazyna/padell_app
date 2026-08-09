@@ -329,7 +329,11 @@ class _StandingsCard extends StatelessWidget {
           for (final c in cols)
             SizedBox(
               width: c.width,
-              child: Text(c.header, textAlign: TextAlign.center, style: st),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Text(c.header, maxLines: 1, softWrap: false, style: st),
+              ),
             ),
         ],
       ),
@@ -344,12 +348,12 @@ class _StandingsCard extends StatelessWidget {
       required String name,
       required bool verified,
       required int id,
-      double avatarSize = 26,
+      double avatarSize = 24,
     }) {
       return Row(
         children: [
           _CardAvatar(url: url, name: name, size: avatarSize),
-          const SizedBox(width: 8),
+          const SizedBox(width: 7),
           Flexible(
             child: Text(name,
                 maxLines: 1,
@@ -440,10 +444,19 @@ class _StandingsCard extends StatelessWidget {
           for (final c in cols)
             SizedBox(
               width: c.width,
-              child: Text(c.value(p),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: c.color(p), fontSize: 11.5, fontWeight: c.weight)),
+              // Значение всегда в одну строку: «136:105» переносилось на две
+              // и читалось как мусор. Не влезает — ужимаем, а не ломаем.
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Text(c.value(p),
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(
+                        color: c.color(p),
+                        fontSize: 11.5,
+                        fontWeight: c.weight)),
+              ),
             ),
         ],
       ),
@@ -492,10 +505,10 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
     case 'round_robin':
       return (
         [
-          _Col('В', (p) => '${p.wins}', (_) => _green),
-          _Col('П', (p) => '${p.losses}', (_) => _red),
-          _Col('З', (p) => '${p.pointsFor}', (_) => Colors.white),
-          _Col('Пр', (p) => '${p.pointsAgainst}', (_) => _dim),
+          _Col('В', (p) => '${p.wins}', (_) => _green, width: 24),
+          _Col('П', (p) => '${p.losses}', (_) => _red, width: 24),
+          _Col('З', (p) => '${p.pointsFor}', (_) => Colors.white, width: 32),
+          _Col('Пр', (p) => '${p.pointsAgainst}', (_) => _dim, width: 32),
           _Col('±', (p) {
             final d = p.pointDiff;
             return d > 0 ? '+$d' : '$d';
@@ -506,11 +519,11 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
     default: // americano / mexicano / king_of_court / just_padel_it / bali_koc
       return (
         [
-          _Col('В', (p) => '${p.wins}', (_) => _green),
-          _Col('П', (p) => '${p.losses}', (_) => _red),
+          _Col('В', (p) => '${p.wins}', (_) => _green, width: 24),
+          _Col('П', (p) => '${p.losses}', (_) => _red, width: 24),
           _Col('Р', (p) => '${p.pointsFor}:${p.pointsAgainst}', (_) => _dim,
-              width: 42),
-          _Col('%', (p) => '${p.winPercent}%', (_) => _dim),
+              width: 50),
+          _Col('%', (p) => '${p.winPercent}%', (_) => _dim, width: 32),
           _Col('Очки', (p) => '${p.totalPoints}', (_) => _green,
               weight: FontWeight.w900, width: 36),
         ],
