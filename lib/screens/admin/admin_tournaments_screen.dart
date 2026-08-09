@@ -271,6 +271,7 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
           summary: list[i],
           onTap: () => _openDetail(list[i]),
           onDuplicate: () => _duplicate(list[i]),
+          onDelete: () => _delete(list[i]),
         ),
       ),
     );
@@ -288,6 +289,50 @@ class _AdminTournamentsScreenState extends State<AdminTournamentsScreen> {
     );
     if (changed == true && mounted) {
       _load();
+    }
+  }
+
+  Future<void> _delete(AdminTournamentSummary t) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        title: Text('Удалить турнир?',
+            style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text(
+          '«${t.name}» удалится насовсем — вместе с записями участников, '
+          'матчами и чатом. Отменить это будет нельзя.',
+          style: TextStyle(color: AppTheme.textDim),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Отмена', style: TextStyle(color: AppTheme.textDim)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Удалить',
+                style: TextStyle(
+                    color: Color(0xFFEF4444), fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+
+    try {
+      await context.read<AdminService>().deleteTournament(t.id);
+      if (!mounted) return;
+      await _load();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Турнир удалён')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$e')),
+      );
     }
   }
 
@@ -340,11 +385,13 @@ class _TournamentCard extends StatelessWidget {
   final AdminTournamentSummary summary;
   final VoidCallback onTap;
   final VoidCallback onDuplicate;
+  final VoidCallback onDelete;
 
   const _TournamentCard({
     required this.summary,
     required this.onTap,
     required this.onDuplicate,
+    required this.onDelete,
   });
 
   @override
@@ -432,6 +479,7 @@ class _TournamentCard extends StatelessWidget {
                       color: AppTheme.card,
                       onSelected: (value) {
                         if (value == 'duplicate') onDuplicate();
+                        if (value == 'delete') onDelete();
                       },
                       itemBuilder: (context) => [
                         PopupMenuItem<String>(
@@ -447,6 +495,22 @@ class _TournamentCard extends StatelessWidget {
                             ],
                           ),
                         ),
+                        // Удалять можно только там, где нечего терять:
+                        // черновик и отменённый. По остальным сервер откажет.
+                        if (summary.status == 'draft' ||
+                            summary.status == 'cancelled')
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete_outline,
+                                    color: Color(0xFFEF4444), size: 18),
+                                SizedBox(width: 10),
+                                Text('Удалить',
+                                    style: TextStyle(color: Color(0xFFEF4444))),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),
