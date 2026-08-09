@@ -138,16 +138,11 @@ class _AdminTournamentDetailScreenState
   void initState() {
     super.initState();
     _currentTab = widget.initialTab;
-    // Ручная правка поля кортов отключает автоподстановку. Полная очистка
-    // поля возвращает автоматический режим.
-    _teamCourts.addListener(() {
-      final text = _teamCourts.text.trim();
-      if (text.isEmpty) {
-        _courtsTouchedManually = false;
-      }
-    });
-    // Смена числа участников подставляет корты, пока админ их не трогал.
-    _maxParticipants.addListener(_autofillCourts);
+    // Слушателей на контроллерах намеренно нет: автоподстановка кортов висит
+    // на `onChanged` поля «Макс. участников», чтобы срабатывать только на
+    // ручной ввод админа, а не на программное заполнение формы из ответа
+    // сервера (иначе турниру молча проставлялось бы число кортов, которого
+    // у него не было).
     _load();
     // Если открыли сразу на конкретной вкладке (напр. из пуша) — грузим её данные.
     if (widget.initialTab == 1) {
@@ -214,20 +209,13 @@ class _AdminTournamentDetailScreenState
     _teamHasLowerBracket = t.hasLowerBracket;
     _teamHasBronzeMatch = t.hasBronzeMatch;
     _teamCourts.text = t.courtsCount != null ? '${t.courtsCount}' : '';
-    // Сервер мог ещё не хранить число кортов для этого турнира (тип раньше
-    // не поддерживал поле) — подставляем авто-расчёт по участникам уже при
-    // открытии экрана. Проверяем именно `t.type`, а не геттер `_isFlex`:
-    // на этом месте `_applyToForm` ещё не отработал `setState(() => _t = t)`
-    // (он в вызывающем коде, после этого метода), поэтому `_t` тут либо
-    // null, либо турнир из ПРЕДЫДУЩЕЙ загрузки — `_isFlex` дал бы неверный
-    // ответ даже для настоящего Flex-турнира. Flex не трогаем — у него свой
-    // блок кортов.
-    if (_teamCourts.text.trim().isEmpty && t.type != 'americano_flex') {
-      final maxP = t.maxParticipants;
-      if (maxP > 0) {
-        _teamCourts.text = '${_computeAutoCourts(maxP)}';
-      }
-    }
+    // Значение, пришедшее с сервера, считаем заданным вручную: автоподстановка
+    // по числу участников не должна его перетирать. Если корты не заданы —
+    // поле остаётся пустым, и турнир так и сохранит «авто» (сервер сам решит,
+    // сколько кортов нужно). Ничего не подставляем при загрузке: подстановка
+    // сломала бы старт solo Just Padel It (там нужно ровно кортов × 4
+    // зарегистрированных) и молча перекроила бы расписание командного турнира.
+    _courtsTouchedManually = t.courtsCount != null;
     // Тоггл статуса работает только для черновик/открыт; иные статусы оставляем как есть.
     _status = (t.status == 'draft' || t.status == 'open') ? t.status : _status;
     _moderationHours.text = (t.moderationHours ?? 0) > 0 ? '${t.moderationHours}' : '';
@@ -520,10 +508,28 @@ class _AdminTournamentDetailScreenState
   int _computeAutoCourts(int maxParticipants) =>
       (maxParticipants / 4).ceil().clamp(1, 32);
 
+  /// Реально ли сервер использует число кортов у этого формата.
+  ///
+  /// Читают его всего три места: Americano Flex (расписание пар), командный
+  /// турнир (матчи группы идут волнами) и solo Just Padel It (сетка посева).
+  /// У короля корта, Bali, американо, мексикано и классического число кортов
+  /// на игру считается от числа участников, а сохранённое значение влияет
+  /// только на количество названий кортов.
+  bool get _courtsAffectSchedule {
+    final t = _t;
+    if (t == null) return false;
+    return t.type == 'americano_flex' ||
+        t.type == 'team' ||
+        (t.type == 'just_padel_it' && !t.isPaired);
+  }
+
   /// Подставить число кортов от количества участников: 1 корт = 4 игрока.
-  /// Не трогает поле, если админ уже вводил своё значение или это Flex —
+  ///
+  /// Вызывается ТОЛЬКО из `onChanged` поля «Макс. участников», то есть когда
+  /// админ сам меняет число участников в этой сессии. Не трогает поле, если
+  /// корты уже заданы (пришли с сервера или введены руками) или это Flex —
   /// у Flex собственный блок кортов.
-  void _autofillCourts() {
+  void _autofillCourts(String _) {
     if (_isFlex || _courtsTouchedManually) return;
 
     final maxP = int.tryParse(_maxParticipants.text.trim());
@@ -532,10 +538,7 @@ class _AdminTournamentDetailScreenState
     final next = '${_computeAutoCourts(maxP)}';
     if (_teamCourts.text.trim() == next) return;
 
-    // Программная подстановка не должна взводить флаг ручной правки.
-    final wasTouched = _courtsTouchedManually;
     _teamCourts.text = next;
-    _courtsTouchedManually = wasTouched;
   }
 
   /// Открыть экран создания пар (JPI, KOC или Bali) и обновить карточку после.
@@ -1205,7 +1208,10 @@ class _AdminTournamentDetailScreenState
                             enabled: !disabled,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
-                            ]),
+                            ],
+                            // Ручная правка числа участников подставляет корты,
+                            // но только если они ещё не заданы.
+                            onChanged: _autofillCourts),
                       ],
                     ),
                   ),
@@ -1404,7 +1410,7 @@ class _AdminTournamentDetailScreenState
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: AppTheme.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'оставьте пустым для авто',
+                    hintText: 'не задано',
                     hintStyle: TextStyle(color: AppTheme.textDim),
                     filled: true,
                     fillColor: AppTheme.cardRaised,
@@ -1416,23 +1422,41 @@ class _AdminTournamentDetailScreenState
                         horizontal: 12, vertical: 12),
                   ),
                   onChanged: (value) {
-                    // Пустое поле возвращает автоматический режим.
+                    // Введённое значение защищаем от автоподстановки по числу
+                    // участников; очистка поля возвращает её.
                     _courtsTouchedManually = value.trim().isNotEmpty;
                   },
                 ),
                 const SizedBox(height: 4),
+                // Пустое поле НЕ означает «авто»: ключ просто не уходит на
+                // сервер, и сохранённое значение остаётся прежним. Вернуть
+                // турнир в авто-режим из приложения нельзя.
                 Text(
-                  'Пусто — автоматически по числу участников (1 корт = 4 игрока).',
+                  _t?.courtsCount == null
+                      ? 'Не задано — число кортов считается автоматически. '
+                          'Пустое поле оставит всё как есть.'
+                      : 'Пустое поле оставит текущее значение без изменений.',
                   style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                 ),
-                // Solo Just Padel It: экран посева строит сетку courtsCount × 4
-                // и заполняет её только по этому лимиту — если кортов меньше,
-                // чем нужно, лишние участники в посев молча не попадут.
+                // Форматы, где сервер число кортов не читает: оно задаёт
+                // только количество названий кортов.
+                if (!_courtsAffectSchedule) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'У этого формата корты на игру считаются автоматически по '
+                    'числу участников — значение задаёт только количество '
+                    'названий кортов.',
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                  ),
+                ],
+                // Solo Just Padel It: посев строит сетку ровно кортов × 4,
+                // поэтому при несовпадении кнопка старта недоступна.
                 if (_isJpiSolo) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'Участников должно быть ровно кортов × 4 — иначе лишние '
-                    'не попадут в посев.',
+                    'Кнопка посева появится, только когда зарегистрированных '
+                    'будет ровно кортов × 4. Если корты не заданы — хватит '
+                    'любого числа игроков, кратного четырём.',
                     style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                   ),
                 ],
@@ -1785,6 +1809,7 @@ class _AdminTournamentDetailScreenState
     TextInputType? keyboardType,
     bool enabled = true,
     List<TextInputFormatter>? inputFormatters,
+    ValueChanged<String>? onChanged,
   }) {
     return TextField(
       controller: c,
@@ -1792,6 +1817,7 @@ class _AdminTournamentDetailScreenState
       maxLines: maxLines,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
+      onChanged: onChanged,
       style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
