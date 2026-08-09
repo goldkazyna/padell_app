@@ -78,6 +78,9 @@ class _AdminTournamentDetailScreenState
   bool _teamHasLowerBracket = false;
   bool _teamHasBronzeMatch = false;
   final _teamCourts = TextEditingController(); // пусто = авто
+  // Админ правил число кортов руками — автоподстановка от участников
+  // больше не перетирает его значение.
+  bool _courtsTouchedManually = false;
 
   // Доп. поля редактирования (как при создании) — до старта менять безопасно
   final _durationHours = TextEditingController();
@@ -135,6 +138,16 @@ class _AdminTournamentDetailScreenState
   void initState() {
     super.initState();
     _currentTab = widget.initialTab;
+    // Ручная правка поля кортов отключает автоподстановку. Полная очистка
+    // поля возвращает автоматический режим.
+    _teamCourts.addListener(() {
+      final text = _teamCourts.text.trim();
+      if (text.isEmpty) {
+        _courtsTouchedManually = false;
+      }
+    });
+    // Смена числа участников подставляет корты, пока админ их не трогал.
+    _maxParticipants.addListener(_autofillCourts);
     _load();
     // Если открыли сразу на конкретной вкладке (напр. из пуша) — грузим её данные.
     if (widget.initialTab == 1) {
@@ -201,6 +214,15 @@ class _AdminTournamentDetailScreenState
     _teamHasLowerBracket = t.hasLowerBracket;
     _teamHasBronzeMatch = t.hasBronzeMatch;
     _teamCourts.text = t.courtsCount != null ? '${t.courtsCount}' : '';
+    // Сервер мог ещё не хранить число кортов для этого турнира (тип раньше
+    // не поддерживал поле) — подставляем авто-расчёт по участникам уже при
+    // открытии экрана. Flex не трогаем — у него свой блок кортов.
+    if (_teamCourts.text.trim().isEmpty && t.type != 'americano_flex') {
+      final maxP = t.maxParticipants;
+      if (maxP > 0) {
+        _teamCourts.text = '${(maxP / 4).ceil().clamp(1, 32)}';
+      }
+    }
     // Тоггл статуса работает только для черновик/открыт; иные статусы оставляем как есть.
     _status = (t.status == 'draft' || t.status == 'open') ? t.status : _status;
     _moderationHours.text = (t.moderationHours ?? 0) > 0 ? '${t.moderationHours}' : '';
@@ -291,10 +313,10 @@ class _AdminTournamentDetailScreenState
                 t.type == 'americano' && _amHasPlayoff ? _amPlayoffType : null,
             playoffFormat:
                 t.type == 'americano' && _amHasPlayoff ? _amPlayoffFormat : null,
-            courtsCount: (t.type == 'team' ||
-                        t.type == 'americano_flex' ||
-                        (t.type == 'just_padel_it' && !t.isPaired)) &&
-                    _teamCourts.text.trim().isNotEmpty
+            // Поле кортов (_teamCourts) общее для всех типов, кроме Flex у
+            // которого свой блок ниже, но контроллер тот же самый — отправляем
+            // значение независимо от типа, лишь бы поле было заполнено.
+            courtsCount: _teamCourts.text.trim().isNotEmpty
                 ? int.tryParse(_teamCourts.text.trim())
                 : null,
             durationHours: int.tryParse(_durationHours.text.trim()),
@@ -484,6 +506,25 @@ class _AdminTournamentDetailScreenState
   bool get _isFlex {
     final t = _t;
     return t != null && t.type == 'americano_flex';
+  }
+
+  /// Подставить число кортов от количества участников: 1 корт = 4 игрока.
+  /// Не трогает поле, если админ уже вводил своё значение или это Flex —
+  /// у Flex собственный блок кортов.
+  void _autofillCourts() {
+    if (_isFlex || _courtsTouchedManually) return;
+
+    final maxP = int.tryParse(_maxParticipants.text.trim());
+    if (maxP == null || maxP <= 0) return;
+
+    final auto = (maxP / 4).ceil().clamp(1, 32);
+    final next = '$auto';
+    if (_teamCourts.text.trim() == next) return;
+
+    // Программная подстановка не должна взводить флаг ручной правки.
+    final wasTouched = _courtsTouchedManually;
+    _teamCourts.text = next;
+    _courtsTouchedManually = wasTouched;
   }
 
   /// Открыть экран создания пар (JPI, KOC или Bali) и обновить карточку после.
@@ -1336,8 +1377,9 @@ class _AdminTournamentDetailScreenState
                   ],
                 ),
               ),
-              // Количество кортов — для solo Just Padel It.
-              if (_isJpiSolo) ...[
+              // Количество кортов — у всех типов, кроме Americano Flex
+              // (у него свой блок ниже с тем же полем — не дублируем).
+              if (!_isFlex) ...[
                 const SizedBox(height: 12),
                 Text('Количество кортов',
                     style: TextStyle(
@@ -1351,7 +1393,7 @@ class _AdminTournamentDetailScreenState
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: AppTheme.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'напр. 3 (кортов × 4 = игроков)',
+                    hintText: 'оставьте пустым для авто',
                     hintStyle: TextStyle(color: AppTheme.textDim),
                     filled: true,
                     fillColor: AppTheme.cardRaised,
@@ -1362,10 +1404,14 @@ class _AdminTournamentDetailScreenState
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 12),
                   ),
+                  onChanged: (value) {
+                    // Пустое поле возвращает автоматический режим.
+                    _courtsTouchedManually = value.trim().isNotEmpty;
+                  },
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Для посева игроков должно быть ровно кортов × 4.',
+                  'Пусто — автоматически по числу участников (1 корт = 4 игрока).',
                   style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                 ),
               ],
@@ -1439,36 +1485,6 @@ class _AdminTournamentDetailScreenState
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text('Количество кортов',
-                    style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600)),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: _teamCourts,
-                  enabled: !disabled,
-                  keyboardType: TextInputType.number,
-                  style: TextStyle(color: AppTheme.textPrimary),
-                  decoration: InputDecoration(
-                    hintText: 'оставьте пустым для авто',
-                    hintStyle: TextStyle(color: AppTheme.textDim),
-                    filled: true,
-                    fillColor: AppTheme.cardRaised,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 12),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Пусто — авто. Иначе матчи группы идут волнами, не более N '
-                  'одновременно.',
-                  style: TextStyle(color: AppTheme.textDim, fontSize: 11),
-                ),
                 _boolTile(
                   label: 'С плей-офф',
                   subtitle: 'На вылет после групп. Выкл — только групповой этап.',
