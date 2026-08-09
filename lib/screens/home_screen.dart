@@ -20,6 +20,7 @@ import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/verification_blockers_banner.dart';
 import '../theme/app_theme.dart';
 import '../services/training_service.dart';
+import 'coach/coach_trainings_screen.dart';
 import '../utils/profile_incomplete_guard.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
@@ -613,6 +614,71 @@ class _CoachScheduleCard extends StatelessWidget {
                     ),
                     const Icon(Icons.chevron_right_rounded,
                         color: Colors.white, size: 24),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Вторая кнопка блока: занятия тренер ведёт отдельно от расписания
+          // кортов, и искать их внутри расписания неочевидно.
+          Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+            child: InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CoachTrainingsScreen()),
+              ),
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: _accent.withAlpha(30),
+                  border: Border.all(color: _accent.withAlpha(90)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: _accent.withAlpha(45),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.fitness_center_rounded,
+                          color: _accent, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Мои тренировки',
+                            style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Создавайте занятия и ведите записи',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded,
+                        color: AppTheme.textSecondary, size: 24),
                   ],
                 ),
               ),
