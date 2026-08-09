@@ -129,9 +129,14 @@ class TrainingPerson {
 class TrainingParticipant {
   final int id;
   final String name;
+
+  /// Приходит только тренеру — для звонка и WhatsApp.
   final String? phone;
   final String? avatar;
   final int rating;
+
+  /// Это место текущего игрока: подсвечиваем кружок.
+  final bool isMe;
 
   const TrainingParticipant({
     required this.id,
@@ -139,6 +144,7 @@ class TrainingParticipant {
     this.phone,
     this.avatar,
     this.rating = 0,
+    this.isMe = false,
   });
 
   factory TrainingParticipant.fromJson(Map<String, dynamic> json) =>
@@ -148,6 +154,7 @@ class TrainingParticipant {
         phone: json['phone'] as String?,
         avatar: json['avatar'] as String?,
         rating: (json['rating'] as num?)?.toInt() ?? 0,
+        isMe: json['is_me'] as bool? ?? false,
       );
 }
 

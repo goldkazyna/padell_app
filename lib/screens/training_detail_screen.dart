@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import '../widgets/app_primary_button.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/training_seats.dart';
 
 /// Тренировка глазами игрока: подробности и запись.
 class TrainingDetailScreen extends StatefulWidget {
@@ -135,6 +136,15 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
                 : 'Мест нет, записано ${t.participantsCount}',
           ),
         ]),
+        const SizedBox(height: 12),
+        _sectionLabel('УЧАСТНИКИ · ${t.participantsCount} из ${t.capacity}'),
+        _card([
+          TrainingSeats(
+            training: t,
+            // Тап по свободному кружку записывает так же, как кнопка внизу.
+            onTapFree: t.canJoin && !_busy ? _toggleJoin : null,
+          ),
+        ]),
         if ((t.description ?? '').isNotEmpty) ...[
           const SizedBox(height: 12),
           _card([
@@ -200,6 +210,16 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
       ),
     );
   }
+
+  Widget _sectionLabel(String text) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(text,
+            style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.4)),
+      );
 
   Widget _notice(String text, Color color) {
     return Container(

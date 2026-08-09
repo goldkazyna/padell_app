@@ -10,6 +10,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/app_primary_button.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
+import '../../widgets/training_seats.dart';
 
 /// Тренировка глазами тренера: кто записался и что с занятием делать.
 class CoachTrainingDetailScreen extends StatefulWidget {
@@ -205,7 +206,19 @@ class _CoachTrainingDetailScreenState extends State<CoachTrainingDetailScreen> {
                 color: AppTheme.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
+        // Кружки показывают заполненность одним взглядом; записывать тапом
+        // тренер не может — его действия в меню строки ниже.
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: TrainingSeats(training: t),
+        ),
+        const SizedBox(height: 12),
         if (t.participants.isEmpty)
           Container(
             padding: const EdgeInsets.all(14),
