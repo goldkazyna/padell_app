@@ -116,16 +116,25 @@ class _TournamentStandingsShareScreenState
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Center(
-                child: RepaintBoundary(
-                  key: _cardKey,
-                  child: _StandingsCard(
-                    tournamentName: widget.tournamentName,
-                    type: widget.type,
-                    typeName: widget.typeName,
-                    startDate: widget.startDate,
-                    clubName: widget.clubName,
-                    clubLogo: widget.clubLogo,
-                    rows: widget.rows,
+                // Картинка не должна зависеть от системного размера шрифта:
+                // при крупном шрифте текст распирал карточку и выгрузка
+                // получалась огромной и разъехавшейся. Внутри карточки
+                // масштабирование выключено, снаружи интерфейс живёт как жил.
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.noScaling,
+                  ),
+                  child: RepaintBoundary(
+                    key: _cardKey,
+                    child: _StandingsCard(
+                      tournamentName: widget.tournamentName,
+                      type: widget.type,
+                      typeName: widget.typeName,
+                      startDate: widget.startDate,
+                      clubName: widget.clubName,
+                      clubLogo: widget.clubLogo,
+                      rows: widget.rows,
+                    ),
                   ),
                 ),
               ),
