@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../models/coach_schedule.dart';
 import '../services/coach_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_primary_button.dart';
 import 'coach/coach_trainings_screen.dart';
 import '../widgets/app_back_button.dart';
 
@@ -171,22 +172,13 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
               child: SizedBox(
                 height: 46,
-                child: ElevatedButton.icon(
+                child: AppPrimaryButton(
+                  label: 'Мои тренировки',
+                  icon: Icons.fitness_center_outlined,
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => const CoachTrainingsScreen(),
                     ),
-                  ),
-                  icon: const Icon(Icons.fitness_center_outlined, size: 18),
-                  label: const Text('Мои тренировки'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accent,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    textStyle: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),

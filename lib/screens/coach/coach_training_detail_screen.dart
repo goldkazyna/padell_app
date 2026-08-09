@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/training.dart';
 import '../../services/training_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_primary_button.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 
@@ -225,19 +226,11 @@ class _CoachTrainingDetailScreenState extends State<CoachTrainingDetailScreen> {
         if (t.canComplete) ...[
           SizedBox(
             height: 48,
-            child: ElevatedButton.icon(
+            child: AppPrimaryButton(
+              label: 'Завершить тренировку',
+              icon: Icons.check_circle_outline,
+              loading: _busy,
               onPressed: _busy ? null : _complete,
-              icon: const Icon(Icons.check_circle_outline, size: 18),
-              label: const Text('Завершить тренировку'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accent,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                textStyle:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-              ),
             ),
           ),
           const SizedBox(height: 10),

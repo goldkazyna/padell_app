@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/training.dart';
 import '../services/training_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_primary_button.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
 
@@ -169,20 +170,33 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
       );
     }
 
+    // Отписка — действие «не основное», поэтому не зелёная кнопка.
+    if (t.isJoined) {
+      return SizedBox(
+        height: 50,
+        child: OutlinedButton.icon(
+          onPressed: _busy ? null : _toggleJoin,
+          icon: const Icon(Icons.logout, size: 18),
+          label: const Text('Отписаться'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppTheme.textPrimary,
+            side: BorderSide(color: AppTheme.border),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            textStyle:
+                const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+    }
+
     return SizedBox(
       height: 50,
-      child: ElevatedButton.icon(
+      child: AppPrimaryButton(
+        label: 'Записаться',
+        icon: Icons.check,
+        loading: _busy,
         onPressed: _busy ? null : _toggleJoin,
-        icon: Icon(t.isJoined ? Icons.logout : Icons.check, size: 18),
-        label: Text(t.isJoined ? 'Отписаться' : 'Записаться'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: t.isJoined ? AppTheme.cardRaised : AppTheme.accent,
-          foregroundColor: t.isJoined ? AppTheme.textPrimary : Colors.white,
-          elevation: 0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-        ),
       ),
     );
   }

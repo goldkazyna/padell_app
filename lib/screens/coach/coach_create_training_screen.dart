@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../models/training.dart';
 import '../../services/training_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_primary_button.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 
@@ -181,18 +182,10 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
                         const SizedBox(height: 24),
                         SizedBox(
                           height: 50,
-                          child: ElevatedButton(
+                          child: AppPrimaryButton(
+                            label: 'Создать тренировку',
+                            loading: _saving,
                             onPressed: _saving ? null : _save,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.accent,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              textStyle: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w700),
-                            ),
-                            child: Text(_saving ? 'Сохраняем…' : 'Создать тренировку'),
                           ),
                         ),
                       ],

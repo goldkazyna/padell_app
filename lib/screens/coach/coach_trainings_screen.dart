@@ -73,9 +73,10 @@ class _CoachTrainingsScreenState extends State<CoachTrainingsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _create,
         backgroundColor: AppTheme.accent,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: const Text('Тренировка'),
+        foregroundColor: Colors.black,
+        icon: const Icon(Icons.add, color: Colors.black),
+        label: const Text('Тренировка',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: Column(

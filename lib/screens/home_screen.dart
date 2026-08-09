@@ -636,8 +636,7 @@ class _CoachScheduleCard extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  color: _accent.withAlpha(30),
-                  border: Border.all(color: _accent.withAlpha(90)),
+                  color: AppTheme.accent,
                 ),
                 child: Row(
                   children: [
@@ -645,31 +644,31 @@ class _CoachScheduleCard extends StatelessWidget {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: _accent.withAlpha(45),
+                        color: Colors.black.withAlpha(30),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(Icons.fitness_center_rounded,
-                          color: _accent, size: 20),
+                          color: Colors.black, size: 20),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: const [
                           Text(
                             'Мои тренировки',
                             style: TextStyle(
-                              color: AppTheme.textPrimary,
+                              color: Colors.black,
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
                               letterSpacing: -0.2,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2),
                           Text(
                             'Создавайте занятия и ведите записи',
                             style: TextStyle(
-                              color: AppTheme.textSecondary,
+                              color: Colors.black87,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -677,8 +676,8 @@ class _CoachScheduleCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Icon(Icons.chevron_right_rounded,
-                        color: AppTheme.textSecondary, size: 24),
+                    const Icon(Icons.chevron_right_rounded,
+                        color: Colors.black, size: 24),
                   ],
                 ),
               ),
