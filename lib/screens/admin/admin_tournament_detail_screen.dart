@@ -4713,6 +4713,53 @@ class _AdminTournamentDetailScreenState
     return 'Сгенерировать раунд ${rounds + 1}';
   }
 
+  /// Матчи раунда с разделителем между кортами.
+  ///
+  /// В эскалере на корте три матча подряд: без заголовка корта они читаются
+  /// как шесть независимых пар. Для остальных форматов, где на корте один
+  /// матч, заголовок не нужен — там список остаётся плоским.
+  List<Widget> _matchesGroupedByCourt(AdminMatchRound round) {
+    final grouped = _matches?.type == 'escalera';
+    if (!grouped) {
+      return round.matches.map((m) => _buildMatchTile(m)).toList();
+    }
+
+    final out = <Widget>[];
+    int? currentCourt;
+
+    for (final m in round.matches) {
+      if (m.courtNumber != currentCourt) {
+        currentCourt = m.courtNumber;
+        out.add(Padding(
+          padding: EdgeInsets.only(top: out.isEmpty ? 0 : 14, bottom: 6),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppTheme.accent.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text('Корт ${m.courtNumber}',
+                    style: TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Container(height: 1, color: AppTheme.border),
+              ),
+            ],
+          ),
+        ));
+      }
+      out.add(_buildMatchTile(m));
+    }
+
+    return out;
+  }
+
   Widget _buildRoundBlock(AdminMatchRound round) {
     // Round Robin, Americano Flex, Король корта и Bali — раундов много,
     // сворачиваем завершённые, чтобы не листать «газету». Активный («идёт»)
@@ -4765,7 +4812,7 @@ class _AdminTournamentDetailScreenState
                 )
               : header,
           if (expanded) ...[
-            ...round.matches.map((m) => _buildMatchTile(m)),
+            ..._matchesGroupedByCourt(round),
             if (round.byes.isNotEmpty) _buildByesBlock(round.byes),
           ],
         ],
@@ -4864,9 +4911,21 @@ class _AdminTournamentDetailScreenState
               if (m.courtNumber != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6),
-                  child: Text('Корт ${m.courtNumber}',
-                      style: TextStyle(
-                          color: AppTheme.textDim, fontSize: 11)),
+                  child: Row(
+                    children: [
+                      Text('Корт ${m.courtNumber}',
+                          style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700)),
+                      // Эскалера: на корте три матча подряд, без номера они
+                      // сливаются в одну кашу.
+                      if (m.matchNumber != null)
+                        Text(' · Матч ${m.matchNumber}',
+                            style: TextStyle(
+                                color: AppTheme.textDim, fontSize: 11)),
+                    ],
+                  ),
                 ),
               _matchTeamRow(m.team1, isWinner: m.winner == 1, isCompleted: m.isCompleted),
               const SizedBox(height: 4),

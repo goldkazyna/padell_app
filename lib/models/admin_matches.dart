@@ -46,6 +46,10 @@ class AdminMatchTeam {
 class AdminMatch {
   final int id;
   final int? courtNumber;
+
+  /// Эскалера: номер короткого матча внутри корта (1-3). У остальных
+  /// форматов на корте один матч, поэтому поле приходит пустым.
+  final int? matchNumber;
   final AdminMatchTeam team1;
   final AdminMatchTeam team2;
   final String status; // pending / completed
@@ -54,6 +58,7 @@ class AdminMatch {
   const AdminMatch({
     required this.id,
     required this.courtNumber,
+    this.matchNumber,
     required this.team1,
     required this.team2,
     required this.status,
@@ -66,6 +71,7 @@ class AdminMatch {
     return AdminMatch(
       id: (json['id'] as num).toInt(),
       courtNumber: (json['court_number'] as num?)?.toInt(),
+      matchNumber: (json['match_number'] as num?)?.toInt(),
       team1: AdminMatchTeam.fromJson(
           (json['team1'] as Map<String, dynamic>?) ?? const {}),
       team2: AdminMatchTeam.fromJson(
