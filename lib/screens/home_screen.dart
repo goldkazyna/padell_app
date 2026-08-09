@@ -19,6 +19,7 @@ import '../widgets/home/admin_club_block.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/verification_blockers_banner.dart';
 import '../theme/app_theme.dart';
+import '../services/training_service.dart';
 import '../utils/profile_incomplete_guard.dart';
 import '../l10n/app_localizations.dart';
 import 'tournament_detail_screen.dart';
@@ -36,13 +37,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// Сколько тренировок открыто для записи — бейдж на плитке «Тренировки».
+  int _availableTrainings = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeProvider>().loadHomeData();
       context.read<ProfileProvider>().loadProfile();
+      _loadTrainingsBadge();
     });
+  }
+
+  Future<void> _loadTrainingsBadge() async {
+    final counts = await context.read<TrainingService>().getCounts();
+    if (!mounted) return;
+    setState(() => _availableTrainings = counts.available);
   }
 
   @override
@@ -110,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 16),
                   ServicesBlock(
                     onOpenTournaments: () => widget.onNavigateToTab?.call(1),
+                    availableTrainings: _availableTrainings,
                   ),
                   const SizedBox(height: 12),
                   // Для admin клуба — блок управления, для остальных —

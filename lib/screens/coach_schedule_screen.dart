@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../models/coach_schedule.dart';
 import '../services/coach_service.dart';
 import '../theme/app_theme.dart';
+import 'coach/coach_trainings_screen.dart';
 import '../widgets/app_back_button.dart';
 
 /// Расписание тренера (просмотр). Прокручиваемая лента дат (прошлое/будущее)
@@ -160,6 +161,18 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                         ),
                       ],
                     ),
+                  ),
+                  // Вход в тренировки: их тренер ведёт отдельно от расписания
+                  // кортов, поэтому это соседний экран, а не вкладка.
+                  IconButton(
+                    tooltip: 'Мои тренировки',
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CoachTrainingsScreen(),
+                      ),
+                    ),
+                    icon: Icon(Icons.fitness_center_outlined,
+                        color: AppTheme.accent),
                   ),
                 ],
               ),

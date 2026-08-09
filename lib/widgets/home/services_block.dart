@@ -8,6 +8,7 @@ import '../../screens/clubs_list_screen.dart';
 import '../../screens/club_cards_screen.dart';
 import '../../screens/create_game_screen.dart';
 import '../../screens/games_screen.dart';
+import '../../screens/trainings_screen.dart';
 import '../../screens/certificates_screen.dart';
 
 /// Блок «Сервисы» на главной — сетка 4×2 быстрых входов.
@@ -15,7 +16,15 @@ import '../../screens/certificates_screen.dart';
 /// навигацию на вкладку «Турниры».
 class ServicesBlock extends StatelessWidget {
   final VoidCallback onOpenTournaments;
-  const ServicesBlock({super.key, required this.onOpenTournaments});
+
+  /// Сколько тренировок сейчас открыто для записи — число в красном бейдже.
+  final int availableTrainings;
+
+  const ServicesBlock({
+    super.key,
+    required this.onOpenTournaments,
+    this.availableTrainings = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,12 +60,14 @@ class ServicesBlock extends StatelessWidget {
         onTap: () => showAppAlert(context, l.serviceComingSoon),
       ),
       _ServiceData(
-        icon: Icons.person_add_alt_1_outlined,
-        label: l.serviceCreateGame,
+        icon: Icons.fitness_center_outlined,
+        label: 'Тренировки',
+        // Бейдж — сколько сейчас занятий со свободными местами.
+        badge: availableTrainings,
         onTap: () {
           if (!ensureProfileComplete(context)) return;
           Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const CreateGameScreen()));
+              MaterialPageRoute(builder: (_) => const TrainingsScreen()));
         },
       ),
       _ServiceData(
@@ -117,10 +128,15 @@ class _ServiceData {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+
+  /// Число в красном кружке поверх иконки. 0 — кружка нет.
+  final int badge;
+
   _ServiceData({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.badge = 0,
   });
 }
 
@@ -138,17 +154,48 @@ class _ServiceTile extends StatelessWidget {
         child: Column(
           children: [
             // Плашка-чип как у «Ближайшего турнира»: фон карточки + тонкая рамка.
-            Container(
-              width: 56,
-              height: 56,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppTheme.card,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
-              ),
-              // Зелёный по запросу (близок к AppTheme.accent 0xFF22C47A, но точнее).
-              child: Icon(data.icon, color: const Color(0xFF22C55E), size: 26),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(16),
+                    border:
+                        Border.all(color: const Color(0xFF2A3330), width: 0.5),
+                  ),
+                  // Зелёный по запросу (близок к AppTheme.accent 0xFF22C47A).
+                  child:
+                      Icon(data.icon, color: const Color(0xFF22C55E), size: 26),
+                ),
+                if (data.badge > 0)
+                  Positioned(
+                    top: -4,
+                    right: -4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      constraints: const BoxConstraints(minWidth: 20),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF4444),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppTheme.background, width: 1.5),
+                      ),
+                      child: Text(
+                        data.badge > 99 ? '99+' : '${data.badge}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 8),
             SizedBox(

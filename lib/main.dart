@@ -34,6 +34,7 @@ import 'services/moderation_service.dart';
 import 'services/support_service.dart';
 import 'services/chat_service.dart';
 import 'services/coach_service.dart';
+import 'services/training_service.dart';
 import 'providers/court_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/settings_provider.dart';
@@ -84,6 +85,7 @@ void main() async {
   final supportService = SupportService(apiService, storageService);
   final chatService = ChatService(apiService, storageService);
   final coachService = CoachService(apiService, storageService);
+  final trainingService = TrainingService(apiService, storageService);
   final pushService = PushNotificationService(apiService, storageService, navigatorKey);
   if (!kIsWeb) {
     try {
@@ -148,6 +150,7 @@ void main() async {
         Provider<SupportService>.value(value: supportService),
         Provider<ChatService>.value(value: chatService),
         Provider<CoachService>.value(value: coachService),
+        Provider<TrainingService>.value(value: trainingService),
       ],
       child: const PadelApp(),
     ),
