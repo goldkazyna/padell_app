@@ -166,7 +166,7 @@ class TrainingCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.event_outlined, size: 16, color: AppTheme.accent),
+                Icon(Icons.event_outlined, size: 16, color: AppTheme.textSecondary),
                 const SizedBox(width: 6),
                 Text(
                   '${t.date}, ${t.time}',

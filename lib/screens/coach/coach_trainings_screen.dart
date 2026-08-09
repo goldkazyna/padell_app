@@ -198,7 +198,7 @@ class _CoachTrainingsScreenState extends State<CoachTrainingsScreen> {
             const SizedBox(height: 10),
             Row(
               children: [
-                Icon(Icons.group_outlined, size: 15, color: AppTheme.accent),
+                Icon(Icons.group_outlined, size: 15, color: AppTheme.textSecondary),
                 const SizedBox(width: 6),
                 Text('${t.participantsCount} из ${t.capacity}',
                     style: TextStyle(
