@@ -63,6 +63,8 @@ class _TournamentTypesInfoScreenState
           l.tournamentInfoBaliKocName, l.tournamentInfoBaliKocBody),
       _TypeInfo('americano_flex', Icons.swap_horiz_rounded, AppTheme.accent,
           l.tournamentInfoFlexName, l.tournamentInfoFlexBody),
+      _TypeInfo('escalera', Icons.stairs_rounded, AppTheme.orange,
+          l.tournamentInfoEscaleraName, l.tournamentInfoEscaleraBody),
     ];
 
     return Scaffold(
