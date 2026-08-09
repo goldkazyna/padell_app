@@ -216,11 +216,16 @@ class _AdminTournamentDetailScreenState
     _teamCourts.text = t.courtsCount != null ? '${t.courtsCount}' : '';
     // Сервер мог ещё не хранить число кортов для этого турнира (тип раньше
     // не поддерживал поле) — подставляем авто-расчёт по участникам уже при
-    // открытии экрана. Flex не трогаем — у него свой блок кортов.
+    // открытии экрана. Проверяем именно `t.type`, а не геттер `_isFlex`:
+    // на этом месте `_applyToForm` ещё не отработал `setState(() => _t = t)`
+    // (он в вызывающем коде, после этого метода), поэтому `_t` тут либо
+    // null, либо турнир из ПРЕДЫДУЩЕЙ загрузки — `_isFlex` дал бы неверный
+    // ответ даже для настоящего Flex-турнира. Flex не трогаем — у него свой
+    // блок кортов.
     if (_teamCourts.text.trim().isEmpty && t.type != 'americano_flex') {
       final maxP = t.maxParticipants;
       if (maxP > 0) {
-        _teamCourts.text = '${(maxP / 4).ceil().clamp(1, 32)}';
+        _teamCourts.text = '${_computeAutoCourts(maxP)}';
       }
     }
     // Тоггл статуса работает только для черновик/открыт; иные статусы оставляем как есть.
@@ -508,6 +513,13 @@ class _AdminTournamentDetailScreenState
     return t != null && t.type == 'americano_flex';
   }
 
+  /// Авто-расчёт числа кортов от количества участников: 1 корт = 4 игрока,
+  /// диапазон 1-32. Только арифметика, без проверок «можно ли подставлять» —
+  /// те проверки разные в разных местах вызова (см. `_autofillCourts` и
+  /// `_applyToForm`).
+  int _computeAutoCourts(int maxParticipants) =>
+      (maxParticipants / 4).ceil().clamp(1, 32);
+
   /// Подставить число кортов от количества участников: 1 корт = 4 игрока.
   /// Не трогает поле, если админ уже вводил своё значение или это Flex —
   /// у Flex собственный блок кортов.
@@ -517,8 +529,7 @@ class _AdminTournamentDetailScreenState
     final maxP = int.tryParse(_maxParticipants.text.trim());
     if (maxP == null || maxP <= 0) return;
 
-    final auto = (maxP / 4).ceil().clamp(1, 32);
-    final next = '$auto';
+    final next = '${_computeAutoCourts(maxP)}';
     if (_teamCourts.text.trim() == next) return;
 
     // Программная подстановка не должна взводить флаг ручной правки.
@@ -1414,6 +1425,17 @@ class _AdminTournamentDetailScreenState
                   'Пусто — автоматически по числу участников (1 корт = 4 игрока).',
                   style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                 ),
+                // Solo Just Padel It: экран посева строит сетку courtsCount × 4
+                // и заполняет её только по этому лимиту — если кортов меньше,
+                // чем нужно, лишние участники в посев молча не попадут.
+                if (_isJpiSolo) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Участников должно быть ровно кортов × 4 — иначе лишние '
+                    'не попадут в посев.',
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                  ),
+                ],
               ],
               // Количество кортов — для Americano Flex.
               if (_isFlex) ...[
