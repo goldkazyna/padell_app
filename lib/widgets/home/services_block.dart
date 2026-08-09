@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
+import '../../services/training_service.dart';
 import '../../utils/app_alert.dart';
 import '../../utils/profile_incomplete_guard.dart';
 import '../../screens/club_select_screen.dart';
@@ -14,17 +16,41 @@ import '../../screens/certificates_screen.dart';
 /// Блок «Сервисы» на главной — сетка 4×2 быстрых входов.
 /// Иконки монохромные (единый цвет). [onOpenTournaments] переключает нижнюю
 /// навигацию на вкладку «Турниры».
-class ServicesBlock extends StatelessWidget {
+class ServicesBlock extends StatefulWidget {
   final VoidCallback onOpenTournaments;
 
-  /// Сколько тренировок сейчас открыто для записи — число в красном бейдже.
-  final int availableTrainings;
+  const ServicesBlock({super.key, required this.onOpenTournaments});
 
-  const ServicesBlock({
-    super.key,
-    required this.onOpenTournaments,
-    this.availableTrainings = 0,
-  });
+  @override
+  State<ServicesBlock> createState() => _ServicesBlockState();
+}
+
+class _ServicesBlockState extends State<ServicesBlock> {
+  /// Сколько тренировок открыто для записи. Счётчик живёт здесь, а не на
+  /// главной: после возврата с экрана тренировок его нужно перечитать —
+  /// иначе бейдж показывает число, которого уже нет.
+  int _availableTrainings = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTrainings();
+  }
+
+  Future<void> _loadTrainings() async {
+    final counts = await context.read<TrainingService>().getCounts();
+    if (!mounted) return;
+    setState(() => _availableTrainings = counts.available);
+  }
+
+  Future<void> _openTrainings() async {
+    if (!ensureProfileComplete(context)) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const TrainingsScreen()),
+    );
+    _loadTrainings();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +88,10 @@ class ServicesBlock extends StatelessWidget {
       _ServiceData(
         icon: Icons.fitness_center_outlined,
         label: 'Тренировки',
-        // Бейдж — сколько сейчас занятий со свободными местами.
-        badge: availableTrainings,
-        onTap: () {
-          if (!ensureProfileComplete(context)) return;
-          Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const TrainingsScreen()));
-        },
+        // Есть занятия — показываем их число, нет — метку новой фичи.
+        badge: _availableTrainings > 0 ? '$_availableTrainings' : 'NEW',
+        badgeIsNew: _availableTrainings == 0,
+        onTap: _openTrainings,
       ),
       _ServiceData(
         icon: Icons.sports_esports_outlined,
@@ -129,14 +152,18 @@ class _ServiceData {
   final String label;
   final VoidCallback onTap;
 
-  /// Число в красном кружке поверх иконки. 0 — кружка нет.
-  final int badge;
+  /// Надпись в кружке поверх иконки. Пусто — кружка нет.
+  final String badge;
+
+  /// Метка новой фичи: кружок шире и с другим текстом.
+  final bool badgeIsNew;
 
   _ServiceData({
     required this.icon,
     required this.label,
     required this.onTap,
-    this.badge = 0,
+    this.badge = '',
+    this.badgeIsNew = false,
   });
 }
 
@@ -171,10 +198,10 @@ class _ServiceTile extends StatelessWidget {
                   child:
                       Icon(data.icon, color: const Color(0xFF22C55E), size: 26),
                 ),
-                if (data.badge > 0)
+                if (data.badge.isNotEmpty)
                   Positioned(
                     top: -4,
-                    right: -4,
+                    right: data.badgeIsNew ? -10 : -4,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
@@ -186,11 +213,12 @@ class _ServiceTile extends StatelessWidget {
                         border: Border.all(color: AppTheme.background, width: 1.5),
                       ),
                       child: Text(
-                        data.badge > 99 ? '99+' : '${data.badge}',
-                        style: const TextStyle(
+                        data.badge,
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
+                          fontSize: data.badgeIsNew ? 9 : 10,
                           fontWeight: FontWeight.w800,
+                          letterSpacing: data.badgeIsNew ? 0.3 : 0,
                         ),
                       ),
                     ),
