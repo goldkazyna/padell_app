@@ -5196,6 +5196,7 @@ class _AdminTournamentDetailScreenState
     final isRoundRobin = _matches?.type == 'round_robin';
     final isJpi = _matches?.type == 'just_padel_it';
     final isMexicano = _matches?.type == 'mexicano';
+    final isEscalera = _matches?.type == 'escalera';
 
     final team1Title = isPlayoff ? pm!.team1.title : m!.team1.title;
     final team2Title = isPlayoff ? pm!.team2.title : m!.team2.title;
@@ -5300,6 +5301,13 @@ class _AdminTournamentDetailScreenState
             );
       } else if (isJpi) {
         await context.read<AdminService>().saveJpiScore(
+              tournamentId,
+              matchId,
+              team1Score: result.score1,
+              team2Score: result.score2,
+            );
+      } else if (isEscalera) {
+        await context.read<AdminService>().saveEscaleraScore(
               tournamentId,
               matchId,
               team1Score: result.score1,
