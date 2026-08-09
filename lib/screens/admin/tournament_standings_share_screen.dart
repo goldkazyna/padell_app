@@ -385,7 +385,8 @@ class _StandingsCard extends StatelessWidget {
           ),
           if (verified) ...[
             const SizedBox(width: 4),
-            VerifiedBadge(size: 11, userId: id, playerName: name),
+            // На 20% меньше: в картинке галочка спорила с именем.
+            VerifiedBadge(size: 8.8, userId: id, playerName: name),
           ],
         ],
       );
