@@ -1240,7 +1240,7 @@ class _AdminTournamentDetailScreenState
                         _textField(_maxParticipants,
                             hint: '8',
                             keyboardType: TextInputType.number,
-                            // Эскалера: участников считает сервер как корты × 4,
+                            // Ladder: участников считает сервер как корты × 4,
                             // руками это поле не меняют.
                             enabled: !disabled && !_isEscalera,
                             inputFormatters: [
@@ -4954,7 +4954,7 @@ class _AdminTournamentDetailScreenState
                               color: AppTheme.textSecondary,
                               fontSize: 11,
                               fontWeight: FontWeight.w700)),
-                      // Эскалера: на корте три матча подряд, без номера они
+                      // Ladder: на корте три матча подряд, без номера они
                       // сливаются в одну кашу.
                       if (m.matchNumber != null)
                         Text(' · Матч ${m.matchNumber}',

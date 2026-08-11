@@ -759,7 +759,7 @@ class AdminService {
     );
   }
 
-  /// Сохранить счёт короткого матча «Эскалеры». POST и PUT одинаковы —
+  /// Сохранить счёт короткого матча «Ladder». POST и PUT одинаковы —
   /// у формата сохранение и правка это одна операция.
   Future<void> saveEscaleraScore(
     int tournamentId,

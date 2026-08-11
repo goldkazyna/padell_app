@@ -329,11 +329,11 @@ class _TournamentLiveKingOfCourtScreenState
   /// параметрам: вместо РП/%/Очки — З (забито геймов) · ПР (пропущено) · ± (разница).
   bool get _isRoundRobin => _data?['tournament']?['format'] == 'round_robin';
 
-  /// Эскалера: колонки таблицы те же, что в админском экране турнира —
+  /// Ladder: колонки таблицы те же, что в админском экране турнира —
   /// забито:пропущено вместо разницы, и подпись зачётной колонки по режиму.
   bool get _isEscalera => _data?['tournament']?['format'] == 'escalera';
 
-  /// Эскалера: по чему считается место — 'points' (баллы за позиции) или
+  /// Ladder: по чему считается место — 'points' (баллы за позиции) или
   /// 'raw_points' (сумма забитых).
   String get _escaleraMode =>
       _data?['tournament']?['standings_mode'] as String? ?? 'raw_points';

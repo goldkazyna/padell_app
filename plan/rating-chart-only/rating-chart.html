@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="UTF-8"><title>Динамика рейтинга — 3 варианта</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: #0a0a0d; color: #e8e8ec; font-family: system-ui, sans-serif; min-height: 100vh; }
+  * { box-sizing: border-box; }
+  .stage { min-height: 100vh; padding: 32px 20px 40px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .phones { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 360px; }
+  .lab { font-size: 11px; color: #6a6a73; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+  .lab b { color: #f3f3f5; }
+  .desc { font-size: 12px; color: #8a8a93; line-height: 1.5; text-align: center; padding: 0 6px; }
+  .phone { width: 360px; border-radius: 28px; background: #131317; padding: 16px; }
+  .intro { max-width: 760px; text-align: center; color: #a2a2ab; font-size: 13px; line-height: 1.6; }
+  .intro h1 { color: #f3f3f5; font-size: 22px; margin: 0 0 6px; font-weight: 700; }
+  .ctx-btn { width: 100%; padding: 14px 16px; border-radius: 12px;
+              background: linear-gradient(135deg, #22c47a 0%, #1a9e62 100%);
+              color: #06281a; font-weight: 800; text-align: left; margin-top: 14px;
+              border: none; cursor: pointer; font-size: 14px; box-shadow: 0 10px 24px rgba(34,196,122,0.18); }
+  .ctx-btn-sub { font-weight: 600; font-size: 11px; opacity: 0.7; margin-top: 2px; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head><body>
+<div class="stage">
+  <div class="intro"><h1>Динамика рейтинга — 3 варианта</h1>
+    A — уже утверждённый. B и C — новые, обе про историю рейтинга.
+  </div>
+  <div class="phones">
+    <div class="wrap">
+      <div class="lab">A — <b>Sparkline + матчи</b> (утв.)</div>
+      <div class="phone">
+        <div id="v1"></div>
+        <button class="ctx-btn">История турниров <div class="ctx-btn-sub">Все сыгранные турниры</div></button>
+      </div>
+      <div class="desc">Sparkline сверху + 15 последних матчей цветными ячейками. Утверждённый вариант.</div>
+    </div>
+    <div class="wrap">
+      <div class="lab">B — <b>По турнирам</b></div>
+      <div class="phone">
+        <div id="v2"></div>
+        <button class="ctx-btn">История турниров <div class="ctx-btn-sub">Все сыгранные турниры</div></button>
+      </div>
+      <div class="desc">Список последних 6 турниров. Каждая строка — дельта рейтинга (+35 / −28) + горизонтальный бар от центра + название турнира и итоговый рейтинг. Видно вклад каждого турнира.</div>
+    </div>
+    <div class="wrap">
+      <div class="lab">C — <b>Кривая с пиками</b></div>
+      <div class="phone">
+        <div id="v3"></div>
+        <button class="ctx-btn">История турниров <div class="ctx-btn-sub">Все сыгранные турниры</div></button>
+      </div>
+      <div class="desc">12-месячная кривая со зелёным пиком «лучший месяц» и красным «худший». Снизу — 3 KPI: лучший / худший / средний за месяц.</div>
+    </div>
+  </div>
+</div>
+<script type="text/babel" src="src/rating-chart.jsx"></script>
+<script type="text/babel">
+  ReactDOM.createRoot(document.getElementById('v1')).render(<RatingChart_V1/>);
+  ReactDOM.createRoot(document.getElementById('v2')).render(<RatingChart_V2/>);
+  ReactDOM.createRoot(document.getElementById('v3')).render(<RatingChart_V3/>);
+</script>
+</body></html>

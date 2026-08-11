@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поединок — Дизайн экранов</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #000;
+    color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding: 40px;
+    justify-content: center;
+  }
+
+  .screen-wrapper { text-align: center; }
+  .screen-label { color: #888; font-size: 14px; margin-bottom: 12px; font-weight: 600; }
+
+  .screen {
+    width: 375px;
+    min-height: 700px;
+    background: #0F0F0F;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid #2A2A2A;
+    position: relative;
+  }
+
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  /* Icons */
+  .icon {
+    font-family: 'Material Icons Outlined';
+    font-size: 18px;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    vertical-align: middle;
+  }
+  .icon-filled {
+    font-family: 'Material Icons';
+  }
+  .icon-sm { font-size: 16px; }
+  .icon-lg { font-size: 22px; }
+  .icon-xl { font-size: 28px; }
+  .icon-green { color: #22C55E; }
+  .icon-gray { color: #888; }
+  .icon-white { color: #fff; }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 16px;
+  }
+  .header-title { font-size: 20px; font-weight: 700; }
+  .header-back {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1A1A1A;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    margin: 0 16px 16px;
+    background: #1A1A1A;
+    border-radius: 12px;
+    padding: 4px;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #888;
+    cursor: pointer;
+  }
+  .tab.active {
+    background: #22C55E;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* Card */
+  .card {
+    background: #1A1A1A;
+    border: 0.5px solid #2A2A2A;
+    border-radius: 16px;
+    margin: 0 16px 12px;
+    padding: 16px;
+  }
+
+  /* Challenge card */
+  .challenge-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .challenge-date { font-size: 13px; color: #888; }
+  .challenge-type {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .type-rated {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22C55E;
+  }
+  .type-friendly {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+  }
+  .challenge-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .challenge-club {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .challenge-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #888;
+  }
+  .challenge-slots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .slot {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .slot.filled { background: #22C55E; color: #fff; }
+  .slot.empty { background: #2A2A2A; color: #555; }
+
+  /* Buttons */
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #22C55E;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-align: center;
+  }
+  .btn-outline {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: #22C55E;
+    border: 1.5px solid #22C55E;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+  }
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: #1A1A1A;
+    color: #fff;
+    border: 0.5px solid #2A2A2A;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+  }
+  .btn-danger {
+    width: 100%;
+    padding: 14px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+  }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 90px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    background: #22C55E;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: #1A1A1A;
+    border-top: 0.5px solid #2A2A2A;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 16px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #888;
+  }
+  .nav-item.active { color: #22C55E; }
+
+  /* Court widget */
+  .court {
+    margin: 16px;
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0.08) 0%, rgba(34, 197, 94, 0.03) 100%);
+    border: 1.5px solid rgba(34, 197, 94, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  .court-field {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 260px;
+  }
+  .court-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 24px 12px;
+  }
+  .court-divider {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    background: rgba(34, 197, 94, 0.2);
+  }
+  .court-net {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(34, 197, 94, 0.15);
+    color: #22C55E;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .court-side-label {
+    position: absolute;
+    bottom: 8px;
+    font-size: 11px;
+    color: rgba(34, 197, 94, 0.4);
+    font-weight: 600;
+  }
+  .court-side-label.left { left: 16px; }
+  .court-side-label.right { right: 16px; }
+
+  .court-player {
+    width: 100px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .court-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .court-avatar.filled { background: #22C55E; color: #fff; }
+  .court-avatar.me { background: #22C55E; color: #fff; border: 2px solid #fff; }
+  .court-avatar.empty { background: #2A2A2A; color: #555; border: 2px dashed #444; }
+  .court-avatar.open { background: rgba(34, 197, 94, 0.1); color: #22C55E; border: 2px dashed rgba(34, 197, 94, 0.5); }
+  .court-name { font-size: 12px; font-weight: 600; color: #fff; }
+  .court-rating { font-size: 11px; color: #888; }
+  .court-label { font-size: 11px; color: #555; margin-top: 2px; }
+
+  /* Form */
+  .form-group { margin: 0 16px 16px; }
+  .form-label { font-size: 13px; color: #888; margin-bottom: 8px; display: block; }
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #1A1A1A;
+    border: 0.5px solid #2A2A2A;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+  .form-input::placeholder { color: #555; }
+  .form-input:focus { border-color: #22C55E; }
+  .form-row { display: flex; gap: 12px; margin: 0 16px 16px; }
+  .form-row .form-group { flex: 1; margin: 0; }
+
+  /* Chips */
+  .chips { display: flex; gap: 8px; }
+  .chip {
+    flex: 1;
+    padding: 12px;
+    background: #1A1A1A;
+    border: 0.5px solid #2A2A2A;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 13px;
+    cursor: pointer;
+    color: #888;
+  }
+  .chip.selected {
+    border-color: #22C55E;
+    color: #22C55E;
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  /* Score */
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .score-team { flex: 1; text-align: center; }
+  .score-team-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .score-team-players { font-size: 11px; color: #888; }
+  .score-input {
+    width: 56px;
+    height: 56px;
+    background: #1A1A1A;
+    border: 1px solid #2A2A2A;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+  .score-input:focus { border-color: #22C55E; }
+  .score-vs { font-size: 16px; font-weight: 700; color: #555; }
+
+  /* Result */
+  .result-card {
+    background: #1A1A1A;
+    border: 0.5px solid #2A2A2A;
+    border-radius: 16px;
+    margin: 0 16px 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .result-score { font-size: 36px; font-weight: 700; margin-bottom: 4px; }
+  .result-label { font-size: 13px; color: #888; margin-bottom: 16px; }
+  .elo-change {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .elo-plus { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+  .elo-minus { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-waiting { background: rgba(251, 191, 36, 0.1); color: #FBBF24; }
+  .status-ready { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+  .status-done { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+
+  /* Bottom sheet */
+  .bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1A1A1A;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 16px;
+    border-top: 0.5px solid #2A2A2A;
+    z-index: 10;
+  }
+  .sheet-handle { width: 40px; height: 4px; background: #333; border-radius: 2px; margin: 0 auto 20px; }
+  .sheet-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+
+  /* Player search */
+  .player-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #0F0F0F;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .player-result-avatar {
+    width: 44px;
+    height: 44px;
+    background: #22C55E;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 14px;
+  }
+  .player-result-info { flex: 1; }
+  .player-result-name { font-size: 14px; font-weight: 600; }
+  .player-result-rating { font-size: 12px; color: #888; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 16px 12px;
+  }
+
+  .content-scroll { padding-bottom: 100px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- ЭКРАН 1: Список поединков -->
+<!-- ============================================ -->
+<div class="screen-wrapper">
+  <div class="screen-label">1. Список поединков</div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span></span>
+    </div>
+
+    <div class="header">
+      <div class="header-title">Поединок</div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active">Открытые</div>
+      <div class="tab">Мои</div>
+    </div>
+
+    <div class="content-scroll">
+      <!-- Card 1 -->
+      <div class="card">
+        <div class="challenge-card-header">
+          <div>
+            <div class="challenge-title">Матч в Almaty Arena</div>
+            <div class="challenge-club">
+              <span class="icon icon-sm icon-gray">location_on</span>
+              Almaty Arena Padel
+            </div>
+          </div>
+          <span class="challenge-type type-rated">Рейтинговый</span>
+        </div>
+        <div class="challenge-meta">
+          <div class="meta-item">
+            <span class="icon icon-sm icon-gray">calendar_today</span>
+            18 мар, 19:00
+          </div>
+          <div class="meta-item">
+            <span class="icon icon-sm icon-gray">trending_up</span>
+            Уровень 3-4
+          </div>
+        </div>
+        <div class="challenge-slots">
+          <div class="slot filled">АК</div>
+          <div class="slot filled">ДМ</div>
+          <div class="slot filled">ТН</div>
+          <div class="slot empty">+</div>
+        </div>
+        <button class="btn-primary">Занять место</button>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <div class="challenge-card-header">
+          <div>
+            <div class="challenge-title">Вечерняя игра</div>
+            <div class="challenge-club">
+              <span class="icon icon-sm icon-gray">location_on</span>
+              PadelHouse
+            </div>
+          </div>
+          <span class="challenge-type type-friendly">Товарищеский</span>
+        </div>
+        <div class="challenge-meta">
+          <div class="meta-item">
+            <span class="icon icon-sm icon-gray">calendar_today</span>
+            19 мар, 20:00
+          </div>
+          <div class="meta-item">
+            <span class="icon icon-sm icon-gray">trending_up</span>
+            Любой уровень
+          </div>
+        </div>
+        <div class="challenge-slots">
+          <div class="slot filled">ИК</div>
+          <div class="slot empty">+</div>
+          <div class="slot empty">+</div>
+          <div class="slot empty">+</div>
+        </div>
+        <button class="btn-primary">Занять место</button>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card">
+        <div class="challenge-card-header">
+          <div>
+            <div class="challenge-title">Утренний матч</div>
+            <div class="challenge-club" style="color: #555;">
+              <span class="icon icon-sm" style="color: #555;">location_on</span>
+              Не указано
+            </div>
+          </div>
+          <span class="challenge-type type-rated">Рейтинговый</span>
+        </div>
+        <div class="challenge-meta">
+          <div class="meta-item">
+            <span class="icon icon-sm icon-gray">calendar_today</span>
+            20 мар, 09:00
+          </div>
+          <div class="meta-item">
+            <span class="icon icon-sm icon-gray">trending_up</span>
+            Уровень 2-3
+          </div>
+        </div>
+        <div class="challenge-slots">
+          <div class="slot filled">РА</div>
+          <div class="slot filled">МС</div>
+          <div class="slot empty">+</div>
+          <div class="slot empty">+</div>
+        </div>
+        <button class="btn-primary">Занять место</button>
+      </div>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab">
+      <span class="icon icon-xl icon-white">add</span>
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <span class="icon icon-lg">home</span>
+        <span>Главная</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon icon-lg">emoji_events</span>
+        <span>Турниры</span>
+      </div>
+      <div class="nav-item active">
+        <span class="icon icon-lg icon-filled icon-green">sports_tennis</span>
+        <span>Поединок</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon icon-lg">leaderboard</span>
+        <span>Рейтинг</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon icon-lg">person</span>
+        <span>Профиль</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ЭКРАН 2: Создание поединка -->
+<!-- ============================================ -->
+<div class="screen-wrapper">
+  <div class="screen-label">2. Создание поединка</div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span></span>
+    </div>
+
+    <div class="header">
+      <div class="header-back">
+        <span class="icon icon-white">arrow_back</span>
+      </div>
+      <div class="header-title">Новый поединок</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Дата</label>
+        <input class="form-input" type="text" value="18 мар 2026" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Время</label>
+        <input class="form-input" type="text" value="19:00" readonly>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Клуб (необязательно)</label>
+      <input class="form-input" type="text" placeholder="Выберите клуб">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Тип поединка</label>
+      <div class="chips">
+        <div class="chip selected">Рейтинговый</div>
+        <div class="chip">Товарищеский</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Мин. уровень</label>
+        <select class="form-input" style="appearance: auto; cursor: pointer;">
+          <option>1.00</option>
+          <option>1.25</option>
+          <option>1.50</option>
+          <option>1.75</option>
+          <option>2.00</option>
+          <option>2.25</option>
+          <option>2.50</option>
+          <option>2.75</option>
+          <option selected>3.00</option>
+          <option>3.25</option>
+          <option>3.50</option>
+          <option>3.75</option>
+          <option>4.00</option>
+          <option>4.25</option>
+          <option>4.50</option>
+          <option>4.75</option>
+          <option>5.00</option>
+          <option>5.25</option>
+          <option>5.50</option>
+          <option>5.75</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Макс. уровень</label>
+        <select class="form-input" style="appearance: auto; cursor: pointer;">
+          <option>1.00</option>
+          <option>1.25</option>
+          <option>1.50</option>
+          <option>1.75</option>
+          <option>2.00</option>
+          <option>2.25</option>
+          <option>2.50</option>
+          <option>2.75</option>
+          <option>3.00</option>
+          <option>3.25</option>
+          <option>3.50</option>
+          <option>3.75</option>
+          <option selected>4.00</option>
+          <option>4.25</option>
+          <option>4.50</option>
+          <option>4.75</option>
+          <option>5.00</option>
+          <option>5.25</option>
+          <option>5.50</option>
+          <option>5.75</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top: 8px;">Расстановка на корте</div>
+
+    <div class="court">
+      <div class="court-divider"></div>
+      <div class="court-net">СЕТКА</div>
+      <div class="court-field">
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar me">Я</div>
+            <div class="court-name">Денис К.</div>
+            <div class="court-rating">1450 ELO</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar open">
+              <span class="icon">person_add</span>
+            </div>
+            <div class="court-label">Пригласить</div>
+          </div>
+        </div>
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar open">
+              <span class="icon">person_add</span>
+            </div>
+            <div class="court-label">Пригласить</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar open">
+              <span class="icon">person_add</span>
+            </div>
+            <div class="court-label">Пригласить</div>
+          </div>
+        </div>
+      </div>
+      <div class="court-side-label left">Команда A</div>
+      <div class="court-side-label right">Команда B</div>
+    </div>
+
+    <div style="padding: 16px;">
+      <button class="btn-primary">Создать поединок</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ЭКРАН 3: Детали — ожидание игроков -->
+<!-- ============================================ -->
+<div class="screen-wrapper">
+  <div class="screen-label">3. Детали — ожидание игроков</div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span></span>
+    </div>
+
+    <div class="header">
+      <div class="header-back">
+        <span class="icon icon-white">arrow_back</span>
+      </div>
+      <div class="header-title">Поединок</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 12px;">
+      <span class="status-badge status-waiting">
+        <span class="icon icon-sm">hourglass_empty</span>
+        Ожидание игроков
+      </span>
+    </div>
+
+    <div class="card" style="text-align: center;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 6px;">
+        <span class="icon icon-sm icon-gray">calendar_today</span>
+        <span class="challenge-date">18 марта 2026, 19:00</span>
+      </div>
+      <div class="challenge-title">Матч в Almaty Arena</div>
+      <div class="challenge-club" style="justify-content: center;">
+        <span class="icon icon-sm icon-gray">location_on</span>
+        Almaty Arena Padel
+      </div>
+      <div style="margin-top: 8px;">
+        <span class="challenge-type type-rated">Рейтинговый</span>
+      </div>
+    </div>
+
+    <div class="court">
+      <div class="court-divider"></div>
+      <div class="court-net">СЕТКА</div>
+      <div class="court-field">
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar me">ДК</div>
+            <div class="court-name">Денис К.</div>
+            <div class="court-rating">1450 ELO</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar filled">АМ</div>
+            <div class="court-name">Алексей М.</div>
+            <div class="court-rating">1380 ELO</div>
+          </div>
+        </div>
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar filled">ТН</div>
+            <div class="court-name">Тимур Н.</div>
+            <div class="court-rating">1520 ELO</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar open">
+              <span class="icon">person_add</span>
+            </div>
+            <div class="court-label">Свободно</div>
+          </div>
+        </div>
+      </div>
+      <div class="court-side-label left">Команда A</div>
+      <div class="court-side-label right">Команда B</div>
+    </div>
+
+    <div style="padding: 0 16px 16px;">
+      <button class="btn-danger" style="margin-top: 8px;">
+        Отменить поединок
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ЭКРАН 4: Все собрались — начать поединок -->
+<!-- ============================================ -->
+<div class="screen-wrapper">
+  <div class="screen-label">4. Все собрались — начать</div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span></span>
+    </div>
+
+    <div class="header">
+      <div class="header-back">
+        <span class="icon icon-white">arrow_back</span>
+      </div>
+      <div class="header-title">Поединок</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 12px;">
+      <span class="status-badge status-ready">
+        <span class="icon icon-sm">check_circle</span>
+        Все игроки на месте
+      </span>
+    </div>
+
+    <div class="card" style="text-align: center;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 6px;">
+        <span class="icon icon-sm icon-gray">calendar_today</span>
+        <span class="challenge-date">18 марта 2026, 19:00</span>
+      </div>
+      <div class="challenge-title">Матч в Almaty Arena</div>
+      <div class="challenge-club" style="justify-content: center;">
+        <span class="icon icon-sm icon-gray">location_on</span>
+        Almaty Arena Padel
+      </div>
+      <div style="margin-top: 8px;">
+        <span class="challenge-type type-rated">Рейтинговый</span>
+      </div>
+    </div>
+
+    <div class="court">
+      <div class="court-divider"></div>
+      <div class="court-net">СЕТКА</div>
+      <div class="court-field">
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar me">ДК</div>
+            <div class="court-name">Денис К.</div>
+            <div class="court-rating">1450 ELO</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar filled">АМ</div>
+            <div class="court-name">Алексей М.</div>
+            <div class="court-rating">1380 ELO</div>
+          </div>
+        </div>
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar filled">ТН</div>
+            <div class="court-name">Тимур Н.</div>
+            <div class="court-rating">1520 ELO</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar filled">СО</div>
+            <div class="court-name">Серик О.</div>
+            <div class="court-rating">1410 ELO</div>
+          </div>
+        </div>
+      </div>
+      <div class="court-side-label left">Команда A</div>
+      <div class="court-side-label right">Команда B</div>
+    </div>
+
+    <div style="padding: 0 16px 12px;">
+      <button class="btn-primary">Начать поединок</button>
+    </div>
+    <div style="padding: 0 16px 16px;">
+      <button class="btn-danger">Отменить поединок</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ЭКРАН 5: Ввод счёта -->
+<!-- ============================================ -->
+<div class="screen-wrapper">
+  <div class="screen-label">5. Ввод счёта</div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span></span>
+    </div>
+
+    <div class="header">
+      <div class="header-back">
+        <span class="icon icon-white">arrow_back</span>
+      </div>
+      <div class="header-title">Счёт</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="court" style="margin-bottom: 8px;">
+      <div class="court-divider"></div>
+      <div class="court-net">СЕТКА</div>
+      <div class="court-field" style="min-height: 180px;">
+        <div class="court-side" style="padding: 16px 12px;">
+          <div class="court-player">
+            <div class="court-avatar me" style="width: 40px; height: 40px; font-size: 14px;">ДК</div>
+            <div class="court-name">Денис К.</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar filled" style="width: 40px; height: 40px; font-size: 14px;">АМ</div>
+            <div class="court-name">Алексей М.</div>
+          </div>
+        </div>
+        <div class="court-side" style="padding: 16px 12px;">
+          <div class="court-player">
+            <div class="court-avatar filled" style="width: 40px; height: 40px; font-size: 14px;">ТН</div>
+            <div class="court-name">Тимур Н.</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar filled" style="width: 40px; height: 40px; font-size: 14px;">СО</div>
+            <div class="court-name">Серик О.</div>
+          </div>
+        </div>
+      </div>
+      <div class="court-side-label left">Команда A</div>
+      <div class="court-side-label right">Команда B</div>
+    </div>
+
+    <!-- Сет 1 -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600;">Сет 1</div>
+      </div>
+      <div class="score-row" style="margin-bottom: 0;">
+        <div class="score-team">
+          <div class="score-team-name" style="color: #22C55E;">Команда A</div>
+        </div>
+        <input class="score-input" type="number" value="6">
+        <div class="score-vs">:</div>
+        <input class="score-input" type="number" value="4">
+        <div class="score-team">
+          <div class="score-team-name">Команда B</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Сет 2 -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600;">Сет 2</div>
+        <span class="icon icon-sm" style="color: #EF4444; cursor: pointer;">close</span>
+      </div>
+      <div class="score-row" style="margin-bottom: 0;">
+        <div class="score-team">
+          <div class="score-team-name">Команда A</div>
+        </div>
+        <input class="score-input" type="number" value="3">
+        <div class="score-vs">:</div>
+        <input class="score-input" type="number" value="6">
+        <div class="score-team">
+          <div class="score-team-name" style="color: #22C55E;">Команда B</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Добавить сет -->
+    <div style="padding: 0 16px 12px;">
+      <button class="btn-outline" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span class="icon icon-sm icon-green">add</span>
+        Добавить сет
+      </button>
+    </div>
+
+    <div style="padding: 0 16px 24px;">
+      <button class="btn-primary">Сохранить результат</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ЭКРАН 6: Результат поединка -->
+<!-- ============================================ -->
+<div class="screen-wrapper">
+  <div class="screen-label">6. Результат поединка</div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span></span>
+    </div>
+
+    <div class="header">
+      <div class="header-back">
+        <span class="icon icon-white">arrow_back</span>
+      </div>
+      <div class="header-title">Поединок</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 12px;">
+      <span class="status-badge status-done">
+        <span class="icon icon-sm">flag</span>
+        Завершён
+      </span>
+    </div>
+
+    <div class="card" style="text-align: center;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 6px;">
+        <span class="icon icon-sm icon-gray">calendar_today</span>
+        <span class="challenge-date">18 марта 2026, 19:00</span>
+      </div>
+      <div style="font-size: 13px; color: #888; display: flex; align-items: center; justify-content: center; gap: 4px;">
+        <span class="icon icon-sm icon-gray">location_on</span>
+        Almaty Arena Padel
+      </div>
+      <div style="margin-top: 8px;">
+        <span class="challenge-type type-rated">Рейтинговый</span>
+      </div>
+    </div>
+
+    <div class="court">
+      <div class="court-divider"></div>
+      <div class="court-net">СЕТКА</div>
+      <div class="court-field">
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar me">ДК</div>
+            <div class="court-name">Денис К.</div>
+            <div class="court-rating">1450 <span style="color:#22C55E">+18</span></div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar filled">АМ</div>
+            <div class="court-name">Алексей М.</div>
+            <div class="court-rating">1380 <span style="color:#22C55E">+21</span></div>
+          </div>
+        </div>
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar filled">ТН</div>
+            <div class="court-name">Тимур Н.</div>
+            <div class="court-rating">1520 <span style="color:#EF4444">-18</span></div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar filled">СО</div>
+            <div class="court-name">Серик О.</div>
+            <div class="court-rating">1410 <span style="color:#EF4444">-17</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="court-side-label left">Команда A</div>
+      <div class="court-side-label right">Команда B</div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-score">2 : 1</div>
+      <div class="result-label">Победа команды A</div>
+      <div style="display: flex; gap: 16px; justify-content: center; margin-top: 12px;">
+        <div>
+          <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Сет 1</div>
+          <div style="font-weight: 700;">6 : 4</div>
+        </div>
+        <div style="width: 1px; background: #2A2A2A;"></div>
+        <div>
+          <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Сет 2</div>
+          <div style="font-weight: 700;">3 : 6</div>
+        </div>
+        <div style="width: 1px; background: #2A2A2A;"></div>
+        <div>
+          <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Сет 3</div>
+          <div style="font-weight: 700;">6 : 2</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+      <span class="elo-change elo-plus">
+        <span class="icon icon-sm" style="vertical-align: middle;">trending_up</span>
+        +18 ELO
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ЭКРАН 7: Bottom sheet — приглашение -->
+<!-- ============================================ -->
+<div class="screen-wrapper">
+  <div class="screen-label">7. Приглашение игрока</div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span></span>
+    </div>
+
+    <div class="header">
+      <div class="header-back">
+        <span class="icon icon-white">arrow_back</span>
+      </div>
+      <div class="header-title">Новый поединок</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="court" style="opacity: 0.3;">
+      <div class="court-divider"></div>
+      <div class="court-net">СЕТКА</div>
+      <div class="court-field">
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar me">ДК</div>
+            <div class="court-name">Денис К.</div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar open">
+              <span class="icon">person_add</span>
+            </div>
+          </div>
+        </div>
+        <div class="court-side">
+          <div class="court-player">
+            <div class="court-avatar open">
+              <span class="icon">person_add</span>
+            </div>
+          </div>
+          <div class="court-player">
+            <div class="court-avatar open">
+              <span class="icon">person_add</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Добавить игрока</div>
+
+      <div class="form-group" style="margin: 0 0 16px;">
+        <input class="form-input" type="tel" placeholder="Номер телефона" value="7777 433 3822" style="font-size: 16px;">
+      </div>
+
+      <div class="player-result">
+        <div class="player-result-avatar">АК</div>
+        <div class="player-result-info">
+          <div class="player-result-name">Алексей Ким</div>
+          <div class="player-result-rating">1380 ELO · Уровень 3</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 8px;">
+        <button class="btn-primary" style="flex: 1;">Пригласить</button>
+        <button class="btn-secondary" style="flex: 1;">Открытое место</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

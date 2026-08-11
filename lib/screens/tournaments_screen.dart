@@ -1167,7 +1167,7 @@ class _ArchiveClubBlock extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => t.type == 'just_padel_it'
             ? TournamentLiveJustPadelItScreen(tournamentId: t.id)
-            // Эскалера открывается экраном Короля корта: структура live та же.
+            // Ladder открывается экраном Короля корта: структура live та же.
             : (t.type == 'king_of_court' || t.type == 'escalera')
                 ? TournamentLiveKingOfCourtScreen(tournamentId: t.id)
                 : t.type == 'bali_koc'

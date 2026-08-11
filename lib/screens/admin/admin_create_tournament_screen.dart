@@ -52,7 +52,7 @@ class _AdminCreateTournamentScreenState
   // Парный Americano Flex (фиксированные пары, собирает админ).
   bool _flexIsPaired = false;
 
-  /// Эскалера: зачёт по сумме забитых очков либо по баллам за позиции.
+  /// Ladder: зачёт по сумме забитых очков либо по баллам за позиции.
   String _escaleraStandingsMode = 'raw_points';
 
   String _type = 'americano'; // americano / king_of_court / round_robin / bali_koc / team / americano_flex / just_padel_it / escalera
@@ -615,7 +615,7 @@ class _AdminCreateTournamentScreenState
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
             ],
-            // Эскалера: число участников задаётся кортами, а не наоборот.
+            // Ladder: число участников задаётся кортами, а не наоборот.
             if (_type == 'escalera') ...[
               _label('Количество кортов (2–10)'),
               _textField(
@@ -874,7 +874,7 @@ class _AdminCreateTournamentScreenState
             ),
             card(
               value: 'escalera',
-              title: 'Эскалера',
+              title: 'Ladder',
               subtitle: 'Лестница из кортов',
               icon: Icons.stairs_rounded,
             ),
@@ -2408,7 +2408,7 @@ class _AdminCreateTournamentScreenState
     );
   }
 
-  /// Эскалера: по чему считается итоговое место.
+  /// Ladder: по чему считается итоговое место.
   Widget _escaleraModeControl() {
     Widget pill({
       required String text,

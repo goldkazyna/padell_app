@@ -2019,7 +2019,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'A flexible Americano for any number of players. Regular Americano needs a strict multiple of 4; here almost any number can play — extras sit out a round in turn.\n\nHow it works. Each round forms 2×2 matches with changing partners (like Americano). If there aren\'t enough players for even courts, some sit out (a bye). Rest is shared fairly: those who rested longest and played least go first — over time everyone gets roughly the same number of matches.\n\nScoring is individual, by average. Because of byes the number of matches played differs, so place is decided by average points per match (not the total). That way no one is helped or hurt by playing more or fewer games.\n\nLineup. Good for an «awkward» number of participants when a strict Americano won\'t fill. The organizer generates the rounds and ends the tournament at any time.\n\nPaired variant. Flex can also run with fixed pairs: then the «atom» is a pair, opponents and rest rotate, and the partner stays the same all tournament.\n\nWho wins. First place goes to whoever has the best average result per match.\n\nExample. 10 players, 2 courts = 8 play, 2 rest each round. Next round two others rest — and so on in a circle. If you played 6 matches for 36 points (average 6), you rank above someone with 40 over 8 matches (average 5).\n\nGood for. When a «non-round» number of players shows up but you want a fair Americano with no idle time and equal opportunity.';
 
   @override
-  String get tournamentInfoEscaleraName => 'Escalera';
+  String get tournamentInfoEscaleraName => 'Ladder';
 
   @override
   String get tournamentInfoEscaleraBody =>

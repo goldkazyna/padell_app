@@ -47,7 +47,7 @@ class AdminMatch {
   final int id;
   final int? courtNumber;
 
-  /// Эскалера: номер короткого матча внутри корта (1-3). У остальных
+  /// Ladder: номер короткого матча внутри корта (1-3). У остальных
   /// форматов на корте один матч, поэтому поле приходит пустым.
   final int? matchNumber;
   final AdminMatchTeam team1;

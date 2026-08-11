@@ -38,7 +38,7 @@ void openTournamentLiveByType(
     case 'king_of_court':
     case 'round_robin':
     case 'escalera':
-      // Round Robin и Эскалера по структуре live идентичны Королю корта (один
+      // Round Robin и Ladder по структуре live идентичны Королю корта (один
       // лидерборд + раунды), поэтому переиспользуем тот же экран. У эскалеры
       // матчи несут ярус корта — экран показывает его подписью корта.
       target = TournamentLiveKingOfCourtScreen(

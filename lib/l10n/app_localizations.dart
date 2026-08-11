@@ -3817,7 +3817,7 @@ abstract class AppLocalizations {
   /// No description provided for @tournamentInfoEscaleraName.
   ///
   /// In ru, this message translates to:
-  /// **'Эскалера'**
+  /// **'Ladder'**
   String get tournamentInfoEscaleraName;
 
   /// No description provided for @tournamentInfoEscaleraBody.
