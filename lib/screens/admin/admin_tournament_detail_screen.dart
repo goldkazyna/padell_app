@@ -2263,10 +2263,7 @@ class _AdminTournamentDetailScreenState
     }
 
     final list = _invitations ?? const <AdminInvitation>[];
-    const maxInvites = 10;
-    final atLimit = list.length >= maxInvites;
-    final canInvite =
-        _t != null && (_t!.type != 'team' || _t!.isAdminPairing) && !atLimit;
+    final canInvite = _t != null && (_t!.type != 'team' || _t!.isAdminPairing);
 
     return RefreshIndicator(
       onRefresh: _loadInvitations,
@@ -2282,17 +2279,11 @@ class _AdminTournamentDetailScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Приглашено: ${list.length} / $maxInvites',
+                    Text('Приглашено: ${list.length}',
                         style: TextStyle(
                             color: AppTheme.textPrimary,
                             fontSize: 15,
                             fontWeight: FontWeight.w700)),
-                    if (atLimit && (_t?.type != 'team' || (_t?.isAdminPairing ?? false))) ...[
-                      const SizedBox(height: 2),
-                      Text('Лимит приглашений достигнут',
-                          style: TextStyle(
-                              color: AppTheme.amber, fontSize: 12)),
-                    ],
                   ],
                 ),
               ),
