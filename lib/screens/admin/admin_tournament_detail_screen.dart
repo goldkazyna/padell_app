@@ -317,10 +317,7 @@ class _AdminTournamentDetailScreenState
             moderationHours: int.tryParse(_moderationHours.text.trim()),
             moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
             status: _status,
-            pairingMode: (t.type == 'team' ||
-                    (t.type == 'just_padel_it' && t.isPaired))
-                ? _pairingMode
-                : null,
+            pairingMode: t.type == 'team' ? _pairingMode : null,
             hasPlayoff: t.type == 'team'
                 ? _teamHasPlayoff
                 : (t.type == 'americano' ? _amHasPlayoff : null),
@@ -1567,8 +1564,7 @@ class _AdminTournamentDetailScreenState
                 ),
               ],
               // Кто собирает пары — только для командного турнира.
-              if (_t?.type == 'team' ||
-                  (_t?.type == 'just_padel_it' && (_t?.isPaired ?? false))) ...[
+              if (_t?.type == 'team') ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
