@@ -1299,6 +1299,9 @@ class _AdminCreateTournamentScreenState
               _groupsCount = n;
               // Полуфинал доступен и для 1, и для 2 групп.
               // Формат пересчитается в _playoffFormatSelector под новый набор.
+              // Три группы и больше играют только по общей таблице —
+              // в один финал такая сетка не помещается.
+              if (n >= 3) _playoffType = 'semifinal_final';
             });
             _updateRoundsCount();
           },
@@ -1430,7 +1433,7 @@ class _AdminCreateTournamentScreenState
     }
 
     return Row(children: [
-      btn('final_only', 'Только финал'),
+      if (_groupsCount < 3) btn('final_only', 'Только финал'),
       btn('semifinal_final', 'Полуфинал + финал'),
     ]);
   }
@@ -1438,7 +1441,14 @@ class _AdminCreateTournamentScreenState
   Widget _playoffFormatSelector() {
     // Опции зависят от числа групп и типа плей-офф (как в Web)
     final options = <(String value, String label)>[];
-    if (_groupsCount == 1 && _playoffType == 'final_only') {
+    if (_groupsCount >= 3) {
+      // Пары по местам в группах тут не сложить: форматы A/B видят только две
+      // группы, остальные остались бы вне сетки. Играем по общей таблице.
+      options.add(const (
+        'table_qf',
+        'Общая таблица (1+4 и 2+3 ждут в полуфинале, 5–12 играют четвертьфинал)',
+      ));
+    } else if (_groupsCount == 1 && _playoffType == 'final_only') {
       options.addAll(const [
         ('cross', '1+4 vs 2+3 (крест)'),
         ('tops', '1+2 vs 3+4 (топы вместе)'),

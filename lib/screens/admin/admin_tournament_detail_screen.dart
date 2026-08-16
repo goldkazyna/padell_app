@@ -5051,6 +5051,7 @@ class _AdminTournamentDetailScreenState
         s.replaceAll(' (нижняя сетка)', '').trim();
     int rank(String s) {
       final b = baseStage(s);
+      if (b == 'Четвертьфинал') return 0;
       if (b == 'Полуфинал') return 1;
       if (b == 'Финал') return 2;
       return 3;
@@ -5117,7 +5118,9 @@ class _AdminTournamentDetailScreenState
       {required bool isLower}) {
     String label;
     String? sub;
-    if (base == 'Полуфинал') {
+    if (base == 'Четвертьфинал') {
+      label = 'ЧЕТВЕРТЬФИНАЛ';
+    } else if (base == 'Полуфинал') {
       label = 'ПОЛУФИНАЛ';
     } else if (base == 'Финал') {
       label = 'ФИНАЛ';

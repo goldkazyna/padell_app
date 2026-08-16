@@ -219,6 +219,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       final base = ((s['stage'] as String?) ?? '')
           .replaceAll(' (нижняя сетка)', '')
           .trim();
+      if (base == 'Четвертьфинал') return 0;
       if (base == 'Полуфинал') return 1;
       if (base == 'Финал') return 2;
       return 3; // Матч за 3-е место / За 3-е место
@@ -299,7 +300,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     String label;
     String? sub;
-    if (base == 'Полуфинал') {
+    if (base == 'Четвертьфинал') {
+      label = 'ЧЕТВЕРТЬФИНАЛ';
+    } else if (base == 'Полуфинал') {
       label = 'ПОЛУФИНАЛ';
     } else if (base == 'Финал') {
       label = 'ФИНАЛ';
