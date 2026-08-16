@@ -116,6 +116,9 @@ class _AdminTournamentDetailScreenState
 
   // Приглашения
   List<AdminInvitation>? _invitations;
+  // Заготовка текста приглашения — приходит с сервера вместе со списком.
+  String _inviteDefaultTitle = '';
+  String _inviteDefaultBody = '';
   bool _loadingInvitations = false;
   String? _invitationsError;
 
@@ -2197,12 +2200,14 @@ class _AdminTournamentDetailScreenState
       _invitationsError = null;
     });
     try {
-      final list = await context
+      final loaded = await context
           .read<AdminService>()
           .getTournamentInvitations(widget.tournamentId);
       if (!mounted) return;
       setState(() {
-        _invitations = list;
+        _invitations = loaded.items;
+        _inviteDefaultTitle = loaded.defaultTitle;
+        _inviteDefaultBody = loaded.defaultBody;
         _loadingInvitations = false;
       });
     } catch (e) {
@@ -3496,11 +3501,32 @@ class _AdminTournamentDetailScreenState
     final selected = await _showPlayerSearchSheet(
       title: 'Пригласить игрока',
     );
-    if (selected == null) return;
+    if (selected == null || !mounted) return;
+
+    // Текст показываем перед отправкой: приглашение уходит пушем,
+    // и организатор часто хочет добавить своё — время, корт, условия.
+    final text = await showModalBottomSheet<({String title, String body})>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => _InviteTextSheet(
+        playerName: selected.name,
+        defaultTitle: _inviteDefaultTitle,
+        defaultBody: _inviteDefaultBody,
+      ),
+    );
+    if (text == null) return;
+
     await _runAction(
-      () => context
-          .read<AdminService>()
-          .invitePlayer(widget.tournamentId, selected.id),
+      () => context.read<AdminService>().invitePlayer(
+            widget.tournamentId,
+            selected.id,
+            title: text.title,
+            body: text.body,
+          ),
       label: 'Отправляем приглашение...',
       successMessage: 'Приглашение отправлено',
     );
@@ -6010,6 +6036,175 @@ class _AdminLeaderAvatar extends StatelessWidget {
         height: size,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => fallback,
+      ),
+    );
+  }
+}
+
+/// Текст приглашения перед отправкой.
+///
+/// Приглашение уходит пушем, поэтому организатору нужно видеть и править
+/// формулировку — время, корт, условия. Пустые поля не отправляются:
+/// сервер подставит свою заготовку.
+class _InviteTextSheet extends StatefulWidget {
+  const _InviteTextSheet({
+    required this.playerName,
+    required this.defaultTitle,
+    required this.defaultBody,
+  });
+
+  final String playerName;
+  final String defaultTitle;
+  final String defaultBody;
+
+  @override
+  State<_InviteTextSheet> createState() => _InviteTextSheetState();
+}
+
+class _InviteTextSheetState extends State<_InviteTextSheet> {
+  late final TextEditingController _title =
+      TextEditingController(text: widget.defaultTitle);
+  late final TextEditingController _body =
+      TextEditingController(text: widget.defaultBody);
+
+  @override
+  void dispose() {
+    _title.dispose();
+    _body.dispose();
+    super.dispose();
+  }
+
+  Widget _label(String text) => Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Text(text,
+            style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600)),
+      );
+
+  Widget _field(TextEditingController controller,
+      {int maxLength = 100, int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLength: maxLength,
+      maxLines: maxLines,
+      onChanged: (_) => setState(() {}),
+      style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+      decoration: InputDecoration(
+        counterStyle:
+            TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+        filled: true,
+        fillColor: AppTheme.cardRaised,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text('Приглашение · ${widget.playerName}',
+                      style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800)),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(Icons.close, color: AppTheme.textSecondary),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _label('Заголовок'),
+            _field(_title),
+            _label('Текст'),
+            _field(_body, maxLength: 250, maxLines: 3),
+            const SizedBox(height: 4),
+            // На телефоне пуш обрезается — длинный текст увидят не целиком.
+            Text('Как увидит игрок',
+                style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 11,
+                    letterSpacing: 0.6)),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.cardRaised,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Padel KZ · сейчас',
+                      style: TextStyle(
+                          color: AppTheme.textSecondary, fontSize: 11)),
+                  const SizedBox(height: 4),
+                  Text(_title.text.isEmpty ? '—' : _title.text,
+                      style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 2),
+                  Text(_body.text.isEmpty ? '—' : _body.text,
+                      style: TextStyle(
+                          color: AppTheme.textPrimary, fontSize: 13)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    _title.text = widget.defaultTitle;
+                    _body.text = widget.defaultBody;
+                    setState(() {});
+                  },
+                  child: Text('Вернуть заготовку',
+                      style: TextStyle(color: AppTheme.textSecondary)),
+                ),
+                const Spacer(),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(
+                      context, (title: _title.text, body: _body.text)),
+                  icon: const Icon(Icons.send, size: 16),
+                  label: const Text('Отправить'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

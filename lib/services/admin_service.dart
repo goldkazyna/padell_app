@@ -555,25 +555,48 @@ class AdminService {
     );
   }
 
-  Future<void> invitePlayer(int tournamentId, int userId) async {
+  /// Пригласить игрока. [title] и [body] — текст, поправленный админом;
+  /// пустые не отправляем, сервер подставит заготовку.
+  Future<void> invitePlayer(
+    int tournamentId,
+    int userId, {
+    String? title,
+    String? body,
+  }) async {
     final token = await _storage.getToken();
     await _api.post(
       '/admin/tournaments/$tournamentId/invite',
-      {'user_id': userId},
+      {
+        'user_id': userId,
+        if (title != null && title.trim().isNotEmpty) 'title': title.trim(),
+        if (body != null && body.trim().isNotEmpty) 'body': body.trim(),
+      },
       token,
     );
   }
 
-  Future<List<AdminInvitation>> getTournamentInvitations(int tournamentId) async {
+  /// Приглашённые и заготовка текста приглашения.
+  ///
+  /// Заготовка приходит с сервера, чтобы формулировка была одна и в вебе,
+  /// и в приложении. Старый ответ без неё даёт пустые строки — экран тогда
+  /// просто покажет поля незаполненными.
+  Future<({List<AdminInvitation> items, String defaultTitle, String defaultBody})>
+      getTournamentInvitations(int tournamentId) async {
     final token = await _storage.getToken();
     final response = await _api.get(
       '/admin/tournaments/$tournamentId/invitations',
       token,
     );
     final list = (response['invitations'] as List?) ?? const [];
-    return list
-        .map((j) => AdminInvitation.fromJson(j as Map<String, dynamic>))
-        .toList();
+    final defaults = (response['invite_defaults'] as Map?) ?? const {};
+
+    return (
+      items: list
+          .map((j) => AdminInvitation.fromJson(j as Map<String, dynamic>))
+          .toList(),
+      defaultTitle: (defaults['title'] as String?) ?? '',
+      defaultBody: (defaults['body'] as String?) ?? '',
+    );
   }
 
   Future<void> cancelInvitation(int tournamentId, int invitationId) async {
