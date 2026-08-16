@@ -5,6 +5,7 @@ import '../../screens/achievements_screen.dart';
 import '../../services/achievement_service.dart';
 import '../../theme/app_theme.dart';
 import '../achievements/achievement_badge.dart';
+import '../achievements/achievement_sheet.dart';
 
 /// Блок значков в своём профиле.
 ///
@@ -94,14 +95,17 @@ class _AchievementsSectionState extends State<AchievementsSection> {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 132,
+            height: 140,
             child: items == null
                 ? _skeleton()
                 : ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: items.length,
                     separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    itemBuilder: (_, i) => AchievementBadge(achievement: items[i]),
+                    itemBuilder: (_, i) => AchievementBadge(
+                      achievement: items[i],
+                      onTap: () => showAchievementSheet(context, items[i]),
+                    ),
                   ),
           ),
         ],
@@ -116,11 +120,11 @@ class _AchievementsSectionState extends State<AchievementsSection> {
       itemCount: 4,
       separatorBuilder: (_, __) => const SizedBox(width: 10),
       itemBuilder: (_, __) => Container(
-        width: 56,
-        height: 56,
+        width: 64,
+        height: 64,
         decoration: BoxDecoration(
           color: AppTheme.cardRaised,
-          borderRadius: BorderRadius.circular(18),
+          shape: BoxShape.circle,
         ),
       ),
     );

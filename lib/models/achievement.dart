@@ -5,9 +5,17 @@ class Achievement {
   final String description;
   final String icon;
   final String group;
+
+  /// Металл медали: bronze | silver | gold. Закреплён за значком навсегда.
+  final String tier;
+
   final int progress;
   final int target;
   final DateTime? unlockedAt;
+
+  /// Сколько процентов игравших открыли значок. null — база ещё мала,
+  /// показывать долю нечестно.
+  final int? rarity;
 
   const Achievement({
     required this.code,
@@ -15,9 +23,11 @@ class Achievement {
     required this.description,
     required this.icon,
     required this.group,
+    required this.tier,
     required this.progress,
     required this.target,
     this.unlockedAt,
+    this.rarity,
   });
 
   bool get isUnlocked => unlockedAt != null;
@@ -34,9 +44,11 @@ class Achievement {
       description: json['description'] as String? ?? '',
       icon: json['icon'] as String? ?? 'emoji_events',
       group: json['group'] as String? ?? 'first_steps',
+      tier: json['tier'] as String? ?? 'silver',
       progress: json['progress'] as int? ?? 0,
       target: json['target'] as int? ?? 1,
       unlockedAt: unlocked == null ? null : DateTime.tryParse(unlocked),
+      rarity: json['rarity'] as int?,
     );
   }
 }

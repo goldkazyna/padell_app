@@ -4,6 +4,7 @@ import '../models/achievement.dart';
 import '../services/achievement_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/achievements/achievement_badge.dart';
+import '../widgets/achievements/achievement_sheet.dart';
 import '../widgets/app_back_button.dart';
 
 /// Все значки игрока по группам.
@@ -127,9 +128,14 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       ),
       const SizedBox(height: 12),
       Wrap(
-        spacing: 12,
-        runSpacing: 18,
-        children: items.map((a) => AchievementBadge(achievement: a)).toList(),
+        spacing: 10,
+        runSpacing: 20,
+        children: items
+            .map((a) => AchievementBadge(
+                  achievement: a,
+                  onTap: () => showAchievementSheet(context, a),
+                ))
+            .toList(),
       ),
       const SizedBox(height: 26),
     ];

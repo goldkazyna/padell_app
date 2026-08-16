@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/achievement.dart';
 import '../services/achievement_service.dart';
 import '../widgets/achievements/achievement_badge.dart';
+import '../widgets/achievements/achievement_sheet.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/rating_provider.dart';
 import '../providers/settings_provider.dart';
@@ -334,7 +335,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               ),
             ),
             SizedBox(
-              height: 104,
+              height: 112,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -343,6 +344,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 itemBuilder: (_, i) => AchievementBadge(
                   achievement: _achievements[i],
                   showProgress: false,
+                  onTap: () => showAchievementSheet(context, _achievements[i]),
                 ),
               ),
             ),
