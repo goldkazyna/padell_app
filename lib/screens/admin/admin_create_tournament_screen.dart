@@ -357,6 +357,7 @@ class _AdminCreateTournamentScreenState
     if (_type == 'just_padel_it' && _flexIsPaired) {
       // Just Padel It с фиксированными парами: пары создаются на этапе проведения.
       body['is_paired'] = true;
+      body['pairing_mode'] = _pairingMode;
     }
 
     if (_type == 'just_padel_it') {
@@ -581,6 +582,21 @@ class _AdminCreateTournamentScreenState
               const SizedBox(height: 12),
               _pairedToggle(),
             ],
+            // Кто собирает пары — вопрос только для фиксированных пар.
+            if (_type == 'just_padel_it' && _flexIsPaired) ...[
+              const SizedBox(height: 12),
+              _label('Кто собирает пары'),
+              _pairingModeSelector(),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  _pairingMode == 'admin'
+                      ? 'Игроки записываются по одному, пары собираете вы перед стартом.'
+                      : 'Пары регистрируются сами, вводя партнёра при записи.',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                ),
+              ),
+            ],
             if (_type == 'just_padel_it') ...[
               const SizedBox(height: 12),
               _jpiRankControl(),
@@ -788,7 +804,12 @@ class _AdminCreateTournamentScreenState
       final active = _type == value;
       return GestureDetector(
         onTap: () {
-          setState(() => _type = value);
+          setState(() {
+            _type = value;
+            // Умолчание разное: в групповом пары собирают сами игроки,
+            // в парном JPI исторически собирал админ — менять молча нельзя.
+            _pairingMode = value == 'just_padel_it' ? 'admin' : 'self';
+          });
           _updateRoundsCount();
         },
         child: Container(

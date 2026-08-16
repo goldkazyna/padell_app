@@ -218,7 +218,13 @@ class _AdminTournamentDetailScreenState
     _minLevel = t.minLevel <= 0 ? 1.0 : t.minLevel;
     _maxLevel = t.maxLevel <= 0 ? 5.0 : t.maxLevel;
     _verifiedOnly = t.verifiedOnly;
-    _pairingMode = t.pairingMode == 'admin' ? 'admin' : 'self';
+    // У парного JPI исторический режим — «админ собирает»: старые турниры
+    // и старые сборки приложения поле не присылали.
+    final defaultPairing =
+        (t.type == 'just_padel_it' && t.isPaired) ? 'admin' : 'self';
+    _pairingMode = t.pairingMode == 'admin'
+        ? 'admin'
+        : (t.pairingMode == 'self' ? 'self' : defaultPairing);
     _teamHasPlayoff = t.hasPlayoff;
     _teamHasLowerBracket = t.hasLowerBracket;
     _teamHasBronzeMatch = t.hasBronzeMatch;
@@ -311,7 +317,10 @@ class _AdminTournamentDetailScreenState
             moderationHours: int.tryParse(_moderationHours.text.trim()),
             moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
             status: _status,
-            pairingMode: t.type == 'team' ? _pairingMode : null,
+            pairingMode: (t.type == 'team' ||
+                    (t.type == 'just_padel_it' && t.isPaired))
+                ? _pairingMode
+                : null,
             hasPlayoff: t.type == 'team'
                 ? _teamHasPlayoff
                 : (t.type == 'americano' ? _amHasPlayoff : null),
@@ -1549,7 +1558,8 @@ class _AdminTournamentDetailScreenState
                 ),
               ],
               // Кто собирает пары — только для командного турнира.
-              if (_t?.type == 'team') ...[
+              if (_t?.type == 'team' ||
+                  (_t?.type == 'just_padel_it' && (_t?.isPaired ?? false))) ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
