@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../widgets/achievements/achievement_badge.dart';
 import '../widgets/achievements/achievement_sheet.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/floating_tab_bar.dart';
 
 /// Все значки игрока по группам.
 class AchievementsScreen extends StatefulWidget {
@@ -46,22 +47,24 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.background,
         elevation: 0,
-        leading: const AppBackButton(),
-        title: Text(
-          'Достижения',
-          style: TextStyle(
-            color: AppTheme.textPrimary,
-            fontSize: 17,
-            fontWeight: FontWeight.w800,
-          ),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Center(child: AppBackButton()),
         ),
+        title: const Text('Достижения',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
       ),
-      body: RefreshIndicator(
-        color: AppTheme.accent,
-        backgroundColor: AppTheme.card,
-        onRefresh: _load,
-        child: _body(),
-      ),
+      // Таблетка нижнего меню остаётся поверх содержимого, как на остальных
+      // вложенных экранах: с достижений уходят обратно в разделы, а не назад.
+      body: Stack(children: [
+        RefreshIndicator(
+          color: AppTheme.accent,
+          backgroundColor: AppTheme.card,
+          onRefresh: _load,
+          child: _body(),
+        ),
+        const FloatingTabBar(),
+      ]),
     );
   }
 
@@ -96,7 +99,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 110),
       children: [
         Text(
           'Получено $unlocked из ${items.length}',
