@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/achievement.dart';
+import '../services/achievement_service.dart';
+import '../widgets/achievements/achievement_badge.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/rating_provider.dart';
 import '../providers/settings_provider.dart';
@@ -38,12 +41,28 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
   String? _error;
   bool _inviting = false;
 
+  /// Только полученные значки: пустых ячеек и счётчика «3 из 15» на чужой
+  /// карточке быть не должно — смотреть на чужую пустоту незачем.
+  List<Achievement> _achievements = const [];
+
   final _invitationService = InvitationService(ApiService(), StorageService());
 
   @override
   void initState() {
     super.initState();
     _loadProfile();
+    _loadAchievements();
+  }
+
+  Future<void> _loadAchievements() async {
+    try {
+      final items =
+          await context.read<AchievementService>().ofPlayer(widget.playerId);
+      if (!mounted) return;
+      setState(() => _achievements = items);
+    } catch (_) {
+      // Значки — не главное на чужой карточке: молча оставляем блок скрытым.
+    }
   }
 
   Future<void> _loadProfile() async {
@@ -300,6 +319,34 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             details: p.ratingTrendDetails,
             trend: p.ratingTrend,
           ),
+
+          if (_achievements.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+              child: Text(
+                'ДОСТИЖЕНИЯ',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 104,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _achievements.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (_, i) => AchievementBadge(
+                  achievement: _achievements[i],
+                  showProgress: false,
+                ),
+              ),
+            ),
+          ],
 
           // History section
           Padding(

@@ -10,6 +10,7 @@ import '../screens/tournament_detail_screen.dart';
 import '../screens/challenge_detail_screen.dart';
 import '../screens/tournament_live_kingofcourt_screen.dart';
 import '../screens/tournament_live_bali_koc_screen.dart';
+import '../screens/achievements_screen.dart';
 import '../screens/tournament_invitations_screen.dart';
 import '../screens/my_bookings_screen.dart';
 import '../screens/admin/admin_tournament_detail_screen.dart';
@@ -358,6 +359,12 @@ class PushNotificationService {
       String type, String tournamentId, String challengeId, String subtype) {
     _log(
         'Navigate: type=$type, subtype=$subtype, tournamentId=$tournamentId, challengeId=$challengeId');
+
+    // Новый значок → экран достижений
+    if (type == 'achievement') {
+      _navigateWhenReady(() => const AchievementsScreen());
+      return;
+    }
 
     // Приглашение на турнир → экран приглашений (принять/отклонить)
     if (type == 'tournament_invite') {

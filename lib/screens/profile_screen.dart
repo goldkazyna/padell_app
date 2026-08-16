@@ -10,6 +10,7 @@ import '../widgets/profile/my_tournaments_button.dart';
 import '../widgets/profile/tournament_invitations_button.dart';
 import '../widgets/profile/my_trainings_button.dart';
 import '../widgets/profile/support_button.dart';
+import '../widgets/profile/achievements_section.dart';
 import '../widgets/profile/rating_dynamics_card.dart';
 import '../widgets/profile/tournaments_history_button.dart';
 import '../widgets/profile/profile_menu.dart';
@@ -75,6 +76,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                   const SizedBox(height: 12),
                   const RatingDynamicsCard(),
+                  const SizedBox(height: 20),
+                  const AchievementsSection(),
+                  const SizedBox(height: 20),
                   const TournamentsHistoryButton(),
                   const MyTournamentsButton(),
                   const TournamentInvitationsButton(),

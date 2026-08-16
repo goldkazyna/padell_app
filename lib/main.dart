@@ -33,6 +33,7 @@ import 'services/invitation_service.dart';
 import 'services/moderation_service.dart';
 import 'services/support_service.dart';
 import 'services/chat_service.dart';
+import 'services/achievement_service.dart';
 import 'services/coach_service.dart';
 import 'services/training_service.dart';
 import 'providers/court_provider.dart';
@@ -86,6 +87,7 @@ void main() async {
   final chatService = ChatService(apiService, storageService);
   final coachService = CoachService(apiService, storageService);
   final trainingService = TrainingService(apiService, storageService);
+  final achievementService = AchievementService(apiService, storageService);
   final pushService = PushNotificationService(apiService, storageService, navigatorKey);
   if (!kIsWeb) {
     try {
@@ -150,6 +152,7 @@ void main() async {
         Provider<SupportService>.value(value: supportService),
         Provider<ChatService>.value(value: chatService),
         Provider<CoachService>.value(value: coachService),
+        Provider<AchievementService>.value(value: achievementService),
         Provider<TrainingService>.value(value: trainingService),
       ],
       child: const PadelApp(),
