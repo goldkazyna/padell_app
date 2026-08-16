@@ -43,6 +43,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   String? _error;
   Map<String, dynamic>? _data;
   int _selectedGroupIdx = 0;
+
+  /// Выбрана общая таблица, а не конкретная группа. По умолчанию открыта
+  /// именно она: по ней идёт посев в плей-офф, значит она главнее.
+  bool _showOverallTable = true;
   _LiveTab _activeTab = _LiveTab.rounds;
   // round_id => isExpanded
   final Map<int, bool> _roundExpanded = {};
@@ -142,7 +146,15 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final tournament = _data!['tournament'] as Map<String, dynamic>;
     final groups = (_data!['groups'] as List).cast<Map<String, dynamic>>();
     final playoff = (_data!['playoff'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+    // Общая таблица приходит только при трёх группах и больше — там плей-офф
+    // строится по ней, а не по местам в группах.
+    final overall = (_data!['overall'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+
     if (_selectedGroupIdx >= groups.length) _selectedGroupIdx = 0;
+    // Раунды всегда принадлежат конкретной группе: на общей таблице их нет.
+    final showOverall = overall.isNotEmpty &&
+        _showOverallTable &&
+        _activeTab == _LiveTab.table;
     final group = groups.isNotEmpty ? groups[_selectedGroupIdx] : null;
 
     return RefreshIndicator(
@@ -154,8 +166,16 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         children: [
           _buildHeader(tournament),
           _buildMainTabs(),
-          if (groups.length > 1) _buildGroupTabs(groups),
-          if (group != null) ...[
+          if (groups.length > 1)
+            _buildGroupTabs(groups,
+                withOverall: overall.isNotEmpty && _activeTab == _LiveTab.table),
+          if (showOverall)
+            _buildLeaderboard(
+              {'leaderboard': overall},
+              title: 'Общая таблица',
+              hint: 'Места 1–4 ждут соперников в полуфинале, 5–12 играют четвертьфинал.',
+            )
+          else if (group != null) ...[
             if (_activeTab == _LiveTab.rounds)
               _buildRounds(group)
             else
@@ -607,13 +627,17 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   }
 
   // ===== Group tabs (pill-кнопки, чтобы не сливались с главными табами) =====
-  Widget _buildGroupTabs(List<Map<String, dynamic>> groups) {
+  Widget _buildGroupTabs(List<Map<String, dynamic>> groups, {bool withOverall = false}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
       child: Row(
         children: [
+          if (withOverall) ...[
+            Expanded(child: _groupTabBtn('Общая', -1)),
+            const SizedBox(width: 8),
+          ],
           for (var i = 0; i < groups.length; i++) ...[
-            if (i > 0) const SizedBox(width: 8),
+            if (i > 0 || withOverall) const SizedBox(width: 8),
             Expanded(child: _groupTabBtn(groups[i]['name'] as String?, i)),
           ],
         ],
@@ -621,10 +645,15 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     );
   }
 
+  /// [idx] = -1 — общая таблица.
   Widget _groupTabBtn(String? label, int idx) {
-    final isActive = _selectedGroupIdx == idx;
+    final isOverall = idx < 0;
+    final isActive = isOverall ? _showOverallTable : (!_showOverallTable && _selectedGroupIdx == idx);
     return GestureDetector(
-      onTap: () => setState(() => _selectedGroupIdx = idx),
+      onTap: () => setState(() {
+        _showOverallTable = isOverall;
+        if (!isOverall) _selectedGroupIdx = idx;
+      }),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         decoration: BoxDecoration(
@@ -651,7 +680,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   }
 
   // ===== Leaderboard =====
-  Widget _buildLeaderboard(Map<String, dynamic> group) {
+  Widget _buildLeaderboard(
+    Map<String, dynamic> group, {
+    String title = 'Таблица лидеров',
+    String? hint,
+  }) {
     // Для Americano Flex ранжирование идёт по среднему за матч (очки ÷ игры),
     // т.к. у игроков разное число игр из-за отдыхов. Поэтому показываем
     // таблицу как в админке: Матчи / Отдыхи / Среднее / Очки.
@@ -678,7 +711,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                     color: AppTheme.amber, size: 16),
                 SizedBox(width: 8),
                 Text(
-                  'Таблица лидеров',
+                  title,
                   style: TextStyle(
                     color: AppTheme.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -688,6 +721,15 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               ],
             ),
           ),
+          if (hint != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: Text(
+                hint,
+                style: TextStyle(
+                    color: AppTheme.textSecondary, fontSize: 11.5, height: 1.35),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
             child: Table(
@@ -752,6 +794,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
+    // Оба поля приходят только в общей таблице: место в ней ведёт в плей-офф,
+    // а игроки собраны из разных групп.
+    final slot = p['playoff_slot'] as String?;
+    final groupName = p['group_name'] as String?;
+    final groupLabel = groupName?.replaceFirst('Группа ', '');
 
     Widget cell(Widget child, {EdgeInsets? padding, AlignmentGeometry alignment = Alignment.center}) {
       return InkWell(
@@ -776,13 +823,29 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       children: [
         // #
         cell(
-          Text(
-            '$position',
-            style: TextStyle(
-              color: rankColor,
-              fontWeight: FontWeight.w800,
-              fontSize: 13,
-            ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$position',
+                style: TextStyle(
+                  color: rankColor,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                ),
+              ),
+              if (slot != null)
+                Text(
+                  slot == 'semifinal' ? 'ПФ' : 'ЧФ',
+                  style: TextStyle(
+                    color: slot == 'semifinal' ? AppTheme.amber : AppTheme.textDim,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 8.5,
+                    height: 1.4,
+                  ),
+                ),
+            ],
           ),
           padding: const EdgeInsets.fromLTRB(2, 8, 6, 8),
           alignment: Alignment.centerLeft,
@@ -821,6 +884,13 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                   size: 12,
                   userId: playerId,
                   playerName: playerName,
+                ),
+              ],
+              if (groupLabel != null) ...[
+                const SizedBox(width: 6),
+                Text(
+                  groupLabel,
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 10.5),
                 ),
               ],
             ],
