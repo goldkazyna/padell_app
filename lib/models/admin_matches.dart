@@ -177,6 +177,12 @@ class AdminLeaderboardRow {
   /// Americano Flex: финальный рейтинг (после завершения турнира).
   final int? ratingAfter;
 
+  /// Общая таблица: из какой группы игрок. В таблице группы поле пустое.
+  final String? groupName;
+
+  /// Общая таблица: куда ведёт место — semifinal | quarterfinal | null.
+  final String? playoffSlot;
+
   const AdminLeaderboardRow({
     required this.position,
     required this.id,
@@ -199,6 +205,8 @@ class AdminLeaderboardRow {
     this.byeCount,
     this.ratingBefore,
     this.ratingAfter,
+    this.groupName,
+    this.playoffSlot,
   });
 
   factory AdminLeaderboardRow.fromJson(Map<String, dynamic> json) {
@@ -227,6 +235,8 @@ class AdminLeaderboardRow {
       byeCount: (json['bye_count'] as num?)?.toInt(),
       ratingBefore: (json['rating_before'] as num?)?.toInt(),
       ratingAfter: (json['rating_after'] as num?)?.toInt(),
+      groupName: json['group_name'] as String?,
+      playoffSlot: json['playoff_slot'] as String?,
     );
   }
 }
@@ -357,6 +367,11 @@ class AdminMatchesResponse {
   final bool unsupported;
   final String? unsupportedMessage;
   final List<AdminMatchGroup> groups;
+
+  /// Общая таблица всех групп. Не пуста только при трёх группах и больше:
+  /// там плей-офф строится по ней, а не по местам в группах.
+  final List<AdminLeaderboardRow> overall;
+
   final AdminPlayoff? playoff;
   final AdminMatchesSummary? summary;
 
@@ -380,6 +395,7 @@ class AdminMatchesResponse {
     required this.unsupported,
     required this.unsupportedMessage,
     required this.groups,
+    this.overall = const [],
     required this.playoff,
     required this.summary,
     this.pairsRequired = false,
@@ -399,6 +415,12 @@ class AdminMatchesResponse {
           ? ((json['groups'] as List?) ?? const [])
               .whereType<Map<String, dynamic>>()
               .map(AdminMatchGroup.fromJson)
+              .toList()
+          : const [],
+      overall: !unsupported
+          ? ((json['overall'] as List?) ?? const [])
+              .whereType<Map<String, dynamic>>()
+              .map(AdminLeaderboardRow.fromJson)
               .toList()
           : const [],
       playoff: !unsupported && json['playoff'] is Map<String, dynamic>

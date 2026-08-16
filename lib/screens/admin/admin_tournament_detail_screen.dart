@@ -138,6 +138,10 @@ class _AdminTournamentDetailScreenState
   bool _loadingMatches = false;
   String? _matchesError;
   int _selectedGroupIdx = 0;
+
+  /// Открыта общая таблица, а не конкретная группа. По умолчанию именно она:
+  /// при трёх группах посев в плей-офф идёт по ней, значит она главнее.
+  bool _showOverallTable = true;
   // Round Robin: какие раунды раскрыты (override). По умолчанию раскрыт «идёт».
   final Map<int, bool> _rrRoundExpanded = {};
 
@@ -3682,9 +3686,12 @@ class _AdminTournamentDetailScreenState
           if (r.summary != null) _buildMatchesSummary(r.summary!),
           if (r.groups.length > 1) ...[
             const SizedBox(height: 12),
-            _buildGroupTabs(r.groups),
+            _buildGroupTabs(r.groups, withOverall: r.overall.isNotEmpty),
           ],
-          if (selectedGroup != null) ...[
+          if (r.overall.isNotEmpty && _showOverallTable) ...[
+            const SizedBox(height: 12),
+            _buildOverallCard(r.overall),
+          ] else if (selectedGroup != null) ...[
             const SizedBox(height: 12),
             _buildGroupCard(selectedGroup),
           ],
@@ -3795,7 +3802,7 @@ class _AdminTournamentDetailScreenState
     );
   }
 
-  Widget _buildGroupTabs(List<AdminMatchGroup> groups) {
+  Widget _buildGroupTabs(List<AdminMatchGroup> groups, {bool withOverall = false}) {
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -3804,6 +3811,7 @@ class _AdminTournamentDetailScreenState
       ),
       child: Row(
         children: [
+          if (withOverall) Expanded(child: _groupTabBtn('Общая', -1)),
           for (var i = 0; i < groups.length; i++)
             Expanded(child: _groupTabBtn(groups[i].name, i)),
         ],
@@ -3811,10 +3819,16 @@ class _AdminTournamentDetailScreenState
     );
   }
 
+  /// [idx] = -1 — общая таблица.
   Widget _groupTabBtn(String label, int idx) {
-    final isActive = _selectedGroupIdx == idx;
+    final isOverall = idx < 0;
+    final isActive =
+        isOverall ? _showOverallTable : (!_showOverallTable && _selectedGroupIdx == idx);
     return GestureDetector(
-      onTap: () => setState(() => _selectedGroupIdx = idx),
+      onTap: () => setState(() {
+        _showOverallTable = isOverall;
+        if (!isOverall) _selectedGroupIdx = idx;
+      }),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
@@ -4137,6 +4151,38 @@ class _AdminTournamentDetailScreenState
         });
       }
     }
+  }
+
+  /// Общая таблица всех групп: по ней идёт посев в плей-офф при трёх группах.
+  Widget _buildOverallCard(List<AdminLeaderboardRow> rows) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF27272A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Общая таблица',
+              style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(
+            'Места 1–4 ждут соперников в полуфинале, 5–12 играют четвертьфинал.',
+            style: TextStyle(
+                color: AppTheme.textSecondary, fontSize: 12, height: 1.35),
+          ),
+          const SizedBox(height: 12),
+          _buildLeaderboard(rows),
+          const SizedBox(height: 10),
+          _buildShareStandingsButton(rows),
+        ],
+      ),
+    );
   }
 
   Widget _buildGroupCard(AdminMatchGroup g) {
@@ -4552,11 +4598,30 @@ class _AdminTournamentDetailScreenState
     return TableRow(
       children: [
         cell(
-          Text('${p.position}',
-              style: TextStyle(
-                  color: posColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700)),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${p.position}',
+                  style: TextStyle(
+                      color: posColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+              // Только в общей таблице: куда ведёт это место.
+              if (p.playoffSlot != null)
+                Text(
+                  p.playoffSlot == 'semifinal' ? 'ПФ' : 'ЧФ',
+                  style: TextStyle(
+                    color: p.playoffSlot == 'semifinal'
+                        ? AppTheme.amber
+                        : AppTheme.textDim,
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w800,
+                    height: 1.4,
+                  ),
+                ),
+            ],
+          ),
           padding: const EdgeInsets.fromLTRB(2, 10, 6, 10),
           alignment: Alignment.centerLeft,
         ),
@@ -4582,6 +4647,13 @@ class _AdminTournamentDetailScreenState
               if (p.verified) ...[
                 const SizedBox(width: 5),
                 VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
+              ],
+              if (p.groupName != null) ...[
+                const SizedBox(width: 6),
+                Text(
+                  p.groupName!.replaceFirst('Группа ', ''),
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 10.5),
+                ),
               ],
             ],
           ),
