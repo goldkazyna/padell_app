@@ -6,6 +6,9 @@ import 'package:padel_app/widgets/waiver/signature_pad.dart';
 ///
 /// Главное здесь — что палец превращается в PNG, который сервер примет:
 /// он отклоняет одноцветную картинку как пустую подпись.
+///
+/// Растеризацию зовём через runAsync: в фейковом времени тестов
+/// Canvas.toImage не завершается никогда.
 void main() {
   Future<void> pumpPad(WidgetTester tester, SignaturePadController pad) async {
     await tester.pumpWidget(MaterialApp(
@@ -48,7 +51,7 @@ void main() {
 
     expect(pad.isEmpty, isFalse);
 
-    final png = await pad.toPng();
+    final png = await tester.runAsync(() => pad.toPng());
     expect(png, isNotNull);
     // Сигнатура формата: сервер проверяет ровно эти восемь байт.
     expect(png!.sublist(0, 8), [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
