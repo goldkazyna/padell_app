@@ -480,14 +480,23 @@ class _AdminTournamentDetailScreenState
     if (t == null) return false;
     if (t.type == 'bali_koc' && !t.baliPairsCreated) return true;
     if (t.type == 'king_of_court' && t.isPaired && !t.kocPairsCreated) return true;
-    if (t.type == 'just_padel_it' && t.isPaired && !t.jpiPairsCreated) return true;
+    // Парный JPI: пары собирает либо админ, либо сами игроки при записи.
+    // Во втором случае пары уже готовы (лежат в командах турнира и переезжают
+    // в формат при старте) — предлагать собрать их заново незачем.
+    if (t.type == 'just_padel_it' && t.isPaired) {
+      return !t.jpiPairsCreated && t.isAdminPairing;
+    }
     return false;
   }
 
   /// Командный турнир с «Админ собирает пары»: перед стартом админ собирает
   /// пары через экран сбора (там же и запуск). Кнопка — «Собрать пары».
+  /// Только групповой турнир: у парного JPI свой экран сбора пар, а общий
+  /// экран рассчитан на команды и там не подойдёт.
   bool get _needAdminPairing =>
-      (_t?.isAdminPairing ?? false) && _t?.status == 'open';
+      _t?.type == 'team' &&
+      (_t?.isAdminPairing ?? false) &&
+      _t?.status == 'open';
 
   /// Открыть экран сбора пар (админ собирает) и обновить карточку после.
   Future<void> _openAdminPairing() async {
