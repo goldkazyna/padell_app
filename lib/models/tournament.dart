@@ -295,7 +295,10 @@ class Tournament {
   final String statusName;
   final bool isRated;
   final bool verifiedOnly; // турнир только для верифицированных игроков
-  final String pairingMode; // self | admin (только для type=team)
+  final String pairingMode; // self | admin (групповой и парный Just Padel It)
+  /// Ответ сервера на вопрос «записываются поодиночке или парой».
+  /// null — старый ответ без этого поля, тогда решаем по типу, как раньше.
+  final bool? soloRegistrationFromApi;
   final double minLevel;
   final double maxLevel;
   final double price;
@@ -342,6 +345,7 @@ class Tournament {
     this.isRated = true,
     this.verifiedOnly = false,
     this.pairingMode = 'self',
+    this.soloRegistrationFromApi,
     required this.minLevel,
     required this.maxLevel,
     required this.price,
@@ -369,11 +373,14 @@ class Tournament {
 
   bool get isTeamTournament => type == 'team';
 
-  /// Групповой турнир, где пары собирает админ (регистрация одиночная).
-  bool get isAdminPairing => type == 'team' && pairingMode == 'admin';
+  /// Пары собирает админ — игроки записываются поодиночке.
+  bool get isAdminPairing => usesSoloRegistration && pairingMode == 'admin';
 
-  /// Регистрация одиночная: любой тип кроме team-с-самосбором пар.
-  bool get usesSoloRegistration => type != 'team' || pairingMode == 'admin';
+  /// Записываются поодиночке или парой. Сервер присылает готовый ответ,
+  /// чтобы клиент не знал, у каких форматов бывают пары. Старый ответ без
+  /// поля — решаем по типу, как раньше.
+  bool get usesSoloRegistration =>
+      soloRegistrationFromApi ?? (type != 'team' || pairingMode == 'admin');
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
     List<TournamentParticipant> parsedParticipants = [];
@@ -444,6 +451,7 @@ class Tournament {
       isRated: json['is_rated'] as bool? ?? true,
       verifiedOnly: json['verified_only'] as bool? ?? false,
       pairingMode: json['pairing_mode'] as String? ?? 'self',
+      soloRegistrationFromApi: json['uses_solo_registration'] as bool?,
       minLevel: (json['min_level'] as num).toDouble(),
       maxLevel: (json['max_level'] as num).toDouble(),
       price: (json['price'] as num).toDouble(),
