@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 import '../screens/club_detail_screen.dart';
+import '../screens/club_waiver_screen.dart';
 import '../screens/tournament_detail_screen.dart';
 
-/// Слушает входящие deep-link'и (padelp://tournament/{id}) и роутит на
-/// нужный экран.
+/// Слушает входящие deep-link'и (padelp://tournament/{id}, padelp://club/{id},
+/// padelp://waiver/{id}) и роутит на нужный экран.
 ///
 /// Деплинки приходят:
 /// - При тапе на ссылку «Открыть в приложении» с лендинга /t/{id}
@@ -73,6 +74,22 @@ class DeepLinkService {
       return;
     }
 
+    // --- Отказ от ответственности ---
+    // padelp://waiver/12     — host=waiver, segments=[12]
+    // https://padel-p.kz/w/12 — segments=[w, 12]
+    int? waiverClubId;
+    if (uri.host == 'waiver' && uri.pathSegments.isNotEmpty) {
+      waiverClubId = int.tryParse(uri.pathSegments.first);
+    } else if (uri.pathSegments.length >= 2 &&
+        (uri.pathSegments[0] == 'w' || uri.pathSegments[0] == 'waiver')) {
+      waiverClubId = int.tryParse(uri.pathSegments[1]);
+    }
+
+    if (waiverClubId != null) {
+      _navigateToWaiver(waiverClubId, fromInitial: fromInitial);
+      return;
+    }
+
     // --- Club ---
     // padelp://club/123  — host=club, segments=[123]
     // https://padel-p.kz/c/123 — segments=[c, 123]
@@ -100,6 +117,25 @@ class DeepLinkService {
         state.push(
           MaterialPageRoute(
             builder: (_) => TournamentDetailScreen(tournamentId: id),
+          ),
+        );
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
+  Future<void> _navigateToWaiver(int clubId, {required bool fromInitial}) async {
+    final key = _navigatorKey;
+    if (key == null) return;
+
+    // При cold-start Navigator может быть ещё не готов — ждём.
+    for (int i = 0; i < 100; i++) {
+      final state = key.currentState;
+      if (state != null && state.mounted) {
+        state.push(
+          MaterialPageRoute(
+            builder: (_) => ClubWaiverScreen(clubId: clubId),
           ),
         );
         return;
