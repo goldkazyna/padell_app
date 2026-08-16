@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
@@ -2341,7 +2342,9 @@ class _PrizesBlock extends StatelessWidget {
   }
 }
 
-/// Блок «Описание турнира» — свёрнут до 3 строк, по тапу разворачивается.
+/// Блок «Описание турнира» — свёрнут до пяти строк, по тапу разворачивается.
+/// Рядом кнопка копирования: в описании часто оставляют номер телефона
+/// для предоплаты, и выделить его из свёрнутого текста нельзя.
 class _DescriptionBlock extends StatefulWidget {
   final String text;
   const _DescriptionBlock({required this.text});
@@ -2354,9 +2357,19 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
   bool _expanded = false;
   bool _isOverflowing = false;
 
+  void _copy() {
+    Clipboard.setData(ClipboardData(text: widget.text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Описание скопировано'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    const collapsedLines = 3;
+    const collapsedLines = 5;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -2367,14 +2380,42 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppLocalizations.of(context)!.tournamentDescription,
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.4,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)!.tournamentDescription,
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: _copy,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, bottom: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.copy_rounded, size: 14, color: AppTheme.accent),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Скопировать',
+                        style: TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           GestureDetector(
@@ -2395,6 +2436,10 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
                   ),
                   maxLines: collapsedLines,
                   textDirection: TextDirection.ltr,
+                  // Без масштаба система с крупным шрифтом переносит текст
+                  // на большее число строк, чем насчитал замер: текст
+                  // обрезается, а ссылка «показать всё» не появляется.
+                  textScaler: MediaQuery.textScalerOf(context),
                 )..layout(maxWidth: constraints.maxWidth);
 
                 final overflowing = tp.didExceedMaxLines;
