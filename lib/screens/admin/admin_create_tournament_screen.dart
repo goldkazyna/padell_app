@@ -1301,7 +1301,10 @@ class _AdminCreateTournamentScreenState
               // Формат пересчитается в _playoffFormatSelector под новый набор.
               // Три группы и больше играют только по общей таблице —
               // в один финал такая сетка не помещается.
-              if (n >= 3) _playoffType = 'semifinal_final';
+              if (n >= 3) {
+                _playoffType = 'semifinal_final';
+                _hasLowerBracket = false;
+              }
             });
             _updateRoundsCount();
           },
@@ -1358,17 +1361,20 @@ class _AdminCreateTournamentScreenState
           _playoffTypeSelector(),
           if (_needsPlayoffFormat()) ...[
             const SizedBox(height: 12),
-            _label(_groupsCount >= 2 && _playoffType == 'semifinal_final'
-                ? 'Формат пар в полуфиналах'
-                : 'Формат пар в финале'),
+            _label(_groupsCount >= 3
+                ? 'Формат плей-офф'
+                : (_groupsCount >= 2 && _playoffType == 'semifinal_final'
+                    ? 'Формат пар в полуфиналах'
+                    : 'Формат пар в финале')),
             _playoffFormatSelector(),
           ],
           const SizedBox(height: 8),
-          _checkboxTile(
-            value: _hasLowerBracket,
-            label: 'Нижняя сетка',
-            onChanged: (v) => setState(() => _hasLowerBracket = v),
-          ),
+          if (_groupsCount < 3)
+            _checkboxTile(
+              value: _hasLowerBracket,
+              label: 'Нижняя сетка',
+              onChanged: (v) => setState(() => _hasLowerBracket = v),
+            ),
           _checkboxTile(
             value: _hasBronzeMatch,
             label: 'Матч за 3-е место',

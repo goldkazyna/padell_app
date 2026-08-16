@@ -234,7 +234,8 @@ class _AdminTournamentDetailScreenState
     _reserveCount.text = t.reserveCount > 0 ? '${t.reserveCount}' : '';
     _waitlistSize.text = t.waitlistSize > 0 ? '${t.waitlistSize}' : '';
     _isRated = t.isRated;
-    _amGroups = t.groupsCount == 2 ? 2 : 1;
+    final loadedGroups = t.groupsCount ?? 1;
+    _amGroups = (loadedGroups >= 1 && loadedGroups <= 4) ? loadedGroups : 1;
     _amRounds.text = t.roundsCount != null ? '${t.roundsCount}' : '';
     _amHasPlayoff = t.hasPlayoff;
     _amPlayoffType = t.playoffType ?? 'final_only';
@@ -1618,12 +1619,23 @@ class _AdminTournamentDetailScreenState
                 if (t.type == 'americano') ...[
                   _label('Количество групп'),
                   const SizedBox(height: 6),
-                  Row(children: [
-                    _fmtChip('1 группа', _amGroups == 1, disabled,
-                        () => setState(() => _amGroups = 1)),
-                    const SizedBox(width: 8),
-                    _fmtChip('2 группы', _amGroups == 2, disabled,
-                        () => setState(() => _amGroups = 2)),
+                  Wrap(spacing: 8, runSpacing: 8, children: [
+                    for (final n in const [1, 2, 3, 4])
+                      _fmtChip(n == 1 ? '1 группа' : '$n группы',
+                          _amGroups == n, disabled, () {
+                        setState(() {
+                          _amGroups = n;
+                          // 3+ групп идут только по общей таблице: топ-4 ждут
+                          // в полуфинале, места 5–12 играют четвертьфинал.
+                          if (n >= 3) {
+                            _amPlayoffType = 'semifinal_final';
+                            _amPlayoffFormat = 'table_qf';
+                            _amHasLower = false;
+                          } else if (_amPlayoffFormat == 'table_qf') {
+                            _amPlayoffFormat = 'mix';
+                          }
+                        });
+                      }),
                   ]),
                   const SizedBox(height: 12),
                   _label('Количество раундов'),
@@ -1647,9 +1659,10 @@ class _AdminTournamentDetailScreenState
                     _label('Тип плей-офф'),
                     const SizedBox(height: 6),
                     Wrap(spacing: 8, runSpacing: 8, children: [
-                      _fmtChip('Только финал', _amPlayoffType == 'final_only',
-                          disabled,
-                          () => setState(() => _amPlayoffType = 'final_only')),
+                      if (_amGroups < 3)
+                        _fmtChip('Только финал', _amPlayoffType == 'final_only',
+                            disabled,
+                            () => setState(() => _amPlayoffType = 'final_only')),
                       _fmtChip(
                           'Полуфинал + финал',
                           _amPlayoffType == 'semifinal_final',
@@ -1657,13 +1670,29 @@ class _AdminTournamentDetailScreenState
                           () => setState(
                               () => _amPlayoffType = 'semifinal_final')),
                     ]),
-                    _boolTile(
-                      label: 'Нижняя сетка',
-                      value: _amHasLower,
-                      onChanged: disabled
-                          ? null
-                          : (v) => setState(() => _amHasLower = v),
-                    ),
+                    if (_amGroups >= 3) ...[
+                      const SizedBox(height: 10),
+                      _label('Формат плей-офф'),
+                      const SizedBox(height: 6),
+                      _fmtChip('Общая таблица', true, true, () {}),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Места 1–4 ждут соперников в полуфинале, '
+                        'места 5–12 играют четвертьфинал. Нужно минимум 12 игроков.',
+                        style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 12,
+                            height: 1.35),
+                      ),
+                    ],
+                    if (_amGroups < 3)
+                      _boolTile(
+                        label: 'Нижняя сетка',
+                        value: _amHasLower,
+                        onChanged: disabled
+                            ? null
+                            : (v) => setState(() => _amHasLower = v),
+                      ),
                     _boolTile(
                       label: 'Матч за 3-е место',
                       value: _amHasBronze,
