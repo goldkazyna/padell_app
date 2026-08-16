@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
@@ -2357,16 +2356,6 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
   bool _expanded = false;
   bool _isOverflowing = false;
 
-  void _copy() {
-    Clipboard.setData(ClipboardData(text: widget.text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Описание скопировано'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     const collapsedLines = 5;
@@ -2380,50 +2369,17 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context)!.tournamentDescription,
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.4,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: _copy,
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8, bottom: 4),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.copy_rounded, size: 14, color: AppTheme.accent),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Скопировать',
-                        style: TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+          Text(
+            AppLocalizations.of(context)!.tournamentDescription,
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.4,
+            ),
           ),
           const SizedBox(height: 8),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _isOverflowing
-                ? () => setState(() => _expanded = !_expanded)
-                : null,
-            child: LayoutBuilder(
+          LayoutBuilder(
               builder: (context, constraints) {
                 final tp = TextPainter(
                   text: TextSpan(
@@ -2452,21 +2408,30 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.text,
-                      maxLines: _expanded ? null : collapsedLines,
-                      overflow: _expanded
-                          ? TextOverflow.visible
-                          : TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 14,
-                        height: 1.4,
+                    // Выделение по долгому нажатию: в описании часто пишут
+                    // номер для предоплаты, и его нужно уметь скопировать.
+                    // SelectionArea вокруг обычного Text, а не SelectableText:
+                    // у последнего нет overflow, и обрезка шла бы без многоточия.
+                    SelectionArea(
+                      child: Text(
+                        widget.text,
+                        maxLines: _expanded ? null : collapsedLines,
+                        overflow: _expanded
+                            ? TextOverflow.visible
+                            : TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                     if (overflowing) ...[
                       const SizedBox(height: 6),
-                      Row(
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => setState(() => _expanded = !_expanded),
+                        child: Row(
                         children: [
                           Text(
                             _expanded
@@ -2487,12 +2452,12 @@ class _DescriptionBlockState extends State<_DescriptionBlock> {
                             size: 18,
                           ),
                         ],
+                        ),
                       ),
                     ],
                   ],
                 );
               },
-            ),
           ),
         ],
       ),
