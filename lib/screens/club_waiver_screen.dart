@@ -148,13 +148,7 @@ class _ClubWaiverScreenState extends State<ClubWaiverScreen> {
   }
 
   Widget _body() {
-    if (_needAuth) {
-      return _message(
-        Icons.lock_outline,
-        'Войдите в приложение Padel KZ, а потом снова наведите камеру '
-        'на QR-код на стойке клуба.',
-      );
-    }
+    if (_needAuth) return _authRequired();
     if (_error != null) return _message(Icons.error_outline, _error!);
 
     final waiver = _waiver;
@@ -170,6 +164,65 @@ class _ClubWaiverScreenState extends State<ClubWaiverScreen> {
     if (waiver.isSigned) return _signed(waiver);
 
     return _form(waiver);
+  }
+
+  /// Отказ подписывает конкретный человек, поэтому без входа никак.
+  ///
+  /// Экран входа лежит под нами: приложение показывает его корнем, пока
+  /// человек не авторизован. Кнопка туда и возвращает.
+  Widget _authRequired() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.lock_outline, size: 42, color: AppTheme.textDim),
+            const SizedBox(height: 14),
+            Text(
+              'Авторизуйтесь',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Отказ от ответственности подписывается от вашего имени — '
+              'войдите в приложение Padel KZ.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () =>
+                    Navigator.of(context).popUntil((route) => route.isFirst),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accent,
+                  foregroundColor: const Color(0xFF08130C),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('Войти',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'После входа снова наведите камеру на QR-код на стойке клуба.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppTheme.textDim, fontSize: 13),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _message(IconData icon, String text) {
