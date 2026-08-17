@@ -57,6 +57,41 @@ void main() {
     expect(png!.sublist(0, 8), [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
   });
 
+  testWidgets('вертикальный штрих на прокручиваемом экране рисуется',
+      (tester) async {
+    // Экран подписи — это список: распознаватель прокрутки забирал себе
+    // движение пальцем вниз, и вертикальные штрихи не появлялись.
+    final pad = SignaturePadController();
+    final scroll = ScrollController();
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ListView(
+          controller: scroll,
+          children: [
+            const SizedBox(height: 400),
+            SizedBox(width: 300, child: SignaturePad(controller: pad)),
+            const SizedBox(height: 800),
+          ],
+        ),
+      ),
+    ));
+
+    final center = tester.getCenter(find.byType(SignaturePad));
+    final gesture = await tester.startGesture(center);
+    // Мелкими шагами, как настоящий палец: одним скачком распознаватели
+    // разрешают спор иначе, и ошибка не воспроизводится.
+    for (int i = 0; i < 12; i++) {
+      await gesture.moveBy(const Offset(0, 5));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    expect(pad.isEmpty, isFalse, reason: 'вертикальный штрих должен рисоваться');
+    expect(scroll.offset, 0, reason: 'список не должен ехать под пальцем');
+  });
+
   testWidgets('очистка возвращает холст в пустое состояние', (tester) async {
     final pad = SignaturePadController();
     await pumpPad(tester, pad);

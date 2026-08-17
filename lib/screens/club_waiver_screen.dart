@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/club_waiver.dart';
 import '../providers/profile_provider.dart';
+import '../services/api_service.dart';
 import '../services/waiver_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
@@ -27,6 +28,7 @@ class _ClubWaiverScreenState extends State<ClubWaiverScreen> {
 
   ClubWaiver? _waiver;
   String? _error;
+  bool _needAuth = false;
   bool _sending = false;
   bool _nameTouched = false;
 
@@ -59,6 +61,11 @@ class _ClubWaiverScreenState extends State<ClubWaiverScreen> {
         _waiver = waiver;
         _error = null;
       });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      // Человек навёл камеру, не войдя в приложение: показываем, что делать,
+      // вместо голого «Unauthenticated».
+      setState(() => e.statusCode == 401 ? _needAuth = true : _error = '$e');
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = '$e');
@@ -141,6 +148,13 @@ class _ClubWaiverScreenState extends State<ClubWaiverScreen> {
   }
 
   Widget _body() {
+    if (_needAuth) {
+      return _message(
+        Icons.lock_outline,
+        'Войдите в приложение Padel KZ, а потом снова наведите камеру '
+        'на QR-код на стойке клуба.',
+      );
+    }
     if (_error != null) return _message(Icons.error_outline, _error!);
 
     final waiver = _waiver;

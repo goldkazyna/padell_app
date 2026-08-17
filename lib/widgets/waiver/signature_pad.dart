@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 /// Управление холстом подписи снаружи: очистка, проверка на пустоту, PNG.
@@ -93,14 +94,29 @@ class SignaturePad extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             child: Container(
               color: background,
-              child: GestureDetector(
-                onPanStart: (d) => controller._startStroke(d.localPosition),
-                onPanUpdate: (d) => controller._addPoint(d.localPosition),
-                child: AnimatedBuilder(
-                  animation: controller,
-                  builder: (context, _) => CustomPaint(
-                    size: Size(constraints.maxWidth, height),
-                    painter: _SignaturePainter(controller, ink),
+              // Точки собираем сырыми событиями указателя, а не жестом:
+              // экран прокручивается, и распознаватель прокрутки забирал бы
+              // себе всякое движение вниз — вертикальные штрихи не рисовались.
+              child: Listener(
+                onPointerDown: (e) => controller._startStroke(e.localPosition),
+                onPointerMove: (e) => controller._addPoint(e.localPosition),
+                child: RawGestureDetector(
+                  // Забираем указатель себе сразу, иначе список под пальцем
+                  // поедет вместо подписи.
+                  gestures: {
+                    EagerGestureRecognizer:
+                        GestureRecognizerFactoryWithHandlers<
+                            EagerGestureRecognizer>(
+                      () => EagerGestureRecognizer(),
+                      (_) {},
+                    ),
+                  },
+                  child: AnimatedBuilder(
+                    animation: controller,
+                    builder: (context, _) => CustomPaint(
+                      size: Size(constraints.maxWidth, height),
+                      painter: _SignaturePainter(controller, ink),
+                    ),
                   ),
                 ),
               ),
