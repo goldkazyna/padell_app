@@ -618,18 +618,46 @@ class AdminService {
     );
   }
 
+  /// Поиск игроков. [forPair] — искать для формы пары: там не прячут уже
+  /// записанных, иначе записавшегося в одиночку не с кем спарить.
   Future<List<AdminParticipant>> searchPlayers(
-      int tournamentId, String query) async {
+      int tournamentId, String query, {bool forPair = false}) async {
     final token = await _storage.getToken();
     final encoded = Uri.encodeQueryComponent(query);
+    final mode = forPair ? '&for=pair' : '';
     final response = await _api.get(
-      '/admin/tournaments/$tournamentId/players/search?q=$encoded',
+      '/admin/tournaments/$tournamentId/players/search?q=$encoded$mode',
       token,
     );
     final list = (response['players'] as List?) ?? const [];
     return list
         .map((j) => AdminParticipant.fromJson(j as Map<String, dynamic>))
         .toList();
+  }
+
+  /// Состояние записи парами: собранные пары и кто остался без пары.
+  Future<Map<String, dynamic>> pairsState(int tournamentId) async {
+    final token = await _storage.getToken();
+    final resp = await _api.get('/admin/tournaments/$tournamentId/pairs', token);
+    return resp;
+  }
+
+  /// Завести пару. Куда она ляжет — в пары формата или в команды турнира —
+  /// решает сервер, приложению эту разницу знать незачем.
+  Future<Map<String, dynamic>> addPair(
+      int tournamentId, int player1Id, int player2Id) async {
+    final token = await _storage.getToken();
+    return _api.post(
+      '/admin/tournaments/$tournamentId/pairs',
+      {'player1_id': player1Id, 'player2_id': player2Id},
+      token,
+    );
+  }
+
+  /// Разбить пару. Игроки остаются записанными на турнир.
+  Future<Map<String, dynamic>> removePair(int tournamentId, int pairId) async {
+    final token = await _storage.getToken();
+    return _api.delete('/admin/tournaments/$tournamentId/pairs/$pairId', null, token);
   }
 
   Future<void> approveTeam(int tournamentId, int teamId) async {

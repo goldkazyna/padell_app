@@ -27,6 +27,7 @@ import 'admin_bali_create_pairs_screen.dart';
 import 'admin_jpi_create_pairs_screen.dart';
 import 'admin_jpi_seeding_screen.dart';
 import 'admin_koc_create_pairs_screen.dart';
+import 'admin_pair_registration_screen.dart';
 import 'admin_pairing_screen.dart';
 
 /// Этап 3a/3b — экран управления существующим турниром.
@@ -494,6 +495,24 @@ class _AdminTournamentDetailScreenState
       _t?.type == 'team' &&
       (_t?.isAdminPairing ?? false) &&
       _t?.status == 'open';
+
+  /// Запись парой: организатор заводит сразу двоих. Признак считает сервер.
+  bool get _canRegisterPairs => _t?.supportsPairRegistration ?? false;
+
+  /// Открыть запись парой и обновить карточку, если что-то поменялось.
+  Future<void> _openPairRegistration() async {
+    final t = _t;
+    if (t == null) return;
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => AdminPairRegistrationScreen(
+          tournamentId: t.id,
+          tournamentName: t.name,
+        ),
+      ),
+    );
+    if (changed == true) await _load();
+  }
 
   /// Открыть экран сбора пар (админ собирает) и обновить карточку после.
   Future<void> _openAdminPairing() async {
@@ -1013,6 +1032,7 @@ class _AdminTournamentDetailScreenState
                   _start();
                 }
               }
+              if (value == 'pairs') _openPairRegistration();
               if (value == 'restart') _restart();
               if (value == 'cancel') _cancelTournament();
               if (value == 'send_push') _sendPush();
@@ -1031,6 +1051,11 @@ class _AdminTournamentDetailScreenState
                               ? 'Посев'
                               : l10n.startTournamentMenu))),
                 ),
+                if (_canRegisterPairs)
+                  const PopupMenuItem<String>(
+                    value: 'pairs',
+                    child: Text('Пары'),
+                  ),
                 PopupMenuItem<String>(
                   value: 'restart',
                   enabled: _t?.canRestart ?? false,

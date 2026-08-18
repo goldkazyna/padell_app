@@ -41,6 +41,10 @@ class AdminTournamentDetail {
   final bool tournamentsFullAccess;
   final bool isAdminPairing;
   final String pairingMode; // 'self' | 'admin' — кто собирает пары (team)
+
+  /// Можно ли заводить пары целиком. Считает сервер: правило одно
+  /// на веб и приложение, повторять его здесь незачем.
+  final bool supportsPairRegistration;
   final bool isPersonal; // личный турнир игрока (без клуба)
   final String? creatorName; // организатор личного турнира
   // Поля для редактирования (как при создании)
@@ -92,6 +96,7 @@ class AdminTournamentDetail {
     this.tournamentsFullAccess = true,
     this.isAdminPairing = false,
     this.pairingMode = 'self',
+    this.supportsPairRegistration = false,
     this.isPersonal = false,
     this.creatorName,
     this.playoffType,
@@ -130,6 +135,8 @@ class AdminTournamentDetail {
       verifiedOnly: json['verified_only'] as bool? ?? false,
       isAdminPairing: json['is_admin_pairing'] as bool? ?? false,
       pairingMode: json['pairing_mode'] as String? ?? 'self',
+      supportsPairRegistration:
+          json['supports_pair_registration'] as bool? ?? false,
       isPersonal: json['is_personal'] as bool? ?? false,
       creatorName: (json['creator'] as Map<String, dynamic>?)?['name'] as String?,
       hasPlayoff: json['has_playoff'] as bool? ?? false,
