@@ -15,6 +15,12 @@ class AdminTournamentDetail {
   final String status;
   final String statusName;
   final AdminClubBrief? club;
+
+  /// Клуб-площадка: где физически играют. Необязательный, правится
+  /// в настройках турнира.
+  final int? venueClubId;
+  final String? venueClubName;
+
   final DateTime? startDate;
   final double minLevel;
   final double maxLevel;
@@ -109,6 +115,8 @@ class AdminTournamentDetail {
     this.roundsCount,
     this.teamsAdvance,
     this.pointsToWin,
+    this.venueClubId,
+    this.venueClubName,
   });
 
   factory AdminTournamentDetail.fromJson(Map<String, dynamic> json) {
@@ -143,9 +151,11 @@ class AdminTournamentDetail {
       hasLowerBracket: json['has_lower_bracket'] as bool? ?? false,
       hasBronzeMatch: json['has_bronze_match'] as bool? ?? false,
       courtsCount: (json['courts_count'] as num?)?.toInt(),
+      // Пустые слоты сохраняем: сервер отдаёт названия позиционно
+      // (`[null, null, "Центральный"]`), и выбрасывание пустых сдвинуло бы
+      // названия на чужие корты.
       courts: (json['courts'] as List?)
               ?.map((c) => c?.toString() ?? '')
-              .where((c) => c.isNotEmpty)
               .toList() ??
           const [],
       canEdit: json['can_edit'] as bool? ?? false,
@@ -170,6 +180,10 @@ class AdminTournamentDetail {
       roundsCount: (json['rounds_count'] as num?)?.toInt(),
       teamsAdvance: (json['teams_advance'] as num?)?.toInt(),
       pointsToWin: (json['points_to_win'] as num?)?.toInt(),
+      venueClubId:
+          ((json['venue_club'] as Map<String, dynamic>?)?['id'] as num?)?.toInt(),
+      venueClubName:
+          (json['venue_club'] as Map<String, dynamic>?)?['name'] as String?,
     );
   }
 }

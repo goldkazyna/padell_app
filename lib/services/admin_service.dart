@@ -327,6 +327,8 @@ class AdminService {
     String? playoffFormat,
     bool? isPaired,
     List<String?>? courts,
+    int? venueClubId,
+    bool includeVenueClub = false,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -367,6 +369,9 @@ class AdminService {
       if (playoffFormat != null) 'playoff_format': playoffFormat,
       if (isPaired != null) 'is_paired': isPaired,
       if (courts != null) 'courts': courts,
+      // Клуб-площадка: сервер меняет её только когда ключ прислан, поэтому
+      // null здесь означает «убрать площадку», а не «оставить как есть».
+      if (includeVenueClub) 'venue_club_id': venueClubId,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(

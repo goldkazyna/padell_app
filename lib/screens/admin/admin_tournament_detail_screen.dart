@@ -17,6 +17,7 @@ import '../../models/admin_tournament_detail.dart';
 import 'tournament_standings_share_screen.dart';
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/admin/venue_club_field.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
@@ -83,6 +84,9 @@ class _AdminTournamentDetailScreenState
   bool _teamHasLowerBracket = false;
   bool _teamHasBronzeMatch = false;
   final _teamCourts = TextEditingController(); // пусто = авто
+  // Клуб-площадка (где играем). Необязательная: null = не выбрана.
+  int? _venueClubId;
+  String? _venueClubName;
   // Админ правил число кортов руками — автоподстановка от участников
   // больше не перетирает его значение.
   bool _courtsTouchedManually = false;
@@ -230,6 +234,8 @@ class _AdminTournamentDetailScreenState
     _teamHasLowerBracket = t.hasLowerBracket;
     _teamHasBronzeMatch = t.hasBronzeMatch;
     _teamCourts.text = t.courtsCount != null ? '${t.courtsCount}' : '';
+    _venueClubId = t.venueClubId;
+    _venueClubName = t.venueClubName;
     // При загрузке ничего не подставляем: автоподстановка висит на живом вводе
     // числа участников, а не на открытии экрана. Иначе простое сохранение брони
     // сломало бы старт solo Just Padel It (там нужно ровно кортов × 4
@@ -339,6 +345,10 @@ class _AdminTournamentDetailScreenState
                 ? int.tryParse(_teamCourts.text.trim())
                 : null,
             durationHours: int.tryParse(_durationHours.text.trim()),
+            // Площадку шлём всегда: поле есть в форме, и её сброс (null)
+            // должен доезжать до сервера как «убрать», а не теряться.
+            venueClubId: _venueClubId,
+            includeVenueClub: true,
             isRated: _isRated,
             reserveCount: int.tryParse(_reserveCount.text.trim()) ?? 0,
             waitlistSize: int.tryParse(_waitlistSize.text.trim()) ?? 0,
@@ -1259,6 +1269,14 @@ class _AdminTournamentDetailScreenState
                     enabled: !disabled),
               ],
               const SizedBox(height: 12),
+              _label('Клуб (площадка)'),
+              _venueClubField(disabled: disabled),
+              const SizedBox(height: 4),
+              Text(
+                'Необязательно. Где физически играют — увидят записавшиеся.',
+                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+              ),
+              const SizedBox(height: 12),
               _label('Дата и время старта'),
               _dateField(disabled: disabled),
               const SizedBox(height: 12),
@@ -1802,8 +1820,16 @@ class _AdminTournamentDetailScreenState
                   '${t.participantsCount} / ${t.maxParticipants}'),
               if (t.pendingCount > 0)
                 _readOnlyRow('На модерации', '${t.pendingCount}'),
-              if (t.courts.isNotEmpty)
-                _readOnlyRow('Корты', t.courts.join(', ')),
+              if (t.courts.any((c) => c.trim().isNotEmpty))
+                _readOnlyRow(
+                  'Корты',
+                  [
+                    for (var i = 0; i < t.courts.length; i++)
+                      t.courts[i].trim().isEmpty
+                          ? 'Корт ${i + 1}'
+                          : t.courts[i],
+                  ].join(', '),
+                ),
               if (t.hasPlayoff)
                 _readOnlyRow(
                     'Плей-офф',
@@ -1963,6 +1989,20 @@ class _AdminTournamentDetailScreenState
               const BorderSide(color: AppTheme.accent, width: 1.2),
         ),
       ),
+    );
+  }
+
+  Widget _venueClubField({required bool disabled}) {
+    return VenueClubField(
+      clubId: _venueClubId,
+      clubName: _venueClubName,
+      enabled: !disabled,
+      onChanged: (id, name) {
+        setState(() {
+          _venueClubId = id;
+          _venueClubName = name;
+        });
+      },
     );
   }
 
