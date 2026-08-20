@@ -85,6 +85,11 @@ class _AdminTournamentDetailScreenState
   bool _teamHasLowerBracket = false;
   bool _teamHasBronzeMatch = false;
   final _teamCourts = TextEditingController(); // пусто = авто
+  // Названия кортов. Держим максимум слотов сразу, показываем столько,
+  // сколько кортов у турнира; пустое поле = названия нет, сервер подпишет
+  // корт номером.
+  late final List<TextEditingController> _courtNames =
+      List.generate(32, (_) => TextEditingController());
   // Клуб-площадка (где играем). Необязательная: null = не выбрана.
   int? _venueClubId;
   String? _venueClubName;
@@ -190,6 +195,9 @@ class _AdminTournamentDetailScreenState
     _waitlistSize.dispose();
     _amRounds.dispose();
     _mexRounds.dispose();
+    for (final c in _courtNames) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -243,6 +251,9 @@ class _AdminTournamentDetailScreenState
     _teamCourts.text = t.courtsCount != null ? '${t.courtsCount}' : '';
     _venueClubId = t.venueClubId;
     _venueClubName = t.venueClubName;
+    for (var i = 0; i < _courtNames.length; i++) {
+      _courtNames[i].text = i < t.courts.length ? t.courts[i] : '';
+    }
     // При загрузке ничего не подставляем: автоподстановка висит на живом вводе
     // числа участников, а не на открытии экрана. Иначе простое сохранение брони
     // сломало бы старт solo Just Padel It (там нужно ровно кортов × 4
@@ -372,6 +383,14 @@ class _AdminTournamentDetailScreenState
             courtsCount: _teamCourts.text.trim().isNotEmpty
                 ? int.tryParse(_teamCourts.text.trim())
                 : null,
+            // Названия кортов: пустое поле уходит как null — сервер подпишет
+            // такой корт номером, а не пустой строкой.
+            courts: [
+              for (var i = 0; i < _courtNamesCount; i++)
+                _courtNames[i].text.trim().isEmpty
+                    ? null
+                    : _courtNames[i].text.trim(),
+            ],
             durationHours: int.tryParse(_durationHours.text.trim()),
             // Площадку шлём всегда: поле есть в форме, и её сброс (null)
             // должен доезжать до сервера как «убрать», а не теряться.
@@ -613,6 +632,17 @@ class _AdminTournamentDetailScreenState
   /// У короля корта, Bali, американо, мексикано и классического число кортов
   /// на игру считается от числа участников, а сохранённое значение влияет
   /// только на количество названий кортов.
+  /// Сколько полей названий кортов показывать: заданное вручную число, иначе
+  /// авто — по четыре игрока на корт (так же считает веб-форма).
+  int get _courtNamesCount {
+    final manual = int.tryParse(_teamCourts.text.trim());
+    if (manual != null && manual >= 1) return manual.clamp(1, 32);
+
+    final maxP = int.tryParse(_maxParticipants.text.trim()) ?? 0;
+    if (maxP <= 0) return 1;
+    return (maxP / 4).ceil().clamp(1, 32);
+  }
+
   bool get _courtsAffectSchedule {
     final t = _t;
     if (t == null) return false;
@@ -1566,7 +1596,11 @@ class _AdminTournamentDetailScreenState
                   onChanged: (value) {
                     // Введённое значение защищаем от автоподстановки по числу
                     // участников; очистка поля возвращает её.
-                    _courtsTouchedManually = value.trim().isNotEmpty;
+                    // setState — чтобы список названий кортов перерисовался
+                    // под новое количество.
+                    setState(() {
+                      _courtsTouchedManually = value.trim().isNotEmpty;
+                    });
                   },
                 ),
                 const SizedBox(height: 4),
@@ -1617,6 +1651,8 @@ class _AdminTournamentDetailScreenState
                   enabled: !disabled,
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: AppTheme.textPrimary),
+                  // Перерисовываем список названий кортов под новое число.
+                  onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
                     hintText: 'напр. 2',
                     hintStyle: TextStyle(color: AppTheme.textDim),
@@ -1636,6 +1672,25 @@ class _AdminTournamentDetailScreenState
                   style: TextStyle(color: AppTheme.textDim, fontSize: 11),
                 ),
               ],
+              // Названия кортов — необязательные подписи. Количество полей
+              // идёт за числом кортов: заданным вручную или авто по игрокам.
+              const SizedBox(height: 12),
+              Text('Названия кортов',
+                  style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              for (var i = 0; i < _courtNamesCount; i++) ...[
+                _textField(_courtNames[i],
+                    hint: 'Корт ${i + 1}', enabled: !disabled),
+                if (i < _courtNamesCount - 1) const SizedBox(height: 8),
+              ],
+              const SizedBox(height: 4),
+              Text(
+                'Пустое поле — корт будет подписан номером.',
+                style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+              ),
               // Кто собирает пары — только для командного турнира.
               if (_t?.type == 'team') ...[
                 const SizedBox(height: 12),
