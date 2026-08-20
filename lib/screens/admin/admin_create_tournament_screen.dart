@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/admin/mexicano_playoff_settings.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
@@ -326,6 +327,14 @@ class _AdminCreateTournamentScreenState
       }
       body['rounds_count'] = rounds;
       body['has_playoff'] = _hasPlayoff;
+      if (_hasPlayoff) {
+        body['playoff_type'] = _playoffType;
+        // Финал топ-4 сервер собирает как 1+4 vs 2+3 — формат нужен только
+        // для полуфиналов.
+        if (_playoffType == 'semifinal_final') {
+          body['playoff_format'] = _mexicanoFormat();
+        }
+      }
     }
 
     if (_type == 'team') {
@@ -1087,10 +1096,18 @@ class _AdminCreateTournamentScreenState
           style: TextStyle(color: AppTheme.textDim, fontSize: 11),
         ),
         const SizedBox(height: 12),
-        _checkboxTile(
-          value: _hasPlayoff,
-          label: 'С плей-офф (после основных раундов)',
-          onChanged: (v) => setState(() => _hasPlayoff = v),
+        MexicanoPlayoffSettings(
+          hasPlayoff: _hasPlayoff,
+          playoffType: _playoffType,
+          playoffFormat: _mexicanoFormat(),
+          onHasPlayoffChanged: (v) => setState(() => _hasPlayoff = v),
+          onTypeChanged: (v) => setState(() {
+            _playoffType = v;
+            // Наборы форматов у Американо и Мексикано разные: приводим
+            // значение к мексиканскому, иначе на сервер уйдёт чужой вариант.
+            _playoffFormat = _mexicanoFormat();
+          }),
+          onFormatChanged: (v) => setState(() => _playoffFormat = v),
         ),
         Divider(color: AppTheme.border, height: 28),
       ]);
@@ -1404,6 +1421,14 @@ class _AdminCreateTournamentScreenState
         ],
       ],
     );
+  }
+
+  /// Формат пар для Мексикано: сервер знает только mix / tops / balanced,
+  /// а общий `_playoffFormat` может держать вариант из набора Американо
+  /// (например, `cross`) — такой приводим к «миксу».
+  String _mexicanoFormat() {
+    const allowed = {'mix', 'tops', 'balanced'};
+    return allowed.contains(_playoffFormat) ? _playoffFormat : 'mix';
   }
 
   bool _needsPlayoffFormat() {

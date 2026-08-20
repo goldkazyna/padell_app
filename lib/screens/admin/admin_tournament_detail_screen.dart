@@ -18,6 +18,7 @@ import 'tournament_standings_share_screen.dart';
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/admin/venue_club_field.dart';
+import '../../widgets/admin/mexicano_playoff_settings.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
@@ -104,6 +105,11 @@ class _AdminTournamentDetailScreenState
   String _amPlayoffFormat = 'mix';
   bool _amHasLower = false;
   bool _amHasBronze = false;
+  // Формат: Мексикано (групп нет — только раунды и плей-офф)
+  final _mexRounds = TextEditingController();
+  bool _mexHasPlayoff = false;
+  String _mexPlayoffType = 'final_only'; // final_only | semifinal_final
+  String _mexPlayoffFormat = 'mix'; // mix | tops | balanced
   // Формат: командный
   int _teamGroups = 2;
   int _teamsAdvance = 2;
@@ -183,6 +189,7 @@ class _AdminTournamentDetailScreenState
     _reserveCount.dispose();
     _waitlistSize.dispose();
     _amRounds.dispose();
+    _mexRounds.dispose();
     super.dispose();
   }
 
@@ -262,6 +269,15 @@ class _AdminTournamentDetailScreenState
     _amPlayoffFormat = t.playoffFormat ?? 'mix';
     _amHasLower = t.hasLowerBracket;
     _amHasBronze = t.hasBronzeMatch;
+    _mexRounds.text = t.roundsCount != null ? '${t.roundsCount}' : '';
+    _mexHasPlayoff = t.hasPlayoff;
+    _mexPlayoffType = t.playoffType ?? 'final_only';
+    // Наборы форматов у Американо и Мексикано разные — чужой вариант
+    // (например, cross) приводим к «миксу».
+    _mexPlayoffFormat =
+        const {'mix', 'tops', 'balanced'}.contains(t.playoffFormat)
+            ? t.playoffFormat!
+            : 'mix';
     _teamGroups = t.groupsCount ?? 2;
     _teamsAdvance = t.teamsAdvance ?? 2;
     _isPaired = t.isPaired;
@@ -327,17 +343,29 @@ class _AdminTournamentDetailScreenState
             pairingMode: t.type == 'team' ? _pairingMode : null,
             hasPlayoff: t.type == 'team'
                 ? _teamHasPlayoff
-                : (t.type == 'americano' ? _amHasPlayoff : null),
+                : (t.type == 'americano'
+                    ? _amHasPlayoff
+                    : (t.type == 'mexicano' ? _mexHasPlayoff : null)),
             hasLowerBracket: t.type == 'team'
                 ? _teamHasLowerBracket
                 : (t.type == 'americano' ? _amHasLower : null),
             hasBronzeMatch: t.type == 'team'
                 ? _teamHasBronzeMatch
                 : (t.type == 'americano' ? _amHasBronze : null),
-            playoffType:
-                t.type == 'americano' && _amHasPlayoff ? _amPlayoffType : null,
-            playoffFormat:
-                t.type == 'americano' && _amHasPlayoff ? _amPlayoffFormat : null,
+            playoffType: t.type == 'americano' && _amHasPlayoff
+                ? _amPlayoffType
+                : (t.type == 'mexicano' && _mexHasPlayoff
+                    ? _mexPlayoffType
+                    : null),
+            // Финал топ-4 у Мексикано сервер собирает как 1+4 vs 2+3 —
+            // формат осмыслен только для полуфиналов.
+            playoffFormat: t.type == 'americano' && _amHasPlayoff
+                ? _amPlayoffFormat
+                : (t.type == 'mexicano' &&
+                        _mexHasPlayoff &&
+                        _mexPlayoffType == 'semifinal_final'
+                    ? _mexPlayoffFormat
+                    : null),
             // Поле кортов (_teamCourts) общее для всех типов, кроме Flex у
             // которого свой блок ниже, но контроллер тот же самый — отправляем
             // значение независимо от типа, лишь бы поле было заполнено.
@@ -355,8 +383,10 @@ class _AdminTournamentDetailScreenState
             groupsCount: t.type == 'americano'
                 ? _amGroups
                 : (t.type == 'team' ? _teamGroups : null),
-            roundsCount:
-                t.type == 'americano' && _amRounds.text.trim().isNotEmpty
+            roundsCount: t.type == 'mexicano' &&
+                    _mexRounds.text.trim().isNotEmpty
+                ? int.tryParse(_mexRounds.text.trim())
+                : t.type == 'americano' && _amRounds.text.trim().isNotEmpty
                     ? int.tryParse(_amRounds.text.trim())
                     : null,
             teamsAdvance: t.type == 'team' ? _teamsAdvance : null,
@@ -1672,6 +1702,7 @@ class _AdminTournamentDetailScreenState
             ],
           ),
           if (t.type == 'americano' ||
+              t.type == 'mexicano' ||
               t.type == 'team' ||
               t.type == 'king_of_court' ||
               t.type == 'americano_flex' ||
@@ -1680,6 +1711,36 @@ class _AdminTournamentDetailScreenState
             _buildSection(
               title: 'Настройка формата',
               children: [
+                // Мексикано: групп нет, пары считаются по очкам каждый раунд.
+                if (t.type == 'mexicano') ...[
+                  _label('Количество раундов'),
+                  _textField(_mexRounds,
+                      hint: '7',
+                      keyboardType: TextInputType.number,
+                      enabled: !disabled,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly
+                      ]),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Обычно 5–9. Закончить раньше плана можно кнопкой '
+                    '«Завершить отборочный этап» во время турнира.',
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                  ),
+                  const SizedBox(height: 12),
+                  MexicanoPlayoffSettings(
+                    hasPlayoff: _mexHasPlayoff,
+                    playoffType: _mexPlayoffType,
+                    playoffFormat: _mexPlayoffFormat,
+                    enabled: !disabled,
+                    onHasPlayoffChanged: (v) =>
+                        setState(() => _mexHasPlayoff = v),
+                    onTypeChanged: (v) =>
+                        setState(() => _mexPlayoffType = v),
+                    onFormatChanged: (v) =>
+                        setState(() => _mexPlayoffFormat = v),
+                  ),
+                ],
                 // Американо
                 if (t.type == 'americano') ...[
                   _label('Количество групп'),
