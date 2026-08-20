@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/americano_playoff_formats.dart';
 import '../../widgets/admin/mexicano_playoff_settings.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
@@ -1491,41 +1492,17 @@ class _AdminCreateTournamentScreenState
   }
 
   Widget _playoffFormatSelector() {
-    // Опции зависят от числа групп и типа плей-офф (как в Web)
-    final options = <(String value, String label)>[];
-    if (_groupsCount >= 3) {
-      // Пары по местам в группах тут не сложить: форматы A/B видят только две
-      // группы, остальные остались бы вне сетки. Играем по общей таблице.
-      options.add(const (
-        'table_qf',
-        'Общая таблица (1+4 и 2+3 ждут в полуфинале, 5–12 играют четвертьфинал)',
-      ));
-    } else if (_groupsCount == 1 && _playoffType == 'final_only') {
-      options.addAll(const [
-        ('cross', '1+4 vs 2+3 (крест)'),
-        ('tops', '1+2 vs 3+4 (топы вместе)'),
-        ('mix', '1+3 vs 2+4 (микс)'),
-      ]);
-    } else if (_groupsCount == 1 && _playoffType == 'semifinal_final') {
-      options.addAll(const [
-        ('mix', 'Микс (1+8 vs 4+5, 2+7 vs 3+6)'),
-        ('tops', 'Топы вместе (1+2 vs 7+8, 3+4 vs 5+6)'),
-        ('balanced', 'Сбалансированный (1+4 vs 5+8, 2+3 vs 6+7)'),
-      ]);
-    } else if (_groupsCount >= 2 && _playoffType == 'semifinal_final') {
-      options.addAll(const [
-        ('mix', 'Микс (A1+B2 vs A3+B4, A2+B1 vs B3+A4)'),
-        ('group_vs', 'Группа vs Группа'),
-        ('tops', 'Топы вместе (A1+B1 vs A3+B3, A2+B2 vs A4+B4)'),
-        ('cross', 'Крест (A1+B4 vs B1+A4, A2+B3 vs B2+A3)'),
-      ]);
-    }
+    // Набор форматов общий с экраном настроек и веб-формой.
+    final options = americanoPlayoffFormats(
+      groupsCount: _groupsCount,
+      playoffType: _playoffType,
+    );
 
     // Если текущий формат не входит в опции — переключим на первую
     if (options.isNotEmpty &&
-        !options.any((o) => o.$1 == _playoffFormat)) {
+        !options.any((o) => o.value == _playoffFormat)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _playoffFormat = options.first.$1);
+        if (mounted) setState(() => _playoffFormat = options.first.value);
       });
     }
 
@@ -1538,17 +1515,17 @@ class _AdminCreateTournamentScreenState
         children: [
           for (final o in options)
             InkWell(
-              onTap: () => setState(() => _playoffFormat = o.$1),
+              onTap: () => setState(() => _playoffFormat = o.value),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 10),
                 child: Row(
                   children: [
                     Icon(
-                      _playoffFormat == o.$1
+                      _playoffFormat == o.value
                           ? Icons.radio_button_checked
                           : Icons.radio_button_unchecked,
-                      color: _playoffFormat == o.$1
+                      color: _playoffFormat == o.value
                           ? AppTheme.accent
                           : AppTheme.textSecondary,
                       size: 18,
@@ -1556,13 +1533,13 @@ class _AdminCreateTournamentScreenState
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        o.$2,
+                        o.label,
                         style: TextStyle(
-                          color: _playoffFormat == o.$1
+                          color: _playoffFormat == o.value
                               ? AppTheme.accent
                               : AppTheme.textPrimary,
                           fontSize: 12,
-                          fontWeight: _playoffFormat == o.$1
+                          fontWeight: _playoffFormat == o.value
                               ? FontWeight.w600
                               : FontWeight.w500,
                         ),

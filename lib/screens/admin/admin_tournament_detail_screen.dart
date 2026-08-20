@@ -18,6 +18,7 @@ import 'tournament_standings_share_screen.dart';
 import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/admin/venue_club_field.dart';
+import '../../utils/americano_playoff_formats.dart';
 import '../../widgets/admin/mexicano_playoff_settings.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
@@ -460,6 +461,81 @@ class _AdminTournamentDetailScreenState
   }
 
   // Универсальный чип выбора (группы, формат плей-офф и т.п.).
+  /// Выбор формата пар для Американо на одной-двух группах. Набор общий
+  /// с экраном создания и веб-формой — раньше в настройках его не было
+  /// вовсе, и формат оставался таким, каким его задали при создании.
+  List<Widget> _americanoFormatChips(bool disabled) {
+    final options = americanoPlayoffFormats(
+      groupsCount: _amGroups,
+      playoffType: _amPlayoffType,
+    );
+    if (options.isEmpty) return const [];
+
+    // Сохранённое значение может быть из чужого набора (сменили тип сетки).
+    final current = normalizeAmericanoPlayoffFormat(
+      groupsCount: _amGroups,
+      playoffType: _amPlayoffType,
+      current: _amPlayoffFormat,
+    );
+    if (current != _amPlayoffFormat) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _amPlayoffFormat = current);
+      });
+    }
+
+    return [
+      const SizedBox(height: 10),
+      _label(americanoPlayoffFormatLabel(
+        groupsCount: _amGroups,
+        playoffType: _amPlayoffType,
+      )),
+      const SizedBox(height: 6),
+      // Радио-строки, а не чипы: подписи вроде «Группа vs Группа (A1+A2 vs
+      // B1+B2, A3+A4 vs B3+B4)» в чип по ширине не помещаются.
+      Container(
+        decoration: BoxDecoration(
+          color: AppTheme.cardRaised,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: [
+            for (final option in options)
+              InkWell(
+                onTap: disabled
+                    ? null
+                    : () => setState(() => _amPlayoffFormat = option.value),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        current == option.value
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                        color: current == option.value
+                            ? AppTheme.accent
+                            : AppTheme.textSecondary,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          option.label,
+                          style: TextStyle(
+                              color: AppTheme.textPrimary, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    ];
+  }
+
   Widget _fmtChip(String label, bool active, bool disabled, VoidCallback onTap) {
     return GestureDetector(
       onTap: disabled ? null : onTap,
@@ -1851,6 +1927,9 @@ class _AdminTournamentDetailScreenState
                           () => setState(
                               () => _amPlayoffType = 'semifinal_final')),
                     ]),
+                    if (_amGroups < 3) ...[
+                      ..._americanoFormatChips(disabled),
+                    ],
                     if (_amGroups >= 3) ...[
                       const SizedBox(height: 10),
                       _label('Формат плей-офф'),
