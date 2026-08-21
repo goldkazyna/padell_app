@@ -143,10 +143,86 @@ class TrainingCard extends StatelessWidget {
 
   const TrainingCard({super.key, required this.training, required this.onTap});
 
+  /// Инициалы для заглушки: у клуба — первые буквы слов названия,
+  /// у тренера — имени и фамилии.
+  static String _initials(String name, {int max = 2}) {
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
+    return parts.take(max).map((part) => part[0].toUpperCase()).join();
+  }
+
+  Widget _coachAvatar() {
+    final url = training.coach?.avatar;
+    final hasPhoto = url != null && url.isNotEmpty;
+
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppTheme.cardRaised,
+        image: hasPhoto
+            ? DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: hasPhoto
+          ? null
+          : Text(
+              _initials(training.coach?.name ?? ''),
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+    );
+  }
+
+  Widget _clubLogo() {
+    final url = training.club.logo;
+    final hasLogo = url != null && url.isNotEmpty;
+
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        color: AppTheme.cardRaised,
+        image: hasLogo
+            ? DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: hasLogo
+          ? null
+          : Text(
+              _initials(training.club.name),
+              style: TextStyle(
+                color: AppTheme.textDim,
+                fontSize: 8,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = training;
     final noSlots = t.freeSlots <= 0;
+    // Полоска набора — доля занятых мест. Последнее место подсвечиваем
+    // жёлтым, при полном наборе гасим.
+    final taken = (t.capacity - t.freeSlots).clamp(0, t.capacity);
+    final fill = t.capacity > 0 ? taken / t.capacity : 0.0;
+    final lastSpot = !noSlots && t.freeSlots == 1;
+    final slotsColor = noSlots
+        ? AppTheme.textDim
+        : (lastSpot ? AppTheme.amber : AppTheme.accent);
 
     return InkWell(
       onTap: onTap,
@@ -165,24 +241,70 @@ class TrainingCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.event_outlined, size: 16, color: AppTheme.textSecondary),
-                const SizedBox(width: 6),
-                Text(
-                  '${t.date}, ${t.time}',
-                  style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                _coachAvatar(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              '${t.date}, ${t.time}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${t.durationMinutes} мин',
+                            style: TextStyle(
+                                color: AppTheme.textDim, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      if ((t.coach?.name ?? '').isNotEmpty) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          t.coach!.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          _clubLogo(),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              t.club.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: AppTheme.textSecondary, fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  '${t.durationMinutes} мин',
-                  style: TextStyle(color: AppTheme.textDim, fontSize: 12),
-                ),
-                const Spacer(),
-                if (t.isJoined)
+                if (t.isJoined) ...[
+                  const SizedBox(width: 8),
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -196,39 +318,20 @@ class TrainingCard extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.w700)),
                   ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if ((t.coach?.name ?? '').isNotEmpty)
-              Row(
-                children: [
-                  Icon(Icons.sports_tennis_outlined,
-                      size: 15, color: AppTheme.textSecondary),
-                  const SizedBox(width: 6),
-                  Text(t.coach!.name,
-                      style: TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600)),
                 ],
-              ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(Icons.place_outlined,
-                    size: 15, color: AppTheme.textSecondary),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    t.club.name,
-                    style:
-                        TextStyle(color: AppTheme.textSecondary, fontSize: 13),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: LinearProgressIndicator(
+                value: fill,
+                minHeight: 4,
+                backgroundColor: AppTheme.cardRaised,
+                valueColor: AlwaysStoppedAnimation(slotsColor),
+              ),
+            ),
+            const SizedBox(height: 9),
             Row(
               children: [
                 Text(
@@ -243,9 +346,11 @@ class TrainingCard extends StatelessWidget {
                 Text(
                   noSlots
                       ? 'Мест нет'
-                      : 'Свободно ${t.freeSlots} из ${t.capacity}',
+                      : (lastSpot
+                          ? 'Осталось 1 место'
+                          : 'Свободно ${t.freeSlots} из ${t.capacity}'),
                   style: TextStyle(
-                    color: noSlots ? AppTheme.textDim : AppTheme.accent,
+                    color: slotsColor,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),

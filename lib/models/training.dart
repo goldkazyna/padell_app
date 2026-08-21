@@ -102,12 +102,16 @@ class TrainingClub {
   final String name;
   final String? city;
 
-  const TrainingClub({this.id, required this.name, this.city});
+  /// Логотип площадки. Может не быть — тогда рисуем монограмму.
+  final String? logo;
+
+  const TrainingClub({this.id, required this.name, this.city, this.logo});
 
   factory TrainingClub.fromJson(Map<String, dynamic> json) => TrainingClub(
         id: (json['id'] as num?)?.toInt(),
         name: json['name'] as String? ?? '',
         city: json['city'] as String?,
+        logo: json['logo'] as String?,
       );
 }
 
