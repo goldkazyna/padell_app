@@ -11,9 +11,13 @@ import '../../widgets/app_primary_button.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 
-/// Создание тренировки: клуб, время, длительность, цена, места, описание.
+/// Создание и правка тренировки: клуб, время, длительность, цена, места,
+/// описание. С [training] экран открывается в режиме редактирования —
+/// поля заполнены, сохранение уходит в update.
 class CoachCreateTrainingScreen extends StatefulWidget {
-  const CoachCreateTrainingScreen({super.key});
+  const CoachCreateTrainingScreen({super.key, this.training});
+
+  final Training? training;
 
   @override
   State<CoachCreateTrainingScreen> createState() =>
@@ -31,9 +35,22 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
 
   bool _saving = false;
 
+  bool get _isEdit => widget.training != null;
+
   @override
   void initState() {
     super.initState();
+    final t = widget.training;
+    if (t == null) return;
+
+    _club = t.club;
+    _price.text = '${t.price}';
+    _capacity.text = '${t.capacity}';
+    _description.text = t.description ?? '';
+    _duration = t.durationMinutes;
+    // startsAt приходит настенным временем «YYYY-MM-DD HH:MM» — разбираем
+    // как локальное, иначе пикер сместит час на разницу с UTC.
+    _startsAt = DateTime.tryParse(t.startsAt.replaceFirst(' ', 'T'));
   }
 
   @override
@@ -46,10 +63,14 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
 
   Future<void> _pickDateTime() async {
     final now = DateTime.now();
+    final initial = _startsAt ?? now.add(const Duration(days: 1));
+    // Правим и уже прошедшее занятие (оно ждёт завершения), поэтому нижнюю
+    // границу опускаем до его даты — иначе пикер падает на initialDate.
+    final first = initial.isBefore(now) ? initial : now;
     final date = await showDatePicker(
       context: context,
-      initialDate: _startsAt ?? now.add(const Duration(days: 1)),
-      firstDate: now,
+      initialDate: initial,
+      firstDate: first,
       lastDate: now.add(const Duration(days: 365)),
     );
     if (date == null || !mounted) return;
@@ -87,14 +108,27 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
 
     setState(() => _saving = true);
     try {
-      await context.read<TrainingService>().create(
-            clubId: _club!.id!,
-            startsAt: _formatForApi(_startsAt!),
-            durationMinutes: _duration,
-            price: price,
-            capacity: capacity,
-            description: _description.text.trim(),
-          );
+      final service = context.read<TrainingService>();
+      if (_isEdit) {
+        await service.update(
+          widget.training!.id,
+          clubId: _club!.id!,
+          startsAt: _formatForApi(_startsAt!),
+          durationMinutes: _duration,
+          price: price,
+          capacity: capacity,
+          description: _description.text.trim(),
+        );
+      } else {
+        await service.create(
+          clubId: _club!.id!,
+          startsAt: _formatForApi(_startsAt!),
+          durationMinutes: _duration,
+          price: price,
+          capacity: capacity,
+          description: _description.text.trim(),
+        );
+      }
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -126,7 +160,7 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
                 children: [
                   const AppBackButton(),
                   const SizedBox(width: 12),
-                  Text('Новая тренировка',
+                  Text(_isEdit ? 'Редактирование' : 'Новая тренировка',
                       style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 20,
@@ -164,7 +198,7 @@ class _CoachCreateTrainingScreenState extends State<CoachCreateTrainingScreen> {
                         SizedBox(
                           height: 50,
                           child: AppPrimaryButton(
-                            label: 'Создать тренировку',
+                            label: _isEdit ? 'Сохранить' : 'Создать тренировку',
                             loading: _saving,
                             onPressed: _saving ? null : _save,
                           ),

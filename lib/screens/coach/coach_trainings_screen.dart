@@ -72,6 +72,18 @@ class _CoachTrainingsScreenState extends State<CoachTrainingsScreen> {
     }
   }
 
+  Future<void> _edit(Training t) async {
+    final saved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => CoachCreateTrainingScreen(training: t),
+      ),
+    );
+    if (saved == true) {
+      _load();
+      if (mounted) await showAppAlert(context, 'Тренировка изменена');
+    }
+  }
+
   Future<void> _open(Training t) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -313,6 +325,20 @@ class _CoachTrainingsScreenState extends State<CoachTrainingsScreen> {
                           fontSize: 11,
                           fontWeight: FontWeight.w700)),
                 ),
+                // Править можно только запланированные: завершённые и
+                // отменённые сервер менять не даёт.
+                if (!t.isCancelled && !t.isCompleted) ...[
+                  const SizedBox(width: 4),
+                  InkWell(
+                    onTap: () => _edit(t),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(Icons.edit_outlined,
+                          size: 17, color: AppTheme.textSecondary),
+                    ),
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 8),

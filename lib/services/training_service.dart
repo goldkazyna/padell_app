@@ -102,6 +102,30 @@ class TrainingService {
     return (r['training_id'] as num).toInt();
   }
 
+  /// Правка запланированной тренировки. Сервер принимает поля выборочно и
+  /// отказывает, если занятие уже завершено или отменено.
+  Future<void> update(
+    int id, {
+    required int clubId,
+    required String startsAt,
+    required int durationMinutes,
+    required int price,
+    required int capacity,
+    String? description,
+  }) async {
+    final token = await _storage.getToken();
+    await _api.put('/coach/trainings/$id', {
+      'club_id': clubId,
+      'starts_at': startsAt,
+      'duration_minutes': durationMinutes,
+      'price': price,
+      'capacity': capacity,
+      // Пустое описание шлём как null — так его можно стереть.
+      'description':
+          (description != null && description.isNotEmpty) ? description : null,
+    }, token);
+  }
+
   Future<void> complete(int id) async {
     final token = await _storage.getToken();
     await _api.post('/coach/trainings/$id/complete', {}, token);
