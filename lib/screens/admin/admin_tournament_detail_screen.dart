@@ -4954,11 +4954,27 @@ class _AdminTournamentDetailScreenState
                 fontSize: 11,
                 fontWeight: FontWeight.w600))),
         cell(
-          Text('${p.totalPoints}',
-              style: const TextStyle(
-                  color: Color(0xFF22C55E),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800)),
+          // Очки и бонус за результат одной строкой: «45 +6». Бонус приходит
+          // только у Ladder в зачёте по сумме очков, иначе он нулевой.
+          Text.rich(
+            TextSpan(children: [
+              TextSpan(text: '${p.totalPoints}'),
+              if (p.bonusPoints > 0)
+                TextSpan(
+                  text: ' +${p.bonusPoints}',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+            ]),
+            maxLines: 1,
+            style: const TextStyle(
+                color: Color(0xFF22C55E),
+                fontSize: 13,
+                fontWeight: FontWeight.w800),
+          ),
           padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
           alignment: Alignment.centerRight,
         ),

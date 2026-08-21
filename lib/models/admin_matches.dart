@@ -152,6 +152,10 @@ class AdminLeaderboardRow {
   /// null/пусто — обычная одиночная строка.
   final List<AdminLeaderboardPlayer>? players;
   final int totalPoints;
+
+  /// Ladder: бонус за результат матча, уже включённый в [totalPoints].
+  /// Показываем его отдельной подписью, чтобы было видно вклад побед.
+  final int bonusPoints;
   final int wins;
   final int losses;
   final int draws;
@@ -191,6 +195,7 @@ class AdminLeaderboardRow {
     this.verified = false,
     this.players,
     required this.totalPoints,
+    this.bonusPoints = 0,
     required this.wins,
     required this.losses,
     required this.draws,
@@ -221,6 +226,7 @@ class AdminLeaderboardRow {
               AdminLeaderboardPlayer.fromJson(e as Map<String, dynamic>))
           .toList(),
       totalPoints: (json['total_points'] as num?)?.toInt() ?? 0,
+      bonusPoints: (json['bonus_points'] as num?)?.toInt() ?? 0,
       wins: (json['wins'] as num?)?.toInt() ?? 0,
       losses: (json['losses'] as num?)?.toInt() ?? 0,
       draws: (json['draws'] as num?)?.toInt() ?? 0,

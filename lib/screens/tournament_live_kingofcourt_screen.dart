@@ -341,6 +341,39 @@ class _TournamentLiveKingOfCourtScreenState
   /// Король корта с фиксированными парами — таблица показывается по парам.
   bool get _isPaired => _data?['tournament']?['is_paired'] == true;
 
+  /// Ширина зачётной колонки: у Ladder рядом с очками идёт бонус за результат
+  /// («45 +6»), поэтому места нужно больше.
+  double get _pointsColWidth => _isEscalera ? 62 : 40;
+
+  /// Очки и бонус одной строкой. Бонус приходит только у Ladder и только
+  /// в зачёте по сумме очков — в остальных форматах он нулевой.
+  Widget _pointsCell(int totalPoints, int bonusPoints, bool isMe) {
+    return SizedBox(
+      width: _pointsColWidth,
+      child: Text.rich(
+        TextSpan(children: [
+          TextSpan(text: '$totalPoints'),
+          if (bonusPoints > 0)
+            TextSpan(
+              text: ' +$bonusPoints',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+        ]),
+        textAlign: TextAlign.right,
+        maxLines: 1,
+        style: TextStyle(
+          color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+
   Widget _buildLeaderboard(List<Map<String, dynamic>> leaderboard) {
     final hdrStyle = TextStyle(
         color: AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.w700);
@@ -374,7 +407,7 @@ class _TournamentLiveKingOfCourtScreenState
                       : (_isEscalera && _escaleraMode == 'points'
                           ? 'БАЛЛЫ'
                           : 'ОЧКИ'),
-                  _isEscalera ? 48 : 40,
+                  _pointsColWidth,
                   align: TextAlign.right),
             ],
           ),
@@ -394,6 +427,7 @@ class _TournamentLiveKingOfCourtScreenState
     final pointDiff = (p['point_diff'] as num?)?.toInt() ?? 0;
     final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
     final totalPoints = (p['total_points'] as num?)?.toInt() ?? 0;
+    final bonusPoints = (p['bonus_points'] as num?)?.toInt() ?? 0;
     final pointsFor = (p['points_for'] as num?)?.toInt() ?? 0;
     final pointsAgainst = (p['points_against'] as num?)?.toInt() ?? 0;
     final isRR = _isRoundRobin;
@@ -545,18 +579,7 @@ class _TournamentLiveKingOfCourtScreenState
                   ),
                 ),
               ),
-              SizedBox(
-                width: 40,
-                child: Text(
-                  '$totalPoints',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: isMe ? AppTheme.accent : const Color(0xFF22C55E),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
+              _pointsCell(totalPoints, bonusPoints, isMe),
             ],
           ],
         ),
@@ -573,6 +596,7 @@ class _TournamentLiveKingOfCourtScreenState
     final pointDiff = (p['point_diff'] as num?)?.toInt() ?? 0;
     final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
     final totalPoints = (p['total_points'] as num?)?.toInt() ?? 0;
+    final bonusPoints = (p['bonus_points'] as num?)?.toInt() ?? 0;
     final p1 = p['player1'] as Map<String, dynamic>?;
     final p2 = p['player2'] as Map<String, dynamic>?;
     final p1Name = p1?['name'] as String?;
@@ -674,12 +698,7 @@ class _TournamentLiveKingOfCourtScreenState
                   textAlign: TextAlign.center,
                   style: TextStyle(color: isMe ? AppTheme.accent : AppTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w600)),
             ),
-            SizedBox(
-              width: 40,
-              child: Text('$totalPoints',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(color: isMe ? AppTheme.accent : const Color(0xFF22C55E), fontSize: 13, fontWeight: FontWeight.w800)),
-            ),
+            _pointsCell(totalPoints, bonusPoints, isMe),
           ],
         ),
       ),
