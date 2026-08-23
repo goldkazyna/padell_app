@@ -2399,6 +2399,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clubCardValidUntilLabel => 'Действует до';
 
   @override
+  String get clubCardBenefitsTitle => 'Что даёт карта';
+
+  @override
   String get clubCardHistoryTitle => 'История операций';
 
   @override

@@ -2376,6 +2376,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get clubCardValidUntilLabel => 'Дейін жарамды';
 
   @override
+  String get clubCardBenefitsTitle => 'Что даёт карта';
+
+  @override
   String get clubCardHistoryTitle => 'Операциялар тарихы';
 
   @override

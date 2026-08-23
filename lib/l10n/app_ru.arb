@@ -863,6 +863,7 @@
   "clubCardKindDiscountTrainer": "Скидка на тренера",
   "clubCardCodeLabel": "Код карты",
   "clubCardValidUntilLabel": "Действует до",
+  "clubCardBenefitsTitle": "Что даёт карта",
   "clubCardHistoryTitle": "История операций",
   "clubCardHistoryEmpty": "Пока нет операций",
   "clubCardCharge": "Списание",

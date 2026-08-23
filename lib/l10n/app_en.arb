@@ -840,6 +840,7 @@
   "clubCardKindDiscountTrainer": "Trainer discount",
   "clubCardCodeLabel": "Card code",
   "clubCardValidUntilLabel": "Valid until",
+  "clubCardBenefitsTitle": "What the card includes",
   "clubCardHistoryTitle": "History",
   "clubCardHistoryEmpty": "No operations yet",
   "clubCardCharge": "Charge",

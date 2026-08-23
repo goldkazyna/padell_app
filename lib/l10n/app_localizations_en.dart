@@ -2394,6 +2394,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubCardValidUntilLabel => 'Valid until';
 
   @override
+  String get clubCardBenefitsTitle => 'What the card includes';
+
+  @override
   String get clubCardHistoryTitle => 'History';
 
   @override

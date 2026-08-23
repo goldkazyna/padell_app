@@ -89,6 +89,10 @@ class _ClubCardDetailScreenState extends State<ClubCardDetailScreen> {
           padding: const EdgeInsets.fromLTRB(16, 6, 16, 100),
           children: [
           ClubCardVisual(card: card, club: widget.club),
+          if (card.benefits.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _BenefitsBlock(card: card, club: widget.club),
+          ],
           const SizedBox(height: 14),
           AppPrimaryButton(
             label: l.clubCardBookingsButton,
@@ -154,6 +158,69 @@ class _ClubCardDetailScreenState extends State<ClubCardDetailScreen> {
       children: [
         for (final t in _transactions) _HistoryRow(tx: t),
       ],
+    );
+  }
+}
+
+/// Что даёт карта: условия клуба списком. Текст пишет клуб в CRM,
+/// каждая строка — отдельный пункт.
+class _BenefitsBlock extends StatelessWidget {
+  final ClubCard card;
+  final ClubCardClubBrief club;
+  const _BenefitsBlock({required this.card, required this.club});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    // Метки в цвете клуба — как сама карта над блоком.
+    final accent = parseHexColor(club.cardAccentColor) ?? AppTheme.accent;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 13, 14, 14),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF1F2A24)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l.clubCardBenefitsTitle,
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.6,
+            ),
+          ),
+          const SizedBox(height: 10),
+          for (final b in card.benefits)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Icon(Icons.check_rounded, size: 16, color: accent),
+                  ),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Text(
+                      b,
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 13.5,
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

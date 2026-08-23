@@ -4528,6 +4528,12 @@ abstract class AppLocalizations {
   /// **'Действует до'**
   String get clubCardValidUntilLabel;
 
+  /// No description provided for @clubCardBenefitsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что даёт карта'**
+  String get clubCardBenefitsTitle;
+
   /// No description provided for @clubCardHistoryTitle.
   ///
   /// In ru, this message translates to:

@@ -34,6 +34,9 @@ class ClubCard {
   final int id;
   final String code;
   final String? typeName;
+
+  /// Что даёт карта — свободный текст клуба. Строки показываем пунктами.
+  final String? description;
   final String? kind; // visits / trainer / discount_court / discount_trainer
   final String? kindName;
   final bool isCounter;
@@ -51,6 +54,7 @@ class ClubCard {
     required this.id,
     required this.code,
     this.typeName,
+    this.description,
     this.kind,
     this.kindName,
     this.isCounter = false,
@@ -68,10 +72,18 @@ class ClubCard {
   bool get isDiscount =>
       kind == 'discount_court' || kind == 'discount_trainer';
 
+  /// Непустые строки описания: клуб пишет условия по одной на строку.
+  List<String> get benefits => (description ?? '')
+      .split(RegExp(r'\r?\n'))
+      .map((e) => e.trim())
+      .where((e) => e.isNotEmpty)
+      .toList();
+
   factory ClubCard.fromJson(Map<String, dynamic> j) => ClubCard(
         id: (j['id'] as num?)?.toInt() ?? 0,
         code: j['code'] as String? ?? '',
         typeName: j['type_name'] as String?,
+        description: j['description'] as String?,
         kind: j['kind'] as String?,
         kindName: j['kind_name'] as String?,
         isCounter: j['is_counter'] as bool? ?? false,
