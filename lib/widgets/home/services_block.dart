@@ -19,7 +19,16 @@ import '../../screens/certificates_screen.dart';
 class ServicesBlock extends StatefulWidget {
   final VoidCallback onOpenTournaments;
 
-  const ServicesBlock({super.key, required this.onOpenTournaments});
+  /// Счётчик «потяните, чтобы обновить» с главной. Меняется — перечитываем
+  /// число тренировок: свой RefreshIndicator у блока не работает, он внутри
+  /// чужого списка.
+  final int refreshTick;
+
+  const ServicesBlock({
+    super.key,
+    required this.onOpenTournaments,
+    this.refreshTick = 0,
+  });
 
   @override
   State<ServicesBlock> createState() => _ServicesBlockState();
@@ -35,6 +44,14 @@ class _ServicesBlockState extends State<ServicesBlock> {
   void initState() {
     super.initState();
     _loadTrainings();
+  }
+
+  @override
+  void didUpdateWidget(covariant ServicesBlock oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshTick != widget.refreshTick) {
+      _loadTrainings();
+    }
   }
 
   Future<void> _loadTrainings() async {

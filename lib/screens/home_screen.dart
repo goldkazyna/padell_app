@@ -37,6 +37,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// Растёт при каждом «потяните, чтобы обновить». Блоки со своими
+  /// счётчиками смотрят на него и перечитывают данные.
+  int _refreshTick = 0;
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 home.refresh(),
                 context.read<ProfileProvider>().loadProfile(),
               ]);
+              // Блоки со своими счётчиками (тренировки) живут отдельно от
+              // провайдера — сообщаем им, что данные пора перечитать.
+              if (mounted) setState(() => _refreshTick++);
             },
             color: AppTheme.accent,
             child: SingleChildScrollView(
@@ -111,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 16),
                   ServicesBlock(
                     onOpenTournaments: () => widget.onNavigateToTab?.call(1),
+                    refreshTick: _refreshTick,
                   ),
                   const SizedBox(height: 12),
                   // Для admin клуба — блок управления, для остальных —
