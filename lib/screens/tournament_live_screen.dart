@@ -998,7 +998,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       4: IntrinsicColumnWidth(), // Пропущено
                       5: IntrinsicColumnWidth(), // Разница
                       6: IntrinsicColumnWidth(), // Матчей
-                      7: IntrinsicColumnWidth(), // Среднее
+                      7: IntrinsicColumnWidth(), // % побед
+                      8: IntrinsicColumnWidth(), // Среднее
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: [
@@ -1039,6 +1040,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         hdr('Пропущено'),
         hdr('Разница'),
         hdr('Матчей'),
+        hdr('% побед'),
         hdr('Среднее'),
       ],
     );
@@ -1062,6 +1064,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final diff = pointsFor - pointsAgainst;
     // Среднее = забито ÷ матчей (как в вебе: 113/6 = 18.83).
     final avg = matches > 0 ? pointsFor / matches : 0.0;
+    // Процент побед считает сервер: он же по нему и ранжирует.
+    final winPercent = (p['win_percent'] as num?)?.toInt() ?? 0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
 
@@ -1168,6 +1172,12 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         cell(Text('$matches',
             style: TextStyle(
                 color: AppTheme.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600))),
+        // % побед — второй критерий таблицы после среднего
+        cell(Text('$winPercent%',
+            style: TextStyle(
+                color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
         // Среднее

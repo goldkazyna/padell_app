@@ -4759,6 +4759,7 @@ class _AdminTournamentDetailScreenState
                 5: IntrinsicColumnWidth(),
                 6: IntrinsicColumnWidth(),
                 7: IntrinsicColumnWidth(),
+                8: IntrinsicColumnWidth(),
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -4774,6 +4775,7 @@ class _AdminTournamentDetailScreenState
                   _flexHdr('Пропущено'),
                   _flexHdr('Разница'),
                   _flexHdr('Матчей'),
+                  _flexHdr('% побед'),
                   _flexHdr('Среднее',
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
@@ -4937,6 +4939,8 @@ class _AdminTournamentDetailScreenState
               fontWeight: FontWeight.w700))),
       // Матчей
       cell(Text('$matches', style: numStyle)),
+      // % побед — второй критерий таблицы после среднего
+      cell(Text('${p.winPercent}%', style: numStyle)),
       // Среднее
       cell(
         Text(avg.toStringAsFixed(2),
