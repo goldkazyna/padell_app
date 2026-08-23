@@ -105,14 +105,28 @@ class TrainingClub {
   /// Логотип площадки. Может не быть — тогда рисуем монограмму.
   final String? logo;
 
-  const TrainingClub({this.id, required this.name, this.city, this.logo});
+  /// Адрес площадки — показываем на экране занятия.
+  final String? address;
+
+  const TrainingClub({
+    this.id,
+    required this.name,
+    this.city,
+    this.logo,
+    this.address,
+  });
 
   factory TrainingClub.fromJson(Map<String, dynamic> json) => TrainingClub(
         id: (json['id'] as num?)?.toInt(),
         name: json['name'] as String? ?? '',
         city: json['city'] as String?,
         logo: json['logo'] as String?,
+        address: json['address'] as String?,
       );
+
+  /// «Алматы · Розыбакиева 247» — то, что есть; пусто, если ничего нет.
+  String get placeLine =>
+      [city, address].where((v) => (v ?? '').trim().isNotEmpty).join(' · ');
 }
 
 class TrainingPerson {
