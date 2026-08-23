@@ -342,6 +342,10 @@ class AdminMatchesSummary {
   final bool canFinish;
   final bool canGeneratePlayoff;
   final bool canGenerateNextRound;
+
+  /// Можно ли пересобрать последний раунд по актуальным результатам.
+  /// Приходит только у форматов, где состав зависит от предыдущего раунда.
+  final bool canRebuildRound;
   final bool canFinishEarly;
 
   const AdminMatchesSummary({
@@ -351,6 +355,7 @@ class AdminMatchesSummary {
     required this.canFinish,
     required this.canGeneratePlayoff,
     required this.canGenerateNextRound,
+    this.canRebuildRound = false,
     this.canFinishEarly = false,
   });
 
@@ -363,6 +368,7 @@ class AdminMatchesSummary {
       canGeneratePlayoff: json['can_generate_playoff'] as bool? ?? false,
       canGenerateNextRound:
           json['can_generate_next_round'] as bool? ?? false,
+      canRebuildRound: json['can_rebuild_round'] as bool? ?? false,
       canFinishEarly: json['can_finish_early'] as bool? ?? false,
     );
   }

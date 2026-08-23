@@ -981,6 +981,20 @@ class AdminService {
   }
 
   /// Сгенерировать следующий раунд (KOC). Возвращает свежий /matches.
+  /// Пересобрать последний раунд по актуальным результатам.
+  ///
+  /// Нужно, когда счёт прошлого раунда исправили уже после генерации
+  /// следующего. Счёт пересобираемого раунда теряется — экран предупреждает.
+  Future<AdminMatchesResponse> rebuildLastRound(int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/tournaments/$tournamentId/rebuild-last-round',
+      {},
+      token,
+    );
+    return AdminMatchesResponse.fromJson(response);
+  }
+
   Future<AdminMatchesResponse> generateNextRound(int tournamentId) async {
     final token = await _storage.getToken();
     final response = await _api.post(

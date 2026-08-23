@@ -4329,6 +4329,31 @@ class _AdminTournamentDetailScreenState
               ),
             ),
           ],
+          if (s.canRebuildRound) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: OutlinedButton.icon(
+                onPressed: _actionBusy ? null : _rebuildLastRound,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('Пересобрать раунд'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.textPrimary,
+                  side: BorderSide(color: AppTheme.border),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  textStyle: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Если поправили счёт прошлого раунда — этот собран по старым данным.',
+              style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+            ),
+          ],
           if (s.canFinish) ...[
             const SizedBox(height: 10),
             SizedBox(
@@ -4421,6 +4446,43 @@ class _AdminTournamentDetailScreenState
       await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
     } finally {
       if (mounted) setState(() => _actionBusy = false);
+    }
+  }
+
+  /// Пересобрать последний раунд: удалить и построить заново из текущей
+  /// таблицы. Нужно, когда счёт прошлого раунда исправили уже после
+  /// генерации следующего.
+  Future<void> _rebuildLastRound() async {
+    if (_actionBusy) return;
+    final admin = context.read<AdminService>();
+    final ok = await _confirm(
+      title: 'Пересобрать последний раунд?',
+      message: 'Составы будут пересчитаны по текущим результатам. '
+          'Счёт, введённый в этом раунде, будет удалён.',
+      okText: 'Пересобрать',
+      destructive: true,
+    );
+    if (!ok) return;
+
+    setState(() {
+      _actionBusy = true;
+      _actionLabel = 'Пересобираем раунд...';
+    });
+    try {
+      final fresh = await admin.rebuildLastRound(widget.tournamentId);
+      if (!mounted) return;
+      setState(() => _matches = fresh);
+      await showAppAlert(context, 'Раунд пересобран по текущим результатам.');
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _actionBusy = false;
+          _actionLabel = null;
+        });
+      }
     }
   }
 
