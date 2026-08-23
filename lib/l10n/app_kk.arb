@@ -838,6 +838,7 @@
   "clubCardKindDiscountTrainer": "Жаттықтырушыға жеңілдік",
   "clubCardCodeLabel": "Карта коды",
   "clubCardValidUntilLabel": "Дейін жарамды",
+  "clubCardBenefitsTitle": "Карта не береді",
   "clubCardHistoryTitle": "Операциялар тарихы",
   "clubCardHistoryEmpty": "Әзірге операциялар жоқ",
   "clubCardCharge": "Есептен шығару",
