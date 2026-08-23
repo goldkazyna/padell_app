@@ -329,6 +329,9 @@ class AdminService {
     List<String?>? courts,
     int? venueClubId,
     bool includeVenueClub = false,
+    /// Новый формат турнира. Сервер применит его только до старта и сам
+    /// приведёт настройки — остальные поля формата в этот момент игнорируются.
+    String? newType,
   }) async {
     final token = await _storage.getToken();
     final body = <String, dynamic>{
@@ -372,6 +375,7 @@ class AdminService {
       // Клуб-площадка: сервер меняет её только когда ключ прислан, поэтому
       // null здесь означает «убрать площадку», а не «оставить как есть».
       if (includeVenueClub) 'venue_club_id': venueClubId,
+      'type': ?newType,
     };
     final response = await _api.put('/admin/tournaments/$id', body, token);
     return AdminTournamentDetail.fromJson(

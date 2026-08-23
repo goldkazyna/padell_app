@@ -91,6 +91,11 @@ class _AdminTournamentDetailScreenState
   // корт номером.
   late final List<TextEditingController> _courtNames =
       List.generate(32, (_) => TextEditingController());
+  /// Выбранный в списке формат. Применяется отдельной кнопкой: смена
+  /// перекраивает настройки турнира, поэтому делаем её осознанным действием.
+  String? _pickedType;
+  bool _switchingType = false;
+
   // Клуб-площадка (где играем). Необязательная: null = не выбрана.
   int? _venueClubId;
   String? _venueClubName;
@@ -252,6 +257,7 @@ class _AdminTournamentDetailScreenState
     _teamCourts.text = t.courtsCount != null ? '${t.courtsCount}' : '';
     _venueClubId = t.venueClubId;
     _venueClubName = t.venueClubName;
+    _pickedType = t.type;
     for (var i = 0; i < _courtNames.length; i++) {
       _courtNames[i].text = i < t.courts.length ? t.courts[i] : '';
     }
@@ -298,6 +304,70 @@ class _AdminTournamentDetailScreenState
   // ---------------------------------------------------------------------------
   // Actions
   // ---------------------------------------------------------------------------
+
+  /// Сменить формат. Сервер сам вычистит настройки старого типа и подгонит
+  /// лимит участников — нам остаётся перечитать турнир, чтобы показать поля
+  /// нового формата.
+  Future<void> _applyType() async {
+    final t = _t;
+    final picked = _pickedType;
+    if (t == null || picked == null || picked == t.type) return;
+
+    final label = t.switchTypes
+        .firstWhere((e) => e.value == picked, orElse: () => (value: picked, label: picked))
+        .label;
+
+    final admin = context.read<AdminService>();
+    final confirmed = await _confirm(
+      title: 'Смена формата',
+      message: 'Сменить формат на «$label»? Настройки текущего формата '
+          'сбросятся, записавшиеся останутся.',
+      okText: 'Сменить',
+    );
+    if (!confirmed) {
+      setState(() => _pickedType = t.type);
+      return;
+    }
+
+    setState(() => _switchingType = true);
+    try {
+      await admin.updateTournament(
+            t.id,
+            name: _name.text.trim(),
+            description: _description.text.trim().isEmpty
+                ? null
+                : _description.text.trim(),
+            startDate: _startDate ?? t.startDate ?? DateTime.now(),
+            minLevel: _minLevel,
+            maxLevel: _maxLevel,
+            maxParticipants: t.maxParticipants,
+            price: t.price,
+            moderationHours: int.tryParse(_moderationHours.text.trim()),
+            moderationMinutes: int.tryParse(_moderationMinutes.text.trim()),
+            newType: picked,
+          );
+      if (!mounted) return;
+      await _load();
+      if (!mounted) return;
+      final fresh = _t;
+      final left = fresh == null
+          ? 0
+          : fresh.maxParticipants - fresh.participantsCount;
+      await showAppAlert(
+        context,
+        left > 0
+            ? 'Формат изменён. Записано ${fresh!.participantsCount} из '
+                '${fresh.maxParticipants} — старт откроется, когда наберётся ещё $left.'
+            : 'Формат изменён.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _pickedType = t.type);
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) setState(() => _switchingType = false);
+    }
+  }
 
   Future<void> _save() async {
     final t = _t;
@@ -1832,6 +1902,57 @@ class _AdminTournamentDetailScreenState
               ],
             ],
           ),
+          if (t.canSwitchType) ...[
+            const SizedBox(height: 16),
+            _buildSection(
+              title: 'Формат турнира',
+              children: [
+                _label('Тип'),
+                const SizedBox(height: 6),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardRaised,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _pickedType ?? t.type,
+                      isExpanded: true,
+                      dropdownColor: AppTheme.cardRaised,
+                      style: TextStyle(
+                          color: AppTheme.textPrimary, fontSize: 14),
+                      items: [
+                        for (final option in t.switchTypes)
+                          DropdownMenuItem(
+                            value: option.value,
+                            child: Text(option.label),
+                          ),
+                      ],
+                      onChanged: (_switchingType || disabled)
+                          ? null
+                          : (value) => setState(() => _pickedType = value),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                if ((_pickedType ?? t.type) != t.type)
+                  _primaryButton(
+                    label: 'Применить формат',
+                    loading: _switchingType,
+                    onTap: _switchingType ? null : _applyType,
+                  ),
+                const SizedBox(height: 4),
+                Text(
+                  'Формат меняется, пока турнир не начат — записавшиеся '
+                  '(${t.participantsCount}) остаются. Настройки старого формата '
+                  'сбросятся, а число участников подгонится под новый. Если людей '
+                  'станет не хватать, турнир дождётся остальных.',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                ),
+              ],
+            ),
+          ],
           if (t.type == 'americano' ||
               t.type == 'mexicano' ||
               t.type == 'team' ||

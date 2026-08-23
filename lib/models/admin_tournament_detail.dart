@@ -21,6 +21,12 @@ class AdminTournamentDetail {
   final int? venueClubId;
   final String? venueClubName;
 
+  /// Можно ли сменить формат: турнир не начат и он одиночный.
+  final bool canSwitchType;
+
+  /// Доступные форматы — пары «значение → название», список даёт сервер.
+  final List<({String value, String label})> switchTypes;
+
   final DateTime? startDate;
   final double minLevel;
   final double maxLevel;
@@ -117,6 +123,8 @@ class AdminTournamentDetail {
     this.pointsToWin,
     this.venueClubId,
     this.venueClubName,
+    this.canSwitchType = false,
+    this.switchTypes = const [],
   });
 
   factory AdminTournamentDetail.fromJson(Map<String, dynamic> json) {
@@ -184,6 +192,14 @@ class AdminTournamentDetail {
           ((json['venue_club'] as Map<String, dynamic>?)?['id'] as num?)?.toInt(),
       venueClubName:
           (json['venue_club'] as Map<String, dynamic>?)?['name'] as String?,
+      canSwitchType: json['can_switch_type'] as bool? ?? false,
+      switchTypes: (json['switch_types'] as List?)
+              ?.map((e) => (
+                    value: '${(e as Map)['value']}',
+                    label: '${e['label']}',
+                  ))
+              .toList() ??
+          const [],
     );
   }
 }
