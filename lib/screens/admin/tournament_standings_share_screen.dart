@@ -10,6 +10,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/app_primary_button.dart';
+import '../../widgets/standings_bits.dart';
 import '../../widgets/verified_badge.dart';
 
 /// Экран-превью красивой таблицы турнира для выгрузки в соцсети (Вариант 1,
@@ -363,38 +364,75 @@ class _StandingsCard extends StatelessWidget {
   /// Имя игрока/пары в строке таблицы. Для пар — оба игрока на двух строках.
   Widget _shareIdentity(AdminLeaderboardRow p) {
     final pair = (p.players != null && p.players!.length == 2) ? p.players! : null;
+
+    /// Одна строка идентичности: аватар и имя.
+    ///
+    /// У одиночного игрока имя разбивается на две строки — так же, как в
+    /// таблицах приложения: в строчку «Турсунова Лейла» растягивает колонку
+    /// и жмёт цифры. У пары строк и так две, по игроку на каждую, поэтому
+    /// там имя оставляем как есть.
     Widget line({
       required String? url,
       required String name,
       required bool verified,
       required int id,
       double avatarSize = 22,
+      bool splitName = false,
     }) {
+      const nameStyle = TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        height: 1.15,
+      );
+      final parts = StandingsName.split(name);
+      final second = splitName ? parts[1] : '';
+
       return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _CardAvatar(url: url, name: name, size: avatarSize),
           const SizedBox(width: 7),
           Flexible(
-            child: Text(name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(splitName ? parts[0] : name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: nameStyle),
+                    ),
+                    if (verified) ...[
+                      const SizedBox(width: 4),
+                      // На 20% меньше: в картинке галочка спорила с именем.
+                      VerifiedBadge(size: 8.8, userId: id, playerName: name),
+                    ],
+                  ],
+                ),
+                if (second.isNotEmpty)
+                  Text(second,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: nameStyle),
+              ],
+            ),
           ),
-          if (verified) ...[
-            const SizedBox(width: 4),
-            // На 20% меньше: в картинке галочка спорила с именем.
-            VerifiedBadge(size: 8.8, userId: id, playerName: name),
-          ],
         ],
       );
     }
 
     if (pair == null) {
       return line(
-          url: p.avatarUrl, name: p.name, verified: p.verified, id: p.id);
+          url: p.avatarUrl,
+          name: p.name,
+          verified: p.verified,
+          id: p.id,
+          splitName: true);
     }
     return Column(
       mainAxisSize: MainAxisSize.min,
