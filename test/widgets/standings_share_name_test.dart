@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:padel_app/models/admin_matches.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -52,6 +53,24 @@ void main() {
 
     expect(find.text('Bibigul'), findsOneWidget);
     expect(find.text('N'), findsOneWidget);
+  });
+
+  testWidgets('имя не обрезается, хотя колонок стало больше', (tester) async {
+    // Колонки В, П, Н, З, Пр и остальные забирают ширину у имени. Если его
+    // прижмёт, текст уедет в многоточие — это и проверяем.
+    tester.view.physicalSize = const Size(1170, 2532);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await pump(tester, [
+      row(1, 'Константин Верещагин'),
+      row(2, 'Турсунова Лейла'),
+    ]);
+
+    for (final part in ['Константин', 'Верещагин', 'Турсунова', 'Лейла']) {
+      final paragraph = tester.renderObject<RenderParagraph>(find.text(part));
+      expect(paragraph.didExceedMaxLines, isFalse, reason: '«$part» обрезано');
+    }
   });
 
   testWidgets('имя из одного слова остаётся одной строкой', (tester) async {

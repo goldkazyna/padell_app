@@ -548,27 +548,31 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
     case 'americano_flex':
       return (
         [
-          _Col('Заб', (p) => '${p.pointsFor}', (_) => _green),
-          _Col('Проп', (p) => '${p.pointsAgainst}', (_) => _red),
-          _Col('Разн', (p) {
+          _Col('В', (p) => '${p.wins}', (_) => _green),
+          _Col('П', (p) => '${p.losses}', (_) => _red),
+          _Col('Н', (p) => '${p.draws}', (_) => _dim),
+          _Col('З', (p) => '${p.pointsFor}', (_) => Colors.white),
+          _Col('Пр', (p) => '${p.pointsAgainst}', (_) => _dim),
+          _Col('±', (p) {
             final d = p.pointsFor - p.pointsAgainst;
             return d > 0 ? '+$d' : '$d';
           }, (p) => _diffColor(p.pointsFor - p.pointsAgainst)),
-          _Col('Матч', (p) => '${p.matchesPlayed ?? 0}', (_) => _dim),
+          _Col('М', (p) => '${p.matchesPlayed ?? 0}', (_) => _dim),
 
-          _Col('Сред', (p) {
+          _Col('Ср', (p) {
             final m = p.matchesPlayed ?? 0;
             final a = p.avgPoints ?? (m > 0 ? p.pointsFor / m : 0.0);
             return a.toStringAsFixed(2);
           }, (_) => _green, weight: FontWeight.w900),
         ],
-        'Заб — забито · Проп — пропущено · Разн — разница · Матч — матчей · Сред — среднее'
+        'В — победы · П — поражения · Н — ничьи · З — забито · Пр — пропущено · ± — разница · М — матчей · Ср — среднее'
       );
     case 'round_robin':
       return (
         [
           _Col('В', (p) => '${p.wins}', (_) => _green),
           _Col('П', (p) => '${p.losses}', (_) => _red),
+          _Col('Н', (p) => '${p.draws}', (_) => _dim),
           _Col('З', (p) => '${p.pointsFor}', (_) => Colors.white),
           _Col('Пр', (p) => '${p.pointsAgainst}', (_) => _dim),
           _Col('±', (p) {
@@ -576,18 +580,20 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
             return d > 0 ? '+$d' : '$d';
           }, (p) => _diffColor(p.pointDiff)),
         ],
-        'В — победы · П — поражения · З — забито · Пр — пропущено · ± — разница'
+        'В — победы · П — поражения · Н — ничьи · З — забито · Пр — пропущено · ± — разница'
       );
     default: // americano / mexicano / king_of_court / just_padel_it / bali_koc
       return (
         [
           _Col('В', (p) => '${p.wins}', (_) => _green),
           _Col('П', (p) => '${p.losses}', (_) => _red),
-          _Col('Р', (p) => '${p.pointsFor}:${p.pointsAgainst}', (_) => _dim),
+          _Col('Н', (p) => '${p.draws}', (_) => _dim),
+          _Col('З', (p) => '${p.pointsFor}', (_) => Colors.white),
+          _Col('Пр', (p) => '${p.pointsAgainst}', (_) => _dim),
           _Col('Очки', (p) => '${p.totalPoints}', (_) => _green,
               weight: FontWeight.w900),
         ],
-        'В — победы · П — поражения · Р — счёт мячей · Очки — сумма очков'
+        'В — победы · П — поражения · Н — ничьи · З — забито · Пр — пропущено · Очки — сумма очков'
       );
   }
 }
