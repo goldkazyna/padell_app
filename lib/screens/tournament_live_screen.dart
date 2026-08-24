@@ -744,8 +744,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 6: IntrinsicColumnWidth(), // З
                 7: IntrinsicColumnWidth(), // Пр
                 8: IntrinsicColumnWidth(), // ±
-                9: IntrinsicColumnWidth(), // %
-                10: IntrinsicColumnWidth(), // Очки
+                9: IntrinsicColumnWidth(), // Очки
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -756,10 +755,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           ),
           const Padding(
             padding: EdgeInsets.fromLTRB(12, 0, 12, 2),
-            child: StandingsLegend(items: [
-              ...StandingsLegend.scoring,
-              ('%', 'процент забитых мячей'),
-            ]),
+            child: StandingsLegend(items: StandingsLegend.scoring),
           ),
           const SizedBox(height: 6),
         ],
@@ -787,7 +783,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         hdr('З'),
         hdr('Пр'),
         hdr('±'),
-        hdr('%'),
         hdr('Очки'),
       ],
     );
@@ -802,8 +797,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     if (position == 3) rankColor = const Color(0xFFCD7F32);
     final pointDiff = (p['point_diff'] as num).toInt();
     final draws = (p['draws'] as num?)?.toInt() ?? 0;
-    // % забитых мячей от всех мячей (как в админке)
-    final ballPercent = (p['ball_percent'] as num?)?.toInt() ?? 0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
     // Оба поля приходят только в общей таблице: место в ней ведёт в плей-офф,
@@ -930,12 +923,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             fontWeight: FontWeight.w700,
           ),
         )),
-        // % (забитых мячей от всех мячей)
-        cell(Text('$ballPercent',
-            style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600))),
         // Очки
         cell(Text(
           '${p['total_points']}',
@@ -1002,8 +989,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       7: IntrinsicColumnWidth(), // Пр
                       8: IntrinsicColumnWidth(), // ±
                       9: IntrinsicColumnWidth(), // М
-                      10: IntrinsicColumnWidth(), // %
-                      11: IntrinsicColumnWidth(), // Ср
+                      10: IntrinsicColumnWidth(), // Ср
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: [
@@ -1021,7 +1007,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             child: StandingsLegend(items: [
               ...StandingsLegend.scoring,
               ('М', 'матчей'),
-              ('%', 'процент побед'),
               ('Ср', 'среднее забитых за матч'),
             ]),
           ),
@@ -1056,7 +1041,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         hdr('Пр'),
         hdr('±'),
         hdr('М'),
-        hdr('%'),
         hdr('Ср'),
       ],
     );
@@ -1080,8 +1064,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final diff = pointsFor - pointsAgainst;
     // Среднее = забито ÷ матчей (как в вебе: 113/6 = 18.83).
     final avg = matches > 0 ? pointsFor / matches : 0.0;
-    // Процент побед считает сервер: он же по нему и ранжирует.
-    final winPercent = (p['win_percent'] as num?)?.toInt() ?? 0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
 
@@ -1187,12 +1169,6 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         cell(Text('$matches',
             style: TextStyle(
                 color: AppTheme.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600))),
-        // % побед — второй критерий таблицы после среднего
-        cell(Text('$winPercent%',
-            style: TextStyle(
-                color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
         // Среднее

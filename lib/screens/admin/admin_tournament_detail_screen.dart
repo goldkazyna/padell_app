@@ -4804,7 +4804,6 @@ class _AdminTournamentDetailScreenState
                 8: IntrinsicColumnWidth(),
                 9: IntrinsicColumnWidth(),
                 10: IntrinsicColumnWidth(),
-                11: IntrinsicColumnWidth(),
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -4823,7 +4822,6 @@ class _AdminTournamentDetailScreenState
                   _flexHdr('Пр'),
                   _flexHdr('±'),
                   _flexHdr('М'),
-                  _flexHdr('%'),
                   _flexHdr('Ср',
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
@@ -4834,7 +4832,6 @@ class _AdminTournamentDetailScreenState
                 StandingsLegend(items: const [
                   ...StandingsLegend.scoring,
                   ('М', 'матчей'),
-                  ('%', 'процент побед'),
                   ('Ср', 'среднее забитых за матч'),
                 ]),
               ],
@@ -4995,8 +4992,6 @@ class _AdminTournamentDetailScreenState
               fontWeight: FontWeight.w700))),
       // Матчей
       cell(Text('$matches', style: numStyle)),
-      // % побед — второй критерий таблицы после среднего
-      cell(Text('${p.winPercent}%', style: numStyle)),
       // Среднее
       cell(
         Text(avg.toStringAsFixed(2),
@@ -5030,8 +5025,7 @@ class _AdminTournamentDetailScreenState
               5: IntrinsicColumnWidth(), // Н
               6: IntrinsicColumnWidth(), // З
               7: IntrinsicColumnWidth(), // Пр
-              8: IntrinsicColumnWidth(), // %
-              9: IntrinsicColumnWidth(), // Очки
+              8: IntrinsicColumnWidth(), // Очки
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: [
@@ -5041,7 +5035,6 @@ class _AdminTournamentDetailScreenState
           ),
           StandingsLegend(items: [
             ...StandingsLegend.scoring.where((e) => e.$1 != '±'),
-            ('%', 'процент побед'),
             (_pointsColumnLabel(), _pointsColumnLabel() == 'БАЛЛЫ'
                 ? 'баллы за позиции'
                 : 'очки в зачёт'),
@@ -5102,7 +5095,6 @@ class _AdminTournamentDetailScreenState
         hdr('Н'),
         hdr('З'),
         hdr('Пр'),
-        hdr('%'),
         hdr(_pointsColumnLabel(),
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
@@ -5198,11 +5190,6 @@ class _AdminTournamentDetailScreenState
             style: TextStyle(color: AppTheme.textSecondary, fontSize: 11))),
         cell(Text('${p.pointsAgainst}',
             style: TextStyle(color: AppTheme.textDim, fontSize: 11))),
-        cell(Text('${p.winPercent}%',
-            style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 11,
-                fontWeight: FontWeight.w600))),
         cell(
           // Очки и бонус за результат одной строкой: «45 +6». Бонус приходит
           // только у Ladder в зачёте по сумме очков, иначе он нулевой.

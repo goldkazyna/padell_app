@@ -517,16 +517,14 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
             return d > 0 ? '+$d' : '$d';
           }, (p) => _diffColor(p.pointsFor - p.pointsAgainst)),
           _Col('Матч', (p) => '${p.matchesPlayed ?? 0}', (_) => _dim),
-          // Второй критерий таблицы после среднего — показываем, чтобы
-          // порядок при равном среднем читался без объяснений.
-          _Col('%', (p) => '${p.winPercent}', (_) => _dim),
+
           _Col('Сред', (p) {
             final m = p.matchesPlayed ?? 0;
             final a = p.avgPoints ?? (m > 0 ? p.pointsFor / m : 0.0);
             return a.toStringAsFixed(2);
           }, (_) => _green, weight: FontWeight.w900),
         ],
-        'Заб — забито · Проп — пропущено · Разн — разница · Матч — матчей · % — процент побед · Сред — среднее'
+        'Заб — забито · Проп — пропущено · Разн — разница · Матч — матчей · Сред — среднее'
       );
     case 'round_robin':
       return (
@@ -548,11 +546,10 @@ Color _diffColor(int d) => d > 0 ? _green : (d < 0 ? _red : _dim);
           _Col('В', (p) => '${p.wins}', (_) => _green),
           _Col('П', (p) => '${p.losses}', (_) => _red),
           _Col('Р', (p) => '${p.pointsFor}:${p.pointsAgainst}', (_) => _dim),
-          _Col('%', (p) => '${p.winPercent}%', (_) => _dim),
           _Col('Очки', (p) => '${p.totalPoints}', (_) => _green,
               weight: FontWeight.w900),
         ],
-        'В — победы · П — поражения · Р — счёт мячей · % — процент побед · Очки — сумма очков'
+        'В — победы · П — поражения · Р — счёт мячей · Очки — сумма очков'
       );
   }
 }

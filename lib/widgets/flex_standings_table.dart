@@ -51,8 +51,7 @@ class FlexStandingsTable extends StatelessWidget {
               7: IntrinsicColumnWidth(), // Пр
               8: IntrinsicColumnWidth(), // ±
               9: IntrinsicColumnWidth(), // М
-              10: IntrinsicColumnWidth(), // %
-              11: IntrinsicColumnWidth(), // Ср
+              10: IntrinsicColumnWidth(), // Ср
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: [
@@ -66,7 +65,6 @@ class FlexStandingsTable extends StatelessWidget {
             items: [
               ...StandingsLegend.scoring,
               ('М', 'матчей'),
-              ('%', 'процент побед'),
               ('Ср', 'среднее забитых за матч'),
             ],
             padding: EdgeInsets.fromLTRB(10, 8, 10, 4),
@@ -97,7 +95,6 @@ class FlexStandingsTable extends StatelessWidget {
       hdr('Пр'),
       hdr('±'),
       hdr('М'),
-      hdr('%'),
       hdr('Ср'),
     ]);
   }
@@ -123,8 +120,6 @@ class FlexStandingsTable extends StatelessWidget {
     final diff = pointsFor - pointsAgainst;
     // Среднее = забито ÷ матчей (как в вебе: 113/6 = 18.83).
     final avg = matches > 0 ? pointsFor / matches : 0.0;
-    // Процент побед считает сервер: он же по нему и ранжирует.
-    final winPercent = (p['win_percent'] as num?)?.toInt() ?? 0;
 
     Color rankColor = AppTheme.textDim;
     if (position == 1) rankColor = const Color(0xFFFFD700);
@@ -272,12 +267,6 @@ class FlexStandingsTable extends StatelessWidget {
         cell(Text('$matches',
             style: TextStyle(
                 color: AppTheme.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600))),
-        // % побед — второй критерий таблицы после среднего
-        cell(Text('$winPercent%',
-            style: TextStyle(
-                color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
         // Среднее
