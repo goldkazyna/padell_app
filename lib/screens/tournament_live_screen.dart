@@ -733,11 +733,17 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
-            child: Table(
+            // Горизонтальный скролл при нехватке ширины / крупном шрифте.
+            child: LayoutBuilder(
+              builder: (context, c) => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: c.maxWidth),
+                  child: Table(
               columnWidths: const {
                 0: IntrinsicColumnWidth(), // #
                 1: IntrinsicColumnWidth(), // avatar
-                2: FlexColumnWidth(),       // имя в две строки
+                2: IntrinsicColumnWidth(), // имя в две строки
                 3: IntrinsicColumnWidth(), // В
                 4: IntrinsicColumnWidth(), // П
                 5: IntrinsicColumnWidth(), // Н
@@ -751,6 +757,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 _buildHeaderRow(),
                 for (final p in lb) _buildLeaderboardTableRow(p),
               ],
+            ),
+                ),
+              ),
             ),
           ),
           const Padding(
@@ -1113,7 +1122,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         // Name + verified
         cell(
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 150),
+            constraints: const BoxConstraints(maxWidth: 240),
             child: StandingsName(
               name: playerName ?? '—',
               color: isMe ? AppTheme.accent : null,

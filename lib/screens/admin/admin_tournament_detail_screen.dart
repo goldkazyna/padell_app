@@ -4919,7 +4919,7 @@ class _AdminTournamentDetailScreenState
       cell(
         pair == null
             ? ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 150),
+                constraints: const BoxConstraints(maxWidth: 240),
                 child: StandingsName(
                   name: p.name,
                   trailing: [
@@ -4939,7 +4939,7 @@ class _AdminTournamentDetailScreenState
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 150),
+                            constraints: const BoxConstraints(maxWidth: 240),
                             child: Text(pl.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -5012,14 +5012,21 @@ class _AdminTournamentDetailScreenState
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Column(
+      // Горизонтальный скролл при нехватке ширины / крупном шрифте:
+      // лучше листать вбок, чем читать «B… N» вместо имени.
+      child: LayoutBuilder(
+        builder: (context, c) => SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: c.maxWidth),
+            child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Table(
             columnWidths: const {
               0: IntrinsicColumnWidth(), // #
               1: IntrinsicColumnWidth(), // avatar
-              2: FlexColumnWidth(),      // имя в две строки
+              2: IntrinsicColumnWidth(), // имя в две строки
               3: IntrinsicColumnWidth(), // В
               4: IntrinsicColumnWidth(), // П
               5: IntrinsicColumnWidth(), // Н
@@ -5040,6 +5047,9 @@ class _AdminTournamentDetailScreenState
                 : 'очки в зачёт'),
           ]),
         ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -5229,14 +5239,20 @@ class _AdminTournamentDetailScreenState
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Column(
+      // Горизонтальный скролл при нехватке ширины / крупном шрифте.
+      child: LayoutBuilder(
+        builder: (context, c) => SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: c.maxWidth),
+            child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Table(
             columnWidths: const {
               0: IntrinsicColumnWidth(), // #
               1: IntrinsicColumnWidth(), // avatar
-              2: FlexColumnWidth(),      // имя в две строки
+              2: IntrinsicColumnWidth(), // имя в две строки
               3: IntrinsicColumnWidth(), // В
               4: IntrinsicColumnWidth(), // П
               5: IntrinsicColumnWidth(), // Н
@@ -5252,6 +5268,9 @@ class _AdminTournamentDetailScreenState
           ),
           const StandingsLegend(items: StandingsLegend.scoring),
         ],
+            ),
+          ),
+        ),
       ),
     );
   }

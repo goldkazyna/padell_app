@@ -178,7 +178,7 @@ class FlexStandingsTable extends StatelessWidget {
         cell(
           pair == null
               ? ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 150),
+                  constraints: const BoxConstraints(maxWidth: 240),
                   child: StandingsName(
                     name: playerName ?? '—',
                     color: isMe ? AppTheme.accent : null,
@@ -200,7 +200,7 @@ class FlexStandingsTable extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 150),
+                              constraints: const BoxConstraints(maxWidth: 240),
                               child: Text(
                                 (pl['name'] as String?) ?? '—',
                                 maxLines: 1,
