@@ -74,8 +74,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       final q = widget.highlightPlayerId != null
           ? '?player_id=${widget.highlightPlayerId}'
           : '';
-      final response = await ApiService()
-          .get('/tournaments/${widget.tournamentId}/live$q', token);
+      final response = await ApiService().get(
+        '/tournaments/${widget.tournamentId}/live$q',
+        token,
+      );
       if (!mounted) return;
       if (response['success'] == true) {
         setState(() {
@@ -103,9 +105,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     // Ограничиваем системный масштаб шрифта на этом экране — таблица
     // плотная и при scale > 1.15 верстка ломается.
     return MediaQuery(
-      data: mq.copyWith(
-        textScaler: mq.textScaler.clamp(maxScaleFactor: 1.15),
-      ),
+      data: mq.copyWith(textScaler: mq.textScaler.clamp(maxScaleFactor: 1.15)),
       child: Scaffold(
         backgroundColor: AppTheme.background,
         body: SafeArea(child: _buildBody()),
@@ -116,7 +116,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   Widget _buildBody() {
     if (_loading) {
       return const Center(
-          child: CircularProgressIndicator(color: AppTheme.accent));
+        child: CircularProgressIndicator(color: AppTheme.accent),
+      );
     }
     if (_error != null) {
       return Center(
@@ -125,17 +126,19 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline,
-                  color: AppTheme.error, size: 48),
+              Icon(Icons.error_outline, color: AppTheme.error, size: 48),
               const SizedBox(height: 12),
-              Text(_error!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.textPrimary)),
+              Text(
+                _error!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppTheme.textPrimary),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _load,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accent),
+                  backgroundColor: AppTheme.accent,
+                ),
                 child: const Text('Повторить'),
               ),
             ],
@@ -146,16 +149,17 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     final tournament = _data!['tournament'] as Map<String, dynamic>;
     final groups = (_data!['groups'] as List).cast<Map<String, dynamic>>();
-    final playoff = (_data!['playoff'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+    final playoff =
+        (_data!['playoff'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
     // Общая таблица приходит только при трёх группах и больше — там плей-офф
     // строится по ней, а не по местам в группах.
-    final overall = (_data!['overall'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+    final overall =
+        (_data!['overall'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
 
     if (_selectedGroupIdx >= groups.length) _selectedGroupIdx = 0;
     // Раунды всегда принадлежат конкретной группе: на общей таблице их нет.
-    final showOverall = overall.isNotEmpty &&
-        _showOverallTable &&
-        _activeTab == _LiveTab.table;
+    final showOverall =
+        overall.isNotEmpty && _showOverallTable && _activeTab == _LiveTab.table;
     final group = groups.isNotEmpty ? groups[_selectedGroupIdx] : null;
 
     return RefreshIndicator(
@@ -168,13 +172,16 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           _buildHeader(tournament),
           _buildMainTabs(),
           if (groups.length > 1)
-            _buildGroupTabs(groups,
-                withOverall: overall.isNotEmpty && _activeTab == _LiveTab.table),
+            _buildGroupTabs(
+              groups,
+              withOverall: overall.isNotEmpty && _activeTab == _LiveTab.table,
+            ),
           if (showOverall)
             _buildLeaderboard(
               {'leaderboard': overall},
               title: 'Общая таблица',
-              hint: 'Места 1–4 ждут соперников в полуфинале, 5–12 играют четвертьфинал.',
+              hint:
+                  'Места 1–4 ждут соперников в полуфинале, 5–12 играют четвертьфинал.',
             )
           else if (group != null) ...[
             if (_activeTab == _LiveTab.rounds)
@@ -212,8 +219,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: Row(
             children: [
-              Icon(Icons.emoji_events_rounded,
-                  color: AppTheme.amber, size: 20),
+              Icon(Icons.emoji_events_rounded, color: AppTheme.amber, size: 20),
               SizedBox(width: 8),
               Text(
                 'Плей-офф',
@@ -234,8 +240,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   }
 
   /// Карточка сетки (основная/нижняя) с вертикальным таймлайном стадий.
-  Widget _buildBracketCard(List<Map<String, dynamic>> stages,
-      {required bool isLower}) {
+  Widget _buildBracketCard(
+    List<Map<String, dynamic>> stages, {
+    required bool isLower,
+  }) {
     int rank(Map<String, dynamic> s) {
       final base = ((s['stage'] as String?) ?? '')
           .replaceAll(' (нижняя сетка)', '')
@@ -280,22 +288,31 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                     borderRadius: BorderRadius.circular(9),
                   ),
                   alignment: Alignment.center,
-                  child: Icon(Icons.emoji_events_rounded,
-                      color: AppTheme.amber, size: 18),
+                  child: Icon(
+                    Icons.emoji_events_rounded,
+                    color: AppTheme.amber,
+                    size: 18,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(title,
-                      style: TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800)),
-                ),
-                Text('$played / $total',
+                  child: Text(
+                    title,
                     style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700)),
+                      color: AppTheme.textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                Text(
+                  '$played / $total',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ],
             ),
           ),
@@ -333,10 +350,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       sub = isLower ? null : 'за 3 место';
     }
 
-    final allDone = matches.isNotEmpty &&
-        matches.every((m) => m['status'] == 'completed');
-    final Color dotColor =
-        allDone ? AppTheme.accent : const Color(0xFF3F3F46);
+    final allDone =
+        matches.isNotEmpty && matches.every((m) => m['status'] == 'completed');
+    final Color dotColor = allDone ? AppTheme.accent : const Color(0xFF3F3F46);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -348,23 +364,31 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               Container(
                 width: 9,
                 height: 9,
-                decoration:
-                    BoxDecoration(shape: BoxShape.circle, color: dotColor),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: dotColor,
+                ),
               ),
               const SizedBox(width: 8),
-              Text(label,
-                  style: TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5)),
+              Text(
+                label,
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
               if (sub != null) ...[
                 const SizedBox(width: 6),
-                Text('· $sub',
-                    style: TextStyle(
-                        color: AppTheme.textDim,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500)),
+                Text(
+                  '· $sub',
+                  style: TextStyle(
+                    color: AppTheme.textDim,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ],
           ),
@@ -409,40 +433,59 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                     _MatchRatingPill(delta: myDelta),
                     const SizedBox(width: 8),
                   ],
-                  const Icon(Icons.check_rounded,
-                      color: AppTheme.accent, size: 14),
+                  const Icon(
+                    Icons.check_rounded,
+                    color: AppTheme.accent,
+                    size: 14,
+                  ),
                   const SizedBox(width: 3),
-                  const Text('Завершён',
-                      style: TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700)),
+                  const Text(
+                    'Завершён',
+                    style: TextStyle(
+                      color: AppTheme.accent,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
             )
           else
             const SizedBox(height: 10),
-          _playoffTeamRow(t1,
-              isWinner: t1Win, completed: completed, score: score1),
-          _playoffTeamRow(t2,
-              isWinner: t2Win, completed: completed, score: score2),
+          _playoffTeamRow(
+            t1,
+            isWinner: t1Win,
+            completed: completed,
+            score: score1,
+          ),
+          _playoffTeamRow(
+            t2,
+            isWinner: t2Win,
+            completed: completed,
+            score: score2,
+          ),
           const SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  Widget _playoffTeamRow(Map<String, dynamic> team,
-      {required bool isWinner, required bool completed, dynamic score}) {
+  Widget _playoffTeamRow(
+    Map<String, dynamic> team, {
+    required bool isWinner,
+    required bool completed,
+    dynamic score,
+  }) {
     final p1 = team['player1'] as Map<String, dynamic>?;
     final p2 = team['player2'] as Map<String, dynamic>?;
-    final names =
-        [p1?['name'], p2?['name']].where((e) => e != null).join(' / ');
+    final names = [
+      p1?['name'],
+      p2?['name'],
+    ].where((e) => e != null).join(' / ');
     final isLoser = completed && !isWinner;
     final noTeam = p1 == null && p2 == null;
 
-    Color nameColor =
-        isLoser ? AppTheme.textSecondary : AppTheme.textPrimary;
+    Color nameColor = isLoser ? AppTheme.textSecondary : AppTheme.textPrimary;
     if (noTeam) nameColor = AppTheme.textDim;
     final nameWeight = isWinner ? FontWeight.w800 : FontWeight.w600;
 
@@ -466,7 +509,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             child: Text(
               names.isEmpty ? 'Ожидание…' : names,
               style: TextStyle(
-                  color: nameColor, fontSize: 14, fontWeight: nameWeight),
+                color: nameColor,
+                fontSize: 14,
+                fontWeight: nameWeight,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -478,8 +524,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     );
   }
 
-  Widget _playoffScoreBox(dynamic score,
-      {required bool isWinner, required bool completed}) {
+  Widget _playoffScoreBox(
+    dynamic score, {
+    required bool isWinner,
+    required bool completed,
+  }) {
     final hasScore = score != null;
 
     Color bg;
@@ -511,8 +560,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         border: border,
       ),
       alignment: Alignment.center,
-      child: Text(text,
-          style: TextStyle(color: fg, fontSize: 18, fontWeight: FontWeight.w800)),
+      child: Text(
+        text,
+        style: TextStyle(color: fg, fontSize: 18, fontWeight: FontWeight.w800),
+      ),
     );
   }
 
@@ -578,7 +629,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 _DatePill(date: t['date'] as String? ?? '')
               else
                 const _LivePill(),
-              if (t['status'] == 'completed' && (t['is_rated'] as bool? ?? false)) ...[
+              if (t['status'] == 'completed' &&
+                  (t['is_rated'] as bool? ?? false)) ...[
                 const Spacer(),
                 TournamentAiButton(
                   tournamentId: widget.tournamentId,
@@ -604,21 +656,22 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             children: [
               Text(
                 t['club_name'] as String? ?? '',
-                style: TextStyle(
-                    color: AppTheme.textSecondary, fontSize: 13),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6),
-                child: Text('·',
-                    style: TextStyle(
-                        color: AppTheme.textDim, fontSize: 13)),
+                child: Text(
+                  '·',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 13),
+                ),
               ),
               Text(
                 t['format_name'] as String? ?? '',
                 style: TextStyle(
-                    color: AppTheme.purple,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600),
+                  color: AppTheme.purple,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -628,7 +681,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   }
 
   // ===== Group tabs (pill-кнопки, чтобы не сливались с главными табами) =====
-  Widget _buildGroupTabs(List<Map<String, dynamic>> groups, {bool withOverall = false}) {
+  Widget _buildGroupTabs(
+    List<Map<String, dynamic>> groups, {
+    bool withOverall = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
       child: Row(
@@ -649,7 +705,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   /// [idx] = -1 — общая таблица.
   Widget _groupTabBtn(String? label, int idx) {
     final isOverall = idx < 0;
-    final isActive = isOverall ? _showOverallTable : (!_showOverallTable && _selectedGroupIdx == idx);
+    final isActive = isOverall
+        ? _showOverallTable
+        : (!_showOverallTable && _selectedGroupIdx == idx);
     return GestureDetector(
       onTap: () => setState(() {
         _showOverallTable = isOverall;
@@ -661,8 +719,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           color: isActive ? AppTheme.accent : const Color(0xFF1F1F23),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color:
-                isActive ? AppTheme.accent : const Color(0xFF2A2A2F),
+            color: isActive ? AppTheme.accent : const Color(0xFF2A2A2F),
             width: 1,
           ),
         ),
@@ -708,8 +765,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
             child: Row(
               children: [
-                Icon(Icons.emoji_events_outlined,
-                    color: AppTheme.amber, size: 16),
+                Icon(
+                  Icons.emoji_events_outlined,
+                  color: AppTheme.amber,
+                  size: 16,
+                ),
                 SizedBox(width: 8),
                 Text(
                   title,
@@ -728,7 +788,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               child: Text(
                 hint,
                 style: TextStyle(
-                    color: AppTheme.textSecondary, fontSize: 11.5, height: 1.35),
+                  color: AppTheme.textSecondary,
+                  fontSize: 11.5,
+                  height: 1.35,
+                ),
               ),
             ),
           Padding(
@@ -740,24 +803,24 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minWidth: c.maxWidth),
                   child: Table(
-              columnWidths: const {
-                0: IntrinsicColumnWidth(), // #
-                1: IntrinsicColumnWidth(), // avatar
-                2: IntrinsicColumnWidth(), // имя в две строки
-                3: IntrinsicColumnWidth(), // В
-                4: IntrinsicColumnWidth(), // П
-                5: IntrinsicColumnWidth(), // Н
-                6: IntrinsicColumnWidth(), // З
-                7: IntrinsicColumnWidth(), // Пр
-                8: IntrinsicColumnWidth(), // ±
-                9: IntrinsicColumnWidth(), // Очки
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                _buildHeaderRow(),
-                for (final p in lb) _buildLeaderboardTableRow(p),
-              ],
-            ),
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(), // #
+                      1: IntrinsicColumnWidth(), // avatar
+                      2: IntrinsicColumnWidth(), // имя в две строки
+                      3: IntrinsicColumnWidth(), // В
+                      4: IntrinsicColumnWidth(), // П
+                      5: IntrinsicColumnWidth(), // Н
+                      6: IntrinsicColumnWidth(), // З
+                      7: IntrinsicColumnWidth(), // Пр
+                      8: IntrinsicColumnWidth(), // ±
+                      9: IntrinsicColumnWidth(), // Очки
+                    },
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      _buildHeaderRow(),
+                      for (final p in lb) _buildLeaderboardTableRow(p),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -774,13 +837,13 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
   TableRow _buildHeaderRow() {
     Widget hdr(String text, {bool center = true}) => Padding(
-          padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
-          child: Text(
-            text,
-            textAlign: center ? TextAlign.center : TextAlign.left,
-            style: _hdrStyle,
-          ),
-        );
+      padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
+      child: Text(
+        text,
+        textAlign: center ? TextAlign.center : TextAlign.left,
+        style: _hdrStyle,
+      ),
+    );
     return TableRow(
       children: [
         hdr('#', center: false),
@@ -814,7 +877,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final groupName = p['group_name'] as String?;
     final groupLabel = groupName?.replaceFirst('Группа ', '');
 
-    Widget cell(Widget child, {EdgeInsets? padding, AlignmentGeometry alignment = Alignment.center}) {
+    Widget cell(
+      Widget child, {
+      EdgeInsets? padding,
+      AlignmentGeometry alignment = Alignment.center,
+    }) {
       return InkWell(
         onTap: () => _openPlayer(playerId, playerName),
         child: Container(
@@ -830,9 +897,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
       // чтобы при переносе имени на 2 строки остальные ячейки тоже были подсвечены.
       decoration: BoxDecoration(
         color: isMe ? AppTheme.accent.withAlpha(20) : null,
-        border: Border(
-          top: BorderSide(color: AppTheme.divider, width: 0.5),
-        ),
+        border: Border(top: BorderSide(color: AppTheme.divider, width: 0.5)),
       ),
       children: [
         // #
@@ -853,7 +918,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 Text(
                   slot == 'semifinal' ? 'ПФ' : 'ЧФ',
                   style: TextStyle(
-                    color: slot == 'semifinal' ? AppTheme.amber : AppTheme.textDim,
+                    color: slot == 'semifinal'
+                        ? AppTheme.amber
+                        : AppTheme.textDim,
                     fontWeight: FontWeight.w800,
                     fontSize: 8.5,
                     height: 1.4,
@@ -896,51 +963,76 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           alignment: Alignment.centerLeft,
         ),
         // В
-        cell(Text('${p['wins']}',
+        cell(
+          Text(
+            '${p['wins']}',
             style: const TextStyle(
-                color: AppTheme.accent,
-                fontSize: 13,
-                fontWeight: FontWeight.w700))),
+              color: AppTheme.accent,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         // П
-        cell(Text('${p['losses']}',
+        cell(
+          Text(
+            '${p['losses']}',
             style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600))),
+              color: AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         // Н — раньше эта колонка была подписана «З», хотя показывала ничьи
-        cell(Text('$draws',
+        cell(
+          Text(
+            '$draws',
             style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600))),
+              color: AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         // З
-        cell(Text('${(p['points_for'] as num?)?.toInt() ?? 0}',
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12))),
+        cell(
+          Text(
+            '${(p['points_for'] as num?)?.toInt() ?? 0}',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          ),
+        ),
         // Пр
-        cell(Text('${(p['points_against'] as num?)?.toInt() ?? 0}',
-            style: TextStyle(color: AppTheme.textDim, fontSize: 12))),
+        cell(
+          Text(
+            '${(p['points_against'] as num?)?.toInt() ?? 0}',
+            style: TextStyle(color: AppTheme.textDim, fontSize: 12),
+          ),
+        ),
         // ±
-        cell(Text(
-          pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
-          style: TextStyle(
-            color: pointDiff > 0
-                ? AppTheme.accent
-                : (pointDiff < 0
-                    ? AppTheme.error
-                    : AppTheme.textSecondary),
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
+        cell(
+          Text(
+            pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
+            style: TextStyle(
+              color: pointDiff > 0
+                  ? AppTheme.accent
+                  : (pointDiff < 0 ? AppTheme.error : AppTheme.textSecondary),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        )),
+        ),
         // Очки
-        cell(Text(
-          '${p['total_points']}',
-          style: TextStyle(
-            color: AppTheme.textPrimary,
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
+        cell(
+          Text(
+            '${p['total_points']}',
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -963,8 +1055,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
             child: Row(
               children: [
-                Icon(Icons.emoji_events_outlined,
-                    color: AppTheme.amber, size: 16),
+                Icon(
+                  Icons.emoji_events_outlined,
+                  color: AppTheme.amber,
+                  size: 16,
+                ),
                 SizedBox(width: 8),
                 Text(
                   'Таблица лидеров',
@@ -1013,11 +1108,13 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           ),
           const Padding(
             padding: EdgeInsets.fromLTRB(12, 0, 12, 2),
-            child: StandingsLegend(items: [
-              ...StandingsLegend.scoring,
-              ('М', 'матчей'),
-              ('Ср', 'среднее забитых за матч'),
-            ]),
+            child: StandingsLegend(
+              items: [
+                ...StandingsLegend.scoring,
+                ('М', 'матчей'),
+                ('Ср', 'среднее забитых за матч'),
+              ],
+            ),
           ),
           const SizedBox(height: 6),
         ],
@@ -1026,21 +1123,24 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   }
 
   TableRow _buildFlexHeaderRow() {
-    Widget hdr(String text,
-            {AlignmentGeometry alignment = Alignment.center,
-            EdgeInsets? padding}) =>
-        Padding(
-          padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 6),
-          child: Align(
-            alignment: alignment,
-            child: Text(text, style: _hdrStyle),
-          ),
-        );
+    Widget hdr(
+      String text, {
+      AlignmentGeometry alignment = Alignment.center,
+      EdgeInsets? padding,
+    }) => Padding(
+      padding: padding ?? const EdgeInsets.fromLTRB(6, 8, 6, 6),
+      child: Align(
+        alignment: alignment,
+        child: Text(text, style: _hdrStyle),
+      ),
+    );
     return TableRow(
       children: [
-        hdr('#',
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(2, 8, 6, 6)),
+        hdr(
+          '#',
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.fromLTRB(2, 8, 6, 6),
+        ),
         const SizedBox(),
         hdr('Игрок', alignment: Alignment.centerLeft),
         hdr('В'),
@@ -1056,7 +1156,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   }
 
   TableRow _buildFlexLeaderboardTableRow(
-      Map<String, dynamic> p, int totalRounds) {
+    Map<String, dynamic> p,
+    int totalRounds,
+  ) {
     final position = (p['position'] as num).toInt();
     final isMe = p['is_me'] == true;
     Color rankColor = AppTheme.textDim;
@@ -1067,7 +1169,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final pointsFor = (p['points_for'] as num?)?.toInt() ?? 0;
     final pointsAgainst = (p['points_against'] as num?)?.toInt() ?? 0;
     // /live отдаёт число матчей как games_played, /results и /stats — matches_played.
-    final matches = (p['matches_played'] as num?)?.toInt() ??
+    final matches =
+        (p['matches_played'] as num?)?.toInt() ??
         (p['games_played'] as num?)?.toInt() ??
         0;
     final diff = pointsFor - pointsAgainst;
@@ -1076,9 +1179,11 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
 
-    Widget cell(Widget child,
-        {EdgeInsets? padding,
-        AlignmentGeometry alignment = Alignment.center}) {
+    Widget cell(
+      Widget child, {
+      EdgeInsets? padding,
+      AlignmentGeometry alignment = Alignment.center,
+    }) {
       return InkWell(
         onTap: () => _openPlayer(playerId, playerName),
         child: Container(
@@ -1092,9 +1197,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     return TableRow(
       decoration: BoxDecoration(
         color: isMe ? AppTheme.accent.withAlpha(20) : null,
-        border: Border(
-          top: BorderSide(color: AppTheme.divider, width: 0.5),
-        ),
+        border: Border(top: BorderSide(color: AppTheme.divider, width: 0.5)),
       ),
       children: [
         // #
@@ -1140,46 +1243,84 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
           alignment: Alignment.centerLeft,
         ),
         // Победы / поражения / ничьи — первыми, как в остальных таблицах
-        cell(Text('${(p['wins'] as num?)?.toInt() ?? 0}',
+        cell(
+          Text(
+            '${(p['wins'] as num?)?.toInt() ?? 0}',
             style: const TextStyle(
-                color: AppTheme.accent, fontSize: 13, fontWeight: FontWeight.w700))),
-        cell(Text('${(p['losses'] as num?)?.toInt() ?? 0}',
+              color: AppTheme.accent,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        cell(
+          Text(
+            '${(p['losses'] as num?)?.toInt() ?? 0}',
             style: TextStyle(
-                color: AppTheme.error, fontSize: 13, fontWeight: FontWeight.w700))),
-        cell(Text('${(p['draws'] as num?)?.toInt() ?? 0}',
+              color: AppTheme.error,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        cell(
+          Text(
+            '${(p['draws'] as num?)?.toInt() ?? 0}',
             style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w700))),
+              color: AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         // Забито
-        cell(Text('$pointsFor',
+        cell(
+          Text(
+            '$pointsFor',
             style: const TextStyle(
-                color: Color(0xFF22C55E),
-                fontSize: 13,
-                fontWeight: FontWeight.w700))),
+              color: Color(0xFF22C55E),
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         // Пропущено
-        cell(Text('$pointsAgainst',
+        cell(
+          Text(
+            '$pointsAgainst',
             style: const TextStyle(
-                color: Color(0xFFEF4444),
-                fontSize: 13,
-                fontWeight: FontWeight.w700))),
+              color: Color(0xFFEF4444),
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         // Разница
-        cell(Text(
+        cell(
+          Text(
             diff > 0 ? '+$diff' : '$diff',
             style: TextStyle(
-                color: diff > 0
-                    ? const Color(0xFF22C55E)
-                    : diff < 0
-                        ? const Color(0xFFEF4444)
-                        : AppTheme.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w700))),
+              color: diff > 0
+                  ? const Color(0xFF22C55E)
+                  : diff < 0
+                  ? const Color(0xFFEF4444)
+                  : AppTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         // Матчей
-        cell(Text('$matches',
+        cell(
+          Text(
+            '$matches',
             style: TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600))),
+              color: AppTheme.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         // Среднее
         cell(
           Text(
@@ -1201,10 +1342,8 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     if (id == null || id <= 0) return;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => PlayerProfileScreen(
-          playerId: id,
-          playerName: name ?? '',
-        ),
+        builder: (_) =>
+            PlayerProfileScreen(playerId: id, playerName: name ?? ''),
       ),
     );
   }
@@ -1219,8 +1358,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     // (внимание уходит на плей-офф снизу).
     if (!_initializedGroups.contains(groupId)) {
       _initializedGroups.add(groupId);
-      final hasPlayoff =
-          ((_data?['playoff'] as List?)?.isNotEmpty ?? false);
+      final hasPlayoff = ((_data?['playoff'] as List?)?.isNotEmpty ?? false);
       final allCompleted =
           rounds.isNotEmpty && rounds.every((r) => r['status'] == 'completed');
 
@@ -1251,17 +1389,18 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final r in rounds) _buildRound(r),
-      ],
+      children: [for (final r in rounds) _buildRound(r)],
     );
   }
 
   Widget _buildRound(Map<String, dynamic> round) {
     final matches = (round['matches'] as List).cast<Map<String, dynamic>>();
-    final byes = (round['byes'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+    final byes =
+        (round['byes'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
     final roundId = (round['id'] as num).toInt();
-    final completedCount = matches.where((m) => m['status'] == 'completed').length;
+    final completedCount = matches
+        .where((m) => m['status'] == 'completed')
+        .length;
     final roundStatus = round['status'] as String? ?? 'pending';
     final inProgress = roundStatus == 'in_progress';
     final allCompleted = roundStatus == 'completed';
@@ -1316,15 +1455,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       pulse: true,
                     )
                   else if (allCompleted)
-                    _RoundStatusPill(
-                      text: 'завершён',
-                      color: AppTheme.textDim,
-                    )
+                    _RoundStatusPill(text: 'завершён', color: AppTheme.textDim)
                   else
-                    _RoundStatusPill(
-                      text: 'ожидание',
-                      color: AppTheme.amber,
-                    ),
+                    _RoundStatusPill(text: 'ожидание', color: AppTheme.amber),
                   const SizedBox(width: 6),
                   AnimatedRotation(
                     turns: expanded ? 0.5 : 0,
@@ -1385,8 +1518,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                     b['name'] as String?,
                   ),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.background,
                       borderRadius: BorderRadius.circular(20),
@@ -1425,9 +1560,7 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     return Container(
       decoration: BoxDecoration(
         color: hasMe ? AppTheme.accent.withAlpha(20) : null,
-        border: Border(
-          top: BorderSide(color: AppTheme.divider, width: 0.5),
-        ),
+        border: Border(top: BorderSide(color: AppTheme.divider, width: 0.5)),
       ),
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
       child: Column(
@@ -1443,7 +1576,9 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                   if (court != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 7, vertical: 2),
+                        horizontal: 7,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppTheme.cardRaised,
                         borderRadius: BorderRadius.circular(5),
@@ -1452,16 +1587,19 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       child: Text(
                         'Корт $court',
                         style: TextStyle(
-                            color: AppTheme.textSecondary,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600),
+                          color: AppTheme.textSecondary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   if (hasMe) ...[
                     if (court != null) const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 7, vertical: 2),
+                        horizontal: 7,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppTheme.accent.withAlpha(38),
                         borderRadius: BorderRadius.circular(5),
@@ -1469,9 +1607,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       child: const Text(
                         'Вы играете',
                         style: TextStyle(
-                            color: AppTheme.accent,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700),
+                          color: AppTheme.accent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -1483,10 +1622,20 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               ),
             ),
           // Team 1 — мини-карточка
-          _buildTeamCard(t1, isWinner: t1Win, isCompleted: completed, score: score1),
+          _buildTeamCard(
+            t1,
+            isWinner: t1Win,
+            isCompleted: completed,
+            score: score1,
+          ),
           const SizedBox(height: 6),
           // Team 2 — мини-карточка
-          _buildTeamCard(t2, isWinner: t2Win, isCompleted: completed, score: score2),
+          _buildTeamCard(
+            t2,
+            isWinner: t2Win,
+            isCompleted: completed,
+            score: score2,
+          ),
         ],
       ),
     );
@@ -1495,10 +1644,12 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
   /// V3 team-card: аватары рядом + имена + крупный счёт справа.
   /// Зелёная заливка карточки — ТОЛЬКО для команды юзера.
   /// Зелёный счёт — у победителя (любой команды).
-  Widget _buildTeamCard(Map<String, dynamic> team,
-      {required bool isWinner,
-      required bool isCompleted,
-      dynamic score}) {
+  Widget _buildTeamCard(
+    Map<String, dynamic> team, {
+    required bool isWinner,
+    required bool isCompleted,
+    dynamic score,
+  }) {
     final p1 = team['player1'] as Map<String, dynamic>?;
     final p2 = team['player2'] as Map<String, dynamic>?;
     final hasMe = team['has_me'] == true;
@@ -1823,7 +1974,9 @@ class _LivePillState extends State<_LivePill>
                       width: 9,
                       height: 9,
                       decoration: const BoxDecoration(
-                          color: AppTheme.accent, shape: BoxShape.circle),
+                        color: AppTheme.accent,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ),
@@ -1831,17 +1984,22 @@ class _LivePillState extends State<_LivePill>
                   width: 9,
                   height: 9,
                   decoration: const BoxDecoration(
-                      color: AppTheme.accent, shape: BoxShape.circle),
+                    color: AppTheme.accent,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          const Text('Идёт сейчас',
-              style: TextStyle(
-                  color: AppTheme.accent,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700)),
+          const Text(
+            'Идёт сейчас',
+            style: TextStyle(
+              color: AppTheme.accent,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -1910,7 +2068,11 @@ class _MatchRatingPill extends StatelessWidget {
     final positive = delta >= 0;
     final color = positive ? AppTheme.accent : AppTheme.error;
     final precise = context.watch<SettingsProvider>().preciseRating;
-    final text = RatingFormatter.formatRatingChange(delta, precise, decimals: 4);
+    final text = RatingFormatter.formatRatingChange(
+      delta,
+      precise,
+      decimals: 4,
+    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
@@ -1921,7 +2083,9 @@ class _MatchRatingPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            positive ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+            positive
+                ? Icons.arrow_upward_rounded
+                : Icons.arrow_downward_rounded,
             color: color,
             size: 11,
           ),
