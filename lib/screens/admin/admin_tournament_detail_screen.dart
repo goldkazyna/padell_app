@@ -24,6 +24,7 @@ import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
 import '../../widgets/moderation_countdown.dart';
+import '../../widgets/standings_bits.dart';
 import '../../widgets/verified_badge.dart';
 import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
@@ -4787,7 +4788,10 @@ class _AdminTournamentDetailScreenState
           scrollDirection: Axis.horizontal,
           child: ConstrainedBox(
             constraints: BoxConstraints(minWidth: c.maxWidth),
-            child: Table(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Table(
               columnWidths: const {
                 0: IntrinsicColumnWidth(),
                 1: IntrinsicColumnWidth(),
@@ -4798,6 +4802,9 @@ class _AdminTournamentDetailScreenState
                 6: IntrinsicColumnWidth(),
                 7: IntrinsicColumnWidth(),
                 8: IntrinsicColumnWidth(),
+                9: IntrinsicColumnWidth(),
+                10: IntrinsicColumnWidth(),
+                11: IntrinsicColumnWidth(),
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -4809,16 +4816,27 @@ class _AdminTournamentDetailScreenState
                   _flexHdr('ИГРОК',
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
-                  _flexHdr('Забито'),
-                  _flexHdr('Пропущено'),
-                  _flexHdr('Разница'),
-                  _flexHdr('Матчей'),
-                  _flexHdr('% побед'),
-                  _flexHdr('Среднее',
+                  _flexHdr('В'),
+                  _flexHdr('П'),
+                  _flexHdr('Н'),
+                  _flexHdr('З'),
+                  _flexHdr('Пр'),
+                  _flexHdr('±'),
+                  _flexHdr('М'),
+                  _flexHdr('%'),
+                  _flexHdr('Ср',
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
                 ]),
                 for (final p in rows) _flexLeaderRow(p),
+              ],
+                ),
+                StandingsLegend(items: const [
+                  ...StandingsLegend.scoring,
+                  ('М', 'матчей'),
+                  ('%', 'процент побед'),
+                  ('Ср', 'среднее забитых за матч'),
+                ]),
               ],
             ),
           ),
@@ -4903,25 +4921,15 @@ class _AdminTournamentDetailScreenState
       ),
       cell(
         pair == null
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 150),
-                    child: Text(p.name,
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600)),
-                  ),
-                  if (p.verified) ...[
-                    const SizedBox(width: 5),
-                    VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
+            ? ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 150),
+                child: StandingsName(
+                  name: p.name,
+                  trailing: [
+                    if (p.verified)
+                      VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
                   ],
-                ],
+                ),
               )
             : Column(
                 mainAxisSize: MainAxisSize.min,
@@ -4957,6 +4965,16 @@ class _AdminTournamentDetailScreenState
               ),
         alignment: Alignment.centerLeft,
       ),
+      // Победы / поражения / ничьи — первыми, как в остальных таблицах
+      cell(Text('${p.wins}',
+          style: const TextStyle(
+              color: Color(0xFF22C55E), fontSize: 13, fontWeight: FontWeight.w700))),
+      cell(Text('${p.losses}',
+          style: const TextStyle(
+              color: Color(0xFFEF4444), fontSize: 13, fontWeight: FontWeight.w700))),
+      cell(Text('${p.draws}',
+          style: TextStyle(
+              color: AppTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w700))),
       // Забито
       cell(Text('${p.pointsFor}',
           style: const TextStyle(
@@ -4999,21 +5017,35 @@ class _AdminTournamentDetailScreenState
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Table(
-        columnWidths: const {
-          0: IntrinsicColumnWidth(), // #
-          1: IntrinsicColumnWidth(), // avatar
-          2: FlexColumnWidth(),      // name (растягивается, переносится)
-          3: IntrinsicColumnWidth(), // В
-          4: IntrinsicColumnWidth(), // П
-          5: IntrinsicColumnWidth(), // Р (forA:against)
-          6: IntrinsicColumnWidth(), // %
-          7: IntrinsicColumnWidth(), // Очки
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _leaderboardHeaderRow(),
-          for (final p in rows) _leaderboardRow(p),
+          Table(
+            columnWidths: const {
+              0: IntrinsicColumnWidth(), // #
+              1: IntrinsicColumnWidth(), // avatar
+              2: FlexColumnWidth(),      // имя в две строки
+              3: IntrinsicColumnWidth(), // В
+              4: IntrinsicColumnWidth(), // П
+              5: IntrinsicColumnWidth(), // Н
+              6: IntrinsicColumnWidth(), // З
+              7: IntrinsicColumnWidth(), // Пр
+              8: IntrinsicColumnWidth(), // %
+              9: IntrinsicColumnWidth(), // Очки
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              _leaderboardHeaderRow(),
+              for (final p in rows) _leaderboardRow(p),
+            ],
+          ),
+          StandingsLegend(items: [
+            ...StandingsLegend.scoring.where((e) => e.$1 != '±'),
+            ('%', 'процент побед'),
+            (_pointsColumnLabel(), _pointsColumnLabel() == 'БАЛЛЫ'
+                ? 'баллы за позиции'
+                : 'очки в зачёт'),
+          ]),
         ],
       ),
     );
@@ -5067,7 +5099,9 @@ class _AdminTournamentDetailScreenState
             padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
         hdr('В'),
         hdr('П'),
-        hdr('Р'),
+        hdr('Н'),
+        hdr('З'),
+        hdr('Пр'),
         hdr('%'),
         hdr(_pointsColumnLabel(),
             alignment: Alignment.centerRight,
@@ -5130,31 +5164,16 @@ class _AdminTournamentDetailScreenState
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         ),
         cell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(p.name,
-                    softWrap: true,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        height: 1.2)),
-              ),
-              if (p.verified) ...[
-                const SizedBox(width: 5),
+          StandingsName(
+            name: p.name,
+            trailing: [
+              if (p.verified)
                 VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
-              ],
-              if (p.groupName != null) ...[
-                const SizedBox(width: 6),
+              if (p.groupName != null)
                 Text(
                   p.groupName!.replaceFirst('Группа ', ''),
                   style: TextStyle(color: AppTheme.textDim, fontSize: 10.5),
                 ),
-              ],
             ],
           ),
           padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
@@ -5170,9 +5189,15 @@ class _AdminTournamentDetailScreenState
                 color: Color(0xFFEF4444),
                 fontSize: 12,
                 fontWeight: FontWeight.w700))),
-        cell(Text('${p.pointsFor}:${p.pointsAgainst}',
+        cell(Text('${p.draws}',
             style: TextStyle(
-                color: AppTheme.textSecondary, fontSize: 11))),
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700))),
+        cell(Text('${p.pointsFor}',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 11))),
+        cell(Text('${p.pointsAgainst}',
+            style: TextStyle(color: AppTheme.textDim, fontSize: 11))),
         cell(Text('${p.winPercent}%',
             style: TextStyle(
                 color: AppTheme.textSecondary,
@@ -5207,8 +5232,8 @@ class _AdminTournamentDetailScreenState
     );
   }
 
-  // Таблица Round Robin — колонки как в вебе: # · Игрок · В · П · З · ПР · ±
-  // (З = выигранные геймы, ПР = пропущенные, ± = разница). Без % и «Очков».
+  // Таблица Round Robin — колонки как в вебе: # · Игрок · В · П · Н · З · Пр · ±
+  // (З = выигранные геймы, Пр = пропущенные, ± = разница). Без % и «Очков».
   // Дизайн (карточка, аватар, цвета мест) — как у обычной таблицы.
   Widget _buildRoundRobinLeaderboard(List<AdminLeaderboardRow> rows) {
     return Container(
@@ -5217,21 +5242,28 @@ class _AdminTournamentDetailScreenState
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Table(
-        columnWidths: const {
-          0: IntrinsicColumnWidth(), // #
-          1: IntrinsicColumnWidth(), // avatar
-          2: FlexColumnWidth(),      // name
-          3: IntrinsicColumnWidth(), // В
-          4: IntrinsicColumnWidth(), // П
-          5: IntrinsicColumnWidth(), // З
-          6: IntrinsicColumnWidth(), // ПР
-          7: IntrinsicColumnWidth(), // ±
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _roundRobinHeaderRow(),
-          for (final p in rows) _roundRobinRow(p),
+          Table(
+            columnWidths: const {
+              0: IntrinsicColumnWidth(), // #
+              1: IntrinsicColumnWidth(), // avatar
+              2: FlexColumnWidth(),      // имя в две строки
+              3: IntrinsicColumnWidth(), // В
+              4: IntrinsicColumnWidth(), // П
+              5: IntrinsicColumnWidth(), // Н
+              6: IntrinsicColumnWidth(), // З
+              7: IntrinsicColumnWidth(), // Пр
+              8: IntrinsicColumnWidth(), // ±
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              _roundRobinHeaderRow(),
+              for (final p in rows) _roundRobinRow(p),
+            ],
+          ),
+          const StandingsLegend(items: StandingsLegend.scoring),
         ],
       ),
     );
@@ -5272,8 +5304,9 @@ class _AdminTournamentDetailScreenState
             padding: const EdgeInsets.fromLTRB(8, 8, 4, 8)),
         hdr('В'),
         hdr('П'),
+        hdr('Н'),
         hdr('З'),
-        hdr('ПР'),
+        hdr('Пр'),
         hdr('±',
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.fromLTRB(6, 8, 4, 8)),
@@ -5325,24 +5358,11 @@ class _AdminTournamentDetailScreenState
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         ),
         cell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(p.name,
-                    softWrap: true,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        height: 1.2)),
-              ),
-              if (p.verified) ...[
-                const SizedBox(width: 5),
+          StandingsName(
+            name: p.name,
+            trailing: [
+              if (p.verified)
                 VerifiedBadge(size: 12, userId: p.id, playerName: p.name),
-              ],
             ],
           ),
           padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
@@ -5358,6 +5378,7 @@ class _AdminTournamentDetailScreenState
                 color: Color(0xFFEF4444),
                 fontSize: 12,
                 fontWeight: FontWeight.w700))),
+        cell(Text('${p.draws}', style: statSecondary)),
         cell(Text('${p.pointsFor}', style: statSecondary)),
         cell(Text('${p.pointsAgainst}', style: statSecondary)),
         cell(

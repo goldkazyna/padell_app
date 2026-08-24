@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/tournament_ai_button.dart';
+import '../widgets/standings_bits.dart';
 import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 
@@ -736,13 +737,15 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
               columnWidths: const {
                 0: IntrinsicColumnWidth(), // #
                 1: IntrinsicColumnWidth(), // avatar
-                2: FlexColumnWidth(),       // name (растягивается, wrap при нужде)
+                2: FlexColumnWidth(),       // имя в две строки
                 3: IntrinsicColumnWidth(), // В
                 4: IntrinsicColumnWidth(), // П
-                5: IntrinsicColumnWidth(), // З
-                6: IntrinsicColumnWidth(), // РП
-                7: IntrinsicColumnWidth(), // %
-                8: IntrinsicColumnWidth(), // Очки
+                5: IntrinsicColumnWidth(), // Н
+                6: IntrinsicColumnWidth(), // З
+                7: IntrinsicColumnWidth(), // Пр
+                8: IntrinsicColumnWidth(), // ±
+                9: IntrinsicColumnWidth(), // %
+                10: IntrinsicColumnWidth(), // Очки
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -750,6 +753,13 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 for (final p in lb) _buildLeaderboardTableRow(p),
               ],
             ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 0, 12, 2),
+            child: StandingsLegend(items: [
+              ...StandingsLegend.scoring,
+              ('%', 'процент забитых мячей'),
+            ]),
           ),
           const SizedBox(height: 6),
         ],
@@ -773,8 +783,10 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         hdr('Игрок', center: false),
         hdr('В'),
         hdr('П'),
+        hdr('Н'),
         hdr('З'),
-        hdr('РП'),
+        hdr('Пр'),
+        hdr('±'),
         hdr('%'),
         hdr('Очки'),
       ],
@@ -861,38 +873,21 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         ),
         // Name (растягивается, может перенестись) + галочка верификации
         cell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  playerName ?? '—',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-                    fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
-                    fontSize: 13,
-                    height: 1.2,
-                  ),
-                ),
-              ),
-              if (p['verified'] == true) ...[
-                const SizedBox(width: 5),
+          StandingsName(
+            name: playerName ?? '—',
+            color: isMe ? AppTheme.accent : null,
+            trailing: [
+              if (p['verified'] == true)
                 VerifiedBadge(
                   size: 12,
                   userId: playerId,
                   playerName: playerName,
                 ),
-              ],
-              if (groupLabel != null) ...[
-                const SizedBox(width: 6),
+              if (groupLabel != null)
                 Text(
                   groupLabel,
                   style: TextStyle(color: AppTheme.textDim, fontSize: 10.5),
                 ),
-              ],
             ],
           ),
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
@@ -910,13 +905,19 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
-        // З
+        // Н — раньше эта колонка была подписана «З», хотя показывала ничьи
         cell(Text('$draws',
             style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600))),
-        // РП
+        // З
+        cell(Text('${(p['points_for'] as num?)?.toInt() ?? 0}',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12))),
+        // Пр
+        cell(Text('${(p['points_against'] as num?)?.toInt() ?? 0}',
+            style: TextStyle(color: AppTheme.textDim, fontSize: 12))),
+        // ±
         cell(Text(
           pointDiff > 0 ? '+$pointDiff' : '$pointDiff',
           style: TextStyle(
@@ -994,12 +995,15 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                       0: IntrinsicColumnWidth(), // #
                       1: IntrinsicColumnWidth(), // avatar
                       2: IntrinsicColumnWidth(), // имя
-                      3: IntrinsicColumnWidth(), // Забито
-                      4: IntrinsicColumnWidth(), // Пропущено
-                      5: IntrinsicColumnWidth(), // Разница
-                      6: IntrinsicColumnWidth(), // Матчей
-                      7: IntrinsicColumnWidth(), // % побед
-                      8: IntrinsicColumnWidth(), // Среднее
+                      3: IntrinsicColumnWidth(), // В
+                      4: IntrinsicColumnWidth(), // П
+                      5: IntrinsicColumnWidth(), // Н
+                      6: IntrinsicColumnWidth(), // З
+                      7: IntrinsicColumnWidth(), // Пр
+                      8: IntrinsicColumnWidth(), // ±
+                      9: IntrinsicColumnWidth(), // М
+                      10: IntrinsicColumnWidth(), // %
+                      11: IntrinsicColumnWidth(), // Ср
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: [
@@ -1011,6 +1015,15 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 ),
               ),
             ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 0, 12, 2),
+            child: StandingsLegend(items: [
+              ...StandingsLegend.scoring,
+              ('М', 'матчей'),
+              ('%', 'процент побед'),
+              ('Ср', 'среднее забитых за матч'),
+            ]),
           ),
           const SizedBox(height: 6),
         ],
@@ -1036,12 +1049,15 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
             padding: const EdgeInsets.fromLTRB(2, 8, 6, 6)),
         const SizedBox(),
         hdr('Игрок', alignment: Alignment.centerLeft),
-        hdr('Забито'),
-        hdr('Пропущено'),
-        hdr('Разница'),
-        hdr('Матчей'),
-        hdr('% побед'),
-        hdr('Среднее'),
+        hdr('В'),
+        hdr('П'),
+        hdr('Н'),
+        hdr('З'),
+        hdr('Пр'),
+        hdr('±'),
+        hdr('М'),
+        hdr('%'),
+        hdr('Ср'),
       ],
     );
   }
@@ -1114,37 +1130,36 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         ),
         // Name + verified
         cell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 150),
-                child: Text(
-                  playerName ?? '—',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: isMe ? AppTheme.accent : AppTheme.textPrimary,
-                    fontWeight: isMe ? FontWeight.w800 : FontWeight.w600,
-                    fontSize: 13,
-                    height: 1.2,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 150),
+            child: StandingsName(
+              name: playerName ?? '—',
+              color: isMe ? AppTheme.accent : null,
+              trailing: [
+                if (p['verified'] == true)
+                  VerifiedBadge(
+                    size: 12,
+                    userId: playerId,
+                    playerName: playerName,
                   ),
-                ),
-              ),
-              if (p['verified'] == true) ...[
-                const SizedBox(width: 5),
-                VerifiedBadge(
-                  size: 12,
-                  userId: playerId,
-                  playerName: playerName,
-                ),
               ],
-            ],
+            ),
           ),
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
           alignment: Alignment.centerLeft,
         ),
+        // Победы / поражения / ничьи — первыми, как в остальных таблицах
+        cell(Text('${(p['wins'] as num?)?.toInt() ?? 0}',
+            style: const TextStyle(
+                color: AppTheme.accent, fontSize: 13, fontWeight: FontWeight.w700))),
+        cell(Text('${(p['losses'] as num?)?.toInt() ?? 0}',
+            style: TextStyle(
+                color: AppTheme.error, fontSize: 13, fontWeight: FontWeight.w700))),
+        cell(Text('${(p['draws'] as num?)?.toInt() ?? 0}',
+            style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w700))),
         // Забито
         cell(Text('$pointsFor',
             style: const TextStyle(
