@@ -43,6 +43,11 @@ class AdminTournamentDetail {
   final bool canEdit;
   final bool canStart;
   final bool canRestart;
+
+  /// Сколько push-рассылок по турниру ещё можно сделать.
+  /// Всего их две: одно объявление не должно прилетать людям без конца.
+  final int pushRemaining;
+  final int pushMax;
   final bool canDelete;
   final bool baliPairsCreated;
   final bool kocPairsCreated;
@@ -98,6 +103,8 @@ class AdminTournamentDetail {
     required this.canEdit,
     required this.canStart,
     required this.canRestart,
+    this.pushRemaining = 0,
+    this.pushMax = 2,
     required this.canDelete,
     this.baliPairsCreated = false,
     this.kocPairsCreated = false,
@@ -169,6 +176,8 @@ class AdminTournamentDetail {
       canEdit: json['can_edit'] as bool? ?? false,
       canStart: json['can_start'] as bool? ?? false,
       canRestart: json['can_restart'] as bool? ?? false,
+      pushRemaining: (json['push_remaining'] as num?)?.toInt() ?? 0,
+      pushMax: (json['push_max'] as num?)?.toInt() ?? 2,
       canDelete: json['can_delete'] as bool? ?? false,
       baliPairsCreated: json['bali_pairs_created'] as bool? ?? false,
       kocPairsCreated: json['koc_pairs_created'] as bool? ?? false,

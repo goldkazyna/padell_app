@@ -987,20 +987,27 @@ class _AdminTournamentDetailScreenState
     final t = _t;
     if (t == null) return;
 
+    // Рассылок по турниру всего две — предупреждаем перед последней,
+    // чтобы её не потратили на пробу.
+    final left = t.pushRemaining;
+    final admin = context.read<AdminService>();
     final ok = await _confirm(
       title: 'Отправить уведомление?',
-      message:
-          'Push о турнире получат все подходящие пользователи приложения (с учётом города и их настроек).',
+      message: 'Push о турнире получат все подходящие пользователи приложения '
+          '(с учётом города и их настроек).\n\n'
+          '${left > 1 ? 'Осталось отправок: $left из ${t.pushMax}.' : 'Это последняя отправка по этому турниру.'}',
       okText: 'Отправить',
     );
     if (!ok) return;
 
     setState(() => _starting = true);
     try {
-      final msg = await context.read<AdminService>().sendTournamentPush(t.id);
+      final result = await admin.sendTournamentPush(t.id);
       if (!mounted) return;
       setState(() => _starting = false);
-      await showAppAlert(context, msg);
+      // Перечитываем турнир — в меню должен обновиться остаток.
+      await _load();
+      await showAppAlert(context, result.message);
     } catch (e) {
       if (!mounted) return;
       setState(() => _starting = false);
@@ -1289,10 +1296,41 @@ class _AdminTournamentDetailScreenState
               }
               // Личные турниры игроков не шлют пуши всем пользователям.
               if (!(_t?.isPersonal ?? false)) {
+                final left = _t?.pushRemaining ?? 0;
+                final spent = left == 0;
                 items.add(PopupMenuItem<String>(
                   value: 'send_push',
-                  enabled: _t?.status == 'open',
-                  child: const Text('Отправить уведомление'),
+                  // Больше двух рассылок на турнир не даём: одно и то же
+                  // объявление не должно прилетать людям снова и снова.
+                  enabled: _t?.status == 'open' && !spent,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(spent
+                            ? 'Уведомления отправлены'
+                            : 'Отправить уведомление'),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: spent
+                              ? AppTheme.textDim.withValues(alpha: 0.16)
+                              : AppTheme.orange.withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: Text(
+                          '$left',
+                          style: TextStyle(
+                            color: spent ? AppTheme.textDim : AppTheme.orange,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ));
               }
               return items;

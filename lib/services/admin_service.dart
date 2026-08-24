@@ -440,15 +440,22 @@ class AdminService {
   }
 
   /// Отправить push-уведомление о турнире всем подходящим пользователям
-  /// (как колокольчик в веб-админке). Возвращает текст результата.
-  Future<String> sendTournamentPush(int id) async {
+  /// (как колокольчик в веб-админке).
+  ///
+  /// Возвращает текст результата и сколько отправок осталось: их всего
+  /// две на турнир, и экран показывает остаток в меню.
+  Future<({String message, int remaining})> sendTournamentPush(int id) async {
     final token = await _storage.getToken();
     final response = await _api.post(
       '/admin/tournaments/$id/send-push',
       const {},
       token,
     );
-    return response['message'] as String? ?? 'Уведомление отправлено';
+
+    return (
+      message: response['message'] as String? ?? 'Уведомление отправлено',
+      remaining: (response['push_remaining'] as num?)?.toInt() ?? 0,
+    );
   }
 
   /// Удалить турнир (только черновик).
