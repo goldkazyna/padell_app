@@ -1526,6 +1526,24 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receive notifications only about tournaments matching your level';
 
   @override
+  String get notifyAllCities => 'All cities';
+
+  @override
+  String get notifyAllClubs => 'All clubs';
+
+  @override
+  String notifyClubsChosen(int count, int total) {
+    return '$count of $total selected';
+  }
+
+  @override
+  String get notifyCitiesTitle => 'Cities';
+
+  @override
+  String get notifyCitiesDesc =>
+      'Turn a city off and you will not get tournament announcements from its clubs';
+
+  @override
   String get notifyClubsTitle => 'Notifications from clubs';
 
   @override

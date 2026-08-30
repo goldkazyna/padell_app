@@ -57,6 +57,10 @@ class AdminTournamentDetail {
   final int? moderationMinutes;
   final bool tournamentsFullAccess;
   final bool isAdminPairing;
+
+  /// Этап лиги: id, название и номер этапа. null — обычный турнир.
+  /// Нужен, чтобы показать плашку лиги и досыпать состав из неё.
+  final Map<String, dynamic>? league;
   final String pairingMode; // 'self' | 'admin' — кто собирает пары (team)
 
   /// Можно ли заводить пары целиком. Считает сервер: правило одно
@@ -114,6 +118,7 @@ class AdminTournamentDetail {
     this.moderationMinutes,
     this.tournamentsFullAccess = true,
     this.isAdminPairing = false,
+    this.league,
     this.pairingMode = 'self',
     this.supportsPairRegistration = false,
     this.isPersonal = false,
@@ -157,6 +162,7 @@ class AdminTournamentDetail {
       price: (json['price'] as num?)?.toDouble(),
       verifiedOnly: json['verified_only'] as bool? ?? false,
       isAdminPairing: json['is_admin_pairing'] as bool? ?? false,
+      league: json['league'] as Map<String, dynamic>?,
       pairingMode: json['pairing_mode'] as String? ?? 'self',
       supportsPairRegistration:
           json['supports_pair_registration'] as bool? ?? false,

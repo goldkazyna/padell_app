@@ -6,6 +6,7 @@ import '../../utils/app_alert.dart';
 import '../../utils/city_l10n.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/app_back_button.dart';
+import '../../utils/cities.dart';
 
 // Local utility aliases — same pattern as edit_profile_screen.dart
 class _T {
@@ -30,16 +31,7 @@ class AdminEditClubScreen extends StatefulWidget {
 }
 
 class _AdminEditClubScreenState extends State<AdminEditClubScreen> {
-  static const _cities = [
-    'Алматы',
-    'Астана',
-    'Шымкент',
-    'Караганда',
-    'Актобе',
-    'Актау',
-    'Атырау',
-    'Костанай',
-  ];
+  static const _cities = kCities;
 
   final _name = TextEditingController();
   final _address = TextEditingController();

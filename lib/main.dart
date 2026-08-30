@@ -34,6 +34,8 @@ import 'services/moderation_service.dart';
 import 'services/support_service.dart';
 import 'services/chat_service.dart';
 import 'services/achievement_service.dart';
+import 'services/admin_league_service.dart';
+import 'services/league_service.dart';
 import 'services/waiver_service.dart';
 import 'services/coach_service.dart';
 import 'services/training_service.dart';
@@ -82,6 +84,8 @@ void main() async {
   final clubCardService = ClubCardService(apiService, storageService);
   final certificateService = CertificateService(apiService, storageService);
   final adminService = AdminService(apiService, storageService);
+  final leagueService = LeagueService(apiService, storageService);
+  final adminLeagueService = AdminLeagueService(apiService, storageService);
   final invitationService = InvitationService(apiService, storageService);
   final moderationService = ModerationService(apiService, storageService);
   final supportService = SupportService(apiService, storageService);
@@ -149,6 +153,8 @@ void main() async {
         Provider<ClubCardService>.value(value: clubCardService),
         Provider<CertificateService>.value(value: certificateService),
         Provider<AdminService>.value(value: adminService),
+        Provider<LeagueService>.value(value: leagueService),
+        Provider<AdminLeagueService>.value(value: adminLeagueService),
         Provider<InvitationService>.value(value: invitationService),
         Provider<ModerationService>.value(value: moderationService),
         Provider<SupportService>.value(value: supportService),

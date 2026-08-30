@@ -8,6 +8,7 @@ import '../widgets/coming_soon_badge.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/main_tab_bar.dart';
 import 'club_detail_screen.dart';
+import '../utils/cities.dart';
 
 class ClubsListScreen extends StatefulWidget {
   /// 'club' (по умолчанию) — обычные клубы; 'community' — комьюнити.
@@ -32,16 +33,7 @@ class _ClubsListScreenState extends State<ClubsListScreen> {
   String _search = '';
   String? _activeCity; // null = все
 
-  static const _cities = <String>[
-    'Алматы',
-    'Астана',
-    'Шымкент',
-    'Караганда',
-    'Актобе',
-    'Актау',
-    'Атырау',
-    'Костанай',
-  ];
+  static const _cities = kCities;
 
   @override
   void initState() {

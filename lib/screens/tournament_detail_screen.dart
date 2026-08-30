@@ -27,6 +27,8 @@ import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'tournament_chat_screen.dart';
+import '../models/league.dart';
+import 'league_detail_screen.dart';
 
 class TournamentDetailScreen extends StatefulWidget {
   final int tournamentId;
@@ -157,6 +159,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                           _buildTags(tournament),
                           const SizedBox(height: 12),
                           _buildTitle(tournament),
+                          if (tournament.league != null) ...[
+                            const SizedBox(height: 10),
+                            _buildLeagueBadge(tournament.league!),
+                          ],
                           const SizedBox(height: 8),
                           _buildLocation(tournament),
                           const SizedBox(height: 16),
@@ -514,6 +520,45 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   }
 
   // === Локация ===
+  /// Плашка «Этап 3 из 8» — этап лиги ведёт на её сводную таблицу.
+  Widget _buildLeagueBadge(TournamentLeagueRef league) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LeagueDetailScreen(leagueId: league.id),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: AppTheme.accent.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.emoji_events_outlined, color: AppTheme.accent, size: 16),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Этап ${league.stage} из ${league.stagesTotal} · ${league.name}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: AppTheme.accent, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildLocation(Tournament t) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

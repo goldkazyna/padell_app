@@ -95,7 +95,9 @@ class _AchievementsSectionState extends State<AchievementsSection> {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 140,
+            // Ровно под медаль с подписью и счётом: лишняя высота внизу
+            // делала отступ до следующего блока вдвое больше остальных.
+            height: 120,
             child: items == null
                 ? _skeleton()
                 : ListView.separated(

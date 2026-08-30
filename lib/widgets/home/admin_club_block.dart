@@ -7,6 +7,7 @@ import '../../screens/admin/admin_moderators_screen.dart';
 import '../../screens/admin/admin_tournaments_screen.dart';
 import '../../screens/admin/admin_users_screen.dart';
 import '../../theme/app_theme.dart';
+import '../../screens/admin/admin_leagues_screen.dart';
 
 /// Блок «Управление клубом» на главной — показывается админам клуба
 /// и модераторам клуба. Кнопка «Создать турнир» прячется если у юзера
@@ -98,6 +99,19 @@ class AdminClubBlock extends StatelessWidget {
             ),
           ),
           if (tournamentsFullAccess) ...[
+            const SizedBox(height: 8),
+            _AdminCta(
+              icon: Icons.emoji_events_outlined,
+              title: 'Лиги',
+              subtitle: 'Серия турниров с общей таблицей',
+              gradientColors: const [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminLeaguesScreen(clubName: club.name),
+                ),
+              ),
+            ),
             const SizedBox(height: 8),
             _AdminCta(
               icon: Icons.add_circle_outline,

@@ -561,6 +561,12 @@
   "settingsSaveError": "Баптауларды сақтау қатесі",
   "onlyMyLevelTournaments": "Тек өз деңгейімдегі турнирлер",
   "onlyMyLevelTournamentsDesc": "Өз деңгейіңізге сай келетін турнирлер туралы ғана хабарлама алу",
+  "notifyAllCities": "Барлық қалалар",
+  "notifyAllClubs": "Барлық клубтар",
+  "notifyClubsChosen": "{total} ішінен {count} таңдалды",
+  "@notifyClubsChosen": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "notifyCitiesTitle": "Қалалар",
+  "notifyCitiesDesc": "Қаланы өшірсеңіз, оның клубтарының турнирлері туралы хабарламалар келмейді",
   "notifyClubsTitle": "Клубтардан хабарламалар",
   "notifyClubsDesc": "Жаңа турнирлер туралы хабарлама алғыңыз келетін клубтарды таңдаңыз",
 

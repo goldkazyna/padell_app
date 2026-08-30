@@ -14,6 +14,7 @@ import '../utils/city_l10n.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
 import 'auth/change_phone_screen.dart';
+import '../utils/cities.dart';
 
 // Local utility aliases mapped to global AppTheme
 class _T {
@@ -314,7 +315,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickCity() async {
-    final cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Актау', 'Атырау', 'Костанай'];
+    const cities = kCities;
     await showModalBottomSheet(
       context: context,
       backgroundColor: _T.card,

@@ -7,6 +7,7 @@ import '../models/challenge.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/challenges/court_widget.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/player_avatar.dart';
 
 class CreateChallengeScreen extends StatefulWidget {
   const CreateChallengeScreen({super.key});
@@ -206,17 +207,9 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  Container(
-                                    width: 40, height: 40,
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.accent,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _getInitials(player['first_name'] ?? '', player['last_name'] ?? ''),
-                                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
-                                    ),
+                                  PlayerAvatar(
+                                    name: player['full_name'] as String? ?? '',
+                                    avatarUrl: player['avatar'] as String?,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(

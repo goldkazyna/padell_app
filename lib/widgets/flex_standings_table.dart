@@ -15,11 +15,21 @@ class FlexStandingsTable extends StatelessWidget {
   final int? currentUserId;
   final void Function(int? id, String? name)? onPlayerTap;
 
+  /// Дополнительная колонка перед В/П/Н — например «Э» в лиге:
+  /// буква для шапки, расшифровка для легенды и значение из строки.
+  final (String, String, String Function(Map<String, dynamic>))? extraColumn;
+
+  /// Минимальная ширина колонки имени. По умолчанию колонка сжимается
+  /// по содержимому; в лиге ФИО просят места, а остальное уезжает в скролл.
+  final double nameMinWidth;
+
   const FlexStandingsTable({
     super.key,
     required this.leaderboard,
     this.currentUserId,
     this.onPlayerTap,
+    this.extraColumn,
+    this.nameMinWidth = 0,
   });
 
   static const _hdrStyle = TextStyle(
@@ -44,27 +54,29 @@ class FlexStandingsTable extends StatelessWidget {
                   0: IntrinsicColumnWidth(), // #
                   1: IntrinsicColumnWidth(), // avatar
                   2: IntrinsicColumnWidth(), // имя
-                  3: IntrinsicColumnWidth(), // В
-                  4: IntrinsicColumnWidth(), // П
-                  5: IntrinsicColumnWidth(), // Н
-                  6: IntrinsicColumnWidth(), // З
-                  7: IntrinsicColumnWidth(), // Пр
-                  8: IntrinsicColumnWidth(), // ±
-                  9: IntrinsicColumnWidth(), // М
-                  10: IntrinsicColumnWidth(), // Ср
+                  3: IntrinsicColumnWidth(), // В или доп. колонка
+                  4: IntrinsicColumnWidth(),
+                  5: IntrinsicColumnWidth(),
+                  6: IntrinsicColumnWidth(),
+                  7: IntrinsicColumnWidth(),
+                  8: IntrinsicColumnWidth(),
+                  9: IntrinsicColumnWidth(),
+                  10: IntrinsicColumnWidth(),
+                  11: IntrinsicColumnWidth(),
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: [_headerRow(), for (final p in leaderboard) _row(p)],
               ),
             ),
           ),
-          const StandingsLegend(
+          StandingsLegend(
             items: [
+              if (extraColumn != null) (extraColumn!.$1, extraColumn!.$2),
               ...StandingsLegend.scoring,
-              ('М', 'матчей'),
-              ('Ср', 'среднее забитых за матч'),
+              const ('М', 'матчей'),
+              const ('Ср', 'среднее забитых за матч'),
             ],
-            padding: EdgeInsets.fromLTRB(10, 8, 10, 4),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
           ),
         ],
       ),
@@ -92,6 +104,7 @@ class FlexStandingsTable extends StatelessWidget {
         ),
         const SizedBox(),
         hdr('Игрок', alignment: Alignment.centerLeft),
+        if (extraColumn != null) hdr(extraColumn!.$1),
         hdr('В'),
         hdr('П'),
         hdr('Н'),
@@ -190,7 +203,10 @@ class FlexStandingsTable extends StatelessWidget {
         cell(
           pair == null
               ? ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 240),
+                  constraints: BoxConstraints(
+                    minWidth: nameMinWidth,
+                    maxWidth: 240,
+                  ),
                   child: StandingsName(
                     name: playerName ?? '—',
                     color: isMe ? AppTheme.accent : null,
@@ -215,7 +231,10 @@ class FlexStandingsTable extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 240),
+                              constraints: BoxConstraints(
+                                minWidth: nameMinWidth,
+                                maxWidth: 240,
+                              ),
                               child: Text(
                                 (pl['name'] as String?) ?? '—',
                                 maxLines: 1,
@@ -245,6 +264,17 @@ class FlexStandingsTable extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
           alignment: Alignment.centerLeft,
         ),
+        if (extraColumn != null)
+          cell(
+            Text(
+              extraColumn!.$3(p),
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         // Победы / поражения / ничьи — первыми, как в остальных таблицах
         cell(
           Text(

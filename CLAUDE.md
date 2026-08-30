@@ -45,6 +45,19 @@ flutter test test/widget_test.dart
 - Material Design 3
 - Minimal dependencies (only cupertino_icons)
 
+## Design System
+
+Правила вёрстки — в `docs/DESIGN_SYSTEM.md`: токены и шкалы (отступы,
+скругления, шрифт), каталог готовых виджетов, рецепты карточки, строки списка,
+таблицы очков, кнопок, диалогов, шторок и пустых состояний.
+
+Кратко: чекбоксы только через `AppCheckbox`, сворачиваемые списки —
+`AppExpandableSection`, кнопка «назад» — `AppBackButton`, сообщения —
+`showAppAlert` (не `SnackBar`), таблицы очков — `FlexStandingsTable`, место —
+`Medal` (1–3) или число (4+), аватар — `PlayerAvatar`, все строки через
+`AppLocalizations`. Новый общий элемент кладём в `lib/widgets/` и описываем
+в том же документе.
+
 ## Key Files
 
 - `lib/app.dart` - Navigation structure and screen routing

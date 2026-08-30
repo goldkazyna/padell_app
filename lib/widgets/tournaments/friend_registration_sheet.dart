@@ -9,6 +9,7 @@ import '../../providers/tournament_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../utils/rating_formatter.dart';
+import '../player_avatar.dart';
 
 /// Bottom-sheet «Записаться с другом» для одиночных турниров.
 /// Ищет другого игрока по номеру телефона, выбирает и регистрирует
@@ -283,23 +284,11 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isSelected ? AppTheme.accent : const Color(0xFF2A3330),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  player.initials,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+            PlayerAvatar(
+              name: player.name,
+              avatarUrl: player.avatar,
+              circle: true,
+              highlighted: isSelected,
             ),
             const SizedBox(width: 12),
             Expanded(

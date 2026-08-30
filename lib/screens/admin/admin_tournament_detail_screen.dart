@@ -33,6 +33,7 @@ import 'admin_jpi_seeding_screen.dart';
 import 'admin_koc_create_pairs_screen.dart';
 import 'admin_pair_registration_screen.dart';
 import 'admin_pairing_screen.dart';
+import '../../widgets/player_avatar.dart';
 
 /// Этап 3a/3b — экран управления существующим турниром.
 /// Таб «Матчи» — заглушка до 3c.
@@ -132,6 +133,7 @@ class _AdminTournamentDetailScreenState
   bool _isPaired = false;
 
   bool _saving = false;
+  bool _savingDescription = false;
   bool _starting = false;
   bool _deleting = false;
 
@@ -1599,8 +1601,15 @@ class _AdminTournamentDetailScreenState
                 _description,
                 hint: 'Можно оставить пустым',
                 maxLines: 3,
-                enabled: !disabled,
+                // Описание правится всегда, даже у завершённого турнира:
+                // на сыгранное оно не влияет, а дописать итоги хочется
+                // как раз после турнира.
+                enabled: t.tournamentsFullAccess,
               ),
+              if (disabled && t.tournamentsFullAccess) ...[
+                const SizedBox(height: 10),
+                _descriptionSaveButton(t),
+              ],
               // Призовой турнир — та же настройка, что при создании.
               _boolTile(
                 label: 'Призовой турнир',
@@ -2447,7 +2456,7 @@ class _AdminTournamentDetailScreenState
   Widget _buildLockedNotice({bool noFullAccess = false}) {
     final text = noFullAccess
         ? 'У вас нет прав на редактирование турниров. Обратитесь к админу клуба.'
-        : 'Турнир уже идёт или завершён — редактирование недоступно';
+        : 'Турнир уже идёт или завершён — менять можно только описание';
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -2703,6 +2712,48 @@ class _AdminTournamentDetailScreenState
         ],
       ),
     );
+  }
+
+  /// Отдельная кнопка сохранения описания — для турниров, где общая
+  /// кнопка «Сохранить» уже недоступна.
+  Widget _descriptionSaveButton(AdminTournamentDetail t) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        onPressed: _savingDescription ? null : () => _saveDescription(t),
+        icon: _savingDescription
+            ? const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: AppTheme.accent),
+              )
+            : const Icon(Icons.save_outlined, size: 18, color: AppTheme.accent),
+        label: Text(
+          _savingDescription ? 'Сохранение...' : 'Сохранить описание',
+          style: const TextStyle(color: AppTheme.accent, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _saveDescription(AdminTournamentDetail t) async {
+    final text = _description.text.trim();
+    setState(() => _savingDescription = true);
+    try {
+      await context
+          .read<AdminService>()
+          .updateTournamentDescription(t.id, text.isEmpty ? null : text);
+      if (!mounted) return;
+      await _load();
+      if (!mounted) return;
+      await showAppAlert(context, 'Описание сохранено');
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    } finally {
+      if (mounted) setState(() => _savingDescription = false);
+    }
   }
 
   Widget _buildActions(AdminTournamentDetail t) {
@@ -3140,6 +3191,10 @@ class _AdminTournamentDetailScreenState
           isFull: isFull,
           onAdd: r.canModify ? _openAddPlayer : null,
         ),
+        if (_leagueBanner() != null) ...[
+          const SizedBox(height: 12),
+          _leagueBanner()!,
+        ],
         if (pending.isNotEmpty) ...[
           const SizedBox(height: 12),
           _buildPendingBlock(pending),
@@ -3157,6 +3212,69 @@ class _AdminTournamentDetailScreenState
         ],
       ],
     );
+  }
+
+  /// Плашка этапа лиги: состав приехал из лиги при создании этапа, и тех,
+  /// кого записали в лигу позже, надо досыпать вручную — иначе они
+  /// появятся только в следующем этапе.
+  Widget? _leagueBanner() {
+    final league = _t?.league;
+    if (league == null) return null;
+
+    final name = league['name'] as String? ?? 'лиги';
+    final stage = (league['stage'] as num?)?.toInt();
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        color: AppTheme.accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.22)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.emoji_events_outlined, color: AppTheme.accent, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              stage != null ? 'Этап $stage лиги «$name»' : 'Этап лиги «$name»',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            ),
+          ),
+          if (_t?.status == 'open')
+            TextButton(
+              onPressed: _refillFromLeague,
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text(
+                'Обновить состав',
+                style: TextStyle(
+                    color: AppTheme.accent, fontSize: 13, fontWeight: FontWeight.w700),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _refillFromLeague() async {
+    try {
+      final added = await context.read<AdminService>().refillFromLeague(widget.tournamentId);
+      await _refreshAfterAction();
+      if (!mounted) return;
+      await showAppAlert(
+        context,
+        added > 0
+            ? 'Добавлено из состава лиги: $added'
+            : 'Все игроки лиги уже в этапе',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    }
   }
 
   /// Блок «Лист ожидания» — синий, с возможностью удалить.
@@ -7199,23 +7317,13 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardRaised,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      _initialsOf(p.name),
-                      style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
+                // Фото игрока — сервер отдаёт его и в поиске, раньше здесь
+                // всегда рисовались инициалы.
+                PlayerAvatar(
+                  name: p.name,
+                  avatarUrl: p.avatarUrl,
+                  size: 36,
+                  circle: true,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -7258,12 +7366,6 @@ class _PlayerSearchSheetState extends State<_PlayerSearchSheet> {
     );
   }
 
-  String _initialsOf(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
-  }
 }
 
 // =============================================================================

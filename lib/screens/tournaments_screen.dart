@@ -16,6 +16,7 @@ import 'tournament_live_kingofcourt_screen.dart';
 import 'tournament_live_justpadelit_screen.dart';
 import 'tournament_live_bali_koc_screen.dart';
 import 'club_detail_screen.dart';
+import '../widgets/tournaments/leagues_strip.dart';
 
 class TournamentsScreen extends StatefulWidget {
   final int? initialClubId;
@@ -582,6 +583,10 @@ class _OpenTab extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.only(bottom: 90),
             children: [
+              // Лиги идут над турнирами: в них записываются один раз на всю
+              // серию, поэтому строкой в общем списке они читались бы как
+              // обычный турнир.
+              const LeaguesStrip(),
               if (forYou.isNotEmpty) ...[
                 _buildForYouHeader(context, forYou.length),
                 for (final clubId in forYouClubOrder)

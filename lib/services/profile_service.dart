@@ -104,6 +104,59 @@ class ProfileResult {
   ProfileResult({required this.success, this.message, this.data});
 }
 
+/// Партнёр по матчам: с кем и с каким результатом играли вместе.
+class PartnerStat {
+  final int userId;
+  final String name;
+  final String? avatar;
+  final int games;
+  final int wins;
+  final int losses;
+  final int draws;
+  final int winrate;
+
+  const PartnerStat({
+    required this.userId,
+    required this.name,
+    required this.games,
+    required this.wins,
+    this.avatar,
+    this.losses = 0,
+    this.draws = 0,
+    this.winrate = 0,
+  });
+
+  factory PartnerStat.fromJson(Map<String, dynamic> json) => PartnerStat(
+        userId: (json['user_id'] as num?)?.toInt() ?? 0,
+        name: json['name'] as String? ?? 'Игрок',
+        avatar: json['avatar'] as String?,
+        games: (json['games'] as num?)?.toInt() ?? 0,
+        wins: (json['wins'] as num?)?.toInt() ?? 0,
+        losses: (json['losses'] as num?)?.toInt() ?? 0,
+        draws: (json['draws'] as num?)?.toInt() ?? 0,
+        winrate: (json['winrate'] as num?)?.toInt() ?? 0,
+      );
+}
+
+/// Ответ ручки «с кем играю».
+class PlayerPartners {
+  final PartnerStat? best;
+  final List<PartnerStat> top;
+  final int partnersCount;
+
+  const PlayerPartners({this.best, this.top = const [], this.partnersCount = 0});
+
+  factory PlayerPartners.fromJson(Map<String, dynamic> json) => PlayerPartners(
+        best: json['best'] is Map<String, dynamic>
+            ? PartnerStat.fromJson(json['best'] as Map<String, dynamic>)
+            : null,
+        top: ((json['top'] as List<dynamic>?) ?? const [])
+            .map((p) => PartnerStat.fromJson(p as Map<String, dynamic>))
+            .toList(),
+        partnersCount: (json['partners_count'] as num?)?.toInt() ?? 0,
+      );
+}
+
 class ProfileService {
   final ApiService _api;
   final StorageService _storage;
@@ -141,6 +194,20 @@ class ProfileService {
     } catch (e) {
       return ProfileResult(success: false, message: 'Ошибка загрузки профиля');
     }
+  }
+
+  /// С кем игрок играет: лучший партнёр и топ остальных.
+  ///
+  /// Отдельным запросом, а не внутри профиля: на сервере расчёт поднимает
+  /// всю историю матчей, и профиль из-за него открывался бы дольше.
+  Future<PlayerPartners?> getPartners() async {
+    final token = await _storage.getToken();
+    if (token == null) return null;
+
+    final response = await _api.get('/profile/partners', token);
+    if (response['success'] != true) return null;
+
+    return PlayerPartners.fromJson(response);
   }
 
   Future<List<Tournament>> getTournamentHistory() async {

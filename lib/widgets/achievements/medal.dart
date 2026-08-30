@@ -111,11 +111,18 @@ class Medal extends StatelessWidget {
   Widget _engraving(Color ink) {
     final number = medalNumbers[achievement.code];
     if (number != null) {
+      // Чем длиннее число, тем мельче гравировка: «500» и «1.7K» при размере
+      // от «50» вылезали бы за кромку медали.
+      final scale = switch (number.length) {
+        <= 2 => .40,
+        3 => .32,
+        _ => .27,
+      };
       return Text(
         number,
         style: TextStyle(
           color: ink,
-          fontSize: size * .40,
+          fontSize: size * scale,
           fontWeight: FontWeight.w900,
           letterSpacing: -size * .012,
           height: 1,

@@ -7,6 +7,7 @@ import '../../services/storage_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../utils/city_l10n.dart';
+import '../../utils/cities.dart';
 
 /// Экран регистрации нового пользователя после входа по SMS.
 /// Собирает ФИО, Город, Дату рождения и Пол (все обязательны) и сохраняет
@@ -25,7 +26,7 @@ class _SmsRegistrationScreenState extends State<SmsRegistrationScreen> {
   String? _gender; // 'male' | 'female'
   bool _isSaving = false;
 
-  static const _cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Актау', 'Атырау', 'Костанай'];
+  static const _cities = kCities;
 
   @override
   void dispose() {

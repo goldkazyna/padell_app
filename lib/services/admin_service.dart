@@ -295,6 +295,19 @@ class AdminService {
   }
 
   /// Обновить редактируемые поля турнира.
+  /// Описание правится отдельным запросом: менять его разрешено в любом
+  /// статусе, включая завершённый турнир, а полное редактирование — нет.
+  Future<String?> updateTournamentDescription(int id, String? description) async {
+    final token = await _storage.getToken();
+    final response = await _api.put(
+      '/admin/tournaments/$id/description',
+      {'description': description},
+      token,
+    );
+
+    return response['description'] as String?;
+  }
+
   Future<AdminTournamentDetail> updateTournament(
     int id, {
     required String name,
@@ -516,6 +529,19 @@ class AdminService {
       const {},
       token,
     );
+  }
+
+  /// Досыпать в этап лиги тех, кого добавили в лигу после его создания.
+  /// Возвращает, сколько игроков добавилось.
+  Future<int> refillFromLeague(int tournamentId) async {
+    final token = await _storage.getToken();
+    final response = await _api.post(
+      '/admin/tournaments/$tournamentId/league/refill',
+      const {},
+      token,
+    );
+
+    return (response['added'] as num?)?.toInt() ?? 0;
   }
 
   Future<void> removeParticipant(int tournamentId, int userId) async {

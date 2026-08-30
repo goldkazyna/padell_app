@@ -4,6 +4,9 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import '../utils/city_l10n.dart';
+import '../widgets/app_checkbox.dart';
+import '../widgets/app_expandable_section.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -24,6 +27,8 @@ class _NotificationSettingsScreenState
   bool _notifyOrganizerChat = true;
   List<int>? _notifyClubIds; // null = все клубы
   List<Map<String, dynamic>> _clubs = [];
+  List<String> _cities = [];          // все города платформы
+  List<String> _citiesOff = [];       // выключенные пользователем
   bool _isLoading = true;
   bool _isSaving = false;
   String? _error;
@@ -52,11 +57,13 @@ class _NotificationSettingsScreenState
             ? List<int>.from(response['notify_club_ids'])
             : null;
         _clubs = List<Map<String, dynamic>>.from(response['clubs'] ?? []);
+        _cities = List<String>.from(response['cities'] ?? const []);
+        _citiesOff = List<String>.from(response['notify_cities_off'] ?? const []);
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _error = 'error';
+        _error = e.toString();
         _isLoading = false;
       });
     }
@@ -151,6 +158,71 @@ class _NotificationSettingsScreenState
     }
   }
 
+  /// Снять галочку = выключить город. Храним именно выключенные:
+  /// новый город на платформе тогда включён у всех по умолчанию.
+  Future<void> _toggleCity(String city) async {
+    final previous = List<String>.from(_citiesOff);
+
+    setState(() {
+      if (_citiesOff.contains(city)) {
+        _citiesOff.remove(city);
+      } else {
+        _citiesOff.add(city);
+      }
+    });
+
+    try {
+      final token = await _storageService.getToken();
+      await _apiService.post(
+        '/notifications/settings',
+        {'notify_cities_off': _citiesOff},
+        token,
+      );
+    } catch (e) {
+      setState(() => _citiesOff = previous);
+    }
+  }
+
+  /// Сводка в свёрнутом виде: по ней видно, надо ли открывать список.
+  String _citiesSummary(BuildContext context) {
+    if (_citiesOff.isEmpty) return AppLocalizations.of(context)!.notifyAllCities;
+
+    return _citiesOff.map((c) => localizeCity(context, c)).join(', ');
+  }
+
+  String _clubsSummary(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    if (_notifyClubIds == null) return l10n.notifyAllClubs;
+
+    return l10n.notifyClubsChosen(_notifyClubIds!.length, _clubs.length);
+  }
+
+  Widget _buildCityRow(String city) {
+    final enabled = !_citiesOff.contains(city);
+
+    return InkWell(
+      onTap: () => _toggleCity(city),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                localizeCity(context, city),
+                style: TextStyle(
+                  color: enabled ? AppTheme.textPrimary : AppTheme.textSecondary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            AppCheckbox(checked: enabled),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _toggleClub(int clubId) async {
     final oldIds = _notifyClubIds != null ? List<int>.from(_notifyClubIds!) : null;
 
@@ -231,22 +303,7 @@ class _NotificationSettingsScreenState
                 ),
               ),
             ),
-            // Checkbox
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: selected ? AppTheme.accent : Colors.transparent,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: selected ? AppTheme.accent : const Color(0xFF3A3A3A),
-                  width: 1.5,
-                ),
-              ),
-              child: selected
-                  ? const Icon(Icons.check, color: Colors.black, size: 16)
-                  : null,
-            ),
+            AppCheckbox(checked: selected),
           ],
         ),
       ),
@@ -339,6 +396,18 @@ class _NotificationSettingsScreenState
                         style: TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          _error!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppTheme.textSecondary.withValues(alpha: 0.6),
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -583,45 +652,31 @@ class _NotificationSettingsScreenState
                         ),
                       ),
 
+                      // Города
+                      if (_cities.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        AppExpandableSection(
+                          title: AppLocalizations.of(context)!.notifyCitiesTitle,
+                          summary: _citiesSummary(context),
+                          description:
+                              AppLocalizations.of(context)!.notifyCitiesDesc,
+                          children: [
+                            for (final city in _cities) _buildCityRow(city),
+                          ],
+                        ),
+                      ],
+
                       // Клубы
                       if (_clubs.isNotEmpty) ...[
-                        const SizedBox(height: 20),
-                        Text(
-                          AppLocalizations.of(context)!.notifyClubsTitle,
-                          style: TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          AppLocalizations.of(context)!.notifyClubsDesc,
-                          style: TextStyle(
-                            color: AppTheme.textSecondary,
-                            fontSize: 13,
-                          ),
-                        ),
                         const SizedBox(height: 12),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: AppTheme.card,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: const Color(0xFF2A3330),
-                              width: 0.5,
-                            ),
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: Column(
-                            children: [
-                              for (int i = 0; i < _clubs.length; i++) ...[
-                                if (i > 0)
-                                  const Divider(height: 1, color: Color(0xFF2A3330)),
-                                _buildClubRow(_clubs[i]),
-                              ],
-                            ],
-                          ),
+                        AppExpandableSection(
+                          title: AppLocalizations.of(context)!.notifyClubsTitle,
+                          summary: _clubsSummary(context),
+                          description:
+                              AppLocalizations.of(context)!.notifyClubsDesc,
+                          children: [
+                            for (final club in _clubs) _buildClubRow(club),
+                          ],
                         ),
                       ],
                       const SizedBox(height: 24),

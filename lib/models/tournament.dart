@@ -1,3 +1,5 @@
+import 'league.dart';
+
 import 'package:flutter/material.dart';
 
 import 'tournament_chat.dart';
@@ -116,6 +118,7 @@ class PartnerSearchResult {
   final double level;
   final int rating;
   final String? phone;
+  final String? avatar;
 
   PartnerSearchResult({
     required this.id,
@@ -123,6 +126,7 @@ class PartnerSearchResult {
     required this.level,
     required this.rating,
     this.phone,
+    this.avatar,
   });
 
   factory PartnerSearchResult.fromJson(Map<String, dynamic> json) {
@@ -140,6 +144,7 @@ class PartnerSearchResult {
       level: parsedLevel,
       rating: json['rating'] as int? ?? 0,
       phone: json['phone'] as String?,
+      avatar: json['avatar'] as String?,
     );
   }
 
@@ -287,6 +292,9 @@ class Tournament {
   final DateTime datetime;
   final DateTime? createdAt; // дата создания турнира (для сортировки)
   final int? durationHours; // длительность турнира в часах (необязательное поле)
+
+  /// Лига, этапом которой является турнир. У обычного турнира — null.
+  final TournamentLeagueRef? league;
   final String type;
   final String typeName;
   final String? venueClubName; // клуб-площадка (где играют), null если не задан
@@ -324,6 +332,7 @@ class Tournament {
   final TournamentChat? chat;
 
   Tournament({
+    this.league,
     required this.id,
     required this.name,
     this.description,
@@ -383,6 +392,7 @@ class Tournament {
       soloRegistrationFromApi ?? (type != 'team' || pairingMode == 'admin');
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
+    final leagueJson = json['league'] as Map<String, dynamic>?;
     List<TournamentParticipant> parsedParticipants = [];
     try {
       final participantsList = json['participants'] as List<dynamic>?;
@@ -428,6 +438,7 @@ class Tournament {
     } catch (_) {}
 
     return Tournament(
+      league: leagueJson != null ? TournamentLeagueRef.fromJson(leagueJson) : null,
       id: json['id'] as int,
       name: json['name'] as String,
       description: json['description'] as String?,

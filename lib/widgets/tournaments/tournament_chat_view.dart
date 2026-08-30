@@ -73,6 +73,9 @@ class _TournamentChatViewState extends State<TournamentChatView>
   Future<void> _send() async {
     final text = _controller.text;
     if (text.trim().isEmpty) return;
+    // Второй тап, пока идёт отправка, создавал второе такое же сообщение
+    // в чате и второй пуш участникам.
+    if (_provider.isSending) return;
     final ok = await _provider.send(widget.tournamentId, text);
     if (!mounted) return;
     if (ok) {
@@ -309,14 +312,25 @@ class _TournamentChatViewState extends State<TournamentChatView>
               ),
             ),
             const SizedBox(width: 8),
-            GestureDetector(
-              onTap: _send,
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                    color: AppTheme.accent, shape: BoxShape.circle),
-                child: const Icon(Icons.send, color: Colors.white, size: 20),
+            Consumer<ChatProvider>(
+              builder: (_, p, _) => GestureDetector(
+                onTap: p.isSending ? null : _send,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                      color: p.isSending
+                          ? AppTheme.accent.withValues(alpha: 0.4)
+                          : AppTheme.accent,
+                      shape: BoxShape.circle),
+                  child: p.isSending
+                      ? const Padding(
+                          padding: EdgeInsets.all(13),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Icon(Icons.send, color: Colors.white, size: 20),
+                ),
               ),
             ),
           ],

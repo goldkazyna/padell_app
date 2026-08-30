@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../services/push_notification_service.dart';
 import '../../theme/app_theme.dart';
 import 'email_login_screen.dart';
+import '../../utils/cities.dart';
 
 class EmailRegisterScreen extends StatefulWidget {
   const EmailRegisterScreen({super.key});
@@ -25,7 +26,7 @@ class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
   String _phone = '';
   String? _city;
 
-  static const _cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Актау', 'Атырау', 'Костанай'];
+  static const _cities = kCities;
 
   @override
   void dispose() {

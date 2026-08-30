@@ -5,6 +5,7 @@ import '../services/achievement_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/achievements/achievement_badge.dart';
 import '../widgets/achievements/achievement_sheet.dart';
+import '../widgets/achievements/medal_art.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/floating_tab_bar.dart';
 
@@ -109,27 +110,76 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 20),
-        // Порядок групп задан явно, чтобы «Первые шаги» всегда были сверху.
-        for (final entry in achievementGroups.entries)
-          ..._group(entry.value, items.where((a) => a.group == entry.key).toList()),
+        const SizedBox(height: 6),
+        Text(
+          'Чем ниже раздел, тем реже значок',
+          style: TextStyle(color: AppTheme.textDim, fontSize: 12),
+        ),
+        const SizedBox(height: 18),
+        // Разделы по сложности, а не по теме: цвет медали и был главным
+        // вопросом игроков — теперь он и есть заголовок раздела.
+        for (final entry in achievementTiers.entries)
+          ..._tier(entry.key, entry.value,
+              items.where((a) => a.tier == entry.key).toList()),
       ],
     );
   }
 
-  List<Widget> _group(String title, List<Achievement> items) {
+  List<Widget> _tier(String tier, String explain, List<Achievement> items) {
     if (items.isEmpty) return const [];
 
+    final metal = MedalMetal.of(tier);
+    final done = items.where((a) => a.isUnlocked).length;
+
     return [
-      Text(
-        title,
-        style: TextStyle(
-          color: AppTheme.textPrimary,
-          fontSize: 15,
-          fontWeight: FontWeight.w800,
-        ),
+      Row(
+        children: [
+          // Кружок того же металла, что и медали раздела.
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [metal.light, metal.dark],
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            MedalMetal.nameOf(tier),
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0x0FFFFFFF),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '$done из ${items.length}',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: 4),
+      Text(
+        explain,
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 12.5, height: 1.35),
+      ),
+      const SizedBox(height: 14),
       Wrap(
         spacing: 10,
         runSpacing: 20,
