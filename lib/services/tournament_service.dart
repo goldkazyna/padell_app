@@ -75,6 +75,30 @@ class TournamentService {
     return response['message'] as String;
   }
 
+  // === Оплата участия ===
+
+  /// Создать оплату участия: бэкенд отдаёт ссылку на checkout Plexy.
+  /// [friendUserId] — платим сразу за двоих.
+  Future<TournamentPaymentStart> startPayment(int tournamentId, String token,
+      {int? friendUserId}) async {
+    final response = await _api.post(
+      '/tournaments/$tournamentId/pay',
+      {if (friendUserId != null) 'friend_user_id': friendUserId},
+      token,
+    );
+    return TournamentPaymentStart.fromJson(response);
+  }
+
+  /// Оплачено ли: спрашиваем свой бэк, а тот — шлюз. Ждать вебхук нельзя,
+  /// человек стоит перед экраном.
+  Future<bool> isPaymentPaid(int tournamentId, int paymentId, String token) async {
+    final response = await _api.get(
+      '/tournaments/$tournamentId/payment-status?payment_id=$paymentId',
+      token,
+    );
+    return response['paid'] == true;
+  }
+
   // === Team registration ===
 
   Future<List<PartnerSearchResult>> searchPartner(int tournamentId, String query, String token) async {
@@ -122,6 +146,35 @@ class TournamentService {
     final response = await _api.post('/tournaments/$tournamentId/unsubscribe', {}, token);
     return response['message'] as String;
   }
+}
+
+/// Ответ на «начать оплату»: ссылка на checkout и id платежа для опроса.
+class TournamentPaymentStart {
+  final bool success;
+  final String message;
+  final int? paymentId;
+  final String? paymentUrl;
+  final double amount;
+  final int playersCount;
+
+  const TournamentPaymentStart({
+    required this.success,
+    this.message = '',
+    this.paymentId,
+    this.paymentUrl,
+    this.amount = 0,
+    this.playersCount = 1,
+  });
+
+  factory TournamentPaymentStart.fromJson(Map<String, dynamic> json) =>
+      TournamentPaymentStart(
+        success: json['success'] == true,
+        message: (json['message'] as String?) ?? '',
+        paymentId: json['payment_id'] is int ? json['payment_id'] as int : null,
+        paymentUrl: json['payment_url'] as String?,
+        amount: (json['amount'] as num?)?.toDouble() ?? 0,
+        playersCount: json['players_count'] is int ? json['players_count'] as int : 1,
+      );
 }
 
 class RegisterResult {

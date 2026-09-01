@@ -67,10 +67,28 @@ class GameCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
 
-            // Level
-            _buildMetaRow(
-              Icons.trending_up,
-              game.levelText,
+            // Level. Игры видно все, поэтому рядом честная пометка, если
+            // уровень не мой: решение всё равно за организатором.
+            Row(
+              children: [
+                Expanded(child: _buildMetaRow(Icons.trending_up, game.levelText)),
+                if (!game.levelMatches)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppTheme.orange.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'не ваш уровень',
+                      style: TextStyle(
+                        color: AppTheme.orange,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
 

@@ -731,14 +731,10 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
+            // Шапки нет: «назад» теперь в самом экране турниров, рядом с
+            // заголовком — иначе стрелок было бы две.
             builder: (_) => Scaffold(
               backgroundColor: AppTheme.background,
-              appBar: AppBar(
-                backgroundColor: AppTheme.background,
-                foregroundColor: AppTheme.textPrimary,
-                elevation: 0,
-                leading: const BackButton(),
-              ),
               body: TournamentsScreen(initialClubId: club.id),
             ),
           ),

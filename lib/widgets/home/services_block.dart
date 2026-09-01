@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
+import '../../providers/game_provider.dart';
 import '../../services/training_service.dart';
 import '../../utils/app_alert.dart';
 import '../../utils/profile_incomplete_guard.dart';
-import '../../screens/club_select_screen.dart';
+import '../../screens/leagues_screen.dart';
 import '../../screens/clubs_list_screen.dart';
 import '../../screens/club_cards_screen.dart';
 import '../../screens/create_game_screen.dart';
@@ -40,10 +41,14 @@ class _ServicesBlockState extends State<ServicesBlock> {
   /// иначе бейдж показывает число, которого уже нет.
   int _availableTrainings = 0;
 
+  /// Сколько игр в ленте — тем же бейджем, что у тренировок.
+  int _openGames = 0;
+
   @override
   void initState() {
     super.initState();
     _loadTrainings();
+    _loadGames();
   }
 
   @override
@@ -51,6 +56,7 @@ class _ServicesBlockState extends State<ServicesBlock> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.refreshTick != widget.refreshTick) {
       _loadTrainings();
+      _loadGames();
     }
   }
 
@@ -58,6 +64,12 @@ class _ServicesBlockState extends State<ServicesBlock> {
     final counts = await context.read<TrainingService>().getCounts();
     if (!mounted) return;
     setState(() => _availableTrainings = counts.available);
+  }
+
+  Future<void> _loadGames() async {
+    final count = await context.read<GameProvider>().countFeed();
+    if (!mounted) return;
+    setState(() => _openGames = count);
   }
 
   Future<void> _openTrainings() async {
@@ -75,10 +87,12 @@ class _ServicesBlockState extends State<ServicesBlock> {
 
     final items = <_ServiceData>[
       _ServiceData(
-        icon: Icons.calendar_month_outlined,
-        label: l.serviceBooking,
+        // Та же иконка, что у раздела «Лиги» в турнирах: одна вещь —
+        // один значок, иначе плитка и раздел читаются как разное.
+        icon: Icons.leaderboard_outlined,
+        label: l.leaguesTitle,
         onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const ClubSelectScreen())),
+            MaterialPageRoute(builder: (_) => const LeaguesScreen())),
       ),
       _ServiceData(
         icon: Icons.apartment_outlined,
@@ -113,10 +127,13 @@ class _ServicesBlockState extends State<ServicesBlock> {
       _ServiceData(
         icon: Icons.sports_esports_outlined,
         label: l.serviceGames,
+        // Игр нет — бейджа нет: ноль в красном кружке зовёт зря.
+        badge: _openGames > 0 ? '$_openGames' : '',
         onTap: () {
           if (!ensureProfileComplete(context)) return;
           Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const GamesScreen()));
+              MaterialPageRoute(builder: (_) => const GamesScreen()))
+              .then((_) => _loadGames());
         },
       ),
       _ServiceData(

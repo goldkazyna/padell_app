@@ -23,6 +23,8 @@ import '../widgets/tournaments/team_list_section.dart';
 import '../widgets/tournaments/team_info_card.dart';
 import '../widgets/tournaments/team_registration_sheet.dart';
 import '../widgets/tournaments/friend_registration_sheet.dart';
+import '../widgets/tournaments/tournament_pay_button.dart';
+import 'payment_webview_screen.dart';
 import '../widgets/verified_badge.dart';
 import 'player_profile_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -182,6 +184,14 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                               tournament.club.paymentUrl != null &&
                               !_paymentDeadlinePassed(tournament))
                             _buildPaymentButton(tournament),
+                          // Оплата участия — там же, где раньше была кнопка
+                          // оплаты по ссылке клуба: сразу под ценой.
+                          if (_canPayForEntry(tournament))
+                            TournamentPayButton(
+                              payment: tournament.payment!,
+                              onPay: () => _onPay(tournament.id),
+                              onPayWithFriend: () => _onPayWithFriend(tournament.id),
+                            ),
                           const SizedBox(height: 28),
                           if (!tournament.usesSoloRegistration) ...[
                             TeamListSection(
@@ -1323,6 +1333,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     final orgInitials = _getInitials(orgName);
     final orgLogo = t.club.logo;
     final orgTelegramUrl = t.club.telegramUrl ?? '';
+    final orgWhatsapp = t.club.whatsappUrl ?? '';
 
     // Виджет с инициалами (используется как основной или fallback)
     final initialsAvatar = Container(
@@ -1414,11 +1425,27 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     ),
                   ),
 
+                  // Написать в WhatsApp — только если клуб дал номер:
+                  // на городской телефон переписку не пошлёшь.
+                  if (orgWhatsapp.isNotEmpty) ...[
+                    _buildOrganizerAction(
+                      icon: const FaIcon(FontAwesomeIcons.whatsapp,
+                          color: AppTheme.accent, size: 19),
+                      bgColor: AppTheme.cardRaised,
+                      onTap: () async {
+                        final uri = Uri.parse(orgWhatsapp);
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        }
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+
                   // Кнопка звонок
                   if (orgPhone.isNotEmpty)
                     _buildOrganizerAction(
-                      icon: Icons.phone,
-                      color: Colors.white,
+                      icon: const Icon(Icons.phone, color: Colors.white, size: 20),
                       bgColor: AppTheme.accent,
                       onTap: () {
                         final phone = orgPhone.replaceAll(RegExp(r'[^\d+]'), '');
@@ -1473,9 +1500,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     );
   }
 
+  /// Круглая кнопка действия организатора (позвонить, написать).
+  ///
+  /// Иконка приходит виджетом: телефон — материальный, WhatsApp — из
+  /// FontAwesome, и общего типа у них нет.
   Widget _buildOrganizerAction({
-    required IconData icon,
-    required Color color,
+    required Widget icon,
     required Color bgColor,
     required VoidCallback onTap,
   }) {
@@ -1488,7 +1518,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           color: bgColor,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: color, size: 20),
+        child: Center(child: icon),
       ),
     );
   }
@@ -1501,9 +1531,26 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
     return name.isNotEmpty ? name[0].toUpperCase() : '?';
   }
 
+  /// Можно ли оплатить участие прямо сейчас.
+  ///
+  /// Не подходит уровень или турнир закрыт для игрока — платить нельзя:
+  /// сервер всё равно откажет, а деньги уже спишутся.
+  bool _canPayForEntry(Tournament t) {
+    final payment = t.payment;
+    return payment != null &&
+        payment.required &&
+        !t.isRegistered &&
+        t.registrationStatus == null &&
+        t.status == 'open' &&
+        t.spotsLeft > 0 &&
+        t.blockReason == null;
+  }
+
   // === Показывать ли нижнюю кнопку ===
   bool _shouldShowBottomButton(Tournament t, TournamentProvider provider) {
     if (provider.isActionLoading) return true;
+    // Платят кнопкой в карточке — снизу дублировать нечего.
+    if (_canPayForEntry(t)) return false;
     if (t.canRegister && !t.isRegistered) return true;
     if (t.registrationStatus == 'pending') return true;
     if (t.isRegistered) return true;
@@ -1943,6 +1990,67 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         ),
       ),
     );
+  }
+
+  /// Оплатить участие: ссылка → checkout во встроенном экране → проверка.
+  Future<void> _onPay(int id, {int? friendUserId}) async {
+    final l10n = AppLocalizations.of(context)!;
+    final provider = context.read<TournamentProvider>();
+    final start = await provider.startPayment(id, friendUserId: friendUserId);
+
+    if (!mounted) return;
+
+    final url = start.paymentUrl;
+    if (!start.success || url == null || url.isEmpty || start.paymentId == null) {
+      _showResultDialog(false, start.message.isNotEmpty ? start.message : l10n.error);
+      return;
+    }
+
+    final paymentId = start.paymentId!;
+    final paid = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PaymentWebViewScreen(
+          url: url,
+          title: l10n.payTitle,
+          subtitle: provider.selectedTournament?.name,
+          amountLabel: TournamentPayButton.formatPrice(start.amount),
+          onCheckPaid: () => provider.isPaymentPaid(id, paymentId),
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    // Оплату могли закрыть на полпути: спрашиваем ещё раз — вебхук мог
+    // прийти как раз в этот момент.
+    final confirmed = paid == true || await provider.isPaymentPaid(id, paymentId);
+    if (!mounted) return;
+
+    await provider.loadTournamentDetails(id);
+    if (!mounted) return;
+
+    _showResultDialog(confirmed,
+        confirmed ? l10n.payDoneBody : l10n.payFailedBody);
+  }
+
+  /// Оплата за себя и друга: сначала выбираем друга, потом платим за двоих.
+  Future<void> _onPayWithFriend(int id) async {
+    final provider = context.read<TournamentProvider>();
+    provider.clearPartnerSearch();
+
+    final friendId = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ChangeNotifierProvider.value(
+        value: provider,
+        child: FriendRegistrationSheet(tournamentId: id, payMode: true),
+      ),
+    );
+
+    if (friendId == null || !mounted) return;
+    await _onPay(id, friendUserId: friendId);
   }
 
   void _onRegister(int id) async {

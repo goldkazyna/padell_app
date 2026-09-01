@@ -161,14 +161,32 @@ class GameRankingRow {
 class GameClub {
   final int id;
   final String name;
+  final String? city;
+  final String? address;
 
-  GameClub({required this.id, required this.name});
+  GameClub({required this.id, required this.name, this.city, this.address});
 
   factory GameClub.fromJson(Map<String, dynamic> json) {
     return GameClub(
       id: json['id'] as int,
       name: json['name'] as String,
+      city: json['city'] as String?,
+      address: json['address'] as String?,
     );
+  }
+
+  /// Город и адрес одной строкой — под названием в списке выбора.
+  String get place => [city, address]
+      .where((p) => p != null && p.trim().isNotEmpty)
+      .join(', ');
+
+  /// Подходит ли клуб под то, что набрали в поиске: ищем и по названию,
+  /// и по адресу — «Жамбыла» находит клуб не хуже, чем его имя.
+  bool matches(String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return true;
+
+    return '$name ${place}'.toLowerCase().contains(q);
   }
 }
 
@@ -188,6 +206,10 @@ class Game {
   final String visibility;
   final double? ratingMin;
   final double? ratingMax;
+
+  /// Подходит ли мой уровень под диапазон игры. Игру видно в любом
+  /// случае — это подсказка, а не запрет: заявку одобряет организатор.
+  final bool levelMatches;
   final int capacity;
   final int? price;
   final String? description;
@@ -222,6 +244,7 @@ class Game {
     required this.visibility,
     this.ratingMin,
     this.ratingMax,
+    this.levelMatches = true,
     this.capacity = 0,
     this.price,
     this.description,
@@ -318,6 +341,7 @@ class Game {
       visibility: json['visibility'] as String? ?? '',
       ratingMin: parsedRatingMin,
       ratingMax: parsedRatingMax,
+      levelMatches: json['level_matches'] as bool? ?? true,
       capacity: json['capacity'] as int? ?? 0,
       price: json['price'] as int?,
       description: json['description'] as String?,
@@ -357,8 +381,18 @@ class Game {
 
   bool get isPendingConfirmation => isInProgress && scoreLocked;
 
-  String get levelText =>
-      '${ratingMin?.toString() ?? ''} – ${ratingMax?.toString() ?? ''}';
+  /// «2.0 – 3.5», «от 2.0», «до 3.5» или «любой уровень» — раньше при
+  /// пустой границе строка выглядела как «2.0 – » или вовсе « – ».
+  String get levelText {
+    final min = ratingMin;
+    final max = ratingMax;
+
+    if (min == null && max == null) return 'Любой уровень';
+    if (min == null) return 'До $max';
+    if (max == null) return 'От $min';
+
+    return '$min – $max';
+  }
 
   String get dateFormatted {
     const months = [

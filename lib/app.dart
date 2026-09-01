@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,7 @@ import 'providers/auth_provider.dart';
 import 'providers/home_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/main_tab_notifier.dart';
+import 'widgets/main_nav_pill.dart';
 import 'services/push_notification_service.dart';
 import 'services/api_service.dart';
 import 'services/version_service.dart';
@@ -221,63 +221,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     setState(() => _currentIndex = index);
   }
 
-  static const Set<int> _lockedTabs = {1, 2, 3};
-
   void _showProfileIncompleteDialog() {
     showProfileIncompleteDialog(context);
-  }
-
-  /// Один таб кастомного нав-бара. Подпись в FittedBox(scaleDown) — авто-
-  /// ужимается под ширину таба, поэтому влезает целиком при любом системном
-  /// шрифте / масштабе экрана (Material BottomNavigationBar её обрезал).
-  Widget _navItem(
-      int idx, IconData inactive, IconData active, String label, bool incomplete) {
-    final selected = _currentIndex == idx;
-    final locked = incomplete && _lockedTabs.contains(idx);
-    final color = selected ? AppTheme.accent : AppTheme.textSecondary;
-
-    return Expanded(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap: () {
-          if (locked) {
-            _showProfileIncompleteDialog();
-            return;
-          }
-          setState(() => _currentIndex = idx);
-          mainTabNotifier.value = idx;
-          // Проверка версии при переключении вкладки (throttle внутри).
-          _checkForUpdate();
-        },
-        child: Opacity(
-          opacity: locked ? 0.35 : 1.0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(selected ? active : inactive, color: color, size: 24),
-                const SizedBox(height: 4),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -310,52 +255,17 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 left: 16,
                 right: 16,
                 bottom: bottomInset > 0 ? bottomInset : 12,
-                child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.background.withOpacity(0.30), // цвет фона
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(
-                        color: const Color(0xFF2A3330), width: 0.5),
-                  ),
-                  // Подпись авто-ужимается (FittedBox), всегда влезает целиком.
-                  child: MediaQuery.withClampedTextScaling(
-                    maxScaleFactor: 1.0,
-                    // ВАЖНО: высота меню фиксированная — не меняется при
-                    // сворачивании, иначе пересчёт раскладки дёргает ленту при
-                    // скролле. Иконки/подписи анимируются ВНУТРИ этой высоты.
-                    child: SizedBox(
-                      height: 60,
-                      child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            _navItem(0, Icons.home_outlined, Icons.home,
-                                AppLocalizations.of(context)!.navHome, incomplete),
-                            _navItem(1, Icons.emoji_events_outlined,
-                                Icons.emoji_events,
-                                AppLocalizations.of(context)!.navTournaments,
-                                incomplete),
-                            _navItem(2, Icons.calendar_month_outlined,
-                                Icons.calendar_month,
-                                AppLocalizations.of(context)!.navBooking,
-                                incomplete),
-                            _navItem(3, Icons.leaderboard_outlined,
-                                Icons.leaderboard,
-                                AppLocalizations.of(context)!.navRating,
-                                incomplete),
-                            _navItem(4, Icons.person_outline, Icons.person,
-                                AppLocalizations.of(context)!.navProfile,
-                                incomplete),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                child: MainNavPill(
+                  current: _currentIndex,
+                  profileIncomplete: incomplete,
+                  onSelect: (idx) {
+                    setState(() => _currentIndex = idx);
+                    mainTabNotifier.value = idx;
+                    // Проверка версии при переключении вкладки (throttle внутри).
+                    _checkForUpdate();
+                  },
+                  onLockedTap: _showProfileIncompleteDialog,
                 ),
-              ),
               ),
             ],
           ),

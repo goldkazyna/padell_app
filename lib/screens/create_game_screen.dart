@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
+import '../widgets/games/club_picker_sheet.dart';
 import '../providers/game_provider.dart';
 import '../models/game.dart';
 import '../widgets/app_back_button.dart';
@@ -530,47 +531,67 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
     );
   }
 
+  /// Поле выбора клуба. Тап открывает шторку с поиском: выпадающий список
+  /// не прокручивался и искать в нём было нечем.
   Widget _buildClubDropdown() {
     return Consumer<GameProvider>(
       builder: (context, provider, _) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: AppTheme.card,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<GameClub?>(
-              value: _club,
-              isExpanded: true,
-              dropdownColor: AppTheme.card,
-              hint: Row(
-                children: [
-                  Icon(Icons.location_on, color: AppTheme.textSecondary, size: 20),
-                  const SizedBox(width: 10),
-                  Text(
-                    AppLocalizations.of(context)!.gameFieldClub,
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+        final club = _club;
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => _pickClub(provider.clubs),
+          child: Container(
+            height: 52,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.location_on,
+                    color: club == null
+                        ? AppTheme.textSecondary
+                        : AppTheme.accent,
+                    size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    club?.name ??
+                        AppLocalizations.of(context)!.gameFieldClub,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: club == null
+                          ? AppTheme.textSecondary
+                          : AppTheme.textPrimary,
+                      fontSize: 14,
+                    ),
                   ),
-                ],
-              ),
-              icon: Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
-              items: provider.clubs.map((c) => DropdownMenuItem<GameClub?>(
-                value: c,
-                child: Text(
-                  c.name,
-                  style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              )).toList(),
-              onChanged: (v) => setState(() => _club = v),
+                Icon(Icons.keyboard_arrow_down,
+                    color: AppTheme.textSecondary),
+              ],
             ),
           ),
         );
       },
     );
+  }
+
+  Future<void> _pickClub(List<GameClub> clubs) async {
+    final picked = await showGameClubPicker(
+      context,
+      clubs: clubs,
+      selected: _club,
+    );
+
+    if (picked == null || !mounted) return;
+
+    // Псевдо-клуб «убрать» отличаем от закрытой шторки.
+    setState(() => _club = picked.id == clearedClub.id ? null : picked);
   }
 
   Widget _buildLevelDropdown({required double? value, required ValueChanged<double?> onChanged}) {

@@ -215,6 +215,43 @@ class TournamentProvider extends ChangeNotifier {
     }
   }
 
+  // === Оплата участия ===
+
+  /// Начать оплату: получаем ссылку на checkout.
+  Future<TournamentPaymentStart> startPayment(int id, {int? friendUserId}) async {
+    final token = await _storage.getToken();
+    if (token == null) {
+      return const TournamentPaymentStart(success: false, message: 'Нет авторизации');
+    }
+
+    _isActionLoading = true;
+    notifyListeners();
+
+    try {
+      return await _service.startPayment(id, token, friendUserId: friendUserId);
+    } on ApiException catch (e) {
+      return TournamentPaymentStart(success: false, message: e.message);
+    } catch (e) {
+      return TournamentPaymentStart(success: false, message: 'Ошибка: $e');
+    } finally {
+      _isActionLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Прошла ли оплата. Экран оплаты спрашивает это, пока человек платит.
+  Future<bool> isPaymentPaid(int tournamentId, int paymentId) async {
+    final token = await _storage.getToken();
+    if (token == null) return false;
+
+    try {
+      return await _service.isPaymentPaid(tournamentId, paymentId, token);
+    } catch (_) {
+      // Сеть моргнула — спросим на следующем круге опроса.
+      return false;
+    }
+  }
+
   // === Отменить запись ===
 
   Future<({bool success, String message})> cancelRegistration(int id) async {

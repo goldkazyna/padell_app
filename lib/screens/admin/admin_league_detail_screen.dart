@@ -9,6 +9,7 @@ import '../../services/admin_league_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/app_alert.dart';
 import '../../widgets/app_back_button.dart';
+import '../../widgets/app_tabs.dart';
 import '../../widgets/app_checkbox.dart';
 import '../../widgets/flex_standings_table.dart';
 import '../../widgets/player_avatar.dart';
@@ -213,7 +214,7 @@ class _AdminLeagueDetailScreenState extends State<AdminLeagueDetailScreen> {
                     children: [
                       _buildSummary(league!),
                       const SizedBox(height: 14),
-                      _buildTabs(),
+                      _buildTabs(league),
                       const SizedBox(height: 12),
                       if (_tab == 0) ..._buildStandings(league),
                       if (_tab == 1) ..._buildStages(league),
@@ -270,40 +271,13 @@ class _AdminLeagueDetailScreenState extends State<AdminLeagueDetailScreen> {
     );
   }
 
-  Widget _buildTabs() {
-    const labels = ['Таблица', 'Этапы', 'Состав'];
-
-    return Row(
-      children: List.generate(labels.length, (i) {
-        final active = _tab == i;
-        return Padding(
-          padding: EdgeInsets.only(right: i == labels.length - 1 ? 0 : 8),
-          child: GestureDetector(
-            onTap: () => setState(() => _tab = i),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-              decoration: BoxDecoration(
-                color: active ? AppTheme.accent.withValues(alpha: 0.14) : AppTheme.card,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: active
-                      ? AppTheme.accent.withValues(alpha: 0.35)
-                      : const Color(0xFF2A3330),
-                  width: 0.5,
-                ),
-              ),
-              child: Text(
-                labels[i],
-                style: TextStyle(
-                  color: active ? AppTheme.accent : AppTheme.textSecondary,
-                  fontSize: 13.5,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        );
-      }),
+  Widget _buildTabs(League league) {
+    // Те же вкладки, что «Открытые / Мои / Архив» в турнирах.
+    return AppTabs(
+      labels: const ['Таблица', 'Этапы', 'Состав'],
+      counts: [null, league.stages.length, league.roster.length],
+      current: _tab,
+      onChanged: (index) => setState(() => _tab = index),
     );
   }
 

@@ -8,6 +8,8 @@ class Club {
   final int id;
   final String name;
   final String? phone;
+  /// Готовая ссылка «написать в WhatsApp» — null, если номера нет.
+  final String? whatsappUrl;
   final String? address;
   final String? city;
   final String? paymentUrl;
@@ -20,6 +22,7 @@ class Club {
     required this.id,
     required this.name,
     this.phone,
+    this.whatsappUrl,
     this.address,
     this.city,
     this.paymentUrl,
@@ -34,6 +37,7 @@ class Club {
       id: json['id'] as int,
       name: json['name'] as String,
       phone: json['phone'] as String?,
+      whatsappUrl: json['whatsapp_url'] as String?,
       address: json['address'] as String?,
       city: json['city'] as String?,
       paymentUrl: json['payment_url'] as String?,
@@ -279,6 +283,36 @@ class TournamentResult {
   }
 }
 
+/// Онлайн-оплата участия: сколько и чем платить.
+///
+/// Приходит только у турниров, где клуб включил оплату и участие платное.
+/// Если поле пустое — запись бесплатная или идёт через модерацию, как раньше.
+class TournamentPaymentInfo {
+  final bool required;
+  final double amount;
+
+  /// Способы, которые принимает шлюз: card, apple_pay, google_pay.
+  final List<String> methods;
+
+  const TournamentPaymentInfo({
+    required this.required,
+    required this.amount,
+    this.methods = const ['card'],
+  });
+
+  factory TournamentPaymentInfo.fromJson(Map<String, dynamic> json) {
+    return TournamentPaymentInfo(
+      required: json['required'] as bool? ?? false,
+      amount: (json['amount'] as num?)?.toDouble() ?? 0,
+      methods: (json['methods'] as List?)?.map((m) => m.toString()).toList() ??
+          const ['card'],
+    );
+  }
+
+  bool get hasApplePay => methods.contains('apple_pay');
+  bool get hasGooglePay => methods.contains('google_pay');
+}
+
 class Tournament {
   final int id;
   final String name;
@@ -330,6 +364,7 @@ class Tournament {
   final int? waitlistPosition;
   final DateTime? moderationDeadline;
   final TournamentChat? chat;
+  final TournamentPaymentInfo? payment;
 
   Tournament({
     this.league,
@@ -378,6 +413,7 @@ class Tournament {
     this.waitlistPosition,
     this.moderationDeadline,
     this.chat,
+    this.payment,
   });
 
   bool get isTeamTournament => type == 'team';
@@ -493,6 +529,9 @@ class Tournament {
       chat: json['chat'] == null
           ? null
           : TournamentChat.fromJson(json['chat'] as Map<String, dynamic>),
+      payment: json['payment'] == null
+          ? null
+          : TournamentPaymentInfo.fromJson(json['payment'] as Map<String, dynamic>),
     );
   }
 

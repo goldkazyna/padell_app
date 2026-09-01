@@ -1588,6 +1588,96 @@ abstract class AppLocalizations {
   /// **'Записаться'**
   String get registerButton;
 
+  /// No description provided for @leaguesTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лиги'**
+  String get leaguesTitle;
+
+  /// No description provided for @leaguesEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лиг пока нет'**
+  String get leaguesEmpty;
+
+  /// No description provided for @leaguesEmptyHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда клуб запустит лигу, она появится здесь'**
+  String get leaguesEmptyHint;
+
+  /// No description provided for @sectionTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турниры'**
+  String get sectionTournaments;
+
+  /// No description provided for @payParticipation.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплатить участие'**
+  String get payParticipation;
+
+  /// No description provided for @payAmount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплатить {amount}'**
+  String payAmount(String amount);
+
+  /// No description provided for @payForTwo.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплатить за двоих'**
+  String get payForTwo;
+
+  /// No description provided for @payMethodsHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Картой онлайн · Apple Pay · Google Pay'**
+  String get payMethodsHint;
+
+  /// No description provided for @payAfterHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'После оплаты вы сразу в списке участников — без модерации'**
+  String get payAfterHint;
+
+  /// No description provided for @paySecureNote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Безопасная оплата, данные карты остаются у банка'**
+  String get paySecureNote;
+
+  /// No description provided for @payFailedTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплата не завершена'**
+  String get payFailedTitle;
+
+  /// No description provided for @payFailedBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы не записаны — оплата не прошла. Место придержано 20 минут: можно оплатить ещё раз, потом оно освободится'**
+  String get payFailedBody;
+
+  /// No description provided for @payDoneTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы в турнире'**
+  String get payDoneTitle;
+
+  /// No description provided for @payDoneBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплата прошла, место в основном списке'**
+  String get payDoneBody;
+
+  /// No description provided for @payTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплата участия'**
+  String get payTitle;
+
   /// No description provided for @applicationPending.
   ///
   /// In ru, this message translates to:

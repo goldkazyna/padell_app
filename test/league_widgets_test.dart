@@ -193,6 +193,34 @@ void main() {
     expect(plain.verified, isFalse, reason: 'без поля — без галочки');
   });
 
+  test('этап приходит полями турнира и рисуется его карточкой', () {
+    // Этап — обычный турнир: сервер отдаёт те же поля, что в списке
+    // турниров, чтобы в лиге рисовать ту же карточку.
+    final stage = LeagueStage.fromJson({
+      'id': 1390, 'stage': 1, 'name': '1й Этап', 'type': 'americano_flex',
+      'type_name': 'Americano Flex', 'status': 'open', 'status_name': 'Открыт',
+      'start_date': '2026-09-02T01:00:00+00:00', 'datetime': '2026-09-02T01:00:00+00:00',
+      'date': '02.09.2026', 'time': '01:00',
+      'price': 19000, 'min_level': 1, 'max_level': 5,
+      'max_participants': 18, 'participants_count': 17, 'participants': 17,
+      'is_registered': false, 'can_register': true,
+      'club': {'id': 17, 'name': 'DAVAY PADEL', 'city': 'Алматы'},
+    });
+
+    expect(stage.tournament, isNotNull);
+    expect(stage.tournament!.price, 19000);
+    expect(stage.tournament!.maxParticipants, 18);
+    expect(stage.stage, 1);
+  });
+
+  test('старый ответ без полей турнира не ломает экран', () {
+    final stage = LeagueStage.fromJson({
+      'id': 11, 'stage': 2, 'name': 'Этап 2', 'status': 'open', 'status_name': 'Открыт',
+    });
+
+    expect(stage.tournament, isNull, reason: 'рисуем запасной строкой');
+  });
+
   test('этап несёт моё место и очки', () {
     // Медальку за этап рисует лига: из истории турниров этапы убраны.
     final stage = LeagueStage.fromJson({

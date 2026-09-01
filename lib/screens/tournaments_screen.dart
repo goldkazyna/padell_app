@@ -16,7 +16,10 @@ import 'tournament_live_kingofcourt_screen.dart';
 import 'tournament_live_justpadelit_screen.dart';
 import 'tournament_live_bali_koc_screen.dart';
 import 'club_detail_screen.dart';
-import '../widgets/tournaments/leagues_strip.dart';
+import '../providers/main_tab_notifier.dart';
+import '../widgets/app_back_button.dart';
+import '../widgets/app_segmented_tabs.dart';
+import '../widgets/tournaments/leagues_list.dart';
 
 class TournamentsScreen extends StatefulWidget {
   final int? initialClubId;
@@ -29,6 +32,11 @@ class TournamentsScreen extends StatefulWidget {
 
 class _TournamentsScreenState extends State<TournamentsScreen> {
   int _tabIndex = 0;
+
+  /// Раздел экрана: 0 — турниры, 1 — лиги. Лига — не турнир: записываются
+  /// в неё один раз на всю серию, поэтому она живёт своим разделом, а не
+  /// строкой в списке турниров.
+  int _section = 0;
   late TournamentsFilter _filter;
 
   @override
@@ -292,40 +300,68 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Заголовок раздела остаётся: переключатель под ним, а не вместо
+          // него — иначе экран теряет имя. Слева — «назад».
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Text(
-              AppLocalizations.of(context)!.tournaments,
-              style: TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.5,
-              ),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+            child: Row(
+              children: [
+                AppBackButton(onTap: _goBack),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _section == 0
+                        ? AppLocalizations.of(context)!.tournaments
+                        : AppLocalizations.of(context)!.leaguesTitle,
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildTab(AppLocalizations.of(context)!.openTab, 0),
-                    _buildTab(AppLocalizations.of(context)!.myTab, 1),
-                    _buildTab(AppLocalizations.of(context)!.archiveTab, 2),
-                    _buildTab(AppLocalizations.of(context)!.cancelledTab, 3),
-                  ],
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: AppSegmentedTabs(
+              labels: [
+                AppLocalizations.of(context)!.sectionTournaments,
+                AppLocalizations.of(context)!.leaguesTitle,
+              ],
+              icons: const [
+                Icons.emoji_events_outlined,
+                Icons.leaderboard_outlined,
+              ],
+              current: _section,
+              onChanged: (i) => setState(() => _section = i),
+            ),
+          ),
+          if (_section == 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildTab(AppLocalizations.of(context)!.openTab, 0),
+                      _buildTab(AppLocalizations.of(context)!.myTab, 1),
+                      _buildTab(AppLocalizations.of(context)!.archiveTab, 2),
+                      _buildTab(AppLocalizations.of(context)!.cancelledTab, 3),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
           const SizedBox(height: 10),
-          if (_tabIndex == 0) ...[
+          if (_section == 0 && _tabIndex == 0) ...[
             Consumer<TournamentProvider>(
               builder: (_, provider, __) => FilterPills(
                 filter: _filter,
@@ -347,15 +383,17 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
             ),
           ],
           Expanded(
-            child: IndexedStack(
-              index: _tabIndex,
-              children: [
-                _OpenTab(userLevel: _userLevel, filter: _filter),
-                _MyTab(userLevel: _userLevel),
-                _ArchiveTab(userLevel: _userLevel),
-                _CancelledTab(userLevel: _userLevel),
-              ],
-            ),
+            child: _section == 1
+                ? const LeaguesList()
+                : IndexedStack(
+                    index: _tabIndex,
+                    children: [
+                      _OpenTab(userLevel: _userLevel, filter: _filter),
+                      _MyTab(userLevel: _userLevel),
+                      _ArchiveTab(userLevel: _userLevel),
+                      _CancelledTab(userLevel: _userLevel),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -404,6 +442,21 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
         },
       ),
     );
+  }
+
+  /// «Назад» из турниров.
+  ///
+  /// Экран живёт двумя жизнями: вкладкой нижней навигации (закрывать
+  /// нечего — уводим на главную) и отдельным экраном турниров клуба
+  /// (тогда просто закрываем).
+  void _goBack() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+
+    mainTabNotifier.value = 0;
   }
 
   Widget _buildTab(String label, int index) {
@@ -583,10 +636,8 @@ class _OpenTab extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.only(bottom: 90),
             children: [
-              // Лиги идут над турнирами: в них записываются один раз на всю
-              // серию, поэтому строкой в общем списке они читались бы как
-              // обычный турнир.
-              const LeaguesStrip(),
+              // Лиг здесь больше нет — у них свой раздел в переключателе
+              // сверху: в списке турниров лига читалась как турнир.
               if (forYou.isNotEmpty) ...[
                 _buildForYouHeader(context, forYou.length),
                 for (final clubId in forYouClubOrder)

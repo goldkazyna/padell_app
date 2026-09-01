@@ -95,6 +95,47 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     await _handleResult(result);
   }
 
+  /// Отменить свою игру. Спрашиваем подтверждение: у игры могут быть
+  /// участники, которые держали это время.
+  Future<void> _cancelGame(Game game) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Отменить игру?',
+          style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          game.acceptedCount > 1
+              ? 'Участники получат уведомление, что игра отменена.'
+              : 'Игра пропадёт из списка игр.',
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(AppLocalizations.of(context)!.no),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Отменить игру',
+                style: TextStyle(color: AppTheme.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final result = await context.read<GameProvider>().cancelGame(game.id);
+    if (result.success && mounted) {
+      Navigator.pop(context);
+      return;
+    }
+    await _handleResult(result);
+  }
+
   Future<void> _approve(int id, int playerRowId) async {
     final result = await context.read<GameProvider>().approve(id, playerRowId);
     await _handleResult(result);
@@ -871,6 +912,19 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
             label: l10n.gameActionFinish,
             onTap: isLoading ? null : () => _finish(game.id),
             isLoading: isLoading,
+          ),
+        );
+      }
+
+      // Отмена своей игры — последней и приглушённой: доигранную и ту, где
+      // уже утверждают счёт, отменять нельзя, там посчитан рейтинг.
+      if (!game.isFinished && !game.isCancelled && !game.scoreLocked) {
+        buttons.add(const SizedBox(height: 10));
+        buttons.add(
+          _buildOutlineButton(
+            label: 'Отменить игру',
+            color: AppTheme.error,
+            onTap: isLoading ? null : () => _cancelGame(game),
           ),
         );
       }

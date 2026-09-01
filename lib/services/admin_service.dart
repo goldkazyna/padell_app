@@ -531,6 +531,12 @@ class AdminService {
     );
   }
 
+  /// Удалить лишний раунд. Сервер разрешит только последний и без счёта.
+  Future<void> removeRound(int tournamentId, int roundId) async {
+    final token = await _storage.getToken();
+    await _api.delete('/admin/tournaments/$tournamentId/rounds/$roundId', null, token);
+  }
+
   /// Досыпать в этап лиги тех, кого добавили в лигу после его создания.
   /// Возвращает, сколько игроков добавилось.
   Future<int> refillFromLeague(int tournamentId) async {

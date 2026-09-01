@@ -6178,14 +6178,29 @@ class _AdminTournamentDetailScreenState
           ),
           const SizedBox(width: 8),
           _roundStatusBadge(round.status),
-          if (collapsible) ...[
-            const Spacer(),
+          const Spacer(),
+          // «Следующий раунд» жмут на один раз больше, чем нужно, и
+          // пустой раунд не даёт завершить турнир. Убрать можно только
+          // последний и пока в нём нет счёта — так же решает сервер.
+          if (_canDeleteRound(round))
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _removeRound(round),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                child: Icon(
+                  Icons.delete_outline,
+                  size: 18,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ),
+          if (collapsible)
             Icon(
               expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
               size: 20,
               color: AppTheme.textSecondary,
             ),
-          ],
         ],
       ),
     );
@@ -6273,6 +6288,40 @@ class _AdminTournamentDetailScreenState
         ],
       ),
     );
+  }
+
+  /// Раунд можно убрать, если он последний и в нём ещё нет счёта.
+  bool _canDeleteRound(AdminMatchRound round) {
+    // Раунды лежат внутри групп: у большинства форматов группа одна.
+    final rounds = [
+      for (final group in _matches?.groups ?? const <AdminMatchGroup>[]) ...group.rounds,
+    ];
+    if (rounds.isEmpty || rounds.last.id != round.id) return false;
+    if (_t?.status == 'completed') return false;
+
+    return !round.matches.any(
+      (m) => m.status == 'completed' || m.team1.score != null || m.team2.score != null,
+    );
+  }
+
+  Future<void> _removeRound(AdminMatchRound round) async {
+    final ok = await _confirm(
+      title: 'Удалить раунд ${round.roundNumber}?',
+      message: 'Матчи раунда удалятся вместе с ним. Это нельзя отменить.',
+      okText: 'Удалить',
+      destructive: true,
+    );
+    if (!ok || !mounted) return;
+
+    try {
+      await context.read<AdminService>().removeRound(widget.tournamentId, round.id);
+      await _refreshAfterAction();
+      if (!mounted) return;
+      await showAppAlert(context, 'Раунд ${round.roundNumber} удалён');
+    } catch (e) {
+      if (!mounted) return;
+      await showAppAlert(context, '$e', title: 'Ошибка', isError: true);
+    }
   }
 
   Widget _roundStatusBadge(String status) {

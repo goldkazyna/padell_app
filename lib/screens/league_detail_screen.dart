@@ -8,10 +8,14 @@ import '../services/league_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
 import '../utils/tournament_navigation.dart';
+import '../providers/main_tab_notifier.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/main_nav_pill.dart';
+import '../widgets/app_tabs.dart';
 import '../widgets/tournaments/club_logo.dart';
 import '../widgets/flex_standings_table.dart';
 import '../widgets/profile/medal.dart';
+import '../widgets/tournaments/hero_tournament_card.dart';
 import 'tournament_detail_screen.dart';
 
 /// Экран лиги: сводная таблица, этапы, запись.
@@ -106,7 +110,39 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
           overflow: TextOverflow.ellipsis,
         ),
       ),
-      body: _loading
+      // Меню не должно пропадать под ногами: из лиги люди уходят на
+      // главную или в рейтинг, а не «назад-назад-назад».
+      body: Stack(
+        children: [
+          Positioned.fill(child: _buildBody()),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 12,
+            child: MainNavPill(
+              current: 1,
+              onSelect: (idx) {
+                // Возвращаемся к корню и переключаем вкладку: лига
+                // открыта поверх главного экрана.
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                mainTabNotifier.value = idx;
+              },
+              onLockedTap: () {},
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: (league != null && (league.canRegister || league.isRegistered))
+          ? _buildBottomBar(league)
+          : null,
+    );
+  }
+
+  /// Содержимое экрана без плавающего меню.
+  Widget _buildBody() {
+    final league = _league;
+
+    return _loading
           ? const Center(child: CircularProgressIndicator(color: AppTheme.accent))
           : _error != null
               ? _buildError()
@@ -114,23 +150,21 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                   onRefresh: _load,
                   color: AppTheme.accent,
                   // Отступы у блоков, а не у списка: таблице нужна вся
-                  // ширина — иначе имена в ней стоят слишком тесно.
+                  // ширина — иначе имена в ней стоят слишком тесно. Снизу —
+                  // место под плавающее меню.
                   child: ListView(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
+                    padding: const EdgeInsets.fromLTRB(
+                        8, 8, 8, MainNavPill.contentInset),
                     children: [
                       _side(_buildHeader(league!)),
                       const SizedBox(height: 16),
-                      _side(_buildTabs()),
+                      _buildTabs(league!),
                       const SizedBox(height: 12),
                       if (_tab == 0) ..._buildStandings(league),
                       if (_tab == 1) ..._buildStages(league).map(_side),
                     ],
                   ),
-                ),
-      bottomNavigationBar: (league != null && (league.canRegister || league.isRegistered))
-          ? _buildBottomBar(league)
-          : null,
-    );
+                );
   }
 
   /// Боковой отступ блока: у списка его нет, чтобы таблица шла во всю ширину.
@@ -311,40 +345,13 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
     );
   }
 
-  Widget _buildTabs() {
-    const labels = ['Таблица', 'Этапы'];
-
-    return Row(
-      children: List.generate(labels.length, (i) {
-        final active = _tab == i;
-        return Padding(
-          padding: EdgeInsets.only(right: i == labels.length - 1 ? 0 : 8),
-          child: GestureDetector(
-            onTap: () => setState(() => _tab = i),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-              decoration: BoxDecoration(
-                color: active ? AppTheme.accent.withValues(alpha: 0.14) : AppTheme.card,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: active
-                      ? AppTheme.accent.withValues(alpha: 0.35)
-                      : const Color(0xFF2A3330),
-                  width: 0.5,
-                ),
-              ),
-              child: Text(
-                labels[i],
-                style: TextStyle(
-                  color: active ? AppTheme.accent : AppTheme.textSecondary,
-                  fontSize: 13.5,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        );
-      }),
+  Widget _buildTabs(League league) {
+    // Те же вкладки, что «Открытые / Мои / Архив» в турнирах.
+    return AppTabs(
+      labels: const ['Таблица', 'Этапы'],
+      counts: [null, league.stages.length],
+      current: _tab,
+      onChanged: (index) => setState(() => _tab = index),
     );
   }
 
@@ -435,7 +442,84 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
     ];
   }
 
+  /// Этап — обычный турнир, поэтому и карточка у него турнирная: дата,
+  /// время, кнопка записи, формат, цена и шкала мест. Отличает этап
+  /// строка над карточкой: номер, медаль за место и набранные очки.
   Widget _stageCard(LeagueStage stage) {
+    final tournament = stage.tournament;
+    if (tournament == null) return _stageRow(stage);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          child: Row(
+            children: [
+              if (stage.myPlace != null && stage.myPlace! <= 3) ...[
+                Medal(place: stage.myPlace!, size: 18),
+                const SizedBox(width: 6),
+              ],
+              Text(
+                'Этап ${stage.stage}',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (stage.myPlace != null) ...[
+                const SizedBox(width: 8),
+                Text(
+                  [
+                    'моё место ${stage.myPlace}',
+                    if (stage.myPoints != null) '${stage.myPoints} очк.',
+                  ].join(' · '),
+                  style: TextStyle(color: AppTheme.accent, fontSize: 12.5),
+                ),
+              ],
+            ],
+          ),
+        ),
+        HeroTournamentCard(
+          tournament: tournament,
+          userLevel: _myLevel(),
+          onTap: () => _openStage(stage),
+        ),
+      ],
+    );
+  }
+
+  /// Уровень игрока — карточка турнира подсвечивает им шкалу «подходит».
+  double? _myLevel() {
+    final level = context.read<HomeProvider>().user?.level;
+
+    return level == null ? null : double.tryParse(level);
+  }
+
+  void _openStage(LeagueStage stage) {
+    // Сыгранный этап открываем как турнир из истории: таблица, раунды и
+    // разбор AI. Несыгранный — обычными деталями с записью и составом.
+    if (stage.isFinished) {
+      openTournamentLiveByType(
+        context,
+        tournamentId: stage.id,
+        tournamentType: stage.tournament?.type ?? 'americano_flex',
+      );
+
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TournamentDetailScreen(tournamentId: stage.id),
+      ),
+    ).then((_) => _load());
+  }
+
+  /// Запасной вид: старый ответ сервера без полей турнира.
+  Widget _stageRow(LeagueStage stage) {
     final date = stage.startDate;
 
     return GestureDetector(

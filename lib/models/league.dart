@@ -1,3 +1,5 @@
+import 'tournament.dart';
+
 /// Лига — серия турниров с общей таблицей.
 ///
 /// Этапы лиги — обычные турниры, поэтому открываются существующим экраном
@@ -160,6 +162,10 @@ class LeagueStage {
   final int? myPlace;
   final int? myPoints;
 
+  /// Этап — обычный турнир, и сервер отдаёт его теми же полями, что и
+  /// список турниров. Держим их целиком, чтобы рисовать той же карточкой.
+  final Tournament? tournament;
+
   const LeagueStage({
     required this.id,
     required this.stage,
@@ -171,6 +177,7 @@ class LeagueStage {
     this.maxParticipants,
     this.myPlace,
     this.myPoints,
+    this.tournament,
   });
 
   factory LeagueStage.fromJson(Map<String, dynamic> json) => LeagueStage(
@@ -184,6 +191,8 @@ class LeagueStage {
         maxParticipants: (json['max_participants'] as num?)?.toInt(),
         myPlace: (json['my_place'] as num?)?.toInt(),
         myPoints: (json['my_points'] as num?)?.toInt(),
+        // Старый ответ без полей турнира — карточка тогда рисуется строкой.
+        tournament: json.containsKey('type') ? Tournament.fromJson(json) : null,
       );
 
   bool get isFinished => status == 'completed';

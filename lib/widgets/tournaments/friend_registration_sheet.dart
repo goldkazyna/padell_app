@@ -15,10 +15,19 @@ import '../player_avatar.dart';
 /// Ищет другого игрока по номеру телефона, выбирает и регистрирует
 /// обоих как отдельных участников (запрос идёт в endpoint /register
 /// с параметром friend_user_id).
+///
+/// В платном турнире записывать некого, пока не заплатили: там шторка
+/// работает как выбор — закрывается и отдаёт id друга ([payMode]), а
+/// оплату за двоих запускает экран турнира.
 class FriendRegistrationSheet extends StatefulWidget {
   final int tournamentId;
+  final bool payMode;
 
-  const FriendRegistrationSheet({super.key, required this.tournamentId});
+  const FriendRegistrationSheet({
+    super.key,
+    required this.tournamentId,
+    this.payMode = false,
+  });
 
   @override
   State<FriendRegistrationSheet> createState() => _FriendRegistrationSheetState();
@@ -59,6 +68,12 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
     final provider = context.read<TournamentProvider>();
     final selected = provider.selectedPartner;
     if (selected == null) return;
+
+    // Платный турнир: друга выбрали — дальше платит экран турнира.
+    if (widget.payMode) {
+      Navigator.of(context).pop(selected.id);
+      return;
+    }
 
     var result = await provider.registerForTournament(
       widget.tournamentId,
@@ -251,7 +266,9 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
                                 color: Colors.white, strokeWidth: 2.5),
                           )
                         : Text(
-                            'Записать нас обоих',
+                            widget.payMode
+                                ? 'Оплатить за двоих'
+                                : 'Записать нас обоих',
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600),
                           ),

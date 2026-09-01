@@ -803,6 +803,55 @@ class AppLocalizationsKk extends AppLocalizations {
   String get registerButton => 'Тіркелу';
 
   @override
+  String get leaguesTitle => 'Лигалар';
+
+  @override
+  String get leaguesEmpty => 'Лигалар әзірге жоқ';
+
+  @override
+  String get leaguesEmptyHint => 'Клуб лига бастағанда, ол осында пайда болады';
+
+  @override
+  String get sectionTournaments => 'Турнирлер';
+
+  @override
+  String get payParticipation => 'Қатысуды төлеу';
+
+  @override
+  String payAmount(String amount) {
+    return 'Төлеу $amount';
+  }
+
+  @override
+  String get payForTwo => 'Екеуіне төлеу';
+
+  @override
+  String get payMethodsHint => 'Онлайн картамен · Apple Pay · Google Pay';
+
+  @override
+  String get payAfterHint =>
+      'Төлегеннен кейін бірден негізгі тізімдесіз — модерациясыз';
+
+  @override
+  String get paySecureNote => 'Қауіпсіз төлем, карта деректері банкте қалады';
+
+  @override
+  String get payFailedTitle => 'Төлем аяқталмады';
+
+  @override
+  String get payFailedBody =>
+      'Сіз тіркелмедіңіз — төлем өтпеді. Орын 20 минут ұсталады, содан кейін босайды';
+
+  @override
+  String get payDoneTitle => 'Сіз турнирдесіз';
+
+  @override
+  String get payDoneBody => 'Төлем өтті, орын негізгі тізімде';
+
+  @override
+  String get payTitle => 'Қатысу төлемі';
+
+  @override
   String get applicationPending => 'Өтінім модерацияда';
 
   @override

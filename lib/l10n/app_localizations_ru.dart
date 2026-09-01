@@ -818,6 +818,56 @@ class AppLocalizationsRu extends AppLocalizations {
   String get registerButton => 'Записаться';
 
   @override
+  String get leaguesTitle => 'Лиги';
+
+  @override
+  String get leaguesEmpty => 'Лиг пока нет';
+
+  @override
+  String get leaguesEmptyHint => 'Когда клуб запустит лигу, она появится здесь';
+
+  @override
+  String get sectionTournaments => 'Турниры';
+
+  @override
+  String get payParticipation => 'Оплатить участие';
+
+  @override
+  String payAmount(String amount) {
+    return 'Оплатить $amount';
+  }
+
+  @override
+  String get payForTwo => 'Оплатить за двоих';
+
+  @override
+  String get payMethodsHint => 'Картой онлайн · Apple Pay · Google Pay';
+
+  @override
+  String get payAfterHint =>
+      'После оплаты вы сразу в списке участников — без модерации';
+
+  @override
+  String get paySecureNote =>
+      'Безопасная оплата, данные карты остаются у банка';
+
+  @override
+  String get payFailedTitle => 'Оплата не завершена';
+
+  @override
+  String get payFailedBody =>
+      'Вы не записаны — оплата не прошла. Место придержано 20 минут: можно оплатить ещё раз, потом оно освободится';
+
+  @override
+  String get payDoneTitle => 'Вы в турнире';
+
+  @override
+  String get payDoneBody => 'Оплата прошла, место в основном списке';
+
+  @override
+  String get payTitle => 'Оплата участия';
+
+  @override
   String get applicationPending => 'Заявка на модерации';
 
   @override

@@ -3,8 +3,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 /// Блок «Безопасная оплата» — иконка-щит + надпись и монохромные значки
 /// VISA / Mastercard / Apple Pay. Используется на главной и на экране брони.
+///
+/// [showGooglePay] добавляет четвёртый значок — там, где шлюз его правда
+/// принимает (оплата турнира). На главной значков намеренно три: это
+/// витрина доверия, а не список способов.
 class SecurePaymentBadge extends StatelessWidget {
-  const SecurePaymentBadge({super.key});
+  final bool showGooglePay;
+
+  const SecurePaymentBadge({super.key, this.showGooglePay = false});
 
   static const Color _labelGrey = Color(0xFF6E6E78);
   static const Color _markGrey = Color(0xFF8C8C94);
@@ -30,9 +36,11 @@ class SecurePaymentBadge extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 14),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 22,
+          runSpacing: 12,
           children: [
             const Text(
               'VISA',
@@ -44,7 +52,6 @@ class SecurePaymentBadge extends StatelessWidget {
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(width: 22),
             // Символ Mastercard — два пересекающихся круга (монохром)
             SizedBox(
               width: 34,
@@ -57,7 +64,6 @@ class SecurePaymentBadge extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 22),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
@@ -73,6 +79,23 @@ class SecurePaymentBadge extends StatelessWidget {
                 ),
               ],
             ),
+            if (showGooglePay) ...[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  FaIcon(FontAwesomeIcons.google, size: 15, color: _markGrey),
+                  SizedBox(width: 4),
+                  Text(
+                    'Pay',
+                    style: TextStyle(
+                      color: _markGrey,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ],

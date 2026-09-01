@@ -816,6 +816,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerButton => 'Register';
 
   @override
+  String get leaguesTitle => 'Leagues';
+
+  @override
+  String get leaguesEmpty => 'No leagues yet';
+
+  @override
+  String get leaguesEmptyHint =>
+      'Once a club starts a league, it shows up here';
+
+  @override
+  String get sectionTournaments => 'Tournaments';
+
+  @override
+  String get payParticipation => 'Pay for entry';
+
+  @override
+  String payAmount(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String get payForTwo => 'Pay for two';
+
+  @override
+  String get payMethodsHint => 'Card online · Apple Pay · Google Pay';
+
+  @override
+  String get payAfterHint =>
+      'Once paid you are in the main list — no moderation';
+
+  @override
+  String get paySecureNote => 'Secure payment, card details stay with the bank';
+
+  @override
+  String get payFailedTitle => 'Payment not completed';
+
+  @override
+  String get payFailedBody =>
+      'You are not registered — the payment did not go through. The spot is held for 20 minutes, then it opens up again';
+
+  @override
+  String get payDoneTitle => 'You are in';
+
+  @override
+  String get payDoneBody => 'Payment went through, your spot is confirmed';
+
+  @override
+  String get payTitle => 'Entry payment';
+
+  @override
   String get applicationPending => 'Application pending';
 
   @override

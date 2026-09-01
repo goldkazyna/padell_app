@@ -33,6 +33,24 @@ class GameService {
     );
   }
 
+  /// Игра из ответа действия.
+  ///
+  /// Если сервер вернул не карточку (старая сборка бэка отдавала на
+  /// отзыв ссылки просто «успех»), перечитываем игру, а не падаем с
+  /// «Null is not a subtype of Map».
+  Future<Game> _gameFromAction(
+    Map<String, dynamic> response,
+    int id,
+    String token,
+  ) async {
+    final data = response['data'];
+    if (data is Map<String, dynamic> && data['id'] != null) {
+      return Game.fromJson(data);
+    }
+
+    return getDetails(id, token);
+  }
+
   Future<List<GameClub>> getClubs(String token) async {
     final response = await _api.get('/games/clubs', token);
     final list = response['data'] as List<dynamic>;
@@ -149,6 +167,12 @@ class GameService {
     return Game.fromJson(response['data'] as Map<String, dynamic>);
   }
 
+  /// Отменить игру целиком (организатор).
+  Future<Game> cancelGame(int id, String token) async {
+    final response = await _api.post('/games/$id/cancel', {}, token);
+    return _gameFromAction(response, id, token);
+  }
+
   Future<Game> startCancel(int id, String token) async {
     final response = await _api.post('/games/$id/start/cancel', {}, token);
     return Game.fromJson(response['data'] as Map<String, dynamic>);
@@ -194,12 +218,12 @@ class GameService {
 
   Future<Game> shareRotate(int id, String token) async {
     final response = await _api.post('/games/$id/share/rotate', {}, token);
-    return Game.fromJson(response['data'] as Map<String, dynamic>);
+    return _gameFromAction(response, id, token);
   }
 
   Future<Game> shareRevoke(int id, String token) async {
     final response = await _api.post('/games/$id/share/revoke', {}, token);
-    return Game.fromJson(response['data'] as Map<String, dynamic>);
+    return _gameFromAction(response, id, token);
   }
 
   Future<Game> transferInitiate(int id, int toUserId, String token) async {

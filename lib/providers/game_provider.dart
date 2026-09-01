@@ -72,6 +72,22 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Сколько игр сейчас в ленте — для бейджа на главной.
+  ///
+  /// Просим одну запись: нужен только счётчик из meta, а не список.
+  /// Ошибку глотаем: из-за бейджа главная падать не должна.
+  Future<int> countFeed() async {
+    final token = await _storage.getToken();
+    if (token == null) return 0;
+
+    try {
+      final result = await _service.getFeed({'per_page': 1}, token);
+      return result.total;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   // === Мои игры ===
 
   Future<void> loadMyGames({Map<String, dynamic>? filters}) async {
@@ -442,6 +458,35 @@ class GameProvider extends ChangeNotifier {
       _isActionLoading = false;
       notifyListeners();
       return (success: true, message: 'Игра началась');
+    } on ApiException catch (e) {
+      _isActionLoading = false;
+      notifyListeners();
+      loadDetails(id);
+      return (success: false, message: e.message);
+    } catch (e) {
+      _isActionLoading = false;
+      notifyListeners();
+      loadDetails(id);
+      return (success: false, message: 'Ошибка: $e');
+    }
+  }
+
+  // === Отменить игру целиком ===
+
+  /// Организатор закрывает игру, чтобы она не висела: после отмены она
+  /// пропадает и из ленты, и из «моих игр».
+  Future<({bool success, String message})> cancelGame(int id) async {
+    final token = await _storage.getToken();
+    if (token == null) return (success: false, message: 'Нет авторизации');
+
+    _isActionLoading = true;
+    notifyListeners();
+
+    try {
+      _currentGame = await _service.cancelGame(id, token);
+      _isActionLoading = false;
+      notifyListeners();
+      return (success: true, message: 'Игра отменена');
     } on ApiException catch (e) {
       _isActionLoading = false;
       notifyListeners();
