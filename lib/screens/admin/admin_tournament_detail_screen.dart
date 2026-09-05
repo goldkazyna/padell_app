@@ -3595,7 +3595,9 @@ class _AdminTournamentDetailScreenState
           pending: pending.length,
           canModify: r.canModify,
           isFull: isFull,
-          onAdd: null, // парные турниры — добавление через Web
+          // Пары заводятся тем же экраном, что и «Пары» в меню: раньше
+          // добавить пару с телефона было нельзя вовсе.
+          onAdd: _canRegisterPairs ? _openPairRegistration : null,
           subtitle: 'пар',
         ),
         if (pending.isNotEmpty) ...[
@@ -3705,9 +3707,10 @@ class _AdminTournamentDetailScreenState
           if (t.player2 != null)
             _buildTeamPlayerRow(t.player2!, isFirst: false),
           const SizedBox(height: 8),
-          Row(
+          Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Spacer(),
               if (pending) ...[
                 TextButton(
                   onPressed: () => _approveTeam(t),
@@ -3718,6 +3721,19 @@ class _AdminTournamentDetailScreenState
                     'Одобрить',
                     style: TextStyle(
                       color: AppTheme.accent,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => _moveTeam(t, 'waiting'),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                  child: Text(
+                    'В очередь',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -3735,7 +3751,50 @@ class _AdminTournamentDetailScreenState
                     ),
                   ),
                 ),
-              ] else if (canModify)
+              ] else if (canModify) ...[
+                // Из очереди — наверх, из состава — обратно в очередь.
+                if (t.status == 'waiting')
+                  TextButton(
+                    onPressed: () => _moveTeam(t, 'pending'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                    child: Text(
+                      'На модерацию',
+                      style: TextStyle(
+                        color: AppTheme.amber,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                if (t.status == 'waiting')
+                  TextButton(
+                    onPressed: () => _moveTeam(t, 'approved'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                    child: const Text(
+                      'В состав',
+                      style: TextStyle(
+                        color: AppTheme.accent,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                if (t.status == 'approved')
+                  TextButton(
+                    onPressed: () => _moveTeam(t, 'waiting'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                    child: Text(
+                      'В очередь',
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 TextButton(
                   onPressed: () => _removeTeam(t),
                   style: TextButton.styleFrom(
@@ -3749,6 +3808,7 @@ class _AdminTournamentDetailScreenState
                     ),
                   ),
                 ),
+              ],
             ],
           ),
         ],
@@ -4295,6 +4355,14 @@ class _AdminTournamentDetailScreenState
     await _runAction(
       () => context.read<AdminService>().approveTeam(widget.tournamentId, t.id),
       label: 'Одобряем пару...',
+    );
+  }
+
+  /// Перевести пару в другой список: основной состав, модерация, очередь.
+  Future<void> _moveTeam(AdminTeam t, String to) async {
+    await _runAction(
+      () => context.read<AdminService>().moveTeam(widget.tournamentId, t.id, to),
+      label: 'Переносим пару...',
     );
   }
 

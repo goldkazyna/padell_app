@@ -726,6 +726,17 @@ class AdminService {
     );
   }
 
+  /// Перевести пару между списками: approved (основной состав),
+  /// pending (модерация), waiting (лист ожидания).
+  Future<void> moveTeam(int tournamentId, int teamId, String to) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/teams/$teamId/move',
+      {'to': to},
+      token,
+    );
+  }
+
   Future<void> removeTeam(int tournamentId, int teamId) async {
     final token = await _storage.getToken();
     await _api.delete(

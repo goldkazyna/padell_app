@@ -2634,7 +2634,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get gameStatusAccepted => 'Құрамда';
 
   @override
-  String get gameStatusCandidate => 'Өтінім';
+  String get gameStatusCandidate => 'Кезекте';
 
   @override
   String get gameStatusInvited => 'Шақырылды';
@@ -2661,10 +2661,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get gameActionDecline => 'Бас тарту';
 
   @override
-  String get gameActionApply => 'Өтінім беру';
+  String get gameActionApply => 'Қосылу';
 
   @override
-  String get gameApplied => 'Өтінім жіберілді';
+  String get gameActionJoinQueue => 'Кезекке тұру';
+
+  @override
+  String get gameApplied => 'Сіз кезектесіз';
 
   @override
   String get gameActionLeave => 'Шығу';

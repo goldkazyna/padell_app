@@ -2674,7 +2674,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gameStatusAccepted => 'В составе';
 
   @override
-  String get gameStatusCandidate => 'Заявка';
+  String get gameStatusCandidate => 'В очереди';
 
   @override
   String get gameStatusInvited => 'Приглашён';
@@ -2701,10 +2701,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gameActionDecline => 'Отклонить';
 
   @override
-  String get gameActionApply => 'Подать заявку';
+  String get gameActionApply => 'Присоединиться';
 
   @override
-  String get gameApplied => 'Заявка отправлена';
+  String get gameActionJoinQueue => 'Встать в очередь';
+
+  @override
+  String get gameApplied => 'Вы в очереди';
 
   @override
   String get gameActionLeave => 'Выйти';

@@ -815,14 +815,15 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       ]);
     }
 
-    // Not participant, open, has free slots: apply
+    // Свободное место занимаем сразу; мест нет — встаём в очередь.
     if (!game.isParticipant &&
         game.myStatus != 'invited' &&
-        game.isOpen &&
-        game.availablePositions.isNotEmpty) {
+        game.myStatus != 'candidate' &&
+        (game.isOpen || game.status == 'full')) {
+      final hasFreeSlot = game.availablePositions.isNotEmpty;
       buttons.add(
         _buildPrimaryButton(
-          label: l10n.gameActionApply,
+          label: hasFreeSlot ? l10n.gameActionApply : l10n.gameActionJoinQueue,
           onTap: isLoading ? null : () => _apply(game.id),
           isLoading: isLoading,
         ),

@@ -5017,7 +5017,7 @@ abstract class AppLocalizations {
   /// No description provided for @gameStatusCandidate.
   ///
   /// In ru, this message translates to:
-  /// **'Заявка'**
+  /// **'В очереди'**
   String get gameStatusCandidate;
 
   /// No description provided for @gameStatusInvited.
@@ -5071,13 +5071,19 @@ abstract class AppLocalizations {
   /// No description provided for @gameActionApply.
   ///
   /// In ru, this message translates to:
-  /// **'Подать заявку'**
+  /// **'Присоединиться'**
   String get gameActionApply;
+
+  /// No description provided for @gameActionJoinQueue.
+  ///
+  /// In ru, this message translates to:
+  /// **'Встать в очередь'**
+  String get gameActionJoinQueue;
 
   /// No description provided for @gameApplied.
   ///
   /// In ru, this message translates to:
-  /// **'Заявка отправлена'**
+  /// **'Вы в очереди'**
   String get gameApplied;
 
   /// No description provided for @gameActionLeave.

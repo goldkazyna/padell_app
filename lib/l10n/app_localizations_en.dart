@@ -2665,7 +2665,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameStatusAccepted => 'Confirmed';
 
   @override
-  String get gameStatusCandidate => 'Pending';
+  String get gameStatusCandidate => 'In queue';
 
   @override
   String get gameStatusInvited => 'Invited';
@@ -2692,10 +2692,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameActionDecline => 'Decline';
 
   @override
-  String get gameActionApply => 'Apply';
+  String get gameActionApply => 'Join';
 
   @override
-  String get gameApplied => 'Application sent';
+  String get gameActionJoinQueue => 'Join the queue';
+
+  @override
+  String get gameApplied => 'You are in the queue';
 
   @override
   String get gameActionLeave => 'Leave';
