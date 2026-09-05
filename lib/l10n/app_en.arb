@@ -1048,5 +1048,17 @@
   "notifyAmigos": "Amigos notifications",
   "notifyAmigosHint": "someone added you, is looking for players, joins a tournament",
   "notifyMessages": "Direct messages",
-  "notifyMessagesHint": "push for a new message"
+  "notifyMessagesHint": "push for a new message",
+  "profileHistory": "Tournament history",
+  "profileHistorySub": "All tournaments you played",
+  "profileMyLeagues": "My leagues",
+  "profileMyLeaguesSub": "Standings and stages",
+  "profileMyTournaments": "My tournaments",
+  "profileMyTournamentsSub": "The ones you signed up for",
+  "profileInvitations": "Tournament invitations",
+  "profileInvitationsSub": "Tournaments you were invited to",
+  "profileMyTrainings": "My trainings",
+  "profileMyTrainingsSub": "Sessions you signed up for",
+  "profileSupport": "Support",
+  "profileSupportSub": "Ask a question or report a problem"
 }

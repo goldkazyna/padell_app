@@ -1078,5 +1078,17 @@
   "notifyAmigos": "Уведомления об амигос",
   "notifyAmigosHint": "кто-то добавил вас, ищет игрока, зовёт на турнир",
   "notifyMessages": "Личные сообщения",
-  "notifyMessagesHint": "пуш на новое сообщение"
+  "notifyMessagesHint": "пуш на новое сообщение",
+  "profileHistory": "История турниров",
+  "profileHistorySub": "Все сыгранные турниры",
+  "profileMyLeagues": "Мои лиги",
+  "profileMyLeaguesSub": "Место в общей таблице и этапы",
+  "profileMyTournaments": "Мои турниры",
+  "profileMyTournamentsSub": "Те, на которые ты записан",
+  "profileInvitations": "Приглашения на турнир",
+  "profileInvitationsSub": "Турниры, куда тебя позвали",
+  "profileMyTrainings": "Мои тренировки",
+  "profileMyTrainingsSub": "Занятия, на которые ты записан",
+  "profileSupport": "Служба поддержки",
+  "profileSupportSub": "Задать вопрос или сообщить о проблеме"
 }

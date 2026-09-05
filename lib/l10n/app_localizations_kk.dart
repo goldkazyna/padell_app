@@ -2988,4 +2988,40 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get notifyMessagesHint => 'жаңа хабарлама туралы push';
+
+  @override
+  String get profileHistory => 'Турнирлер тарихы';
+
+  @override
+  String get profileHistorySub => 'Ойналған барлық турнирлер';
+
+  @override
+  String get profileMyLeagues => 'Менің лигаларым';
+
+  @override
+  String get profileMyLeaguesSub => 'Жалпы кестедегі орын және кезеңдер';
+
+  @override
+  String get profileMyTournaments => 'Менің турнирлерім';
+
+  @override
+  String get profileMyTournamentsSub => 'Сіз тіркелгендері';
+
+  @override
+  String get profileInvitations => 'Турнирге шақырулар';
+
+  @override
+  String get profileInvitationsSub => 'Сізді шақырған турнирлер';
+
+  @override
+  String get profileMyTrainings => 'Менің жаттығуларым';
+
+  @override
+  String get profileMyTrainingsSub => 'Сіз жазылған сабақтар';
+
+  @override
+  String get profileSupport => 'Қолдау қызметі';
+
+  @override
+  String get profileSupportSub => 'Сұрақ қою немесе мәселе туралы хабарлау';
 }

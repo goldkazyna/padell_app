@@ -3019,4 +3019,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifyMessagesHint => 'push for a new message';
+
+  @override
+  String get profileHistory => 'Tournament history';
+
+  @override
+  String get profileHistorySub => 'All tournaments you played';
+
+  @override
+  String get profileMyLeagues => 'My leagues';
+
+  @override
+  String get profileMyLeaguesSub => 'Standings and stages';
+
+  @override
+  String get profileMyTournaments => 'My tournaments';
+
+  @override
+  String get profileMyTournamentsSub => 'The ones you signed up for';
+
+  @override
+  String get profileInvitations => 'Tournament invitations';
+
+  @override
+  String get profileInvitationsSub => 'Tournaments you were invited to';
+
+  @override
+  String get profileMyTrainings => 'My trainings';
+
+  @override
+  String get profileMyTrainingsSub => 'Sessions you signed up for';
+
+  @override
+  String get profileSupport => 'Support';
+
+  @override
+  String get profileSupportSub => 'Ask a question or report a problem';
 }

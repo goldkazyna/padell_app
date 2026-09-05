@@ -1046,5 +1046,17 @@
   "notifyAmigos": "Амигос туралы хабарландырулар",
   "notifyAmigosHint": "сізді қосты, ойыншы іздейді, турнирге шақырады",
   "notifyMessages": "Жеке хабарламалар",
-  "notifyMessagesHint": "жаңа хабарлама туралы push"
+  "notifyMessagesHint": "жаңа хабарлама туралы push",
+  "profileHistory": "Турнирлер тарихы",
+  "profileHistorySub": "Ойналған барлық турнирлер",
+  "profileMyLeagues": "Менің лигаларым",
+  "profileMyLeaguesSub": "Жалпы кестедегі орын және кезеңдер",
+  "profileMyTournaments": "Менің турнирлерім",
+  "profileMyTournamentsSub": "Сіз тіркелгендері",
+  "profileInvitations": "Турнирге шақырулар",
+  "profileInvitationsSub": "Сізді шақырған турнирлер",
+  "profileMyTrainings": "Менің жаттығуларым",
+  "profileMyTrainingsSub": "Сіз жазылған сабақтар",
+  "profileSupport": "Қолдау қызметі",
+  "profileSupportSub": "Сұрақ қою немесе мәселе туралы хабарлау"
 }

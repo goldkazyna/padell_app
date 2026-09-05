@@ -6,19 +6,14 @@ import '../theme/app_theme.dart';
 import '../widgets/home/profile_incomplete_banner.dart';
 import '../widgets/profile/profile_hero.dart';
 import '../widgets/profile/moderation_payment_banner.dart';
-import '../widgets/profile/my_tournaments_button.dart';
-import '../widgets/profile/tournament_invitations_button.dart';
-import '../widgets/profile/my_trainings_button.dart';
-import '../widgets/profile/support_button.dart';
 import '../widgets/profile/achievements_section.dart';
 import '../widgets/profile/partners_section.dart';
 import '../widgets/profile/amigos_card.dart';
 import '../widgets/profile/messages_bell.dart';
 import '../widgets/profile/rating_dynamics_card.dart';
-import '../widgets/profile/tournaments_history_button.dart';
 import '../widgets/profile/profile_menu.dart';
+import '../widgets/profile/profile_court_menu.dart';
 import '../widgets/verification_blockers_banner.dart';
-import '../widgets/profile/my_leagues_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -87,12 +82,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
                   const PartnersSection(),
                   const SizedBox(height: 20),
-                  const TournamentsHistoryButton(),
-                  const MyLeaguesButton(),
-                  const MyTournamentsButton(),
-                  const TournamentInvitationsButton(),
-                  const MyTrainingsButton(),
-                  const SupportButton(),
+                  // Шесть разделов одним блоком-кортом: раньше это были шесть
+                  // цветных карточек во всю ширину, и «Служба поддержки»
+                  // выглядела так же важно, как приглашение, ждущее ответа.
+                  const ProfileCourtMenu(),
                   const SizedBox(height: 22),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),

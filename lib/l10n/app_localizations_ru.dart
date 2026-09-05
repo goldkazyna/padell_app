@@ -3026,4 +3026,40 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notifyMessagesHint => 'пуш на новое сообщение';
+
+  @override
+  String get profileHistory => 'История турниров';
+
+  @override
+  String get profileHistorySub => 'Все сыгранные турниры';
+
+  @override
+  String get profileMyLeagues => 'Мои лиги';
+
+  @override
+  String get profileMyLeaguesSub => 'Место в общей таблице и этапы';
+
+  @override
+  String get profileMyTournaments => 'Мои турниры';
+
+  @override
+  String get profileMyTournamentsSub => 'Те, на которые ты записан';
+
+  @override
+  String get profileInvitations => 'Приглашения на турнир';
+
+  @override
+  String get profileInvitationsSub => 'Турниры, куда тебя позвали';
+
+  @override
+  String get profileMyTrainings => 'Мои тренировки';
+
+  @override
+  String get profileMyTrainingsSub => 'Занятия, на которые ты записан';
+
+  @override
+  String get profileSupport => 'Служба поддержки';
+
+  @override
+  String get profileSupportSub => 'Задать вопрос или сообщить о проблеме';
 }

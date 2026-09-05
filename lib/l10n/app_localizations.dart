@@ -5685,6 +5685,78 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'пуш на новое сообщение'**
   String get notifyMessagesHint;
+
+  /// No description provided for @profileHistory.
+  ///
+  /// In ru, this message translates to:
+  /// **'История турниров'**
+  String get profileHistory;
+
+  /// No description provided for @profileHistorySub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все сыгранные турниры'**
+  String get profileHistorySub;
+
+  /// No description provided for @profileMyLeagues.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои лиги'**
+  String get profileMyLeagues;
+
+  /// No description provided for @profileMyLeaguesSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Место в общей таблице и этапы'**
+  String get profileMyLeaguesSub;
+
+  /// No description provided for @profileMyTournaments.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои турниры'**
+  String get profileMyTournaments;
+
+  /// No description provided for @profileMyTournamentsSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Те, на которые ты записан'**
+  String get profileMyTournamentsSub;
+
+  /// No description provided for @profileInvitations.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приглашения на турнир'**
+  String get profileInvitations;
+
+  /// No description provided for @profileInvitationsSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турниры, куда тебя позвали'**
+  String get profileInvitationsSub;
+
+  /// No description provided for @profileMyTrainings.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои тренировки'**
+  String get profileMyTrainings;
+
+  /// No description provided for @profileMyTrainingsSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Занятия, на которые ты записан'**
+  String get profileMyTrainingsSub;
+
+  /// No description provided for @profileSupport.
+  ///
+  /// In ru, this message translates to:
+  /// **'Служба поддержки'**
+  String get profileSupport;
+
+  /// No description provided for @profileSupportSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Задать вопрос или сообщить о проблеме'**
+  String get profileSupportSub;
 }
 
 class _AppLocalizationsDelegate
