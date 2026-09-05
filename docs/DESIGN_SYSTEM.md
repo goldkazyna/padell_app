@@ -78,6 +78,8 @@
 | Основная кнопка | `AppPrimaryButton` | `widgets/app_primary_button.dart` |
 | Кнопка «назад» | `AppBackButton` | `widgets/app_back_button.dart` |
 | Поделиться трансляцией | `LiveShareButton` | `widgets/live_share_button.dart` |
+| Строка амигос | `AmigoRow` | `widgets/amigos/amigo_row.dart` |
+| Пузырь сообщения | `ChatBubble` | `widgets/amigos/chat_bubble.dart` |
 | Сворачиваемый блок | `AppExpandableSection` | `widgets/app_expandable_section.dart` |
 | Аватар игрока | `PlayerAvatar` | `widgets/player_avatar.dart` |
 | Логотип клуба | `ClubLogoTile` | `widgets/tournaments/club_logo.dart` |
@@ -412,6 +414,34 @@ Row(children: [
   на трансляцию;
 - на iPad share-sheet без якоря не открывается, поэтому кнопка сама передаёт
   `sharePositionOrigin` — свой `Share.share` рядом писать не нужно.
+
+## Амигос и переписка
+
+**`AmigoRow`** — строка списка амигос: аватар 38, имя, мета-строка, справа
+статус. Статус не украшение, а вход, поэтому у него свой обработчик:
+
+```dart
+AmigoRow(
+  amigo: amigo,
+  onTap: () => openPlayer(amigo.id),        // профиль
+  onStatusTap: () => openStatus(amigo.status!),  // трансляция / турнир / игра
+)
+```
+
+- бейдж статуса: `accent` для «играет» и «ищет игроков», `orange` для
+  «турнир 19:00» — цвет повторяет смысл, а не заменяет слово;
+- у играющего аватар в акцентном кольце: видно, не читая бейдж;
+- «взаимно» — слово в мета-строке, а не бейдж: это факт, а не статус;
+- порядок строк задаёт сервер (играет → турнир скоро → ищет игроков → по
+  имени). Сортировать в приложении нельзя: правило одно и живёт на бэке.
+
+**`ChatBubble`** — пузырь личного сообщения: свои `accent` 14% справа, чужие
+`cardRaised` слева, время 10.5 внутри пузыря справа снизу.
+
+- сплошной зелёной заливкой свои пузыри красить нельзя: чёрный текст на
+  зелёном в приложении означает кнопку, и пузырь читался бы как нажимаемый;
+- долгий тап удаляет только своё сообщение (`onLongPress` игнорируется у чужих);
+- дата дня — `ChatDaySeparator` по центру, приглушённым.
 
 ---
 

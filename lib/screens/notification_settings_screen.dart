@@ -3,6 +3,7 @@ import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import 'blocked_users_screen.dart';
 import '../widgets/app_back_button.dart';
 import '../utils/city_l10n.dart';
 import '../widgets/app_checkbox.dart';
@@ -25,6 +26,8 @@ class _NotificationSettingsScreenState
   bool _notifyReminders = true;
   bool _notifyBookingReminders = true;
   bool _notifyOrganizerChat = true;
+  bool _notifyAmigos = true;
+  bool _notifyMessages = true;
   List<int>? _notifyClubIds; // null = все клубы
   List<Map<String, dynamic>> _clubs = [];
   List<String> _cities = [];          // все города платформы
@@ -53,6 +56,8 @@ class _NotificationSettingsScreenState
         _notifyReminders = response['notify_tournament_reminders'] != false;
         _notifyBookingReminders = response['notify_booking_reminders'] != false;
         _notifyOrganizerChat = response['notify_organizer_chat'] != false;
+        _notifyAmigos = response['notify_amigos'] != false;
+        _notifyMessages = response['notify_messages'] != false;
         _notifyClubIds = response['notify_club_ids'] != null
             ? List<int>.from(response['notify_club_ids'])
             : null;
@@ -153,6 +158,100 @@ class _NotificationSettingsScreenState
     } catch (e) {
       setState(() {
         _notifyOrganizerChat = old;
+        _isSaving = false;
+      });
+    }
+  }
+
+  /// Карточка-тумблер: заголовок, объяснение что перестанет приходить, и
+  /// переключатель. Форма та же, что у остальных настроек уведомлений.
+  Widget _amigoToggle({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Switch.adaptive(
+            value: value,
+            onChanged: onChanged,
+            activeColor: AppTheme.accent,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Пуши про амигос и про личные сообщения — два разных тумблера:
+  /// раздражают они по-разному, и выключают их порознь.
+  Future<void> _updateAmigos(bool value) async {
+    final old = _notifyAmigos;
+    setState(() {
+      _notifyAmigos = value;
+      _isSaving = true;
+    });
+    try {
+      final token = await _storageService.getToken();
+      await _apiService.post(
+        '/notifications/settings',
+        {'notify_amigos': value},
+        token,
+      );
+      setState(() => _isSaving = false);
+    } catch (e) {
+      setState(() {
+        _notifyAmigos = old;
+        _isSaving = false;
+      });
+    }
+  }
+
+  Future<void> _updateMessages(bool value) async {
+    final old = _notifyMessages;
+    setState(() {
+      _notifyMessages = value;
+      _isSaving = true;
+    });
+    try {
+      final token = await _storageService.getToken();
+      await _apiService.post(
+        '/notifications/settings',
+        {'notify_messages': value},
+        token,
+      );
+      setState(() => _isSaving = false);
+    } catch (e) {
+      setState(() {
+        _notifyMessages = old;
         _isSaving = false;
       });
     }
@@ -649,6 +748,68 @@ class _NotificationSettingsScreenState
                                     activeColor: AppTheme.accent,
                                   ),
                           ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Амигос: активность своих и личные сообщения
+                      _amigoToggle(
+                        title: AppLocalizations.of(context)!.notifyAmigos,
+                        subtitle: AppLocalizations.of(context)!.notifyAmigosHint,
+                        value: _notifyAmigos,
+                        onChanged: _updateAmigos,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _amigoToggle(
+                        title: AppLocalizations.of(context)!.notifyMessages,
+                        subtitle: AppLocalizations.of(context)!.notifyMessagesHint,
+                        value: _notifyMessages,
+                        onChanged: _updateMessages,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Заблокированные — рядом с тумблером сообщений: сюда
+                      // человек идёт из той же мысли «не хочу это получать».
+                      InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const BlockedUsersScreen(),
+                          ),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppTheme.card,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: const Color(0xFF2A3330),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  AppLocalizations.of(context)!.blockedList,
+                                  style: TextStyle(
+                                    color: AppTheme.textPrimary,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                size: 18,
+                                color: AppTheme.textDim,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
 

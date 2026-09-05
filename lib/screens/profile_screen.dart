@@ -12,6 +12,8 @@ import '../widgets/profile/my_trainings_button.dart';
 import '../widgets/profile/support_button.dart';
 import '../widgets/profile/achievements_section.dart';
 import '../widgets/profile/partners_section.dart';
+import '../widgets/profile/amigos_card.dart';
+import '../widgets/profile/messages_bell.dart';
 import '../widgets/profile/rating_dynamics_card.dart';
 import '../widgets/profile/tournaments_history_button.dart';
 import '../widgets/profile/profile_menu.dart';
@@ -58,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const ProfileHero(),
+                  const ProfileHero(trailing: MessagesBell()),
                   const ModerationPaymentBanner(),
                   if (profile.user?.isProfileIncomplete == true) ...[
                     const SizedBox(height: 12),
@@ -76,6 +78,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ],
+                  const SizedBox(height: 12),
+                  const AmigosCard(),
                   const SizedBox(height: 12),
                   const RatingDynamicsCard(),
                   const SizedBox(height: 20),

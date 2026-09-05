@@ -17,6 +17,7 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/amigos/amigo_actions.dart';
 import '../widgets/main_tab_bar.dart';
 import '../widgets/profile/medal.dart';
 import '../widgets/profile/player_hero.dart';
@@ -245,6 +246,9 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             winrate: p.winrate,
             tournamentsCount: p.tournamentsCount,
           ),
+
+          // Амигос и переписка — выше статистики: действие важнее цифр.
+          AmigoActions(playerId: p.id, playerName: p.name),
 
           // Кнопка «Позвать на турнир» — зелёный градиент как «История турниров»
           Padding(

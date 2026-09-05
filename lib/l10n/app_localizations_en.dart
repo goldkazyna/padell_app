@@ -2834,4 +2834,189 @@ class AppLocalizationsEn extends AppLocalizations {
   String gameInvitedBy(String name) {
     return 'Invited by: $name';
   }
+
+  @override
+  String get amigos => 'Amigos';
+
+  @override
+  String get amigosMine => 'Mine';
+
+  @override
+  String get amigosFollowers => 'Added me';
+
+  @override
+  String get amigosFeed => 'Feed';
+
+  @override
+  String get amigosMyTitle => 'My amigos';
+
+  @override
+  String get amigosPlayingNow => 'Playing now';
+
+  @override
+  String get amigosAdd => 'Add to amigos';
+
+  @override
+  String get amigosAdded => 'In amigos';
+
+  @override
+  String get amigosAddBack => 'Add back';
+
+  @override
+  String get amigosRemove => 'Remove from amigos';
+
+  @override
+  String amigosRemoveConfirm(String name) {
+    return 'Remove $name from amigos?';
+  }
+
+  @override
+  String get amigosMutual => 'mutual';
+
+  @override
+  String get amigosEmpty =>
+      'Nobody here yet.\nStart with those you have already played with.';
+
+  @override
+  String get amigosEmptyFollowers => 'Nobody has added you yet.';
+
+  @override
+  String get amigosEmptyFeed =>
+      'Quiet for now. You will see who is playing and who is heading out.';
+
+  @override
+  String get amigosCandidatesTitle => 'You often play together';
+
+  @override
+  String amigosGamesTogether(int count) {
+    return '$count matches together';
+  }
+
+  @override
+  String get amigosSearchHint => 'Search your amigos';
+
+  @override
+  String get amigoPlaying => 'playing';
+
+  @override
+  String get amigoLooking => 'looking for players';
+
+  @override
+  String get amigoTournament => 'tournament';
+
+  @override
+  String get amigoPlayed => 'played a tournament';
+
+  @override
+  String get amigoWatch => 'watch';
+
+  @override
+  String get amigosProfileEmpty => 'Add the people you play with';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get messagesEmpty =>
+      'Your chats will be here.\nWrite to someone you play with — the Message button is on their profile.';
+
+  @override
+  String get messageWrite => 'Message';
+
+  @override
+  String get messageHint => 'Message...';
+
+  @override
+  String get messageYouPrefix => 'You: ';
+
+  @override
+  String get messageRules => 'Keep it on point. Spam can be reported.';
+
+  @override
+  String get messageToday => 'Today';
+
+  @override
+  String get messageYesterday => 'Yesterday';
+
+  @override
+  String get messageDeleteConfirm => 'Delete this message?';
+
+  @override
+  String get messageBlockedByMe => 'You blocked this player';
+
+  @override
+  String get messageBlockedMe => 'This player limited messaging';
+
+  @override
+  String get blockUser => 'Block player';
+
+  @override
+  String blockUserConfirm(String name) {
+    return 'Block $name?';
+  }
+
+  @override
+  String get blockUserExplain =>
+      'They will not be able to message you or see your activity. You disappear from their amigos, they from yours.';
+
+  @override
+  String get blockAction => 'Block';
+
+  @override
+  String get unblockAction => 'Unblock';
+
+  @override
+  String get blockedList => 'Blocked';
+
+  @override
+  String get blockedEmpty => 'You have not blocked anyone.';
+
+  @override
+  String blockedAt(String date) {
+    return 'blocked $date';
+  }
+
+  @override
+  String get reportUser => 'Report';
+
+  @override
+  String get reportSubtitle =>
+      'We will look into the chat and reply in support';
+
+  @override
+  String get reportSpam => 'Spam and ads';
+
+  @override
+  String get reportAbuse => 'Abuse';
+
+  @override
+  String get reportFraud => 'Fraud';
+
+  @override
+  String get reportOther => 'Other';
+
+  @override
+  String get reportComment => 'What happened? (optional)';
+
+  @override
+  String get reportSend => 'Send';
+
+  @override
+  String get reportSent => 'Report sent';
+
+  @override
+  String get reportSentBlockAsk => 'Report sent. Block this player?';
+
+  @override
+  String get notifyAmigos => 'Amigos notifications';
+
+  @override
+  String get notifyAmigosHint =>
+      'someone added you, is looking for players, joins a tournament';
+
+  @override
+  String get notifyMessages => 'Direct messages';
+
+  @override
+  String get notifyMessagesHint => 'push for a new message';
 }

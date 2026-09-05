@@ -17,6 +17,7 @@ import 'services/profile_service.dart';
 import 'services/push_notification_service.dart';
 import 'services/challenge_service.dart';
 import 'services/game_service.dart';
+import 'services/amigo_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/tournament_provider.dart';
 import 'providers/home_provider.dart';
@@ -24,6 +25,7 @@ import 'providers/rating_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/challenge_provider.dart';
 import 'providers/game_provider.dart';
+import 'providers/amigo_provider.dart';
 import 'services/court_service.dart';
 import 'services/club_service.dart';
 import 'services/club_card_service.dart';
@@ -79,6 +81,7 @@ void main() async {
   final profileService = ProfileService(apiService, storageService);
   final challengeService = ChallengeService(apiService);
   final gameService = GameService(apiService);
+  final amigoService = AmigoService(apiService);
   final courtService = CourtService(apiService, storageService);
   final clubService = ClubService(apiService, storageService);
   final clubCardService = ClubCardService(apiService, storageService);
@@ -133,6 +136,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => GameProvider(gameService, storageService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AmigoProvider(amigoService, storageService),
         ),
         ChangeNotifierProvider(
           create: (_) => CourtProvider(courtService),

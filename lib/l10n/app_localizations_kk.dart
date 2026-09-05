@@ -2803,4 +2803,189 @@ class AppLocalizationsKk extends AppLocalizations {
   String gameInvitedBy(String name) {
     return 'Шақырған: $name';
   }
+
+  @override
+  String get amigos => 'Амигос';
+
+  @override
+  String get amigosMine => 'Менікі';
+
+  @override
+  String get amigosFollowers => 'Мені қосқандар';
+
+  @override
+  String get amigosFeed => 'Лента';
+
+  @override
+  String get amigosMyTitle => 'Менің амигос';
+
+  @override
+  String get amigosPlayingNow => 'Қазір ойнап жатыр';
+
+  @override
+  String get amigosAdd => 'Амигосқа қосу';
+
+  @override
+  String get amigosAdded => 'Амигоста';
+
+  @override
+  String get amigosAddBack => 'Жауап ретінде';
+
+  @override
+  String get amigosRemove => 'Амигостан шығару';
+
+  @override
+  String amigosRemoveConfirm(String name) {
+    return '$name амигостан шығарылсын ба?';
+  }
+
+  @override
+  String get amigosMutual => 'өзара';
+
+  @override
+  String get amigosEmpty =>
+      'Әзірге ешкім жоқ.\nБұрын бірге ойнағандардан бастаңыз.';
+
+  @override
+  String get amigosEmptyFollowers => 'Сізді әзірге ешкім қоспады.';
+
+  @override
+  String get amigosEmptyFeed =>
+      'Әзірге тыныш. Мұнда кім ойнап жатқаны көрінеді.';
+
+  @override
+  String get amigosCandidatesTitle => 'Сіз жиі бірге ойнайсыз';
+
+  @override
+  String amigosGamesTogether(int count) {
+    return 'бірге $count матч';
+  }
+
+  @override
+  String get amigosSearchHint => 'Өзіңдікілерден іздеу';
+
+  @override
+  String get amigoPlaying => 'ойнап жатыр';
+
+  @override
+  String get amigoLooking => 'ойыншы іздейді';
+
+  @override
+  String get amigoTournament => 'турнир';
+
+  @override
+  String get amigoPlayed => 'турнир ойнады';
+
+  @override
+  String get amigoWatch => 'көру';
+
+  @override
+  String get amigosProfileEmpty => 'Бірге ойнайтындарды қосыңыз';
+
+  @override
+  String get messages => 'Хабарламалар';
+
+  @override
+  String get messagesEmpty =>
+      'Мұнда жазысулар болады.\nБірге ойнайтын адамға жазыңыз — «Жазу» түймесі профильде.';
+
+  @override
+  String get messageWrite => 'Жазу';
+
+  @override
+  String get messageHint => 'Хабарлама…';
+
+  @override
+  String get messageYouPrefix => 'Сіз: ';
+
+  @override
+  String get messageRules => 'Нақты жазыңыз. Спамға шағым беруге болады.';
+
+  @override
+  String get messageToday => 'Бүгін';
+
+  @override
+  String get messageYesterday => 'Кеше';
+
+  @override
+  String get messageDeleteConfirm => 'Хабарлама жойылсын ба?';
+
+  @override
+  String get messageBlockedByMe => 'Сіз ойыншыны бұғаттадыңыз';
+
+  @override
+  String get messageBlockedMe => 'Ойыншы жазысуды шектеді';
+
+  @override
+  String get blockUser => 'Ойыншыны бұғаттау';
+
+  @override
+  String blockUserConfirm(String name) {
+    return '$name бұғатталсын ба?';
+  }
+
+  @override
+  String get blockUserExplain =>
+      'Ол сізге жаза алмайды және белсенділігіңізді көрмейді. Амигос байланысы екі жақтан да жойылады.';
+
+  @override
+  String get blockAction => 'Бұғаттау';
+
+  @override
+  String get unblockAction => 'Бұғаттан шығару';
+
+  @override
+  String get blockedList => 'Бұғатталғандар';
+
+  @override
+  String get blockedEmpty => 'Ешкім бұғатталмаған.';
+
+  @override
+  String blockedAt(String date) {
+    return '$date бұғатталды';
+  }
+
+  @override
+  String get reportUser => 'Шағымдану';
+
+  @override
+  String get reportSubtitle => 'Жазысуды қарап, қолдау арқылы жауап береміз';
+
+  @override
+  String get reportSpam => 'Спам және жарнама';
+
+  @override
+  String get reportAbuse => 'Қорлау';
+
+  @override
+  String get reportFraud => 'Алаяқтық';
+
+  @override
+  String get reportOther => 'Басқа';
+
+  @override
+  String get reportComment => 'Не болды? (міндетті емес)';
+
+  @override
+  String get reportSend => 'Жіберу';
+
+  @override
+  String get reportSent => 'Шағым жіберілді';
+
+  @override
+  String get reportSentBlockAsk =>
+      'Шағым жіберілді. Ойыншыны бұғаттау керек пе?';
+
+  @override
+  String get notifyAmigos => 'Амигос туралы хабарландырулар';
+
+  @override
+  String get notifyAmigosHint =>
+      'сізді қосты, ойыншы іздейді, турнирге шақырады';
+
+  @override
+  String get notifyMessages => 'Жеке хабарламалар';
+
+  @override
+  String get notifyMessagesHint => 'жаңа хабарлама туралы push';
 }

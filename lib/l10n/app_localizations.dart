@@ -5343,6 +5343,348 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Пригласил: {name}'**
   String gameInvitedBy(String name);
+
+  /// No description provided for @amigos.
+  ///
+  /// In ru, this message translates to:
+  /// **'Амигос'**
+  String get amigos;
+
+  /// No description provided for @amigosMine.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои'**
+  String get amigosMine;
+
+  /// No description provided for @amigosFollowers.
+  ///
+  /// In ru, this message translates to:
+  /// **'Меня добавили'**
+  String get amigosFollowers;
+
+  /// No description provided for @amigosFeed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лента'**
+  String get amigosFeed;
+
+  /// No description provided for @amigosMyTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мои амигос'**
+  String get amigosMyTitle;
+
+  /// No description provided for @amigosPlayingNow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сейчас играют'**
+  String get amigosPlayingNow;
+
+  /// No description provided for @amigosAdd.
+  ///
+  /// In ru, this message translates to:
+  /// **'В амигос'**
+  String get amigosAdd;
+
+  /// No description provided for @amigosAdded.
+  ///
+  /// In ru, this message translates to:
+  /// **'В амигос ✓'**
+  String get amigosAdded;
+
+  /// No description provided for @amigosAddBack.
+  ///
+  /// In ru, this message translates to:
+  /// **'В ответ'**
+  String get amigosAddBack;
+
+  /// No description provided for @amigosRemove.
+  ///
+  /// In ru, this message translates to:
+  /// **'Убрать из амигос'**
+  String get amigosRemove;
+
+  /// No description provided for @amigosRemoveConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Убрать {name} из амигос?'**
+  String amigosRemoveConfirm(String name);
+
+  /// No description provided for @amigosMutual.
+  ///
+  /// In ru, this message translates to:
+  /// **'взаимно'**
+  String get amigosMutual;
+
+  /// No description provided for @amigosEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока никого.\nНачните с тех, с кем уже играли.'**
+  String get amigosEmpty;
+
+  /// No description provided for @amigosEmptyFollowers.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вас пока никто не добавил.'**
+  String get amigosEmptyFollowers;
+
+  /// No description provided for @amigosEmptyFeed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока тихо. Здесь будет видно, кто играет и кто собирается.'**
+  String get amigosEmptyFeed;
+
+  /// No description provided for @amigosCandidatesTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы часто играете вместе'**
+  String get amigosCandidatesTitle;
+
+  /// No description provided for @amigosGamesTogether.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} матчей вместе'**
+  String amigosGamesTogether(int count);
+
+  /// No description provided for @amigosSearchHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поиск по своим'**
+  String get amigosSearchHint;
+
+  /// No description provided for @amigoPlaying.
+  ///
+  /// In ru, this message translates to:
+  /// **'играет'**
+  String get amigoPlaying;
+
+  /// No description provided for @amigoLooking.
+  ///
+  /// In ru, this message translates to:
+  /// **'ищет игроков'**
+  String get amigoLooking;
+
+  /// No description provided for @amigoTournament.
+  ///
+  /// In ru, this message translates to:
+  /// **'турнир'**
+  String get amigoTournament;
+
+  /// No description provided for @amigoPlayed.
+  ///
+  /// In ru, this message translates to:
+  /// **'сыграл турнир'**
+  String get amigoPlayed;
+
+  /// No description provided for @amigoWatch.
+  ///
+  /// In ru, this message translates to:
+  /// **'смотреть'**
+  String get amigoWatch;
+
+  /// No description provided for @amigosProfileEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавьте тех, с кем играете'**
+  String get amigosProfileEmpty;
+
+  /// No description provided for @messages.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщения'**
+  String get messages;
+
+  /// No description provided for @messagesEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Здесь будут переписки.\nНапишите тому, с кем играете — кнопка «Написать» есть в профиле игрока.'**
+  String get messagesEmpty;
+
+  /// No description provided for @messageWrite.
+  ///
+  /// In ru, this message translates to:
+  /// **'Написать'**
+  String get messageWrite;
+
+  /// No description provided for @messageHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщение…'**
+  String get messageHint;
+
+  /// No description provided for @messageYouPrefix.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы: '**
+  String get messageYouPrefix;
+
+  /// No description provided for @messageRules.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пишите по делу. На спам можно пожаловаться.'**
+  String get messageRules;
+
+  /// No description provided for @messageToday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сегодня'**
+  String get messageToday;
+
+  /// No description provided for @messageYesterday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вчера'**
+  String get messageYesterday;
+
+  /// No description provided for @messageDeleteConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить сообщение?'**
+  String get messageDeleteConfirm;
+
+  /// No description provided for @messageBlockedByMe.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы заблокировали игрока'**
+  String get messageBlockedByMe;
+
+  /// No description provided for @messageBlockedMe.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игрок ограничил переписку'**
+  String get messageBlockedMe;
+
+  /// No description provided for @blockUser.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокировать игрока'**
+  String get blockUser;
+
+  /// No description provided for @blockUserConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокировать {name}?'**
+  String blockUserConfirm(String name);
+
+  /// No description provided for @blockUserExplain.
+  ///
+  /// In ru, this message translates to:
+  /// **'Он не сможет писать вам и видеть вашу активность. Вы исчезнете из его амигос, он — из ваших.'**
+  String get blockUserExplain;
+
+  /// No description provided for @blockAction.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокировать'**
+  String get blockAction;
+
+  /// No description provided for @unblockAction.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разблокировать'**
+  String get unblockAction;
+
+  /// No description provided for @blockedList.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокированные'**
+  String get blockedList;
+
+  /// No description provided for @blockedEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Никого не блокировали.'**
+  String get blockedEmpty;
+
+  /// No description provided for @blockedAt.
+  ///
+  /// In ru, this message translates to:
+  /// **'заблокирован {date}'**
+  String blockedAt(String date);
+
+  /// No description provided for @reportUser.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожаловаться'**
+  String get reportUser;
+
+  /// No description provided for @reportSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мы посмотрим переписку и ответим в поддержке'**
+  String get reportSubtitle;
+
+  /// No description provided for @reportSpam.
+  ///
+  /// In ru, this message translates to:
+  /// **'Спам и реклама'**
+  String get reportSpam;
+
+  /// No description provided for @reportAbuse.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оскорбления'**
+  String get reportAbuse;
+
+  /// No description provided for @reportFraud.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мошенничество'**
+  String get reportFraud;
+
+  /// No description provided for @reportOther.
+  ///
+  /// In ru, this message translates to:
+  /// **'Другое'**
+  String get reportOther;
+
+  /// No description provided for @reportComment.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что случилось? (необязательно)'**
+  String get reportComment;
+
+  /// No description provided for @reportSend.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отправить'**
+  String get reportSend;
+
+  /// No description provided for @reportSent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Жалоба отправлена'**
+  String get reportSent;
+
+  /// No description provided for @reportSentBlockAsk.
+  ///
+  /// In ru, this message translates to:
+  /// **'Жалоба отправлена. Заблокировать игрока?'**
+  String get reportSentBlockAsk;
+
+  /// No description provided for @notifyAmigos.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления об амигос'**
+  String get notifyAmigos;
+
+  /// No description provided for @notifyAmigosHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'кто-то добавил вас, ищет игрока, зовёт на турнир'**
+  String get notifyAmigosHint;
+
+  /// No description provided for @notifyMessages.
+  ///
+  /// In ru, this message translates to:
+  /// **'Личные сообщения'**
+  String get notifyMessages;
+
+  /// No description provided for @notifyMessagesHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'пуш на новое сообщение'**
+  String get notifyMessagesHint;
 }
 
 class _AppLocalizationsDelegate
