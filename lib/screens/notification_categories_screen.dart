@@ -47,6 +47,11 @@ class _NotificationCategoriesScreenState extends State<NotificationCategoriesScr
       case 'booking': return l10n.booking;
       case 'challenge': return l10n.navChallenges;
       case 'general': return l10n.notifCategoryGeneral;
+      // Новые разделы уведомлений: амигос и личные сообщения. Без них ключ
+      // показывался бы человеку как есть — «amigo».
+      case 'amigo': return l10n.amigos;
+      case 'message': return l10n.messages;
+      case 'game': return l10n.serviceGames;
       default: return key;
     }
   }
