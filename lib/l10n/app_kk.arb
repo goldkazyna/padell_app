@@ -279,6 +279,9 @@
   "@shareLevel": { "placeholders": { "level": { "type": "String" } } },
   "shareCost": "Құны: {cost}",
   "@shareCost": { "placeholders": { "cost": { "type": "String" } } },
+
+  "liveShareText": "Турнир трансляциясын көр",
+  "shareFailed": "«Бөлісу» терезесін ашу мүмкін болмады",
   "shareAppPromo": "Padel KZ — қосымшаны жүктеп алыңыз және турнирлерге тіркеліңіз!",
   "noSpotsLeftUpper": "ОРЫН ЖОҚ",
   "tournamentUnrated": "РЕЙТИНГСІЗ",

@@ -751,6 +751,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get liveShareText => 'Watch the tournament live';
+
+  @override
+  String get shareFailed => 'Could not open the share sheet';
+
+  @override
   String get shareAppPromo =>
       'Padel KZ — download the app and register for tournaments!';
 

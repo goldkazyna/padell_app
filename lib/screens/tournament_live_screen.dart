@@ -6,6 +6,7 @@ import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/rating_formatter.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/live_share_button.dart';
 import '../widgets/tournament_ai_button.dart';
 import '../widgets/standings_bits.dart';
 import '../widgets/verified_badge.dart';
@@ -629,15 +630,20 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
                 _DatePill(date: t['date'] as String? ?? '')
               else
                 const _LivePill(),
+              const Spacer(),
               if (t['status'] == 'completed' &&
                   (t['is_rated'] as bool? ?? false)) ...[
-                const Spacer(),
                 TournamentAiButton(
                   tournamentId: widget.tournamentId,
                   tournamentName: t['name'] as String? ?? '',
                   playerId: widget.highlightPlayerId,
                 ),
+                const SizedBox(width: 8),
               ],
+              LiveShareButton(
+                tournamentId: widget.tournamentId,
+                tournamentName: t['name'] as String? ?? '',
+              ),
             ],
           ),
           const SizedBox(height: 14),

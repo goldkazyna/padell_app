@@ -280,6 +280,9 @@
   "@shareLevel": { "placeholders": { "level": { "type": "String" } } },
   "shareCost": "Стоимость: {cost}",
   "@shareCost": { "placeholders": { "cost": { "type": "String" } } },
+
+  "liveShareText": "Смотри трансляцию турнира",
+  "shareFailed": "Не удалось открыть «Поделиться»",
   "shareAppPromo": "Padel KZ — скачай приложение и записывайся на турниры!",
   "noSpotsLeftUpper": "МЕСТ НЕТ",
   "tournamentUnrated": "БЕЗ РЕЙТИНГА",

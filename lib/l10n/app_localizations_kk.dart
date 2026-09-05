@@ -738,6 +738,12 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String get liveShareText => 'Турнир трансляциясын көр';
+
+  @override
+  String get shareFailed => '«Бөлісу» терезесін ашу мүмкін болмады';
+
+  @override
   String get shareAppPromo =>
       'Padel KZ — қосымшаны жүктеп алыңыз және турнирлерге тіркеліңіз!';
 

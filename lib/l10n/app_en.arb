@@ -270,6 +270,9 @@
   "shareFreeSpots": "Free spots: {count}",
   "shareLevel": "Level: {level}",
   "shareCost": "Cost: {cost}",
+
+  "liveShareText": "Watch the tournament live",
+  "shareFailed": "Could not open the share sheet",
   "shareAppPromo": "Padel KZ — download the app and register for tournaments!",
   "noSpotsLeftUpper": "NO SPOTS",
   "tournamentUnrated": "UNRATED",

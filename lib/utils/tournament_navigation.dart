@@ -15,11 +15,16 @@ import '../screens/tournament_live_team_screen.dart';
 ///
 /// [highlightPlayerId] — кого подсвечивать вместо текущего пользователя
 /// (актуально при открытии из чужого профиля).
+///
+/// [replace] — подменить текущий экран вместо добавления нового. Нужен
+/// экрану-переходнику по ссылке `padelp://live/{id}`: он узнаёт формат
+/// турнира и не должен оставаться в истории.
 void openTournamentLiveByType(
   BuildContext context, {
   required int tournamentId,
   required String tournamentType,
   int? highlightPlayerId,
+  bool replace = false,
 }) {
   Widget target;
   switch (tournamentType) {
@@ -66,10 +71,12 @@ void openTournamentLiveByType(
       );
   }
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => target),
-  );
+  final route = MaterialPageRoute(builder: (_) => target);
+  if (replace) {
+    Navigator.pushReplacement(context, route);
+  } else {
+    Navigator.push(context, route);
+  }
 }
 
 /// Удобная обёртка от Tournament-объекта.

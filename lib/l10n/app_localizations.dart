@@ -1468,6 +1468,18 @@ abstract class AppLocalizations {
   /// **'Стоимость: {cost}'**
   String shareCost(String cost);
 
+  /// No description provided for @liveShareText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Смотри трансляцию турнира'**
+  String get liveShareText;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось открыть «Поделиться»'**
+  String get shareFailed;
+
   /// No description provided for @shareAppPromo.
   ///
   /// In ru, this message translates to:

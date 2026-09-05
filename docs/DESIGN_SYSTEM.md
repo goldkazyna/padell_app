@@ -77,6 +77,7 @@
 | Чекбокс | `AppCheckbox` | `widgets/app_checkbox.dart` |
 | Основная кнопка | `AppPrimaryButton` | `widgets/app_primary_button.dart` |
 | Кнопка «назад» | `AppBackButton` | `widgets/app_back_button.dart` |
+| Поделиться трансляцией | `LiveShareButton` | `widgets/live_share_button.dart` |
 | Сворачиваемый блок | `AppExpandableSection` | `widgets/app_expandable_section.dart` |
 | Аватар игрока | `PlayerAvatar` | `widgets/player_avatar.dart` |
 | Логотип клуба | `ClubLogoTile` | `widgets/tournaments/club_logo.dart` |
@@ -386,6 +387,31 @@ appBar: AppBar(
   у них другой размер, отступы и область нажатия;
 - если нужен свой обработчик (спросить о несохранённых правках) — передаём
   `onTap`, а не пишем свою кнопку.
+
+## Кнопка «поделиться трансляцией»
+
+**`LiveShareButton`** — круг 34×34 в шапке live-экрана, справа. Тот же размер
+и обводка, что у `AppBackButton`: они стоят в одной строке, разнобой заметен.
+
+```dart
+Row(children: [
+  const AppBackButton(),
+  const SizedBox(width: 12),
+  const _LivePill(),
+  const Spacer(),
+  LiveShareButton(
+    tournamentId: widget.tournamentId,
+    tournamentName: t['name'] as String? ?? '',
+  ),
+])
+```
+
+- шлёт ссылку `https://padel-p.kz/live/{id}` — лендинг открывает тот же live
+  в приложении у зрителя, а без приложения уводит в магазин;
+- ссылку на `/t/{id}` тут не используем: она ведёт на карточку турнира, а не
+  на трансляцию;
+- на iPad share-sheet без якоря не открывается, поэтому кнопка сама передаёт
+  `sharePositionOrigin` — свой `Share.share` рядом писать не нужно.
 
 ---
 

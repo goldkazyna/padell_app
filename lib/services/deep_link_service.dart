@@ -7,9 +7,10 @@ import 'package:flutter/foundation.dart';
 import '../screens/club_detail_screen.dart';
 import '../screens/club_waiver_screen.dart';
 import '../screens/tournament_detail_screen.dart';
+import '../screens/tournament_live_entry_screen.dart';
 
-/// Слушает входящие deep-link'и (padelp://tournament/{id}, padelp://club/{id},
-/// padelp://waiver/{id}) и роутит на нужный экран.
+/// Слушает входящие deep-link'и (padelp://tournament/{id}, padelp://live/{id},
+/// padelp://club/{id}, padelp://waiver/{id}) и роутит на нужный экран.
 ///
 /// Деплинки приходят:
 /// - При тапе на ссылку «Открыть в приложении» с лендинга /t/{id}
@@ -57,6 +58,23 @@ class DeepLinkService {
 
   void _handleUri(Uri uri, {bool fromInitial = false}) {
     if (kDebugMode) debugPrint('DeepLink: $uri (initial=$fromInitial)');
+
+    // --- Трансляция турнира ---
+    // padelp://live/123      — host=live, segments=[123]
+    // https://padel-p.kz/live/123 — segments=[live, 123]
+    // Проверяем раньше турнира: у ссылки на live тот же номер турнира,
+    // и общий разбор увёл бы зрителя на карточку вместо трансляции.
+    int? liveTournamentId;
+    if (uri.host == 'live' && uri.pathSegments.isNotEmpty) {
+      liveTournamentId = int.tryParse(uri.pathSegments.first);
+    } else if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'live') {
+      liveTournamentId = int.tryParse(uri.pathSegments[1]);
+    }
+
+    if (liveTournamentId != null) {
+      _navigateToLive(liveTournamentId, fromInitial: fromInitial);
+      return;
+    }
 
     // --- Tournament ---
     // padelp://tournament/123  — host=tournament, segments=[123]
@@ -117,6 +135,25 @@ class DeepLinkService {
         state.push(
           MaterialPageRoute(
             builder: (_) => TournamentDetailScreen(tournamentId: id),
+          ),
+        );
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
+  Future<void> _navigateToLive(int id, {required bool fromInitial}) async {
+    final key = _navigatorKey;
+    if (key == null) return;
+
+    // При cold-start Navigator может быть ещё не готов — ждём.
+    for (int i = 0; i < 100; i++) {
+      final state = key.currentState;
+      if (state != null && state.mounted) {
+        state.push(
+          MaterialPageRoute(
+            builder: (_) => TournamentLiveEntryScreen(tournamentId: id),
           ),
         );
         return;
