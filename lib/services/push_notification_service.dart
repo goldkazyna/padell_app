@@ -11,6 +11,9 @@ import '../screens/challenge_detail_screen.dart';
 import '../screens/tournament_live_kingofcourt_screen.dart';
 import '../screens/tournament_live_bali_koc_screen.dart';
 import '../screens/achievements_screen.dart';
+import '../screens/amigos_screen.dart';
+import '../screens/chat_screen.dart';
+import '../screens/messages_screen.dart';
 import '../screens/tournament_invitations_screen.dart';
 import '../screens/my_bookings_screen.dart';
 import '../screens/admin/admin_tournament_detail_screen.dart';
@@ -300,7 +303,10 @@ class PushNotificationService {
     final tournamentId = message.data['tournament_id'] ?? '';
     final challengeId = message.data['challenge_id'] ?? '';
     final subtype = message.data['subtype'] ?? '';
-    final payload = '$type|$tournamentId|$challengeId|$subtype';
+    final userId = message.data['user_id'] ?? '';
+    // Пятым и шестым идут собеседник и его имя: у личных сообщений
+    // ни турнира, ни поединка нет, открывать переписку больше нечем.
+    final payload = '$type|$tournamentId|$challengeId|$subtype|$userId|${notification.title ?? ''}';
 
     // iOS: Firebase сам показывает notification через setForegroundNotificationPresentationOptions
     // Android: показываем через local notifications (у Firebase нет foreground display на Android)
@@ -342,8 +348,10 @@ class PushNotificationService {
     final tournamentId = parts.length > 1 ? parts[1] : '';
     final challengeId = parts.length > 2 ? parts[2] : '';
     final subtype = parts.length > 3 ? parts[3] : '';
+    final userId = parts.length > 4 ? parts[4] : '';
+    final title = parts.length > 5 ? parts[5] : '';
 
-    _navigateByType(type, tournamentId, challengeId, subtype);
+    _navigateByType(type, tournamentId, challengeId, subtype, userId, title);
   }
 
   void _handleNotificationTap(RemoteMessage message) {
@@ -352,13 +360,37 @@ class PushNotificationService {
     final tournamentId = message.data['tournament_id'] ?? '';
     final challengeId = message.data['challenge_id'] ?? '';
     final subtype = message.data['subtype'] ?? '';
-    _navigateByType(type, tournamentId, challengeId, subtype);
+    final userId = message.data['user_id'] ?? '';
+    final title = message.notification?.title ?? '';
+    _navigateByType(type, tournamentId, challengeId, subtype, userId, title);
   }
 
   void _navigateByType(
-      String type, String tournamentId, String challengeId, String subtype) {
+      String type, String tournamentId, String challengeId, String subtype,
+      [String userId = '', String title = '']) {
     _log(
         'Navigate: type=$type, subtype=$subtype, tournamentId=$tournamentId, challengeId=$challengeId');
+
+    // Личное сообщение → сразу в переписку с отправителем. Имя берём из
+    // заголовка пуша: там как раз имя собеседника.
+    if (type == 'direct_message') {
+      final id = int.tryParse(userId);
+      if (id != null) {
+        _navigateWhenReady(
+          () => ChatScreen(playerId: id, playerName: title),
+        );
+      } else {
+        _navigateWhenReady(() => const MessagesScreen());
+      }
+      return;
+    }
+
+    // «Вас добавили в амигос» → вкладка «Меня добавили»: оттуда можно
+    // добавить в ответ одним нажатием.
+    if (type == 'amigo_added') {
+      _navigateWhenReady(() => const AmigosScreen(initialTab: 1));
+      return;
+    }
 
     // Новый значок → экран достижений
     if (type == 'achievement') {
