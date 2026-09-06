@@ -283,7 +283,7 @@ class CourtMenuZone extends StatelessWidget {
     );
   }
 
-  /// Узкий вариант: иконка по центру, название под ней, метка углом.
+  /// Узкий вариант: иконка по центру, название под ней, метка сверху.
   Widget _compact(
     bool alarmed,
     Color iconColor,
@@ -293,7 +293,48 @@ class CourtMenuZone extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          _compactBody(alarmed, iconColor, iconBg, iconBorder),
+          // «NEW» садится на верхнюю кромку ячейки: в углу иконки метка
+          // спорит с числами соседей и теряется.
+          if (tag != null)
+            Positioned(
+              top: -7,
+              child: Container(
+                height: 16,
+                padding: const EdgeInsets.symmetric(horizontal: 7),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppTheme.error,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  tag!,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.4,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _compactBody(
+    bool alarmed,
+    Color iconColor,
+    Color iconBg,
+    Color iconBorder,
+  ) {
+    return Container(
         constraints: const BoxConstraints(minHeight: 84),
         color: alarmed ? AppTheme.error.withValues(alpha: 0.10) : null,
         // По бокам ужато до 4: шрифт крупнее, и длинным названиям
@@ -326,7 +367,7 @@ class CourtMenuZone extends StatelessWidget {
                     ),
                     child: Icon(icon, size: 17, color: iconColor),
                   ),
-                if (badge > 0 || value != null || tag != null)
+                if (badge > 0 || value != null)
                   Positioned(
                     top: -6,
                     right: -10,
@@ -347,7 +388,7 @@ class CourtMenuZone extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        badge > 0 ? '${badge > 99 ? '99+' : badge}' : (value ?? tag!),
+                        badge > 0 ? '${badge > 99 ? '99+' : badge}' : value!,
                         style: TextStyle(
                           color: badge > 0 ? Colors.white : AppTheme.accent,
                           fontSize: 9.5,
@@ -375,7 +416,6 @@ class CourtMenuZone extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

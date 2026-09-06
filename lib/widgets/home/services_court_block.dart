@@ -28,12 +28,11 @@ enum ServicesLayout {
 }
 
 /// Показывать ли на главной все три раскладки сразу — чтобы выбрать на
-/// живом экране, а не по картинке. Выбрали — ставим [kServicesLayout]
-/// и возвращаем false.
-const bool kServicesPreview = true;
+/// живом экране, а не по картинке. Выбор сделан, превью выключено.
+const bool kServicesPreview = false;
 
-/// Что показываем, когда выбор сделан.
-const ServicesLayout kServicesLayout = ServicesLayout.quad;
+/// Выбранная раскладка: четыре колонки, иконки акцентом без плашек.
+const ServicesLayout kServicesLayout = ServicesLayout.quadBare;
 
 /// «Сервисы» на главной: восемь зон на корте.
 ///
@@ -97,6 +96,7 @@ class _ServicesCourtBlockState extends State<ServicesCourtBlock> {
   }
 
   /// Восемь входов одним списком: раскладка меняется, состав — нет.
+  /// Порядок как в макете: сверху то, куда ходят чаще.
   List<_Service> _services(AppLocalizations l) => [
         _Service(
           // Та же иконка, что у раздела «Лиги» в турнирах: одна вещь —
@@ -104,7 +104,6 @@ class _ServicesCourtBlockState extends State<ServicesCourtBlock> {
           icon: Icons.leaderboard_outlined,
           title: l.leaguesTitle,
           subtitle: l.serviceLeaguesSub,
-          accent: true,
           onTap: () => _open(const LeaguesScreen()),
         ),
         _Service(
@@ -112,6 +111,21 @@ class _ServicesCourtBlockState extends State<ServicesCourtBlock> {
           title: l.serviceClubs,
           subtitle: l.serviceClubsSub,
           onTap: () => _open(ClubsListScreen(title: l.serviceClubs)),
+        ),
+        _Service(
+          icon: Icons.groups_outlined,
+          title: l.serviceCommunity,
+          subtitle: l.serviceCommunitySub,
+          onTap: () => _open(ClubsListScreen(
+            type: 'community',
+            title: l.serviceCommunity,
+          )),
+        ),
+        _Service(
+          icon: Icons.shopping_bag_outlined,
+          title: l.serviceShop,
+          subtitle: l.serviceShopSub,
+          onTap: () => showAppAlert(context, l.serviceComingSoon),
         ),
         _Service(
           icon: Icons.fitness_center_outlined,
@@ -131,15 +145,6 @@ class _ServicesCourtBlockState extends State<ServicesCourtBlock> {
           onTap: () => _open(const GamesScreen(), needProfile: true),
         ),
         _Service(
-          icon: Icons.groups_outlined,
-          title: l.serviceCommunity,
-          subtitle: l.serviceCommunitySub,
-          onTap: () => _open(ClubsListScreen(
-            type: 'community',
-            title: l.serviceCommunity,
-          )),
-        ),
-        _Service(
           icon: Icons.credit_card_outlined,
           title: l.serviceClubCards,
           subtitle: l.serviceClubCardsSub,
@@ -150,12 +155,6 @@ class _ServicesCourtBlockState extends State<ServicesCourtBlock> {
           title: l.serviceCertificates,
           subtitle: l.serviceCertificatesSub,
           onTap: () => _open(const CertificatesScreen()),
-        ),
-        _Service(
-          icon: Icons.shopping_bag_outlined,
-          title: l.serviceShop,
-          subtitle: l.serviceShopSub,
-          onTap: () => showAppAlert(context, l.serviceComingSoon),
         ),
       ];
 
