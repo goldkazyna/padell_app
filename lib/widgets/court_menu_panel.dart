@@ -290,7 +290,9 @@ class CourtMenuZone extends StatelessWidget {
       child: Container(
         constraints: const BoxConstraints(minHeight: 84),
         color: alarmed ? AppTheme.error.withValues(alpha: 0.10) : null,
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+        // По бокам ужато до 4: шрифт крупнее, и длинным названиям
+        // («Сертификаты», «Клубные карты») нужна каждая доля ширины.
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -348,9 +350,10 @@ class CourtMenuZone extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: AppTheme.textPrimary,
-                fontSize: 11.5,
+                fontSize: 13.5,
                 fontWeight: FontWeight.w600,
                 height: 1.2,
+                letterSpacing: -0.2,
               ),
             ),
           ],
