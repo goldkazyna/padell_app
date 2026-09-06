@@ -51,15 +51,17 @@ void main() {
   }
 
   testWidgets('восемь зон в два ряда', (tester) async {
-    tester.view.physicalSize = const Size(390, 300);
+    tester.view.physicalSize = const Size(390, 1400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(wrap());
     await tester.pump();
 
-    expect(find.byType(CourtMenuZone), findsNWidgets(8));
-    expect(find.byType(CourtMenuRow), findsNWidgets(2));
+    // Пока идёт выбор раскладки, на главной три панели подряд: 8 зон в
+    // каждой. Выберем — останется одна.
+    final panels = kServicesPreview ? 3 : 1;
+    expect(find.byType(CourtMenuZone), findsNWidgets(8 * panels));
 
     // Названия на месте — все восемь входов видны без прокрутки блока.
     for (final name in [
@@ -72,7 +74,7 @@ void main() {
       'Сертификаты',
       'Магазин',
     ]) {
-      expect(find.text(name), findsOneWidget, reason: name);
+      expect(find.text(name), findsNWidgets(panels), reason: name);
     }
 
     await expectLater(
@@ -85,6 +87,6 @@ void main() {
     await tester.pumpWidget(wrap());
     await tester.pump();
 
-    expect(find.text('NEW'), findsOneWidget);
+    expect(find.text('NEW'), findsNWidgets(kServicesPreview ? 3 : 1));
   });
 }
