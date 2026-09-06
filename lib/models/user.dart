@@ -48,6 +48,12 @@ class User {
   final String levelName;
   final int? place;
   final String? city;
+
+  /// Необязательные контакты — заполняются в редактировании профиля.
+  final String? whatsapp;
+  final String? telegramUsername;
+  final String? instagram;
+
   final String? gender;
   final DateTime? birthDate;
   final String? hand;
@@ -72,6 +78,9 @@ class User {
     required this.levelName,
     this.place,
     this.city,
+    this.whatsapp,
+    this.telegramUsername,
+    this.instagram,
     this.gender,
     this.birthDate,
     this.hand,
@@ -149,6 +158,11 @@ class User {
     }
   }
 
+  /// Есть ли способ связаться, кроме звонка: WhatsApp или телеграм.
+  /// По нему в профиле горит точка «загляни в редактирование».
+  bool get hasMessenger =>
+      (whatsapp?.isNotEmpty ?? false) || (telegramUsername?.isNotEmpty ?? false);
+
   factory User.fromJson(Map<String, dynamic> json) {
     final adminClubsList = (json['admin_clubs'] as List?) ?? const [];
     final adminClubs = adminClubsList
@@ -171,6 +185,9 @@ class User {
       levelName: json['level_name'] as String? ?? '',
       place: json['place'] as int?,
       city: json['city'] as String?,
+      whatsapp: json['whatsapp'] as String?,
+      telegramUsername: json['telegram_username'] as String?,
+      instagram: json['instagram'] as String?,
       gender: json['gender'] as String?,
       birthDate: json['birth_date'] != null
           ? DateTime.tryParse(json['birth_date'] as String)

@@ -4,6 +4,7 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../screens/edit_profile_screen.dart';
+import '../../models/user.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/rating_formatter.dart';
 import '../level_verification_sheet.dart';
@@ -110,7 +111,9 @@ class ProfileHero extends StatelessWidget {
 }
 
 class _TopRow extends StatelessWidget {
-  final dynamic user;
+  // Типизировано осознанно: точка у карандаша считается по контактам, и
+  // dynamic скрыл бы опечатку в имени поля.
+  final User? user;
   final Widget? trailing;
   const _TopRow({required this.user, this.trailing});
 
@@ -238,15 +241,38 @@ class _TopRow extends StatelessWidget {
               context.read<ProfileProvider>().loadProfile();
             }
           }),
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0x0FFFFFFF),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppTheme.border),
-            ),
-            child: Icon(Icons.edit_outlined, size: 16, color: AppTheme.textPrimary),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0x0FFFFFFF),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppTheme.border),
+                ),
+                child: Icon(Icons.edit_outlined,
+                    size: 16, color: AppTheme.textPrimary),
+              ),
+              // Точка, пока не указан ни WhatsApp, ни телеграм: связаться с
+              // человеком после игры нечем, кроме звонка. Появился хоть один
+              // способ — точка гаснет.
+              if (user != null && !user!.hasMessenger)
+                Positioned(
+                  right: -2,
+                  top: -2,
+                  child: Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: AppTheme.amber,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.background, width: 1.5),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ],
