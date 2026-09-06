@@ -222,27 +222,33 @@ class _TopRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        trailing ??
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-              ).then((_) {
-                if (context.mounted) {
-                  context.read<ProfileProvider>().loadProfile();
-                }
-              }),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0x0FFFFFFF),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppTheme.border),
-                ),
-                child: Icon(Icons.edit_outlined, size: 16, color: AppTheme.textPrimary),
-              ),
+        // Сообщения приходят снаружи и встают рядом с карандашом, а не
+        // вместо него: когда в шапке появился чат, «редактировать профиль»
+        // молча пропало, и менять имя стало негде — кроме меню внизу.
+        if (trailing != null) ...[
+          trailing!,
+          const SizedBox(width: 8),
+        ],
+        GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+          ).then((_) {
+            if (context.mounted) {
+              context.read<ProfileProvider>().loadProfile();
+            }
+          }),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0x0FFFFFFF),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppTheme.border),
             ),
+            child: Icon(Icons.edit_outlined, size: 16, color: AppTheme.textPrimary),
+          ),
+        ),
       ],
     );
   }
