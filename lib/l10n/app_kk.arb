@@ -1007,6 +1007,8 @@
   "amigosEmptyFeed": "Әзірге тыныш. Мұнда кім ойнап жатқаны көрінеді.",
   "amigosCandidatesTitle": "Сіз жиі бірге ойнайсыз",
   "amigosGamesTogether": "бірге {count} матч",
+
+  "amigosWinrateTogether": "{winrate}% жеңіс",
   "amigosSearchHint": "Өзіңдікілерден іздеу",
   "amigoPlaying": "ойнап жатыр",
   "amigoLooking": "ойыншы іздейді",

@@ -5446,6 +5446,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} матч вместе} few{{count} матча вместе} many{{count} матчей вместе} other{{count} матча вместе}}'**
   String amigosGamesTogether(int count);
 
+  /// No description provided for @amigosWinrateTogether.
+  ///
+  /// In ru, this message translates to:
+  /// **'{winrate}% побед'**
+  String amigosWinrateTogether(int winrate);
+
   /// No description provided for @amigosSearchHint.
   ///
   /// In ru, this message translates to:

@@ -2899,6 +2899,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String amigosWinrateTogether(int winrate) {
+    return '$winrate% wins';
+  }
+
+  @override
   String get amigosSearchHint => 'Search your amigos';
 
   @override

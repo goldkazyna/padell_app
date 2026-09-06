@@ -2862,6 +2862,11 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String amigosWinrateTogether(int winrate) {
+    return '$winrate% жеңіс';
+  }
+
+  @override
   String get amigosSearchHint => 'Өзіңдікілерден іздеу';
 
   @override

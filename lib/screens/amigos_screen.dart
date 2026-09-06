@@ -787,22 +787,60 @@ class _CandidateRow extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 3),
+                  // Кто он сейчас: уровень и рейтинг. Это решает, звать ли
+                  // человека в пару, — важнее, чем сколько вы сыграли.
                   Text(
-                    // У найденных поиском совместных матчей нет — показываем
-                    // уровень и рейтинг, иначе строка врала бы «0 матчей».
-                    candidate.gamesTogether > 0
-                        ? l10n.amigosGamesTogether(candidate.gamesTogether)
-                        : [
-                            if (candidate.level != null)
-                              'ур. ${candidate.level!.toStringAsFixed(2)}',
-                            if (candidate.rating > 0) '${candidate.rating}',
-                          ].join(' · '),
+                    [
+                      if (candidate.level != null)
+                        'ур. ${candidate.level!.toStringAsFixed(2)}',
+                      if (candidate.rating > 0) '${candidate.rating}',
+                    ].join(' · '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: AppTheme.textSecondary,
-                      fontSize: 12,
+                      fontSize: 11.5,
                     ),
                   ),
+                  // Совместная история — второй строкой, с процентом побед
+                  // вдвоём. У найденных поиском её нет, строку не рисуем.
+                  if (candidate.gamesTogether > 0) ...[
+                    const SizedBox(height: 2),
+                    // Одной строкой с разной раскраской: два отдельных Text
+                    // в Row не помещались и упирались в кнопку.
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: l10n.amigosGamesTogether(
+                              candidate.gamesTogether,
+                            ),
+                          ),
+                          const TextSpan(text: '  ·  '),
+                          TextSpan(
+                            text: l10n.amigosWinrateTogether(candidate.winrate),
+                            style: TextStyle(
+                              // Та же шкала, что у винрейта в профиле:
+                              // 60+ зелёный, 40+ жёлтый, ниже красный.
+                              color: candidate.winrate >= 60
+                                  ? AppTheme.accent
+                                  : (candidate.winrate >= 40
+                                        ? AppTheme.amber
+                                        : AppTheme.error),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppTheme.textDim,
+                        fontSize: 11.5,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

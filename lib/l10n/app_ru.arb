@@ -1037,6 +1037,9 @@
   "amigosCandidatesTitle": "Вы часто играете вместе",
   "amigosGamesTogether": "{count, plural, one{{count} матч вместе} few{{count} матча вместе} many{{count} матчей вместе} other{{count} матча вместе}}",
   "@amigosGamesTogether": { "placeholders": {"count": {"type": "int"}} },
+
+  "amigosWinrateTogether": "{winrate}% побед",
+  "@amigosWinrateTogether": { "placeholders": { "winrate": { "type": "int" } } },
   "amigosSearchHint": "Поиск по своим",
   "amigoPlaying": "играет",
   "amigoLooking": "ищет игроков",

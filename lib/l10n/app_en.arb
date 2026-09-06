@@ -1009,6 +1009,8 @@
   "amigosEmptyFeed": "Quiet for now. You will see who is playing and who is heading out.",
   "amigosCandidatesTitle": "You often play together",
   "amigosGamesTogether": "{count, plural, one{{count} match together} other{{count} matches together}}",
+
+  "amigosWinrateTogether": "{winrate}% wins",
   "amigosSearchHint": "Search your amigos",
   "amigoPlaying": "playing",
   "amigoLooking": "looking for players",

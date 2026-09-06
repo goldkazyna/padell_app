@@ -2909,6 +2909,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String amigosWinrateTogether(int winrate) {
+    return '$winrate% побед';
+  }
+
+  @override
   String get amigosSearchHint => 'Поиск по своим';
 
   @override
