@@ -103,6 +103,7 @@
   "tournamentStatusCompleted": "Завершён",
   "tournamentStatusCancelled": "Отменён",
 
+  "sectionMessengers": "МЕССЕНДЖЕРЫ",
   "sectionContacts": "КОНТАКТЫ",
   "sectionAbout": "О ВАС",
   "sectionGameStyle": "ИГРОВОЙ СТИЛЬ",
@@ -324,6 +325,10 @@
     "placeholders": { "amount": { "type": "int" } }
   },
   "inactivityDecayedText": "Так будет каждый месяц, пока вы не выйдете на корт. Один турнир — и списания прекратятся.",
+  "fieldWhatsapp": "WhatsApp",
+  "fieldTelegram": "Telegram",
+  "fieldInstagram": "Instagram",
+  "whatsappSameAsPhone": "Как телефон",
   "leaguesTitle": "Лиги",
   "leaguesEmpty": "Лиг пока нет",
   "leaguesEmptyHint": "Когда клуб запустит лигу, она появится здесь",

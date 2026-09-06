@@ -592,6 +592,12 @@ abstract class AppLocalizations {
   /// **'Отменён'**
   String get tournamentStatusCancelled;
 
+  /// No description provided for @sectionMessengers.
+  ///
+  /// In ru, this message translates to:
+  /// **'МЕССЕНДЖЕРЫ'**
+  String get sectionMessengers;
+
   /// No description provided for @sectionContacts.
   ///
   /// In ru, this message translates to:
@@ -1641,6 +1647,30 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Так будет каждый месяц, пока вы не выйдете на корт. Один турнир — и списания прекратятся.'**
   String get inactivityDecayedText;
+
+  /// No description provided for @fieldWhatsapp.
+  ///
+  /// In ru, this message translates to:
+  /// **'WhatsApp'**
+  String get fieldWhatsapp;
+
+  /// No description provided for @fieldTelegram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Telegram'**
+  String get fieldTelegram;
+
+  /// No description provided for @fieldInstagram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Instagram'**
+  String get fieldInstagram;
+
+  /// No description provided for @whatsappSameAsPhone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Как телефон'**
+  String get whatsappSameAsPhone;
 
   /// No description provided for @leaguesTitle.
   ///

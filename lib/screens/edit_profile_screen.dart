@@ -43,6 +43,9 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _whatsappController = TextEditingController();
+  final _telegramController = TextEditingController();
+  final _instagramController = TextEditingController();
 
   String? _city;
   String? _gender;
@@ -72,6 +75,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _whatsappController.dispose();
+    _telegramController.dispose();
+    _instagramController.dispose();
     super.dispose();
   }
 
@@ -94,6 +100,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _birthDate = birth;
         _phone = (user['phone'] as String? ?? '').trim();
         _phoneController.text = _phone; // пустое если не задан
+        _whatsappController.text = _formatPhone(
+          (user['whatsapp'] as String?) ?? '',
+        );
+        _telegramController.text = (user['telegram_username'] as String?) ?? '';
+        _instagramController.text = (user['instagram'] as String?) ?? '';
         _avatarUrl = user['avatar'] as String?;
         _rating = user['rating'] as int?;
         final lvl = user['level'];
@@ -180,6 +191,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (_birthDate != null) {
         body['birth_date'] = _birthDate!.toIso8601String().substring(0, 10);
       }
+      // Контакты шлём всегда: пустая строка стирает старое значение.
+      body['whatsapp'] = _whatsappController.text.trim();
+      body['telegram_username'] = _telegramController.text.trim();
+      body['instagram'] = _instagramController.text.trim();
+
       // Телефон — отправляем только если изначально был пуст и юзер ввёл.
       // Если уже был задан — поле заблокировано, не шлём.
       if (_phone.isEmpty) {
@@ -429,6 +445,58 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               trailing: Icon(Icons.chevron_right, size: 16, color: _T.dim),
                               onTap: _pickCity,
                               incomplete: _city == null || _city!.isEmpty,
+                              isLast: true,
+                            ),
+                          ]),
+                          // Сразу под городом: это тоже «как со мной
+                          // связаться», просто необязательное. Отдельной
+                          // секцией — в «КОНТАКТАХ» выше лежат имя и телефон,
+                          // которые обязательны.
+                          _buildSectionTitle(
+                            AppLocalizations.of(context)!.sectionMessengers,
+                            optional: true,
+                          ),
+                          _buildCard(children: [
+                            _buildEditableRow(
+                              icon: Icons.chat_outlined,
+                              label: AppLocalizations.of(context)!.fieldWhatsapp,
+                              controller: _whatsappController,
+                              hint: '+7 777 ...',
+                              keyboardType: TextInputType.phone,
+                              // У части людей WhatsApp на другом номере,
+                              // поэтому не подставляем молча, а предлагаем.
+                              trailing: _phone.isEmpty
+                                  ? null
+                                  : GestureDetector(
+                                      onTap: () => setState(() {
+                                        _whatsappController.text =
+                                            _formatPhone(_phone);
+                                      }),
+                                      behavior: HitTestBehavior.opaque,
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .whatsappSameAsPhone,
+                                        style: const TextStyle(
+                                          color: _T.green,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            _divider(),
+                            _buildEditableRow(
+                              icon: Icons.send_outlined,
+                              label: AppLocalizations.of(context)!.fieldTelegram,
+                              controller: _telegramController,
+                              hint: '@username',
+                            ),
+                            _divider(),
+                            _buildEditableRow(
+                              icon: Icons.camera_alt_outlined,
+                              label: AppLocalizations.of(context)!.fieldInstagram,
+                              controller: _instagramController,
+                              hint: '@username',
                               isLast: true,
                             ),
                           ]),
@@ -848,6 +916,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     TextInputType? keyboardType,
     bool isLast = false,
     bool incomplete = false,
+    Widget? trailing,
   }) {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
@@ -894,6 +963,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
             ),
           ),
+          if (trailing != null) ...[
+            const SizedBox(width: 8),
+            trailing,
+          ],
         ],
       ),
     );

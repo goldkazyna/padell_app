@@ -101,6 +101,7 @@
   "tournamentStatusCompleted": "Completed",
   "tournamentStatusCancelled": "Cancelled",
 
+  "sectionMessengers": "MESSENGERS",
   "sectionContacts": "CONTACTS",
   "sectionAbout": "ABOUT YOU",
   "sectionGameStyle": "GAME STYLE",
@@ -312,6 +313,10 @@
     "placeholders": { "amount": { "type": "int" } }
   },
   "inactivityDecayedText": "This repeats every month until you play. One tournament stops it.",
+  "fieldWhatsapp": "WhatsApp",
+  "fieldTelegram": "Telegram",
+  "fieldInstagram": "Instagram",
+  "whatsappSameAsPhone": "Same as phone",
   "leaguesTitle": "Leagues",
   "leaguesEmpty": "No leagues yet",
   "leaguesEmptyHint": "Once a club starts a league, it shows up here",

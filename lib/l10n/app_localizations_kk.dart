@@ -271,6 +271,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get tournamentStatusCancelled => 'Бас тартылды';
 
   @override
+  String get sectionMessengers => 'МЕССЕНДЖЕРЛЕР';
+
+  @override
   String get sectionContacts => 'БАЙЛАНЫСТАР';
 
   @override
@@ -837,6 +840,18 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get inactivityDecayedText =>
       'Корттқа шыққанша осы ай сайын қайталанады. Бір турнир жеткілікті.';
+
+  @override
+  String get fieldWhatsapp => 'WhatsApp';
+
+  @override
+  String get fieldTelegram => 'Telegram';
+
+  @override
+  String get fieldInstagram => 'Instagram';
+
+  @override
+  String get whatsappSameAsPhone => 'Телефон сияқты';
 
   @override
   String get leaguesTitle => 'Лигалар';

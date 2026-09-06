@@ -103,6 +103,7 @@
   "tournamentStatusCompleted": "Аяқталды",
   "tournamentStatusCancelled": "Бас тартылды",
 
+  "sectionMessengers": "МЕССЕНДЖЕРЛЕР",
   "sectionContacts": "БАЙЛАНЫСТАР",
   "sectionAbout": "СІЗ ТУРАЛЫ",
   "sectionGameStyle": "ОЙЫН СТИЛІ",
@@ -323,6 +324,10 @@
     "placeholders": { "amount": { "type": "int" } }
   },
   "inactivityDecayedText": "Корттқа шыққанша осы ай сайын қайталанады. Бір турнир жеткілікті.",
+  "fieldWhatsapp": "WhatsApp",
+  "fieldTelegram": "Telegram",
+  "fieldInstagram": "Instagram",
+  "whatsappSameAsPhone": "Телефон сияқты",
   "leaguesTitle": "Лигалар",
   "leaguesEmpty": "Лигалар әзірге жоқ",
   "leaguesEmptyHint": "Клуб лига бастағанда, ол осында пайда болады",

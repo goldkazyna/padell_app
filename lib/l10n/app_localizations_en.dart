@@ -271,6 +271,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tournamentStatusCancelled => 'Cancelled';
 
   @override
+  String get sectionMessengers => 'MESSENGERS';
+
+  @override
   String get sectionContacts => 'CONTACTS';
 
   @override
@@ -850,6 +853,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get inactivityDecayedText =>
       'This repeats every month until you play. One tournament stops it.';
+
+  @override
+  String get fieldWhatsapp => 'WhatsApp';
+
+  @override
+  String get fieldTelegram => 'Telegram';
+
+  @override
+  String get fieldInstagram => 'Instagram';
+
+  @override
+  String get whatsappSameAsPhone => 'Same as phone';
 
   @override
   String get leaguesTitle => 'Leagues';
