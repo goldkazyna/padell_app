@@ -15,6 +15,7 @@ import '../widgets/amigos/amigo_row.dart';
 import '../widgets/court_grid_background.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/player_avatar.dart';
+import '../widgets/verified_badge.dart';
 import 'game_detail_screen.dart';
 import 'player_profile_screen.dart';
 import 'tournament_detail_screen.dart';
@@ -807,15 +808,25 @@ class _CandidateRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    candidate.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          candidate.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      if (candidate.levelVerified) ...[
+                        const SizedBox(width: 5),
+                        const VerifiedBadge(size: 10),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 3),
                   // Кто он сейчас: уровень и рейтинг. Это решает, звать ли

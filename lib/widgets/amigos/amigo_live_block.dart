@@ -5,6 +5,7 @@ import '../../models/amigo.dart';
 import '../../theme/app_theme.dart';
 import '../court_grid_background.dart';
 import '../player_avatar.dart';
+import '../verified_badge.dart';
 
 /// «Сейчас на корте» — верх экрана амигос.
 ///
@@ -165,15 +166,25 @@ class _PlayerLine extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  amigo.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        amigo.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    if (amigo.levelVerified) ...[
+                      const SizedBox(width: 5),
+                      const VerifiedBadge(size: 11),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(

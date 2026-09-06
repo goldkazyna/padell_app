@@ -57,6 +57,9 @@ class Amigo {
   final double? level;
   final int rating;
 
+  /// Уровень подтверждён клубом — рядом с именем синяя галочка.
+  final bool levelVerified;
+
   /// Добавили друг друга.
   final bool mutual;
 
@@ -74,6 +77,7 @@ class Amigo {
     this.avatar,
     this.level,
     this.rating = 0,
+    this.levelVerified = false,
     this.mutual = false,
     this.isAmigo = false,
     this.status,
@@ -88,6 +92,7 @@ class Amigo {
       // Уровень с бэка приходит то числом, то строкой — как везде в проекте.
       level: json['level'] == null ? null : double.tryParse('${json['level']}'),
       rating: (json['rating'] as num?)?.toInt() ?? 0,
+      levelVerified: json['level_verified'] as bool? ?? false,
       mutual: json['mutual'] as bool? ?? false,
       isAmigo: json['is_amigo'] as bool? ?? false,
       status: AmigoStatus.fromJson(json['status'] as Map<String, dynamic>?),
@@ -104,6 +109,7 @@ class Amigo {
       avatar: avatar,
       level: level,
       rating: rating,
+      levelVerified: levelVerified,
       mutual: mutual ?? this.mutual,
       isAmigo: isAmigo ?? this.isAmigo,
       status: status,
@@ -122,6 +128,9 @@ class AmigoCandidate {
   final int gamesTogether;
   final int winrate;
 
+  /// Уровень подтверждён клубом.
+  final bool levelVerified;
+
   /// Локальное состояние: добавили прямо на этом экране.
   final bool added;
 
@@ -133,6 +142,7 @@ class AmigoCandidate {
     this.rating = 0,
     this.gamesTogether = 0,
     this.winrate = 0,
+    this.levelVerified = false,
     this.added = false,
   });
 
@@ -145,6 +155,7 @@ class AmigoCandidate {
       rating: (json['rating'] as num?)?.toInt() ?? 0,
       gamesTogether: (json['games_together'] as num?)?.toInt() ?? 0,
       winrate: (json['winrate'] as num?)?.toInt() ?? 0,
+      levelVerified: json['level_verified'] as bool? ?? false,
       added: json['added'] as bool? ?? json['is_amigo'] as bool? ?? false,
     );
   }
@@ -158,6 +169,7 @@ class AmigoCandidate {
       rating: rating,
       gamesTogether: gamesTogether,
       winrate: winrate,
+      levelVerified: levelVerified,
       added: added ?? this.added,
     );
   }
@@ -168,6 +180,10 @@ class AmigoFeedEvent {
   final int userId;
   final String playerName;
   final String? playerAvatar;
+
+  /// Уровень подтверждён клубом.
+  final bool playerVerified;
+
   final String kind;
   final String title;
   final String subtitle;
@@ -184,6 +200,7 @@ class AmigoFeedEvent {
     required this.userId,
     required this.playerName,
     this.playerAvatar,
+    this.playerVerified = false,
     required this.kind,
     required this.title,
     required this.subtitle,
@@ -203,6 +220,7 @@ class AmigoFeedEvent {
       userId: (json['user_id'] as num?)?.toInt() ?? 0,
       playerName: player['name'] as String? ?? 'Игрок',
       playerAvatar: player['avatar'] as String?,
+      playerVerified: player['level_verified'] as bool? ?? false,
       kind: json['kind'] as String? ?? '',
       title: json['title'] as String? ?? '',
       subtitle: json['subtitle'] as String? ?? '',

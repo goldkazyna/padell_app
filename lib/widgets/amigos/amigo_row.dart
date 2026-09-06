@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/amigo.dart';
 import '../../theme/app_theme.dart';
 import '../player_avatar.dart';
+import '../verified_badge.dart';
 
 /// Строка амигос: аватар, имя, уровень и чем человек занят.
 ///
@@ -90,15 +91,25 @@ class AmigoRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    amigo.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          amigo.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      if (amigo.levelVerified) ...[
+                        const SizedBox(width: 5),
+                        const VerifiedBadge(size: 10),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
