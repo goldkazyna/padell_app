@@ -12,6 +12,7 @@ import '../../screens/tournament_types_info_screen.dart';
 import '../../screens/documents_screen.dart';
 import '../../screens/auth/delete_account_code_screen.dart';
 import '../../theme/app_theme.dart';
+import '../home/section_title.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils/app_alert.dart';
 
@@ -82,6 +83,8 @@ class ProfileMenu extends StatelessWidget {
           ],
         ),
 
+        const SizedBox(height: 20),
+
         // === ИНФОРМАЦИЯ ===
         SettingsSection(
           label: l.sectionInfo,
@@ -105,6 +108,8 @@ class ProfileMenu extends StatelessWidget {
             ),
           ],
         ),
+
+        const SizedBox(height: 20),
 
         // === АККАУНТ ===
         SettingsSection(
@@ -130,7 +135,7 @@ class ProfileMenu extends StatelessWidget {
         ),
 
         // === Подвал ===
-        const SizedBox(height: 18),
+        const SizedBox(height: 20),
         FooterLink(
           icon: Icons.send,
           iconTint: const Color(0xFF4D8FF0),
@@ -307,17 +312,12 @@ class SettingsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Тот же заголовок, что у «Достижений» и «С кем играю»: раньше тут
+        // был свой стиль — мелкие серые капслоком, и низ профиля выглядел
+        // куском из другого приложения.
         Padding(
-          padding: const EdgeInsets.only(left: 6, top: 20, bottom: 9),
-          child: Text(
-            label.toUpperCase(),
-            style: const TextStyle(
-              color: _dim,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.0,
-            ),
-          ),
+          padding: const EdgeInsets.only(bottom: 12),
+          child: SectionTitle(title: label),
         ),
         Container(
           decoration: BoxDecoration(

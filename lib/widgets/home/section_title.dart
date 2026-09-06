@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
+/// Заголовок раздела: одно начертание на все экраны.
+///
+/// [subtitle] — серая приписка сразу за названием («12 из 30», «8 партнёров»),
+/// [trailing] — действие справа акцентом («Все»).
 class SectionTitle extends StatelessWidget {
   final String title;
+  final String? subtitle;
   final String? trailing;
   final VoidCallback? onTrailingTap;
   final VoidCallback? onInfoTap;
@@ -10,6 +15,7 @@ class SectionTitle extends StatelessWidget {
   const SectionTitle({
     super.key,
     required this.title,
+    this.subtitle,
     this.trailing,
     this.onTrailingTap,
     this.onInfoTap,
@@ -31,6 +37,13 @@ class SectionTitle extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            if (subtitle != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                subtitle!,
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+              ),
+            ],
             if (onInfoTap != null) ...[
               const SizedBox(width: 8),
               GestureDetector(

@@ -15,6 +15,10 @@ import '../widgets/profile/profile_menu.dart';
 import '../widgets/profile/profile_court_menu.dart';
 import '../widgets/verification_blockers_banner.dart';
 
+/// Шаг между блоками профиля. Один на все стыки: раньше тут стояли 12, 20 и
+/// 22 вперемешку, и разделы «плавали» — глазом это читается как небрежность.
+const double _gap = 20;
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -73,20 +77,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 12),
+                  const SizedBox(height: _gap),
                   const AmigosCard(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: _gap),
                   const RatingDynamicsCard(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: _gap),
                   const AchievementsSection(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: _gap),
                   const PartnersSection(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: _gap),
                   // Шесть разделов одним блоком-кортом: раньше это были шесть
                   // цветных карточек во всю ширину, и «Служба поддержки»
                   // выглядела так же важно, как приглашение, ждущее ответа.
                   const ProfileCourtMenu(),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: _gap),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: ProfileMenu(),

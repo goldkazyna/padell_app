@@ -4,6 +4,7 @@ import '../../models/achievement.dart';
 import '../../screens/achievements_screen.dart';
 import '../../services/achievement_service.dart';
 import '../../theme/app_theme.dart';
+import '../home/section_title.dart';
 import '../achievements/achievement_badge.dart';
 import '../achievements/achievement_sheet.dart';
 
@@ -62,36 +63,15 @@ class _AchievementsSectionState extends State<AchievementsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                'Достижения',
-                style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (unlockedCount != null) ...[
-                const SizedBox(width: 8),
-                Text(
-                  '$unlockedCount из ${items!.length}',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
-                ),
-              ],
-              const Spacer(),
-              if (items != null)
-                GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AchievementsScreen()),
-                  ),
-                  child: Text(
-                    'Все',
-                    style: TextStyle(color: AppTheme.accent, fontSize: 14),
-                  ),
-                ),
-            ],
+          SectionTitle(
+            title: 'Достижения',
+            subtitle:
+                unlockedCount == null ? null : '$unlockedCount из ${items!.length}',
+            trailing: items == null ? null : 'Все',
+            onTrailingTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(

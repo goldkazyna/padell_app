@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../screens/player_profile_screen.dart';
 import '../../services/profile_service.dart';
 import '../../theme/app_theme.dart';
+import '../home/section_title.dart';
 import '../player_avatar.dart';
 
 /// Блок «С кем играю» в своём профиле.
@@ -53,22 +54,9 @@ class _PartnersSectionState extends State<PartnersSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                'С кем играю',
-                style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                _partnersCountText(_data!.partnersCount),
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
-              ),
-            ],
+          SectionTitle(
+            title: 'С кем играю',
+            subtitle: _partnersCountText(_data!.partnersCount),
           ),
           const SizedBox(height: 12),
           _bestCard(best),
