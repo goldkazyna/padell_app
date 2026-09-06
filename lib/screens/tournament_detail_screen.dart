@@ -8,6 +8,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../widgets/chat_icon_button.dart';
 import '../widgets/app_primary_button.dart';
 import '../utils/tournament_type_l10n.dart';
 import '../utils/app_alert.dart';
@@ -237,41 +238,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               if (tournament?.chat?.canRead == true)
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      _buildCircleButton(
-                        icon: CupertinoIcons.chat_bubble,
-                        onTap: () => _openChat(context, tournament!),
-                      ),
-                      if (chatUnread > 0)
-                        Positioned(
-                          right: -4,
-                          top: -4,
-                          child: Container(
-                            constraints: const BoxConstraints(
-                                minWidth: 20, minHeight: 20),
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppTheme.accent,
-                              borderRadius: BorderRadius.circular(10),
-                              // Тёмное кольцо-отбивка от кнопки (как на макете).
-                              border: Border.all(
-                                  color: AppTheme.background, width: 2),
-                            ),
-                            child: Text(
-                              '$chatUnread',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  height: 1),
-                            ),
-                          ),
-                        ),
-                    ],
+                  child: ChatIconButton(
+                    unread: chatUnread,
+                    onTap: () => _openChat(context, tournament!),
                   ),
                 ),
               Padding(
