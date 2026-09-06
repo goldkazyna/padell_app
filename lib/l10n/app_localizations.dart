@@ -5443,7 +5443,7 @@ abstract class AppLocalizations {
   /// No description provided for @amigosGamesTogether.
   ///
   /// In ru, this message translates to:
-  /// **'{count} матчей вместе'**
+  /// **'{count, plural, one{{count} матч вместе} few{{count} матча вместе} many{{count} матчей вместе} other{{count} матча вместе}}'**
   String amigosGamesTogether(int count);
 
   /// No description provided for @amigosSearchHint.

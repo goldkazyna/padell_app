@@ -1035,7 +1035,7 @@
   "amigosEmptyFollowers": "Вас пока никто не добавил.",
   "amigosEmptyFeed": "Пока тихо. Здесь будет видно, кто играет и кто собирается.",
   "amigosCandidatesTitle": "Вы часто играете вместе",
-  "amigosGamesTogether": "{count} матчей вместе",
+  "amigosGamesTogether": "{count, plural, one{{count} матч вместе} few{{count} матча вместе} many{{count} матчей вместе} other{{count} матча вместе}}",
   "@amigosGamesTogether": { "placeholders": {"count": {"type": "int"}} },
   "amigosSearchHint": "Поиск по своим",
   "amigoPlaying": "играет",

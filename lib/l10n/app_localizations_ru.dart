@@ -2897,7 +2897,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String amigosGamesTogether(int count) {
-    return '$count матчей вместе';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count матча вместе',
+      many: '$count матчей вместе',
+      few: '$count матча вместе',
+      one: '$count матч вместе',
+    );
+    return '$_temp0';
   }
 
   @override

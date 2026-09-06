@@ -2889,7 +2889,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String amigosGamesTogether(int count) {
-    return '$count matches together';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count matches together',
+      one: '$count match together',
+    );
+    return '$_temp0';
   }
 
   @override

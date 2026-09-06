@@ -9,6 +9,7 @@ import '../models/amigo.dart';
 import '../providers/amigo_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../widgets/amigos/amigo_live_block.dart';
 import '../widgets/amigos/amigo_open_sheet.dart';
 import '../widgets/amigos/amigo_row.dart';
 import '../widgets/app_back_button.dart';
@@ -249,14 +250,32 @@ class _AmigosScreenState extends State<AmigosScreen> {
   }
 
   List<Widget> _mineTab(AmigoProvider provider, AppLocalizations l10n) {
+    final playing =
+        provider.amigos.where((a) => a.status?.isPlaying == true).toList();
+    final rest =
+        provider.amigos.where((a) => a.status?.isPlaying != true).toList();
+
     return [
+      // Главный вопрос экрана — «кто сейчас на корте». Пока кто-то играет,
+      // он занимает верх блоком с фактурой корта.
+      if (playing.isNotEmpty) ...[
+        AmigoLiveBlock(
+          amigos: playing,
+          onOpen: _openAmigo,
+          onWatch: (amigo) => _openStatus(amigo.status!),
+        ),
+        const SizedBox(height: 18),
+      ],
+
       if (provider.amigos.isEmpty)
         _EmptyCard(text: l10n.amigosEmpty)
-      else
+      else if (rest.isNotEmpty) ...[
+        _SectionTitle('${l10n.amigosMyTitle} · ${provider.amigos.length}'),
+        const SizedBox(height: 8),
         _ListCard(
           onLongPress: _remove,
-          items: provider.amigos,
-          children: provider.amigos
+          items: rest,
+          children: rest
               .map(
                 (amigo) => AmigoRow(
                   amigo: amigo,
@@ -266,6 +285,7 @@ class _AmigosScreenState extends State<AmigosScreen> {
               )
               .toList(),
         ),
+      ],
 
       // Поиск живёт прямо в списке, над кандидатами: добавлять хочется не
       // только тех, с кем уже играл, и прятать это за лупой незачем.
@@ -626,6 +646,38 @@ class _SmallButton extends StatelessWidget {
   }
 }
 
+/// Кружок «добавить»: плюс, а после добавления — галочка.
+class _AddCircle extends StatelessWidget {
+  final bool added;
+  final VoidCallback? onTap;
+
+  const _AddCircle({required this.added, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: added ? null : onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 32,
+        height: 32,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: added
+              ? Colors.white.withValues(alpha: 0.06)
+              : AppTheme.accent.withValues(alpha: 0.14),
+        ),
+        child: Icon(
+          added ? Icons.check : Icons.add,
+          size: added ? 16 : 19,
+          color: added ? AppTheme.textDim : AppTheme.accent,
+        ),
+      ),
+    );
+  }
+}
+
 /// Строка кандидата: с кем уже играли, но ещё не добавили.
 class _CandidateRow extends StatelessWidget {
   final AmigoCandidate candidate;
@@ -685,11 +737,9 @@ class _CandidateRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            _SmallButton(
-              label: candidate.added ? l10n.amigosAdded : l10n.amigosAdd,
-              filled: !candidate.added,
-              onTap: onAdd,
-            ),
+            // Круглый плюс вместо надписи «В амигос»: десять зелёных кнопок
+            // подряд превращали список в стену акцента.
+            _AddCircle(added: candidate.added, onTap: onAdd),
           ],
         ),
       ),

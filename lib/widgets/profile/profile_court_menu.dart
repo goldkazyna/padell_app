@@ -14,7 +14,7 @@ import '../../services/invitation_service.dart';
 import '../../services/support_service.dart';
 import '../../services/training_service.dart';
 import '../../theme/app_theme.dart';
-import 'court_grid_background.dart';
+import '../court_grid_background.dart';
 
 /// Меню профиля: шесть зон на корте.
 ///

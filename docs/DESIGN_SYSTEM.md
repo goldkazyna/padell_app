@@ -81,7 +81,8 @@
 | Строка амигос | `AmigoRow` | `widgets/amigos/amigo_row.dart` |
 | Пузырь сообщения | `ChatBubble` | `widgets/amigos/chat_bubble.dart` |
 | Меню профиля | `ProfileCourtMenu` | `widgets/profile/profile_court_menu.dart` |
-| Разметка корта фоном | `CourtGridBackground` | `widgets/profile/court_grid_background.dart` |
+| Разметка корта фоном | `CourtGridBackground` | `widgets/court_grid_background.dart` |
+| Блок «сейчас на корте» | `AmigoLiveBlock` | `widgets/amigos/amigo_live_block.dart` |
 | Сворачиваемый блок | `AppExpandableSection` | `widgets/app_expandable_section.dart` |
 | Аватар игрока | `PlayerAvatar` | `widgets/player_avatar.dart` |
 | Логотип клуба | `ClubLogoTile` | `widgets/tournaments/club_logo.dart` |
