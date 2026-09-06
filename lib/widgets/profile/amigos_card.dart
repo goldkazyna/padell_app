@@ -5,11 +5,8 @@ import '../../l10n/app_localizations.dart';
 import '../../models/amigo.dart';
 import '../../providers/amigo_provider.dart';
 import '../../screens/amigos_screen.dart';
-import '../../screens/game_detail_screen.dart';
-import '../../screens/player_profile_screen.dart';
-import '../../screens/tournament_detail_screen.dart';
-import '../../screens/tournament_live_entry_screen.dart';
 import '../../theme/app_theme.dart';
+import '../amigos/amigo_open_sheet.dart';
 import '../player_avatar.dart';
 
 /// Амигос в профиле — лента аватаров.
@@ -35,29 +32,16 @@ class _AmigosCardState extends State<AmigosCard> {
     );
   }
 
-  /// Куда ведёт тап по аватару: играет — в трансляцию, собирается играть —
-  /// в турнир или игру, остальные — в профиль игрока.
+  /// Тап по аватару: если человек занят игрой — спрашиваем, смотреть
+  /// трансляцию или открыть профиль. Если нет — сразу профиль.
   void _open(Amigo amigo) {
-    final status = amigo.status;
-
-    if (status != null && status.isPlaying && status.tournamentId != null) {
-      _push(TournamentLiveEntryScreen(tournamentId: status.tournamentId!));
-      return;
-    }
-    if (status != null && status.tournamentId != null) {
-      _push(TournamentDetailScreen(tournamentId: status.tournamentId!));
-      return;
-    }
-    if (status != null && status.gameId != null) {
-      _push(GameDetailScreen(gameId: status.gameId!));
-      return;
-    }
-
-    _push(PlayerProfileScreen(playerId: amigo.id, playerName: amigo.name));
-  }
-
-  void _push(Widget screen) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+    openAmigoTarget(
+      context,
+      playerId: amigo.id,
+      playerName: amigo.name,
+      avatar: amigo.avatar,
+      status: amigo.status,
+    );
   }
 
   @override

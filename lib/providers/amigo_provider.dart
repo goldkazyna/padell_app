@@ -22,6 +22,10 @@ class AmigoProvider extends ChangeNotifier {
   List<ConversationSummary> _conversations = [];
   List<BlockedUser> _blocked = [];
 
+  List<AmigoCandidate> _searchResults = [];
+  String _searchQuery = '';
+  bool _isSearching = false;
+
   int _count = 0;
   int _playingCount = 0;
   int _unread = 0;
@@ -35,6 +39,9 @@ class AmigoProvider extends ChangeNotifier {
   List<Amigo> get amigos => _amigos;
   List<Amigo> get followers => _followers;
   List<AmigoCandidate> get candidates => _candidates;
+  List<AmigoCandidate> get searchResults => _searchResults;
+  String get searchQuery => _searchQuery;
+  bool get isSearching => _isSearching;
   List<AmigoFeedEvent> get feed => _feed;
   List<ConversationSummary> get conversations => _conversations;
   List<BlockedUser> get blocked => _blocked;
@@ -103,6 +110,43 @@ class AmigoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Поиск игроков по имени. Пустой запрос просто очищает выдачу.
+  Future<void> search(String query) async {
+    _searchQuery = query;
+
+    if (query.trim().length < 2) {
+      _searchResults = [];
+      _isSearching = false;
+      notifyListeners();
+      return;
+    }
+
+    _isSearching = true;
+    notifyListeners();
+
+    try {
+      final token = await _token();
+      if (token == null) return;
+
+      final found = await _service.search(query.trim(), token);
+      // Пока ходили на сервер, человек мог набрать дальше — старый ответ
+      // не показываем.
+      if (_searchQuery == query) _searchResults = found;
+    } catch (e) {
+      _error = '$e';
+    } finally {
+      _isSearching = false;
+      notifyListeners();
+    }
+  }
+
+  void clearSearch() {
+    _searchQuery = '';
+    _searchResults = [];
+    _isSearching = false;
+    notifyListeners();
+  }
+
   Future<void> loadFeed() async {
     _isLoadingFeed = true;
     notifyListeners();
@@ -138,6 +182,9 @@ class AmigoProvider extends ChangeNotifier {
       // Кандидат становится добавленным на месте: строка не исчезает и
       // список не прыгает под пальцем.
       _candidates = _candidates
+          .map((c) => c.id == userId ? c.copyWith(added: true) : c)
+          .toList();
+      _searchResults = _searchResults
           .map((c) => c.id == userId ? c.copyWith(added: true) : c)
           .toList();
       _followers = _followers

@@ -3055,4 +3055,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSupportSub => 'Ask a question or report a problem';
+
+  @override
+  String get amigoOpenLive => 'Watch live';
+
+  @override
+  String get amigoOpenTournament => 'Open tournament';
+
+  @override
+  String get amigoOpenGame => 'Open game';
+
+  @override
+  String get amigoOpenProfile => 'Player profile';
+
+  @override
+  String get amigosSearchPlaceholder => 'First or last name';
+
+  @override
+  String get amigosSearchNothing => 'Nobody found. Try another spelling';
+
+  @override
+  String get amigosSearchTitle => 'Find a player';
 }

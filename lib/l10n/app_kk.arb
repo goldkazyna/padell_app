@@ -1058,5 +1058,12 @@
   "profileMyTrainings": "Менің жаттығуларым",
   "profileMyTrainingsSub": "Сіз жазылған сабақтар",
   "profileSupport": "Қолдау қызметі",
-  "profileSupportSub": "Сұрақ қою немесе мәселе туралы хабарлау"
+  "profileSupportSub": "Сұрақ қою немесе мәселе туралы хабарлау",
+  "amigoOpenLive": "Трансляцияны көру",
+  "amigoOpenTournament": "Турнирді ашу",
+  "amigoOpenGame": "Ойынды ашу",
+  "amigoOpenProfile": "Ойыншы профилі",
+  "amigosSearchPlaceholder": "Аты немесе тегі",
+  "amigosSearchNothing": "Ешкім табылмады. Басқаша жазып көріңіз",
+  "amigosSearchTitle": "Ойыншыны табу"
 }

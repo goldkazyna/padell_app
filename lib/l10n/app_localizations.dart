@@ -5757,6 +5757,48 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Задать вопрос или сообщить о проблеме'**
   String get profileSupportSub;
+
+  /// No description provided for @amigoOpenLive.
+  ///
+  /// In ru, this message translates to:
+  /// **'Смотреть трансляцию'**
+  String get amigoOpenLive;
+
+  /// No description provided for @amigoOpenTournament.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть турнир'**
+  String get amigoOpenTournament;
+
+  /// No description provided for @amigoOpenGame.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть игру'**
+  String get amigoOpenGame;
+
+  /// No description provided for @amigoOpenProfile.
+  ///
+  /// In ru, this message translates to:
+  /// **'Профиль игрока'**
+  String get amigoOpenProfile;
+
+  /// No description provided for @amigosSearchPlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя или фамилия'**
+  String get amigosSearchPlaceholder;
+
+  /// No description provided for @amigosSearchNothing.
+  ///
+  /// In ru, this message translates to:
+  /// **'Никого не нашли. Попробуйте другое написание'**
+  String get amigosSearchNothing;
+
+  /// No description provided for @amigosSearchTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Найти игрока'**
+  String get amigosSearchTitle;
 }
 
 class _AppLocalizationsDelegate

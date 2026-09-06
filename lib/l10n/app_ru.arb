@@ -1090,5 +1090,12 @@
   "profileMyTrainings": "Мои тренировки",
   "profileMyTrainingsSub": "Занятия, на которые ты записан",
   "profileSupport": "Служба поддержки",
-  "profileSupportSub": "Задать вопрос или сообщить о проблеме"
+  "profileSupportSub": "Задать вопрос или сообщить о проблеме",
+  "amigoOpenLive": "Смотреть трансляцию",
+  "amigoOpenTournament": "Открыть турнир",
+  "amigoOpenGame": "Открыть игру",
+  "amigoOpenProfile": "Профиль игрока",
+  "amigosSearchPlaceholder": "Имя или фамилия",
+  "amigosSearchNothing": "Никого не нашли. Попробуйте другое написание",
+  "amigosSearchTitle": "Найти игрока"
 }

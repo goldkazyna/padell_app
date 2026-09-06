@@ -1060,5 +1060,12 @@
   "profileMyTrainings": "My trainings",
   "profileMyTrainingsSub": "Sessions you signed up for",
   "profileSupport": "Support",
-  "profileSupportSub": "Ask a question or report a problem"
+  "profileSupportSub": "Ask a question or report a problem",
+  "amigoOpenLive": "Watch live",
+  "amigoOpenTournament": "Open tournament",
+  "amigoOpenGame": "Open game",
+  "amigoOpenProfile": "Player profile",
+  "amigosSearchPlaceholder": "First or last name",
+  "amigosSearchNothing": "Nobody found. Try another spelling",
+  "amigosSearchTitle": "Find a player"
 }

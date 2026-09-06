@@ -3024,4 +3024,25 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get profileSupportSub => 'Сұрақ қою немесе мәселе туралы хабарлау';
+
+  @override
+  String get amigoOpenLive => 'Трансляцияны көру';
+
+  @override
+  String get amigoOpenTournament => 'Турнирді ашу';
+
+  @override
+  String get amigoOpenGame => 'Ойынды ашу';
+
+  @override
+  String get amigoOpenProfile => 'Ойыншы профилі';
+
+  @override
+  String get amigosSearchPlaceholder => 'Аты немесе тегі';
+
+  @override
+  String get amigosSearchNothing => 'Ешкім табылмады. Басқаша жазып көріңіз';
+
+  @override
+  String get amigosSearchTitle => 'Ойыншыны табу';
 }

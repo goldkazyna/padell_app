@@ -49,6 +49,23 @@ class AmigoService {
         .toList();
   }
 
+  /// Поиск игроков по имени — чтобы добавить не только тех, с кем уже играли.
+  Future<List<AmigoCandidate>> search(String query, String token) async {
+    final response = await _api.get(
+      '/amigos/search?q=${Uri.encodeQueryComponent(query)}',
+      token,
+    );
+    final list = (response['players'] as List<dynamic>?) ?? const [];
+
+    return list
+        .map((json) => AmigoCandidate.fromJson({
+              ...json as Map<String, dynamic>,
+              // Уже добавленных показываем сразу отмеченными.
+              'added': (json)['is_amigo'] ?? false,
+            }))
+        .toList();
+  }
+
   Future<List<AmigoFeedEvent>> getFeed(String token) async {
     final response = await _api.get('/amigos/feed', token);
     final list = (response['events'] as List<dynamic>?) ?? const [];

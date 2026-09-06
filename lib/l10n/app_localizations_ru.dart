@@ -3062,4 +3062,26 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileSupportSub => 'Задать вопрос или сообщить о проблеме';
+
+  @override
+  String get amigoOpenLive => 'Смотреть трансляцию';
+
+  @override
+  String get amigoOpenTournament => 'Открыть турнир';
+
+  @override
+  String get amigoOpenGame => 'Открыть игру';
+
+  @override
+  String get amigoOpenProfile => 'Профиль игрока';
+
+  @override
+  String get amigosSearchPlaceholder => 'Имя или фамилия';
+
+  @override
+  String get amigosSearchNothing =>
+      'Никого не нашли. Попробуйте другое написание';
+
+  @override
+  String get amigosSearchTitle => 'Найти игрока';
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +9,7 @@ import '../models/amigo.dart';
 import '../providers/amigo_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_alert.dart';
+import '../widgets/amigos/amigo_open_sheet.dart';
 import '../widgets/amigos/amigo_row.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/player_avatar.dart';
@@ -31,6 +34,44 @@ class AmigosScreen extends StatefulWidget {
 
 class _AmigosScreenState extends State<AmigosScreen> {
   late int _tab = widget.initialTab;
+
+  final _searchController = TextEditingController();
+  bool _searchOpen = false;
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  /// Ищем не на каждую букву: иначе на каждый символ уходит запрос.
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 350), () {
+      if (mounted) context.read<AmigoProvider>().search(value);
+    });
+  }
+
+  void _toggleSearch() {
+    setState(() => _searchOpen = !_searchOpen);
+    if (!_searchOpen) {
+      _searchController.clear();
+      context.read<AmigoProvider>().clearSearch();
+    }
+  }
+
+  /// Тап по амигос: занят игрой — спрашиваем куда идти, иначе профиль.
+  void _openAmigo(Amigo amigo) {
+    openAmigoTarget(
+      context,
+      playerId: amigo.id,
+      playerName: amigo.name,
+      avatar: amigo.avatar,
+      status: amigo.status,
+    );
+  }
 
   @override
   void initState() {
@@ -151,9 +192,76 @@ class _AmigosScreenState extends State<AmigosScreen> {
                           letterSpacing: -0.3,
                         ),
                       ),
+                      const Spacer(),
+                      // Поиск по всей базе: добавлять хочется не только тех,
+                      // с кем уже играл.
+                      GestureDetector(
+                        onTap: _toggleSearch,
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: _searchOpen
+                                ? AppTheme.accent.withValues(alpha: 0.16)
+                                : AppTheme.card,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppTheme.border),
+                          ),
+                          child: Icon(
+                            _searchOpen ? Icons.close : Icons.search,
+                            size: 18,
+                            color: _searchOpen
+                                ? AppTheme.accent
+                                : AppTheme.textPrimary,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                if (_searchOpen)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    child: TextField(
+                      controller: _searchController,
+                      autofocus: true,
+                      onChanged: _onSearchChanged,
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: l10n.amigosSearchPlaceholder,
+                        hintStyle: TextStyle(
+                          color: AppTheme.textDim,
+                          fontSize: 14,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          size: 18,
+                          color: AppTheme.textDim,
+                        ),
+                        filled: true,
+                        fillColor: AppTheme.cardRaised,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: AppTheme.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: AppTheme.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: AppTheme.accent),
+                        ),
+                      ),
+                    ),
+                  ),
+                if (!_searchOpen)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _Tabs(
@@ -171,18 +279,61 @@ class _AmigosScreenState extends State<AmigosScreen> {
                   ),
                 ),
                 Expanded(
-                  child: RefreshIndicator(
-                    color: AppTheme.accent,
-                    backgroundColor: AppTheme.card,
-                    onRefresh: _load,
-                    child: _body(provider, l10n),
-                  ),
+                  child: _searchOpen
+                      ? _searchBody(provider, l10n)
+                      : RefreshIndicator(
+                          color: AppTheme.accent,
+                          backgroundColor: AppTheme.card,
+                          onRefresh: _load,
+                          child: _body(provider, l10n),
+                        ),
                 ),
               ],
             );
           },
         ),
       ),
+    );
+  }
+
+  /// Выдача поиска: те же строки кандидатов, но найденные по имени.
+  Widget _searchBody(AmigoProvider provider, AppLocalizations l10n) {
+    if (provider.isSearching && provider.searchResults.isEmpty) {
+      return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+
+    if (provider.searchQuery.trim().length < 2) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+        child: Text(
+          l10n.amigosSearchTitle,
+          style: TextStyle(color: AppTheme.textDim, fontSize: 13),
+        ),
+      );
+    }
+
+    if (provider.searchResults.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+        child: _EmptyCard(text: l10n.amigosSearchNothing),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 30),
+      children: [
+        _ListCard(
+          children: provider.searchResults
+              .map((candidate) => _CandidateRow(
+                    candidate: candidate,
+                    onTap: () => _openPlayer(candidate.id, candidate.name),
+                    onAdd: candidate.added
+                        ? null
+                        : () => context.read<AmigoProvider>().follow(candidate.id),
+                  ))
+              .toList(),
+        ),
+      ],
     );
   }
 
@@ -213,10 +364,8 @@ class _AmigosScreenState extends State<AmigosScreen> {
           children: provider.amigos
               .map((amigo) => AmigoRow(
                     amigo: amigo,
-                    onTap: () => _openPlayer(amigo.id, amigo.name),
-                    onStatusTap: amigo.status == null
-                        ? null
-                        : () => _openStatus(amigo.status!),
+                    onTap: () => _openAmigo(amigo),
+                    onStatusTap: () => _openAmigo(amigo),
                   ))
               .toList(),
         ),
@@ -535,7 +684,15 @@ class _CandidateRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    l10n.amigosGamesTogether(candidate.gamesTogether),
+                    // У найденных поиском совместных матчей нет — показываем
+                    // уровень и рейтинг, иначе строка врала бы «0 матчей».
+                    candidate.gamesTogether > 0
+                        ? l10n.amigosGamesTogether(candidate.gamesTogether)
+                        : [
+                            if (candidate.level != null)
+                              'ур. ${candidate.level!.toStringAsFixed(2)}',
+                            if (candidate.rating > 0) '${candidate.rating}',
+                          ].join(' · '),
                     style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                   ),
                 ],

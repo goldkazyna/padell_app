@@ -145,6 +145,7 @@ class AmigoCandidate {
       rating: (json['rating'] as num?)?.toInt() ?? 0,
       gamesTogether: (json['games_together'] as num?)?.toInt() ?? 0,
       winrate: (json['winrate'] as num?)?.toInt() ?? 0,
+      added: json['added'] as bool? ?? json['is_amigo'] as bool? ?? false,
     );
   }
 
