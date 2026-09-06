@@ -132,6 +132,40 @@ class PlayerInactivity {
   }
 }
 
+/// Вся история рейтинга: точки от первой до последней и свод по ним.
+class RatingHistoryData {
+  final List<RatingTrendPoint> points;
+  final int current;
+  final int start;
+  final int best;
+  final int worst;
+
+  const RatingHistoryData({
+    this.points = const [],
+    this.current = 0,
+    this.start = 0,
+    this.best = 0,
+    this.worst = 0,
+  });
+
+  /// Изменение за всё время: от первой точки до текущей.
+  int get total => current - start;
+
+  factory RatingHistoryData.fromJson(Map<String, dynamic> json) {
+    final summary = json['summary'] as Map<String, dynamic>? ?? const {};
+
+    return RatingHistoryData(
+      points: ((json['points'] as List<dynamic>?) ?? const [])
+          .map((p) => RatingTrendPoint.fromJson(p as Map<String, dynamic>))
+          .toList(),
+      current: (summary['current'] as num?)?.toInt() ?? 0,
+      start: (summary['start'] as num?)?.toInt() ?? 0,
+      best: (summary['best'] as num?)?.toInt() ?? 0,
+      worst: (summary['worst'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
 class ProfileData {
   final User user;
   final ProfileStatistics statistics;
@@ -264,6 +298,18 @@ class ProfileService {
     if (response['success'] != true) return null;
 
     return PlayerPartners.fromJson(response);
+  }
+
+  /// Вся динамика рейтинга — отдельным запросом: в профиль лезет только
+  /// последняя десятка, тянуть всю историю на каждый вход незачем.
+  Future<RatingHistoryData?> getRatingHistory() async {
+    final token = await _storage.getToken();
+    if (token == null) return null;
+
+    final response = await _api.get('/profile/rating-history', token);
+    if (response['success'] != true) return null;
+
+    return RatingHistoryData.fromJson(response);
   }
 
   Future<List<Tournament>> getTournamentHistory() async {

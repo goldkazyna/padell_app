@@ -873,6 +873,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get whatsappSameAsPhone => 'Как телефон';
 
   @override
+  String get ratingAllDynamics => 'Вся динамика';
+
+  @override
   String get leaguesTitle => 'Лиги';
 
   @override

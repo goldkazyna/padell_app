@@ -871,6 +871,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatsappSameAsPhone => 'Same as phone';
 
   @override
+  String get ratingAllDynamics => 'Full history';
+
+  @override
   String get leaguesTitle => 'Leagues';
 
   @override

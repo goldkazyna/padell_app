@@ -858,6 +858,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get whatsappSameAsPhone => 'Телефон сияқты';
 
   @override
+  String get ratingAllDynamics => 'Толық динамика';
+
+  @override
   String get leaguesTitle => 'Лигалар';
 
   @override

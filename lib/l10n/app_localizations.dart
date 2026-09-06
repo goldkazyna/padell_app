@@ -1678,6 +1678,12 @@ abstract class AppLocalizations {
   /// **'Как телефон'**
   String get whatsappSameAsPhone;
 
+  /// No description provided for @ratingAllDynamics.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вся динамика'**
+  String get ratingAllDynamics;
+
   /// No description provided for @leaguesTitle.
   ///
   /// In ru, this message translates to:

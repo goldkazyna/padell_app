@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/match.dart';
+import '../../screens/rating_history_screen.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/profile_service.dart';
@@ -162,14 +164,45 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'ДИНАМИКА РЕЙТИНГА',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.2,
-            color: _dim,
-          ),
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'ДИНАМИКА РЕЙТИНГА',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  color: _dim,
+                ),
+              ),
+            ),
+            // Только в своём профиле: чужую историю целиком мы не отдаём.
+            if (widget.ratingTrendDetails == null)
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const RatingHistoryScreen(),
+                  ),
+                ),
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.ratingAllDynamics,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _green,
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, size: 16, color: _green),
+                  ],
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 4),
         Row(
