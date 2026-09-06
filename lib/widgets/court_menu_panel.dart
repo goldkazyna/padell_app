@@ -133,6 +133,11 @@ class CourtMenuZone extends StatelessWidget {
   /// Узкая зона: иконка и название, без подписи. Для ряда из четырёх.
   final bool compact;
 
+  /// Иконка без квадратной плашки — прямо на разметке корта, акцентом.
+  /// Так было в макете: панель выглядит легче, но зона хуже «читается»
+  /// как кнопка.
+  final bool bareIcon;
+
   final VoidCallback onTap;
 
   const CourtMenuZone({
@@ -148,6 +153,7 @@ class CourtMenuZone extends StatelessWidget {
     this.accent = false,
     this.alert = false,
     this.compact = false,
+    this.bareIcon = false,
   });
 
   @override
@@ -299,16 +305,27 @@ class CourtMenuZone extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: iconBg,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: iconBorder),
+                if (bareIcon)
+                  SizedBox(
+                    width: 34,
+                    height: 34,
+                    child: Icon(
+                      icon,
+                      size: 24,
+                      color: alarmed ? AppTheme.error : AppTheme.accent,
+                    ),
+                  )
+                else
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: iconBg,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: iconBorder),
+                    ),
+                    child: Icon(icon, size: 17, color: iconColor),
                   ),
-                  child: Icon(icon, size: 17, color: iconColor),
-                ),
                 if (badge > 0 || value != null || tag != null)
                   Positioned(
                     top: -6,

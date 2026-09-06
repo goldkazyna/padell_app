@@ -3,10 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:padel_app/theme/app_theme.dart';
 import 'package:padel_app/widgets/court_menu_panel.dart';
 
-/// Два способа разложить «Сервисы» на корте — рядом, для выбора.
+/// Три способа разложить «Сервисы» на корте — рядом, для выбора.
 ///
-/// Слева ряды по две зоны, как в меню профиля: с подписью под названием.
-/// Справа четыре колонки: только иконка и название, зато блок вдвое ниже.
+/// А — ряды по две зоны, как в меню профиля: с подписью под названием.
+/// Б — четыре колонки, иконка в квадратной плашке (стоит сейчас).
+/// В — четыре колонки, иконка без плашки, акцентом: так было в макете.
 void main() {
   const items = [
     ('Лиги', 'Сезон из этапов', Icons.leaderboard_outlined, true, null),
@@ -19,7 +20,7 @@ void main() {
     ('Магазин', 'Ракетки и мячи', Icons.shopping_bag_outlined, false, null),
   ];
 
-  CourtMenuZone zone(int i, {bool compact = false}) {
+  CourtMenuZone zone(int i, {bool compact = false, bool bare = false}) {
     final (title, subtitle, icon, accent, mark) = items[i];
 
     return CourtMenuZone(
@@ -28,6 +29,7 @@ void main() {
       subtitle: subtitle,
       accent: accent,
       compact: compact,
+      bareIcon: bare,
       value: mark != null && mark != 'NEW' ? mark : null,
       valueColor: AppTheme.accent,
       tag: mark == 'NEW' ? mark : null,
@@ -47,8 +49,20 @@ void main() {
         ),
       );
 
-  testWidgets('две раскладки корта рядом', (tester) async {
-    tester.view.physicalSize = const Size(820, 620);
+  /// Четыре колонки в два ряда.
+  Widget quad({required bool bare}) => CourtMenuPanel(rows: [
+        for (int r = 0; r < 2; r++)
+          CourtMenuRow.cells(
+            divider: r == 0,
+            cells: [
+              for (int c = 0; c < 4; c++)
+                zone(r * 4 + c, compact: true, bare: bare),
+            ],
+          ),
+      ]);
+
+  testWidgets('раскладки корта рядом', (tester) async {
+    tester.view.physicalSize = const Size(1180, 640);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
@@ -76,22 +90,23 @@ void main() {
                   ],
                 ),
               ),
-              const SizedBox(width: 24),
+              const SizedBox(width: 20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    label('Б · четыре колонки, компактно'),
-                    CourtMenuPanel(rows: [
-                      for (int r = 0; r < 2; r++)
-                        CourtMenuRow.cells(
-                          divider: r == 0,
-                          cells: [
-                            for (int c = 0; c < 4; c++)
-                              zone(r * 4 + c, compact: true),
-                          ],
-                        ),
-                    ]),
+                    label('Б · плашки под иконками (стоит сейчас)'),
+                    quad(bare: false),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    label('В · иконки без плашек, как в макете'),
+                    quad(bare: true),
                   ],
                 ),
               ),
