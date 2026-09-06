@@ -833,6 +833,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leagueTagShort => 'League';
 
   @override
+  String inactivityTitle(int days) {
+    return 'You haven\'t played for $days days';
+  }
+
+  @override
+  String inactivityText(int days, int amount) {
+    return 'In $days days $amount rating will be deducted. Play any tournament and the counter resets.';
+  }
+
+  @override
+  String inactivityDecayedTitle(int amount) {
+    return '$amount rating deducted for inactivity';
+  }
+
+  @override
+  String get inactivityDecayedText =>
+      'This repeats every month until you play. One tournament stops it.';
+
+  @override
   String get leaguesTitle => 'Leagues';
 
   @override

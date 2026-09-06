@@ -835,6 +835,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get leagueTagShort => 'Лига';
 
   @override
+  String inactivityTitle(int days) {
+    return 'Вы не играли $days дней';
+  }
+
+  @override
+  String inactivityText(int days, int amount) {
+    return 'Через $days дн. спишется $amount рейтинга. Сыграйте в любом турнире — счётчик обнулится.';
+  }
+
+  @override
+  String inactivityDecayedTitle(int amount) {
+    return 'Списано $amount рейтинга за простой';
+  }
+
+  @override
+  String get inactivityDecayedText =>
+      'Так будет каждый месяц, пока вы не выйдете на корт. Один турнир — и списания прекратятся.';
+
+  @override
   String get leaguesTitle => 'Лиги';
 
   @override

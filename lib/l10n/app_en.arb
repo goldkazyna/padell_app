@@ -299,6 +299,19 @@
     "placeholders": { "stage": { "type": "int" } }
   },
   "leagueTagShort": "League",
+  "inactivityTitle": "You haven't played for {days} days",
+  "@inactivityTitle": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "inactivityText": "In {days} days {amount} rating will be deducted. Play any tournament and the counter resets.",
+  "@inactivityText": {
+    "placeholders": { "days": { "type": "int" }, "amount": { "type": "int" } }
+  },
+  "inactivityDecayedTitle": "{amount} rating deducted for inactivity",
+  "@inactivityDecayedTitle": {
+    "placeholders": { "amount": { "type": "int" } }
+  },
+  "inactivityDecayedText": "This repeats every month until you play. One tournament stops it.",
   "leaguesTitle": "Leagues",
   "leaguesEmpty": "No leagues yet",
   "leaguesEmptyHint": "Once a club starts a league, it shows up here",

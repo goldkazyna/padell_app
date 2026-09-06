@@ -310,6 +310,19 @@
     "placeholders": { "stage": { "type": "int" } }
   },
   "leagueTagShort": "Лига",
+  "inactivityTitle": "Сіз {days} күн ойнаған жоқсыз",
+  "@inactivityTitle": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "inactivityText": "{days} күннен кейін {amount} рейтинг шегеріледі. Кез келген турнирде ойнаңыз — есеп нөлденеді.",
+  "@inactivityText": {
+    "placeholders": { "days": { "type": "int" }, "amount": { "type": "int" } }
+  },
+  "inactivityDecayedTitle": "Ойнамағаныңыз үшін {amount} рейтинг шегерілді",
+  "@inactivityDecayedTitle": {
+    "placeholders": { "amount": { "type": "int" } }
+  },
+  "inactivityDecayedText": "Корттқа шыққанша осы ай сайын қайталанады. Бір турнир жеткілікті.",
   "leaguesTitle": "Лигалар",
   "leaguesEmpty": "Лигалар әзірге жоқ",
   "leaguesEmptyHint": "Клуб лига бастағанда, ол осында пайда болады",

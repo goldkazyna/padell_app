@@ -13,6 +13,7 @@ class ProfileProvider extends ChangeNotifier {
   String? _error;
   User? _user;
   ProfileStatistics? _statistics;
+  PlayerInactivity _inactivity = const PlayerInactivity();
 
   List<Tournament> _tournamentHistory = [];
   bool _isLoadingHistory = false;
@@ -27,6 +28,9 @@ class ProfileProvider extends ChangeNotifier {
   String? get error => _error;
   User? get user => _user;
   ProfileStatistics? get statistics => _statistics;
+
+  /// Простой: сколько дней без игры и когда спишется рейтинг.
+  PlayerInactivity get inactivity => _inactivity;
   List<Tournament> get tournamentHistory => _tournamentHistory;
   bool get isLoadingHistory => _isLoadingHistory;
   List<Match> get matches => _matches;
@@ -44,6 +48,7 @@ class ProfileProvider extends ChangeNotifier {
     if (result.success && result.data != null) {
       _user = result.data!.user;
       _statistics = result.data!.statistics;
+      _inactivity = result.data!.inactivity;
       _error = null;
     } else {
       _error = result.message;

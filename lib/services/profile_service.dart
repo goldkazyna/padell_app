@@ -89,11 +89,59 @@ class ProfileStatistics {
   }
 }
 
+/// Простой: сколько дней человек не играл и что за это будет.
+///
+/// Считает бэкенд (`App\Support\RatingDecay`) — правило одно на всех и
+/// живёт в одном месте.
+class PlayerInactivity {
+  final int idleDays;
+  final DateTime? lastPlayedAt;
+
+  /// Дней до ближайшего списания. Ноль — спишется сегодня ночью.
+  final int daysUntilDecay;
+
+  /// Сколько снимут (меньше 50, если до порога 1000 осталось меньше).
+  final int amount;
+
+  /// Пора показывать предупреждение.
+  final bool warn;
+
+  /// За этот простой уже списывали хотя бы раз.
+  final bool decayed;
+
+  const PlayerInactivity({
+    this.idleDays = 0,
+    this.lastPlayedAt,
+    this.daysUntilDecay = 0,
+    this.amount = 0,
+    this.warn = false,
+    this.decayed = false,
+  });
+
+  factory PlayerInactivity.fromJson(Map<String, dynamic> json) {
+    return PlayerInactivity(
+      idleDays: (json['idle_days'] as num?)?.toInt() ?? 0,
+      lastPlayedAt: json['last_played_at'] == null
+          ? null
+          : DateTime.tryParse(json['last_played_at'] as String),
+      daysUntilDecay: (json['days_until_decay'] as num?)?.toInt() ?? 0,
+      amount: (json['amount'] as num?)?.toInt() ?? 0,
+      warn: json['warn'] as bool? ?? false,
+      decayed: json['decayed'] as bool? ?? false,
+    );
+  }
+}
+
 class ProfileData {
   final User user;
   final ProfileStatistics statistics;
+  final PlayerInactivity inactivity;
 
-  ProfileData({required this.user, required this.statistics});
+  ProfileData({
+    required this.user,
+    required this.statistics,
+    this.inactivity = const PlayerInactivity(),
+  });
 }
 
 class ProfileResult {
@@ -185,9 +233,17 @@ class ProfileService {
       final statsData = response['statistics'] as Map<String, dynamic>? ?? {};
       final statistics = ProfileStatistics.fromJson(statsData);
 
+      final idleData = response['inactivity'] as Map<String, dynamic>?;
+
       return ProfileResult(
         success: true,
-        data: ProfileData(user: user, statistics: statistics),
+        data: ProfileData(
+          user: user,
+          statistics: statistics,
+          inactivity: idleData == null
+              ? const PlayerInactivity()
+              : PlayerInactivity.fromJson(idleData),
+        ),
       );
     } on ApiException catch (e) {
       return ProfileResult(success: false, message: e.message);

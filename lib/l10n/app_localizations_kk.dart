@@ -820,6 +820,25 @@ class AppLocalizationsKk extends AppLocalizations {
   String get leagueTagShort => 'Лига';
 
   @override
+  String inactivityTitle(int days) {
+    return 'Сіз $days күн ойнаған жоқсыз';
+  }
+
+  @override
+  String inactivityText(int days, int amount) {
+    return '$days күннен кейін $amount рейтинг шегеріледі. Кез келген турнирде ойнаңыз — есеп нөлденеді.';
+  }
+
+  @override
+  String inactivityDecayedTitle(int amount) {
+    return 'Ойнамағаныңыз үшін $amount рейтинг шегерілді';
+  }
+
+  @override
+  String get inactivityDecayedText =>
+      'Корттқа шыққанша осы ай сайын қайталанады. Бір турнир жеткілікті.';
+
+  @override
   String get leaguesTitle => 'Лигалар';
 
   @override

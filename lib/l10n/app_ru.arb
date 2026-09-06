@@ -311,6 +311,19 @@
     "placeholders": { "stage": { "type": "int" } }
   },
   "leagueTagShort": "Лига",
+  "inactivityTitle": "Вы не играли {days} дней",
+  "@inactivityTitle": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "inactivityText": "Через {days} дн. спишется {amount} рейтинга. Сыграйте в любом турнире — счётчик обнулится.",
+  "@inactivityText": {
+    "placeholders": { "days": { "type": "int" }, "amount": { "type": "int" } }
+  },
+  "inactivityDecayedTitle": "Списано {amount} рейтинга за простой",
+  "@inactivityDecayedTitle": {
+    "placeholders": { "amount": { "type": "int" } }
+  },
+  "inactivityDecayedText": "Так будет каждый месяц, пока вы не выйдете на корт. Один турнир — и списания прекратятся.",
   "leaguesTitle": "Лиги",
   "leaguesEmpty": "Лиг пока нет",
   "leaguesEmptyHint": "Когда клуб запустит лигу, она появится здесь",

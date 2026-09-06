@@ -1618,6 +1618,30 @@ abstract class AppLocalizations {
   /// **'Лига'**
   String get leagueTagShort;
 
+  /// No description provided for @inactivityTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы не играли {days} дней'**
+  String inactivityTitle(int days);
+
+  /// No description provided for @inactivityText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Через {days} дн. спишется {amount} рейтинга. Сыграйте в любом турнире — счётчик обнулится.'**
+  String inactivityText(int days, int amount);
+
+  /// No description provided for @inactivityDecayedTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Списано {amount} рейтинга за простой'**
+  String inactivityDecayedTitle(int amount);
+
+  /// No description provided for @inactivityDecayedText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Так будет каждый месяц, пока вы не выйдете на корт. Один турнир — и списания прекратятся.'**
+  String get inactivityDecayedText;
+
   /// No description provided for @leaguesTitle.
   ///
   /// In ru, this message translates to:

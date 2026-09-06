@@ -9,6 +9,7 @@ import '../widgets/profile/moderation_payment_banner.dart';
 import '../widgets/profile/achievements_section.dart';
 import '../widgets/profile/partners_section.dart';
 import '../widgets/profile/amigos_card.dart';
+import '../widgets/profile/inactivity_card.dart';
 import '../widgets/profile/messages_bell.dart';
 import '../widgets/profile/rating_dynamics_card.dart';
 import '../widgets/profile/profile_menu.dart';
@@ -77,6 +78,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ],
+                  // Простой — сразу под статистикой матчей в шапке: цифры
+                  // выше объясняют, о чём речь.
+                  const SizedBox(height: _gap),
+                  const InactivityCard(),
                   const SizedBox(height: _gap),
                   const AmigosCard(),
                   const SizedBox(height: _gap),
