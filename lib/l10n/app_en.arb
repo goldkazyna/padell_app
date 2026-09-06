@@ -294,6 +294,11 @@
   "pendingStatus": "Pending",
   "organizer": "Organizer",
   "registerButton": "Register",
+  "leagueStageTag": "League · stage {stage}",
+  "@leagueStageTag": {
+    "placeholders": { "stage": { "type": "int" } }
+  },
+  "leagueTagShort": "League",
   "leaguesTitle": "Leagues",
   "leaguesEmpty": "No leagues yet",
   "leaguesEmptyHint": "Once a club starts a league, it shows up here",

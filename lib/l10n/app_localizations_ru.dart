@@ -827,6 +827,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get registerButton => 'Записаться';
 
   @override
+  String leagueStageTag(int stage) {
+    return 'Лига · этап $stage';
+  }
+
+  @override
+  String get leagueTagShort => 'Лига';
+
+  @override
   String get leaguesTitle => 'Лиги';
 
   @override

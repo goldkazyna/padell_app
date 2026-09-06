@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../utils/profile_incomplete_guard.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/tournaments/club_logo.dart';
+import '../widgets/tournaments/league_stage_tag.dart';
 import 'tournament_detail_screen.dart';
 
 /// Полный календарь предстоящих турниров — все ближайшие, сгруппированы по дню.
@@ -241,6 +242,10 @@ class _CalendarRow extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (t.league != null) ...[
+                        LeagueStageTag(league: t.league!),
+                        const SizedBox(width: 6),
+                      ],
                       Text(
                         t.time,
                         style: const TextStyle(

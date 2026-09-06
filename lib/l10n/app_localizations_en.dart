@@ -825,6 +825,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerButton => 'Register';
 
   @override
+  String leagueStageTag(int stage) {
+    return 'League · stage $stage';
+  }
+
+  @override
+  String get leagueTagShort => 'League';
+
+  @override
   String get leaguesTitle => 'Leagues';
 
   @override

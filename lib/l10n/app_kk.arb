@@ -305,6 +305,11 @@
   "pendingStatus": "Күтуде",
   "organizer": "Ұйымдастырушы",
   "registerButton": "Тіркелу",
+  "leagueStageTag": "Лига · {stage}-кезең",
+  "@leagueStageTag": {
+    "placeholders": { "stage": { "type": "int" } }
+  },
+  "leagueTagShort": "Лига",
   "leaguesTitle": "Лигалар",
   "leaguesEmpty": "Лигалар әзірге жоқ",
   "leaguesEmptyHint": "Клуб лига бастағанда, ол осында пайда болады",

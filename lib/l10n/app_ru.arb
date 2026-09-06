@@ -306,6 +306,11 @@
   "pendingStatus": "Ожидание",
   "organizer": "Организатор",
   "registerButton": "Записаться",
+  "leagueStageTag": "Лига · этап {stage}",
+  "@leagueStageTag": {
+    "placeholders": { "stage": { "type": "int" } }
+  },
+  "leagueTagShort": "Лига",
   "leaguesTitle": "Лиги",
   "leaguesEmpty": "Лиг пока нет",
   "leaguesEmptyHint": "Когда клуб запустит лигу, она появится здесь",

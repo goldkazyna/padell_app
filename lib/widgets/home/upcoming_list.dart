@@ -4,6 +4,7 @@ import '../../models/tournament.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/tournament_type_l10n.dart';
 import '../tournaments/club_logo.dart';
+import '../tournaments/league_stage_tag.dart';
 
 /// «Скоро» V2: горизонтальная лента дней (14) + список турниров выбранного дня.
 class UpcomingList extends StatefulWidget {
@@ -320,6 +321,10 @@ class _TournamentRow extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (t.league != null) ...[
+                        LeagueStageTag(league: t.league!),
+                        const SizedBox(width: 6),
+                      ],
                       Text(
                         t.time,
                         style: const TextStyle(

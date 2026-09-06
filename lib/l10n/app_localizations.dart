@@ -1606,6 +1606,18 @@ abstract class AppLocalizations {
   /// **'Записаться'**
   String get registerButton;
 
+  /// No description provided for @leagueStageTag.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лига · этап {stage}'**
+  String leagueStageTag(int stage);
+
+  /// No description provided for @leagueTagShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лига'**
+  String get leagueTagShort;
+
   /// No description provided for @leaguesTitle.
   ///
   /// In ru, this message translates to:

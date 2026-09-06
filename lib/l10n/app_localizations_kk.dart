@@ -812,6 +812,14 @@ class AppLocalizationsKk extends AppLocalizations {
   String get registerButton => 'Тіркелу';
 
   @override
+  String leagueStageTag(int stage) {
+    return 'Лига · $stage-кезең';
+  }
+
+  @override
+  String get leagueTagShort => 'Лига';
+
+  @override
   String get leaguesTitle => 'Лигалар';
 
   @override
