@@ -402,6 +402,7 @@ class _AmigosScreenState extends State<AmigosScreen> {
                 : _SmallButton(
                     label: l10n.amigosAddBack,
                     filled: true,
+                    pending: provider.isPending(amigo.id),
                     onTap: () => context.read<AmigoProvider>().follow(amigo.id),
                   ),
           );
@@ -686,14 +687,20 @@ class _EmptyCard extends StatelessWidget {
 class _SmallButton extends StatelessWidget {
   final String label;
   final bool filled;
+  final bool pending;
   final VoidCallback? onTap;
 
-  const _SmallButton({required this.label, required this.filled, this.onTap});
+  const _SmallButton({
+    required this.label,
+    required this.filled,
+    this.pending = false,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: pending ? null : onTap,
       child: Container(
         height: 32,
         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -703,30 +710,44 @@ class _SmallButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border: filled ? null : Border.all(color: const Color(0xFF2A3330)),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: filled ? Colors.black : AppTheme.textSecondary,
-            fontSize: 12.5,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        child: pending
+            ? SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: filled ? Colors.black : AppTheme.textSecondary,
+                ),
+              )
+            : Text(
+                label,
+                style: TextStyle(
+                  color: filled ? Colors.black : AppTheme.textSecondary,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }
 }
 
-/// Кружок «добавить»: плюс, а после добавления — галочка.
+/// Кружок «добавить»: плюс, во время запроса — крутилка, потом галочка.
+///
+/// Крутилка живёт в самой кнопке, а не одна на экран: сервер отвечает не
+/// мгновенно, и без отклика человек не понимает, нажалось или нет, и жмёт
+/// второй раз.
 class _AddCircle extends StatelessWidget {
   final bool added;
+  final bool pending;
   final VoidCallback? onTap;
 
-  const _AddCircle({required this.added, this.onTap});
+  const _AddCircle({required this.added, this.pending = false, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: added ? null : onTap,
+      onTap: added || pending ? null : onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
         width: 32,
@@ -738,11 +759,20 @@ class _AddCircle extends StatelessWidget {
               ? Colors.white.withValues(alpha: 0.06)
               : AppTheme.accent.withValues(alpha: 0.14),
         ),
-        child: Icon(
-          added ? Icons.check : Icons.add,
-          size: added ? 16 : 19,
-          color: added ? AppTheme.textDim : AppTheme.accent,
-        ),
+        child: pending
+            ? SizedBox(
+                width: 15,
+                height: 15,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppTheme.accent,
+                ),
+              )
+            : Icon(
+                added ? Icons.check : Icons.add,
+                size: added ? 16 : 19,
+                color: added ? AppTheme.textDim : AppTheme.accent,
+              ),
       ),
     );
   }
@@ -847,7 +877,11 @@ class _CandidateRow extends StatelessWidget {
             const SizedBox(width: 10),
             // Круглый плюс вместо надписи «В амигос»: десять зелёных кнопок
             // подряд превращали список в стену акцента.
-            _AddCircle(added: candidate.added, onTap: onAdd),
+            _AddCircle(
+              added: candidate.added,
+              pending: context.watch<AmigoProvider>().isPending(candidate.id),
+              onTap: onAdd,
+            ),
           ],
         ),
       ),

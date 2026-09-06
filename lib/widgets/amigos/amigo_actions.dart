@@ -51,6 +51,8 @@ class _AmigoActionsState extends State<AmigoActions> {
 
   Future<void> _toggle() async {
     if (_busy) return;
+    // Отклик до запроса: сервер отвечает не сразу, и без крутилки человек
+    // жмёт кнопку второй раз.
     setState(() => _busy = true);
 
     final provider = context.read<AmigoProvider>();
@@ -130,10 +132,14 @@ class _Button extends StatelessWidget {
           border: filled ? null : Border.all(color: const Color(0xFF2A3330)),
         ),
         child: busy
-            ? const SizedBox(
+            ? SizedBox(
                 width: 18,
                 height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  // На прозрачной кнопке чёрная крутилка не видна.
+                  color: filled ? Colors.black : AppTheme.textSecondary,
+                ),
               )
             : Text(
                 label,

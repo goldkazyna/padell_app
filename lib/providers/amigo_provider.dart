@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../models/amigo.dart';
@@ -26,6 +28,11 @@ class AmigoProvider extends ChangeNotifier {
   String _searchQuery = '';
   bool _isSearching = false;
 
+  /// По каким игрокам прямо сейчас идёт запрос: добавление или удаление.
+  /// Нужен, чтобы крутилка была в той самой кнопке, на которую нажали, а не
+  /// одна на весь экран — иначе непонятно, сработало нажатие или нет.
+  final Set<int> _pending = {};
+
   int _count = 0;
   int _playingCount = 0;
   int _unread = 0;
@@ -42,6 +49,9 @@ class AmigoProvider extends ChangeNotifier {
   List<AmigoCandidate> get searchResults => _searchResults;
   String get searchQuery => _searchQuery;
   bool get isSearching => _isSearching;
+
+  /// Идёт ли сейчас действие по этому игроку.
+  bool isPending(int userId) => _pending.contains(userId);
   List<AmigoFeedEvent> get feed => _feed;
   List<ConversationSummary> get conversations => _conversations;
   List<BlockedUser> get blocked => _blocked;
@@ -170,6 +180,9 @@ class AmigoProvider extends ChangeNotifier {
   }
 
   Future<bool> follow(int userId) async {
+    if (_pending.contains(userId)) return false;
+
+    _pending.add(userId);
     _isActionLoading = true;
     notifyListeners();
 
@@ -191,18 +204,24 @@ class AmigoProvider extends ChangeNotifier {
           .map((f) => f.id == userId ? f.copyWith(isAmigo: true, mutual: true) : f)
           .toList();
 
-      await loadAmigos();
+      // Список своих перечитываем в фоне: кнопка уже показала результат, и
+      // ждать второй запрос человеку незачем.
+      unawaited(loadAmigos());
       return true;
     } catch (e) {
       _error = '$e';
       return false;
     } finally {
+      _pending.remove(userId);
       _isActionLoading = false;
       notifyListeners();
     }
   }
 
   Future<bool> unfollow(int userId) async {
+    if (_pending.contains(userId)) return false;
+
+    _pending.add(userId);
     _isActionLoading = true;
     notifyListeners();
 
@@ -222,6 +241,7 @@ class AmigoProvider extends ChangeNotifier {
       _error = '$e';
       return false;
     } finally {
+      _pending.remove(userId);
       _isActionLoading = false;
       notifyListeners();
     }
