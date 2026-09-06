@@ -174,6 +174,10 @@ class AmigoFeedEvent {
   final int? tournamentId;
   final int? gameId;
   final int? ratingChange;
+
+  /// Место в турнире: 1–3 показываем медалью, дальше числом.
+  final int? place;
+
   final DateTime? at;
 
   const AmigoFeedEvent({
@@ -186,6 +190,7 @@ class AmigoFeedEvent {
     this.tournamentId,
     this.gameId,
     this.ratingChange,
+    this.place,
     this.at,
   });
 
@@ -204,6 +209,7 @@ class AmigoFeedEvent {
       tournamentId: json['tournament_id'] as int?,
       gameId: json['game_id'] as int?,
       ratingChange: (json['rating_change'] as num?)?.toInt(),
+      place: (json['place'] as num?)?.toInt(),
       at: json['at'] == null ? null : DateTime.tryParse(json['at'] as String),
     );
   }

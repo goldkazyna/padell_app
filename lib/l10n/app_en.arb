@@ -1014,6 +1014,8 @@
   "amigoLooking": "looking for players",
   "amigoTournament": "tournament",
   "amigoPlayed": "played a tournament",
+
+  "amigoPlaceShort": "place {place}",
   "amigoWatch": "watch",
   "amigosProfileEmpty": "Add the people you play with",
   "messages": "Messages",

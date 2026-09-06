@@ -1042,6 +1042,9 @@
   "amigoLooking": "ищет игроков",
   "amigoTournament": "турнир",
   "amigoPlayed": "сыграл турнир",
+
+  "amigoPlaceShort": "{place} место",
+  "@amigoPlaceShort": { "placeholders": { "place": { "type": "int" } } },
   "amigoWatch": "смотреть",
   "amigosProfileEmpty": "Добавьте тех, с кем играете",
   "messages": "Сообщения",

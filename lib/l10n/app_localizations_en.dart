@@ -2914,6 +2914,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get amigoPlayed => 'played a tournament';
 
   @override
+  String amigoPlaceShort(int place) {
+    return 'place $place';
+  }
+
+  @override
   String get amigoWatch => 'watch';
 
   @override

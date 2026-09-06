@@ -12,6 +12,7 @@ import '../utils/app_alert.dart';
 import '../widgets/amigos/amigo_live_block.dart';
 import '../widgets/amigos/amigo_open_sheet.dart';
 import '../widgets/amigos/amigo_row.dart';
+import '../widgets/court_grid_background.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/player_avatar.dart';
 import 'game_detail_screen.dart';
@@ -250,10 +251,12 @@ class _AmigosScreenState extends State<AmigosScreen> {
   }
 
   List<Widget> _mineTab(AmigoProvider provider, AppLocalizations l10n) {
-    final playing =
-        provider.amigos.where((a) => a.status?.isPlaying == true).toList();
-    final rest =
-        provider.amigos.where((a) => a.status?.isPlaying != true).toList();
+    final playing = provider.amigos
+        .where((a) => a.status?.isPlaying == true)
+        .toList();
+    final rest = provider.amigos
+        .where((a) => a.status?.isPlaying != true)
+        .toList();
 
     return [
       // Главный вопрос экрана — «кто сейчас на корте». Пока кто-то играет,
@@ -423,27 +426,94 @@ class _AmigosScreenState extends State<AmigosScreen> {
       return [_EmptyCard(text: l10n.amigosEmptyFeed)];
     }
 
-    return [
-      _ListCard(
-        children: provider.feed
-            .map(
-              (event) => _FeedRow(
-                event: event,
-                onTap: () => _openPlayer(event.userId, event.playerName),
-                onTargetTap: () => _openStatus(
-                  AmigoStatus(
-                    kind: event.kind,
-                    title: event.title,
-                    subtitle: event.subtitle,
-                    tournamentId: event.tournamentId,
-                    gameId: event.gameId,
-                  ),
-                ),
-              ),
-            )
-            .toList(),
-      ),
-    ];
+    final live = provider.feed.where((e) => e.isPlaying).toList();
+    final rest = provider.feed.where((e) => !e.isPlaying).toList();
+
+    final widgets = <Widget>[];
+
+    // Идущие игры — наверх и крупно: у них есть кнопка, остальное читают.
+    for (final event in live) {
+      widgets.add(
+        _FeedLiveCard(
+          event: event,
+          onOpen: () => _openFeedEvent(event),
+          onWatch: () => _openStatus(_statusOf(event)),
+        ),
+      );
+      widgets.add(const SizedBox(height: 10));
+    }
+
+    // Остальное — по дням: без заголовков лента выглядит сломанной, потому
+    // что время идёт «21:54, 22:10, 21:57» — это разные дни.
+    DateTime? currentDay;
+    List<Widget> dayRows = [];
+
+    void flushDay() {
+      if (dayRows.isEmpty) return;
+      widgets.add(_ListCard(children: List.of(dayRows)));
+      dayRows = [];
+    }
+
+    for (final event in rest) {
+      final day = _dayOf(event.at);
+      if (currentDay == null || day != currentDay) {
+        flushDay();
+        currentDay = day;
+        widgets.add(const SizedBox(height: 8));
+        widgets.add(_SectionTitle(_dayLabel(day, l10n)));
+        widgets.add(const SizedBox(height: 8));
+      }
+
+      dayRows.add(
+        _FeedRow(
+          event: event,
+          onTap: () => _openFeedEvent(event),
+          onTargetTap: () => _openStatus(_statusOf(event)),
+        ),
+      );
+    }
+    flushDay();
+
+    return widgets;
+  }
+
+  /// День события без времени — по нему группируем.
+  DateTime _dayOf(DateTime? at) {
+    final local = (at ?? DateTime.now()).toLocal();
+    return DateTime(local.year, local.month, local.day);
+  }
+
+  String _dayLabel(DateTime day, AppLocalizations l10n) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    if (day == today) return l10n.messageToday;
+    if (day == yesterday) return l10n.messageYesterday;
+
+    return DateFormat(
+      'd MMMM',
+      Localizations.localeOf(context).languageCode,
+    ).format(day);
+  }
+
+  AmigoStatus _statusOf(AmigoFeedEvent event) => AmigoStatus(
+    kind: event.kind,
+    title: event.title,
+    subtitle: event.subtitle,
+    tournamentId: event.tournamentId,
+    gameId: event.gameId,
+  );
+
+  /// Тап по событию: у играющего спрашиваем куда идти, у остальных — профиль.
+  void _openFeedEvent(AmigoFeedEvent event) {
+    openAmigoTarget(
+      context,
+      playerId: event.userId,
+      playerName: event.playerName,
+      avatar: event.playerAvatar,
+      status: event.isPlaying ? _statusOf(event) : null,
+    );
   }
 }
 
@@ -747,7 +817,126 @@ class _CandidateRow extends StatelessWidget {
   }
 }
 
-/// Строка ленты: одна фраза, а не карточка — лента читается за секунду.
+/// Крупная карточка «играет прямо сейчас» — верх ленты.
+class _FeedLiveCard extends StatelessWidget {
+  final AmigoFeedEvent event;
+  final VoidCallback onOpen;
+  final VoidCallback onWatch;
+
+  const _FeedLiveCard({
+    required this.event,
+    required this.onOpen,
+    required this.onWatch,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppTheme.accent.withValues(alpha: 0.35),
+            width: 1.5,
+          ),
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF16281F), Color(0xFF0D1714)],
+          ),
+        ),
+        child: Stack(
+          children: [
+            const Positioned.fill(child: CourtGridBackground(coverage: 0.7)),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: onOpen,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppTheme.accent, width: 2),
+                      ),
+                      padding: const EdgeInsets.all(2),
+                      child: PlayerAvatar(
+                        name: event.playerName,
+                        avatarUrl: event.playerAvatar,
+                        size: 40,
+                        circle: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: onOpen,
+                      behavior: HitTestBehavior.opaque,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${event.playerName.split(' ').first} ${l10n.amigoPlaying}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            event.subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: onWatch,
+                    child: Container(
+                      height: 30,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppTheme.accent.withValues(alpha: 0.45),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.amigoWatch,
+                        style: TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Строка ленты: кто, что сделал и с каким результатом.
 class _FeedRow extends StatelessWidget {
   final AmigoFeedEvent event;
   final VoidCallback? onTap;
@@ -773,6 +962,7 @@ class _FeedRow extends StatelessWidget {
     final time = event.at == null
         ? ''
         : DateFormat('HH:mm').format(event.at!.toLocal());
+    final change = event.ratingChange ?? 0;
 
     return InkWell(
       onTap: onTap,
@@ -780,11 +970,23 @@ class _FeedRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            PlayerAvatar(
-              name: event.playerName,
-              avatarUrl: event.playerAvatar,
-              size: 38,
-              circle: true,
+            // Кольцо у играющего — то же, что в списке и в профиле.
+            Container(
+              decoration: event.isPlaying
+                  ? BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.accent, width: 1.5),
+                    )
+                  : null,
+              padding: event.isPlaying
+                  ? const EdgeInsets.all(2)
+                  : EdgeInsets.zero,
+              child: PlayerAvatar(
+                name: event.playerName,
+                avatarUrl: event.playerAvatar,
+                size: event.isPlaying ? 34 : 38,
+                circle: true,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -839,9 +1041,28 @@ class _FeedRow extends StatelessWidget {
                 ),
               )
             else
-              Text(
-                time,
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Рост рейтинга акцентом, падение приглушённо: подсвечивать
+                  // красным чужой минус незачем.
+                  if (change != 0)
+                    Text(
+                      change > 0 ? '+$change' : '$change',
+                      style: TextStyle(
+                        color: change > 0 ? AppTheme.accent : AppTheme.textDim,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  const SizedBox(height: 2),
+                  Text(
+                    event.place != null
+                        ? l10n.amigoPlaceShort(event.place!)
+                        : time,
+                    style: TextStyle(color: AppTheme.textDim, fontSize: 11),
+                  ),
+                ],
               ),
           ],
         ),

@@ -2877,6 +2877,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get amigoPlayed => 'турнир ойнады';
 
   @override
+  String amigoPlaceShort(int place) {
+    return '$place орын';
+  }
+
+  @override
   String get amigoWatch => 'көру';
 
   @override

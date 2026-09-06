@@ -1012,6 +1012,8 @@
   "amigoLooking": "ойыншы іздейді",
   "amigoTournament": "турнир",
   "amigoPlayed": "турнир ойнады",
+
+  "amigoPlaceShort": "{place} орын",
   "amigoWatch": "көру",
   "amigosProfileEmpty": "Бірге ойнайтындарды қосыңыз",
   "messages": "Хабарламалар",

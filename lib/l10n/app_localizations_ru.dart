@@ -2924,6 +2924,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get amigoPlayed => 'сыграл турнир';
 
   @override
+  String amigoPlaceShort(int place) {
+    return '$place место';
+  }
+
+  @override
   String get amigoWatch => 'смотреть';
 
   @override

@@ -5476,6 +5476,12 @@ abstract class AppLocalizations {
   /// **'сыграл турнир'**
   String get amigoPlayed;
 
+  /// No description provided for @amigoPlaceShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'{place} место'**
+  String amigoPlaceShort(int place);
+
   /// No description provided for @amigoWatch.
   ///
   /// In ru, this message translates to:
