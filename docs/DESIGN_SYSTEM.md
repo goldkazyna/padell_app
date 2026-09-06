@@ -76,6 +76,7 @@
 |---|---|---|
 | Чекбокс | `AppCheckbox` | `widgets/app_checkbox.dart` |
 | Основная кнопка | `AppPrimaryButton` | `widgets/app_primary_button.dart` |
+| Главная кнопка экрана | `AppHeroButton` | `widgets/app_hero_button.dart` |
 | Кнопка «назад» | `AppBackButton` | `widgets/app_back_button.dart` |
 | Поделиться трансляцией | `LiveShareButton` | `widgets/live_share_button.dart` |
 | Строка амигос | `AmigoRow` | `widgets/amigos/amigo_row.dart` |
@@ -526,6 +527,30 @@ Container(
   раньше перерисовки.
 
 Так сделаны `_AddCircle` и `_SmallButton` в амигос и кнопки `AmigoActions`.
+
+## Главная кнопка экрана
+
+**`AppHeroButton`** — одно, самое важное действие экрана («Позвать на турнир»).
+Отличается от `AppPrimaryButton` намеренно: градиент, иконка в квадрате и
+шеврон. Но зелёный — **тот же токен**:
+
+```dart
+gradient: LinearGradient(
+  colors: [AppTheme.accent, Color.lerp(AppTheme.accent, const Color(0xFF06120C), 0.62)!],
+)
+```
+
+- текст и иконки **чёрные** — как на любой заливке акцентом;
+- свечение слабое (`accent` 22%, blur 18): кнопка и так самая яркая;
+- на экране такая кнопка **одна**. Если их две — значит, ни одна не главная,
+  и обе должны стать `AppPrimaryButton`.
+
+Раньше здесь жил свой оттенок `#22C55E` с тёмно-зелёным концом `#166534`, и
+рядом с обычной акцентной кнопкой они читались как из разных наборов.
+
+**Долг:** `#22C55E` остался ещё примерно в 57 местах (лайв-экраны, клубы,
+расписание, рейтинг). Менять на токен — отдельным проходом со скриншотами,
+а не по одному месту.
 
 ---
 

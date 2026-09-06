@@ -18,6 +18,7 @@ import '../services/storage_service.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/amigos/amigo_actions.dart';
+import '../widgets/app_hero_button.dart';
 import '../widgets/home/active_tournament_card.dart';
 import '../widgets/main_tab_bar.dart';
 import '../widgets/profile/medal.dart';
@@ -267,68 +268,15 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               ),
             ),
 
-          // Кнопка «Позвать на турнир» — зелёный градиент как «История турниров»
+          // Главная кнопка экрана: градиент собран из токена акцента, текст
+          // чёрный — как на любой акцентной заливке в приложении.
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: _inviting ? null : _openInvite,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF22C55E), Color(0xFF166534)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF22C55E).withAlpha(80),
-                        blurRadius: 20,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(50),
-                          borderRadius: BorderRadius.circular(9),
-                        ),
-                        child: _inviting
-                            ? const Padding(
-                                padding: EdgeInsets.all(7),
-                                child: CircularProgressIndicator(
-                                    color: Colors.white, strokeWidth: 2),
-                              )
-                            : const Icon(Icons.emoji_events_rounded,
-                                color: Colors.white, size: 19),
-                      ),
-                      const SizedBox(width: 12),
-                      const Expanded(
-                        child: Text(
-                          'Позвать на турнир',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                      ),
-                      const Icon(Icons.chevron_right_rounded,
-                          color: Colors.white, size: 22),
-                    ],
-                  ),
-                ),
-              ),
+            child: AppHeroButton(
+              label: 'Позвать на турнир',
+              icon: Icons.emoji_events_rounded,
+              busy: _inviting,
+              onTap: _openInvite,
             ),
           ),
 
