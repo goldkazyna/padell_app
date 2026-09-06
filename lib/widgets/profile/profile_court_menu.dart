@@ -110,7 +110,7 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
               Column(
                 children: [
                   _zoneRow(
-                    left: _Zone(
+                    left: CourtMenuZone(
                       icon: Icons.event_available_outlined,
                       accent: true,
                       title: l10n.profileMyTournaments,
@@ -119,10 +119,9 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
                       valueColor: AppTheme.accent,
                       onTap: () => _open(const MyTournamentsScreen()),
                     ),
-                    right: _Zone(
+                    right: CourtMenuZone(
                       icon: Icons.mail_outline,
-                      warn: true,
-                      hot: true,
+                      alert: true,
                       title: l10n.profileInvitations,
                       subtitle: l10n.profileInvitationsSub,
                       badge: _invitations,
@@ -131,14 +130,14 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
                     divider: true,
                   ),
                   _zoneRow(
-                    left: _Zone(
+                    left: CourtMenuZone(
                       icon: Icons.sports_tennis_outlined,
                       title: l10n.profileMyTrainings,
                       subtitle: l10n.profileMyTrainingsSub,
                       value: _trainings > 0 ? '$_trainings' : null,
                       onTap: () => _open(const MyTrainingsScreen()),
                     ),
-                    right: _Zone(
+                    right: CourtMenuZone(
                       icon: Icons.emoji_events_outlined,
                       title: l10n.profileMyLeagues,
                       subtitle: l10n.profileMyLeaguesSub,
@@ -148,14 +147,14 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
                     divider: true,
                   ),
                   _zoneRow(
-                    left: _Zone(
+                    left: CourtMenuZone(
                       icon: Icons.history,
                       title: l10n.profileHistory,
                       subtitle: l10n.profileHistorySub,
                       value: played > 0 ? '$played' : null,
                       onTap: () => _open(const MyTournamentsHistoryScreen()),
                     ),
-                    right: _Zone(
+                    right: CourtMenuZone(
                       icon: Icons.headset_mic_outlined,
                       title: l10n.profileSupport,
                       subtitle: l10n.profileSupportSub,
@@ -214,7 +213,7 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
 }
 
 /// Одна зона корта: иконка, число или бейдж, название и подпись.
-class _Zone extends StatelessWidget {
+class CourtMenuZone extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
@@ -229,15 +228,14 @@ class _Zone extends StatelessWidget {
   /// Акцентная иконка (свои ближайшие турниры).
   final bool accent;
 
-  /// Красная иконка (приглашения).
-  final bool warn;
-
-  /// Подсветка всей зоны — только у той, где нужен человек.
-  final bool hot;
+  /// Зона, которая умеет тревожить: пока бейдж пуст — обычная, с бейджем
+  /// краснеет иконка и фон. Красный без дела быстро перестают замечать.
+  final bool alert;
 
   final VoidCallback onTap;
 
-  const _Zone({
+  const CourtMenuZone({
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -246,21 +244,22 @@ class _Zone extends StatelessWidget {
     this.valueColor,
     this.badge = 0,
     this.accent = false,
-    this.warn = false,
-    this.hot = false,
+    this.alert = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = warn
+    final alarmed = alert && badge > 0;
+
+    final iconColor = alarmed
         ? AppTheme.error
         : (accent ? AppTheme.accent : AppTheme.textPrimary);
-    final iconBg = warn
+    final iconBg = alarmed
         ? AppTheme.error.withValues(alpha: 0.16)
         : (accent
             ? AppTheme.accent.withValues(alpha: 0.16)
             : Colors.white.withValues(alpha: 0.06));
-    final iconBorder = warn
+    final iconBorder = alarmed
         ? AppTheme.error.withValues(alpha: 0.32)
         : (accent
             ? AppTheme.accent.withValues(alpha: 0.32)
@@ -271,7 +270,7 @@ class _Zone extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Container(
         constraints: const BoxConstraints(minHeight: 94),
-        color: hot ? AppTheme.error.withValues(alpha: 0.10) : null,
+        color: alarmed ? AppTheme.error.withValues(alpha: 0.10) : null,
         padding: const EdgeInsets.all(13),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
