@@ -8,6 +8,7 @@ import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/profile_service.dart';
 import '../../utils/rating_formatter.dart';
+import 'rating_sparkline.dart';
 
 /// Карточка «Динамика рейтинга».
 /// Показывает:
@@ -275,33 +276,13 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
   Widget _buildChart(List<int> trend, int selectedIdx) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        const height = 96.0;
-        return GestureDetector(
-          onTapDown: (details) {
-            // Найти ближайшую точку по X
-            final coords = _calcPoints(trend, width, height);
-            final dx = details.localPosition.dx;
-            int nearest = 0;
-            double minDist = double.infinity;
-            for (int i = 0; i < coords.length; i++) {
-              final d = (coords[i].dx - dx).abs();
-              if (d < minDist) {
-                minDist = d;
-                nearest = i;
-              }
-            }
-            setState(() => _selectedIdx = nearest);
-          },
-          child: CustomPaint(
-            size: Size(width, height),
-            painter: _SparklinePainter(
-              trend: trend,
-              selectedIdx: selectedIdx,
-              green: _green,
-              card: _bg,
-            ),
-          ),
+        return RatingSparkline(
+          trend: trend,
+          selectedIdx: selectedIdx,
+          green: _green,
+          card: _bg,
+          size: Size(constraints.maxWidth, 96),
+          onPick: (i) => setState(() => _selectedIdx = i),
         );
       },
     );
@@ -413,152 +394,5 @@ class _RatingDynamicsCardState extends State<RatingDynamicsCard> {
       buf.write(s[i]);
     }
     return buf.toString();
-  }
-}
-
-List<Offset> _calcPoints(List<int> trend, double width, double height) {
-  if (trend.isEmpty) return const <Offset>[];
-  const padL = 8.0, padR = 8.0, padT = 18.0, padB = 4.0;
-  final innerW = width - padL - padR;
-  final innerH = height - padT - padB;
-
-  int minV = trend.reduce((a, b) => a < b ? a : b);
-  int maxV = trend.reduce((a, b) => a > b ? a : b);
-  if (maxV == minV) {
-    maxV = minV + 1; // защита от деления на 0
-  }
-  // Добавим небольшой запас по вертикали
-  final range = (maxV - minV).toDouble();
-  minV = (minV - range * 0.1).round();
-  maxV = (maxV + range * 0.1).round();
-
-  return List.generate(trend.length, (i) {
-    final x = trend.length == 1
-        ? padL + innerW / 2
-        : padL + (i / (trend.length - 1)) * innerW;
-    final y =
-        padT + (1 - (trend[i] - minV) / (maxV - minV)) * innerH;
-    return Offset(x, y);
-  });
-}
-
-class _SparklinePainter extends CustomPainter {
-  final List<int> trend;
-  final int selectedIdx;
-  final Color green;
-  final Color card;
-
-  _SparklinePainter({
-    required this.trend,
-    required this.selectedIdx,
-    required this.green,
-    required this.card,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (trend.isEmpty) return;
-    final points = _calcPoints(trend, size.width, size.height);
-
-    if (points.length >= 2) {
-      // Сплайн Catmull-Rom через кубические Bezier
-      final path = Path()..moveTo(points[0].dx, points[0].dy);
-      for (int i = 0; i < points.length - 1; i++) {
-        final p0 = i == 0 ? points[i] : points[i - 1];
-        final p1 = points[i];
-        final p2 = points[i + 1];
-        final p3 = i + 2 < points.length ? points[i + 2] : p2;
-        final c1 = Offset(
-          p1.dx + (p2.dx - p0.dx) / 6,
-          p1.dy + (p2.dy - p0.dy) / 6,
-        );
-        final c2 = Offset(
-          p2.dx - (p3.dx - p1.dx) / 6,
-          p2.dy - (p3.dy - p1.dy) / 6,
-        );
-        path.cubicTo(c1.dx, c1.dy, c2.dx, c2.dy, p2.dx, p2.dy);
-      }
-
-      // Area fill (градиент)
-      final areaPath = Path.from(path)
-        ..lineTo(points.last.dx, size.height - 4)
-        ..lineTo(points.first.dx, size.height - 4)
-        ..close();
-      final areaPaint = Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [green.withAlpha(77), green.withAlpha(0)],
-        ).createShader(Offset.zero & size);
-      canvas.drawPath(areaPath, areaPaint);
-
-      // Линия
-      final linePaint = Paint()
-        ..color = green
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round;
-      canvas.drawPath(path, linePaint);
-    }
-
-    // Вертикальный пунктир под активной точкой
-    if (selectedIdx >= 0 && selectedIdx < points.length) {
-      final sel = points[selectedIdx];
-      final guidePaint = Paint()
-        ..color = green.withAlpha(77)
-        ..strokeWidth = 1;
-      // Пунктир
-      double y = sel.dy;
-      while (y < size.height - 4) {
-        canvas.drawLine(
-          Offset(sel.dx, y),
-          Offset(sel.dx, (y + 2).clamp(0, size.height - 4)),
-          guidePaint,
-        );
-        y += 5;
-      }
-    }
-
-    // Точки — крупные, чтобы попадать пальцем
-    for (int i = 0; i < points.length; i++) {
-      final isSel = i == selectedIdx;
-      final p = points[i];
-      if (isSel) {
-        canvas.drawCircle(
-          p,
-          14,
-          Paint()..color = green.withAlpha(50),
-        );
-      }
-      // Внешний контур-обводка цветом карточки (чтобы точка отрывалась
-      // от линии графика).
-      canvas.drawCircle(
-        p,
-        isSel ? 8 : 6,
-        Paint()..color = card,
-      );
-      // Заливка зелёным
-      canvas.drawCircle(
-        p,
-        isSel ? 6.5 : 4.5,
-        Paint()..color = green,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _SparklinePainter old) {
-    return old.selectedIdx != selectedIdx ||
-        old.trend.length != trend.length ||
-        !_listEq(old.trend, trend);
-  }
-
-  static bool _listEq(List<int> a, List<int> b) {
-    if (a.length != b.length) return false;
-    for (int i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
-    }
-    return true;
   }
 }

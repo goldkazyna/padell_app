@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/profile/rating_sparkline.dart';
 
 /// Вся динамика рейтинга: каждая точка от первой игры до сегодняшней.
 ///
@@ -20,6 +21,13 @@ class _RatingHistoryScreenState extends State<RatingHistoryScreen> {
   RatingHistoryData? _data;
   bool _loading = true;
 
+  /// Выбранная точка графика. null — последняя.
+  int? _selected;
+
+  /// График открываем на свежем конце: людям интересно «что сейчас», а не
+  /// «что было год назад».
+  final _chartScroll = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -29,12 +37,25 @@ class _RatingHistoryScreenState extends State<RatingHistoryScreen> {
   Future<void> _load() async {
     try {
       final data = await context.read<ProfileService>().getRatingHistory();
-      if (mounted) setState(() => _data = data);
+      if (!mounted) return;
+      setState(() => _data = data);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_chartScroll.hasClients) {
+          _chartScroll.jumpTo(_chartScroll.position.maxScrollExtent);
+        }
+      });
     } catch (_) {
       // Экран не пустой ради ошибки: покажем «пока пусто» и кнопку обновить.
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _chartScroll.dispose();
+    super.dispose();
   }
 
   @override
@@ -69,7 +90,14 @@ class _RatingHistoryScreenState extends State<RatingHistoryScreen> {
                     // Первая строка — свод, дальше точки от новых к старым.
                     itemCount: data.points.length + 1,
                     itemBuilder: (_, i) {
-                      if (i == 0) return _summary(data);
+                      if (i == 0) {
+                        return Column(
+                          children: [
+                            _summary(data),
+                            _chart(data),
+                          ],
+                        );
+                      }
 
                       final point = data.points[data.points.length - i];
                       return _row(point, number: data.points.length - i + 1);
@@ -151,6 +179,89 @@ class _RatingHistoryScreenState extends State<RatingHistoryScreen> {
               _stat('Максимум', '${data.best}'),
               _stat('Минимум', '${data.worst}'),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Тот же график, что в карточке профиля, но по всем точкам и с
+  /// прокруткой вбок: на экран влезает десяток, а их бывает сотня.
+  Widget _chart(RatingHistoryData data) {
+    final trend = data.points.map((p) => p.rating).toList();
+    final selected = (_selected ?? trend.length - 1).clamp(0, trend.length - 1);
+    final point = data.points[selected];
+
+    // Шаг между точками фиксированный — иначе на длинной истории они
+    // слипаются в сплошную линию.
+    const step = 46.0;
+    final width = (trend.length * step).clamp(320.0, double.infinity);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.fromLTRB(0, 14, 0, 12),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              children: [
+                Text(
+                  '${point.rating}',
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _delta(point.delta),
+                const Spacer(),
+                Text(
+                  'листается вбок',
+                  style: TextStyle(color: AppTheme.textDim, fontSize: 10.5),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 2),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Text(
+              [
+                point.name,
+                if (point.clubName != null) point.clubName!,
+                if (point.date != null) point.date!,
+              ].join(' — '),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          SingleChildScrollView(
+            controller: _chartScroll,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: RatingSparkline(
+              trend: trend,
+              selectedIdx: selected,
+              green: AppTheme.accent,
+              card: AppTheme.card,
+              size: Size(width, 110),
+              onPick: (i) => setState(() => _selected = i),
+            ),
           ),
         ],
       ),
