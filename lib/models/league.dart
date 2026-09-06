@@ -133,6 +133,9 @@ class League {
 
   bool get isFull => maxPlayers != null && players >= maxPlayers!;
 
+  /// Лига ещё идёт — её считаем в профиле рядом с «Мои лиги».
+  bool get isRunning => status != 'completed' && status != 'cancelled';
+
   bool get canRegister =>
       !isRegistered && !isFull && (status == 'open' || status == 'in_progress');
 

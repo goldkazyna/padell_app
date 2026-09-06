@@ -11,6 +11,7 @@ import '../../screens/my_trainings_screen.dart';
 import '../../screens/support_tickets_screen.dart';
 import '../../screens/tournament_invitations_screen.dart';
 import '../../services/invitation_service.dart';
+import '../../services/league_service.dart';
 import '../../services/support_service.dart';
 import '../../services/training_service.dart';
 import '../../theme/app_theme.dart';
@@ -32,6 +33,7 @@ class ProfileCourtMenu extends StatefulWidget {
 class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
   int _invitations = 0;
   int _trainings = 0;
+  int _leagues = 0;
   int _support = 0;
 
   @override
@@ -46,6 +48,7 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
     // Сервисы забираем до первого await: после него трогать context нельзя.
     final invitations = context.read<InvitationService>();
     final trainings = context.read<TrainingService>();
+    final leagues = context.read<LeagueService>();
     final support = context.read<SupportService>();
 
     try {
@@ -56,6 +59,14 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
     try {
       final counts = await trainings.getCounts();
       if (mounted) setState(() => _trainings = counts.upcoming);
+    } catch (_) {}
+
+    try {
+      // Считаем только идущие: завершённые лиги живут в истории и цифру
+      // в меню бы только раздували.
+      final mine = await leagues.mine();
+      final running = mine.where((l) => l.isRunning).length;
+      if (mounted) setState(() => _leagues = running);
     } catch (_) {}
 
     try {
@@ -131,6 +142,7 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
                       icon: Icons.emoji_events_outlined,
                       title: l10n.profileMyLeagues,
                       subtitle: l10n.profileMyLeaguesSub,
+                      value: _leagues > 0 ? '$_leagues' : null,
                       onTap: () => _open(const MyLeaguesScreen()),
                     ),
                     divider: true,
