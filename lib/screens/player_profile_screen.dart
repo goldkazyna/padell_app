@@ -18,6 +18,7 @@ import '../services/storage_service.dart';
 import '../utils/app_alert.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/amigos/amigo_actions.dart';
+import '../widgets/home/active_tournament_card.dart';
 import '../widgets/main_tab_bar.dart';
 import '../widgets/profile/medal.dart';
 import '../widgets/profile/player_hero.dart';
@@ -249,6 +250,22 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
 
           // Амигос и переписка — выше статистики: действие важнее цифр.
           AmigoActions(playerId: p.id, playerName: p.name),
+
+          // Если человек прямо сейчас играет — показываем турнир той же
+          // карточкой, что и свой активный турнир на главной.
+          if (p.liveTournament != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: ActiveTournamentCard(
+                tournament: p.liveTournament,
+                onTap: () => openTournamentLiveByType(
+                  context,
+                  tournamentId: p.liveTournament!.id,
+                  tournamentType: p.liveTournament!.type,
+                  highlightPlayerId: p.id,
+                ),
+              ),
+            ),
 
           // Кнопка «Позвать на турнир» — зелёный градиент как «История турниров»
           Padding(

@@ -1,3 +1,4 @@
+import '../models/tournament.dart';
 import 'api_service.dart';
 import 'profile_service.dart' show RatingTrendPoint;
 import 'storage_service.dart';
@@ -282,6 +283,11 @@ class RatingService {
         ratingTrend: trendList.map((v) => (v as num).toInt()).toList(),
         ratingTrendDetails: _parseTrendDetails(p['rating_trend_details']),
         history: historyList.map((h) => RatingHistoryItem.fromJson(h as Map<String, dynamic>)).toList(),
+        liveTournament: response['live_tournament'] is Map<String, dynamic>
+            ? Tournament.fromJson(
+                response['live_tournament'] as Map<String, dynamic>,
+              )
+            : null,
       );
     } catch (_) {
       return null;
@@ -410,6 +416,10 @@ class PlayerProfile {
   final List<RatingTrendPoint> ratingTrendDetails;
   final List<RatingHistoryItem> history;
 
+  /// Турнир, который человек играет прямо сейчас. Показываем в профиле той
+  /// же карточкой, что свой активный турнир на главной.
+  final Tournament? liveTournament;
+
   PlayerProfile({
     required this.id,
     required this.name,
@@ -427,6 +437,7 @@ class PlayerProfile {
     this.ratingTrend = const [],
     this.ratingTrendDetails = const [],
     required this.history,
+    this.liveTournament,
   });
 
   String get initials {
