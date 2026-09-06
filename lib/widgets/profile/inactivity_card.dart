@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../providers/profile_provider.dart';
+import '../../services/profile_service.dart';
 import '../../theme/app_theme.dart';
 
 /// Напоминание о простое — под статистикой матчей.
@@ -13,15 +14,29 @@ import '../../theme/app_theme.dart';
 ///
 /// Тон спокойный: это напоминание, а не штраф. Красным — только когда
 /// списание уже случилось.
+
+/// Временно: показывать карточку всегда, обоими состояниями, чтобы
+/// посмотреть её на живом экране. Отсчёт простоя у всех начался 6 сентября,
+/// и раньше 21 октября она не появится сама.
+///
+/// Убрать вместе с [_Preview], когда посмотрели.
+const bool kInactivityPreview = true;
+
 class InactivityCard extends StatelessWidget {
   const InactivityCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final idle = context.watch<ProfileProvider>().inactivity;
 
+    if (kInactivityPreview) return const _Preview();
     if (!idle.warn) return const SizedBox.shrink();
+
+    return _card(context, idle);
+  }
+
+  Widget _card(BuildContext context, PlayerInactivity idle) {
+    final l10n = AppLocalizations.of(context)!;
 
     final accent = idle.decayed ? AppTheme.error : AppTheme.amber;
     final title = idle.decayed
@@ -87,6 +102,39 @@ class InactivityCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Оба состояния подряд — только на время показа.
+class _Preview extends StatelessWidget {
+  const _Preview();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const InactivityCard()._card(
+          context,
+          const PlayerInactivity(
+            idleDays: 47,
+            daysUntilDecay: 13,
+            amount: 50,
+            warn: true,
+          ),
+        ),
+        const SizedBox(height: 12),
+        const InactivityCard()._card(
+          context,
+          const PlayerInactivity(
+            idleDays: 62,
+            daysUntilDecay: 30,
+            amount: 50,
+            warn: true,
+            decayed: true,
+          ),
+        ),
+      ],
     );
   }
 }
