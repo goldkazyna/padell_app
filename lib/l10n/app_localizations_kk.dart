@@ -2331,6 +2331,33 @@ class AppLocalizationsKk extends AppLocalizations {
   String get serviceCertificates => 'Сертификаттар';
 
   @override
+  String get serviceTrainings => 'Жаттығулар';
+
+  @override
+  String get serviceLeaguesSub => 'Кезеңдерден тұратын маусым';
+
+  @override
+  String get serviceClubsSub => 'Корттар мен кесте';
+
+  @override
+  String get serviceCommunitySub => 'Ойыншылар қауымдастығы';
+
+  @override
+  String get serviceShopSub => 'Ракеткалар мен доптар';
+
+  @override
+  String get serviceTrainingsSub => 'Жаттықтырушыға жазылу';
+
+  @override
+  String get serviceGamesSub => '2×2 кездесулер';
+
+  @override
+  String get serviceClubCardsSub => 'Сағаттар мен есептен шығару';
+
+  @override
+  String get serviceCertificatesSub => 'Ойын сыйлау';
+
+  @override
   String get serviceComingSoon => 'Бөлім әзірленуде';
 
   @override

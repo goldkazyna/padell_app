@@ -4444,6 +4444,60 @@ abstract class AppLocalizations {
   /// **'Сертификаты'**
   String get serviceCertificates;
 
+  /// No description provided for @serviceTrainings.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тренировки'**
+  String get serviceTrainings;
+
+  /// No description provided for @serviceLeaguesSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сезон из этапов'**
+  String get serviceLeaguesSub;
+
+  /// No description provided for @serviceClubsSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Корты и расписание'**
+  String get serviceClubsSub;
+
+  /// No description provided for @serviceCommunitySub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сообщества игроков'**
+  String get serviceCommunitySub;
+
+  /// No description provided for @serviceShopSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ракетки и мячи'**
+  String get serviceShopSub;
+
+  /// No description provided for @serviceTrainingsSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Записаться к тренеру'**
+  String get serviceTrainingsSub;
+
+  /// No description provided for @serviceGamesSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поединки 2×2'**
+  String get serviceGamesSub;
+
+  /// No description provided for @serviceClubCardsSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Часы и списания'**
+  String get serviceClubCardsSub;
+
+  /// No description provided for @serviceCertificatesSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подарить игру'**
+  String get serviceCertificatesSub;
+
   /// No description provided for @serviceComingSoon.
   ///
   /// In ru, this message translates to:

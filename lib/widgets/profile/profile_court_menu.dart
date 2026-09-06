@@ -15,7 +15,7 @@ import '../../services/league_service.dart';
 import '../../services/support_service.dart';
 import '../../services/training_service.dart';
 import '../../theme/app_theme.dart';
-import '../court_grid_background.dart';
+import '../court_menu_panel.dart';
 
 /// Меню профиля: шесть зон на корте.
 ///
@@ -88,264 +88,63 @@ class _ProfileCourtMenuState extends State<ProfileCourtMenu> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: AppTheme.accent.withValues(alpha: 0.42),
-              width: 1.5,
-            ),
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF16281F), Color(0xFF12211C), Color(0xFF0D1714)],
-              stops: [0.0, 0.4, 1.0],
-            ),
-          ),
-          child: Stack(
-            children: [
-              const Positioned.fill(child: CourtGridBackground()),
-              Column(
-                children: [
-                  _zoneRow(
-                    left: CourtMenuZone(
-                      icon: Icons.event_available_outlined,
-                      accent: true,
-                      title: l10n.profileMyTournaments,
-                      subtitle: l10n.profileMyTournamentsSub,
-                      value: myTournaments > 0 ? '$myTournaments' : null,
-                      valueColor: AppTheme.accent,
-                      onTap: () => _open(const MyTournamentsScreen()),
-                    ),
-                    right: CourtMenuZone(
-                      icon: Icons.mail_outline,
-                      alert: true,
-                      title: l10n.profileInvitations,
-                      subtitle: l10n.profileInvitationsSub,
-                      badge: _invitations,
-                      onTap: () => _open(const TournamentInvitationsScreen()),
-                    ),
-                    divider: true,
-                  ),
-                  _zoneRow(
-                    left: CourtMenuZone(
-                      icon: Icons.sports_tennis_outlined,
-                      title: l10n.profileMyTrainings,
-                      subtitle: l10n.profileMyTrainingsSub,
-                      value: _trainings > 0 ? '$_trainings' : null,
-                      onTap: () => _open(const MyTrainingsScreen()),
-                    ),
-                    right: CourtMenuZone(
-                      icon: Icons.emoji_events_outlined,
-                      title: l10n.profileMyLeagues,
-                      subtitle: l10n.profileMyLeaguesSub,
-                      value: _leagues > 0 ? '$_leagues' : null,
-                      onTap: () => _open(const MyLeaguesScreen()),
-                    ),
-                    divider: true,
-                  ),
-                  _zoneRow(
-                    left: CourtMenuZone(
-                      icon: Icons.history,
-                      title: l10n.profileHistory,
-                      subtitle: l10n.profileHistorySub,
-                      value: played > 0 ? '$played' : null,
-                      onTap: () => _open(const MyTournamentsHistoryScreen()),
-                    ),
-                    right: CourtMenuZone(
-                      icon: Icons.headset_mic_outlined,
-                      title: l10n.profileSupport,
-                      subtitle: l10n.profileSupportSub,
-                      badge: _support,
-                      onTap: () => _open(const SupportTicketsScreen()),
-                    ),
-                    divider: false,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Ряд из двух зон: вертикальная линия между ними — как разметка корта,
-  /// горизонтальная снизу — акцентная, она же граница половин.
-  Widget _zoneRow({
-    required Widget left,
-    required Widget right,
-    required bool divider,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: divider
-            ? Border(
-                bottom: BorderSide(
-                  color: AppTheme.accent.withValues(alpha: 0.26),
-                  width: 1.5,
+      child: CourtMenuPanel(
+        rows: [
+              CourtMenuRow(
+                left: CourtMenuZone(
+                  icon: Icons.event_available_outlined,
+                  accent: true,
+                  title: l10n.profileMyTournaments,
+                  subtitle: l10n.profileMyTournamentsSub,
+                  value: myTournaments > 0 ? '$myTournaments' : null,
+                  valueColor: AppTheme.accent,
+                  onTap: () => _open(const MyTournamentsScreen()),
                 ),
-              )
-            : null,
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Color(0x1AFFFFFF), width: 1.5),
-                  ),
+                right: CourtMenuZone(
+                  icon: Icons.mail_outline,
+                  alert: true,
+                  title: l10n.profileInvitations,
+                  subtitle: l10n.profileInvitationsSub,
+                  badge: _invitations,
+                  onTap: () => _open(const TournamentInvitationsScreen()),
                 ),
-                child: left,
+                divider: true,
               ),
-            ),
-            Expanded(child: right),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Одна зона корта: иконка, число или бейдж, название и подпись.
-class CourtMenuZone extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  /// Число справа сверху (сколько турниров, сыграно и так далее).
-  final String? value;
-  final Color? valueColor;
-
-  /// Красный кружок с числом — там, где ждут ответа.
-  final int badge;
-
-  /// Акцентная иконка (свои ближайшие турниры).
-  final bool accent;
-
-  /// Зона, которая умеет тревожить: пока бейдж пуст — обычная, с бейджем
-  /// краснеет иконка и фон. Красный без дела быстро перестают замечать.
-  final bool alert;
-
-  final VoidCallback onTap;
-
-  const CourtMenuZone({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    this.value,
-    this.valueColor,
-    this.badge = 0,
-    this.accent = false,
-    this.alert = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final alarmed = alert && badge > 0;
-
-    final iconColor = alarmed
-        ? AppTheme.error
-        : (accent ? AppTheme.accent : AppTheme.textPrimary);
-    final iconBg = alarmed
-        ? AppTheme.error.withValues(alpha: 0.16)
-        : (accent
-            ? AppTheme.accent.withValues(alpha: 0.16)
-            : Colors.white.withValues(alpha: 0.06));
-    final iconBorder = alarmed
-        ? AppTheme.error.withValues(alpha: 0.32)
-        : (accent
-            ? AppTheme.accent.withValues(alpha: 0.32)
-            : Colors.white.withValues(alpha: 0.08));
-
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 94),
-        color: alarmed ? AppTheme.error.withValues(alpha: 0.10) : null,
-        padding: const EdgeInsets.all(13),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: iconBg,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: iconBorder),
-                  ),
-                  child: Icon(icon, size: 17, color: iconColor),
+              CourtMenuRow(
+                left: CourtMenuZone(
+                  icon: Icons.sports_tennis_outlined,
+                  title: l10n.profileMyTrainings,
+                  subtitle: l10n.profileMyTrainingsSub,
+                  value: _trainings > 0 ? '$_trainings' : null,
+                  onTap: () => _open(const MyTrainingsScreen()),
                 ),
-                const Spacer(),
-                if (badge > 0)
-                  Container(
-                    constraints: const BoxConstraints(minWidth: 20),
-                    height: 20,
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppTheme.error,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      badge > 99 ? '99+' : '$badge',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  )
-                else if (value != null)
-                  Text(
-                    value!,
-                    style: TextStyle(
-                      color: valueColor ?? AppTheme.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      height: 1,
-                    ),
-                  )
-                else
-                  Icon(Icons.chevron_right, size: 16, color: AppTheme.textDim),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                height: 1.2,
+                right: CourtMenuZone(
+                  icon: Icons.emoji_events_outlined,
+                  title: l10n.profileMyLeagues,
+                  subtitle: l10n.profileMyLeaguesSub,
+                  value: _leagues > 0 ? '$_leagues' : null,
+                  onTap: () => _open(const MyLeaguesScreen()),
+                ),
+                divider: true,
               ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              subtitle,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 11,
-                height: 1.35,
+              CourtMenuRow(
+                left: CourtMenuZone(
+                  icon: Icons.history,
+                  title: l10n.profileHistory,
+                  subtitle: l10n.profileHistorySub,
+                  value: played > 0 ? '$played' : null,
+                  onTap: () => _open(const MyTournamentsHistoryScreen()),
+                ),
+                right: CourtMenuZone(
+                  icon: Icons.headset_mic_outlined,
+                  title: l10n.profileSupport,
+                  subtitle: l10n.profileSupportSub,
+                  badge: _support,
+                  onTap: () => _open(const SupportTicketsScreen()),
+                ),
+                divider: false,
               ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -2355,6 +2355,33 @@ class AppLocalizationsRu extends AppLocalizations {
   String get serviceCertificates => 'Сертификаты';
 
   @override
+  String get serviceTrainings => 'Тренировки';
+
+  @override
+  String get serviceLeaguesSub => 'Сезон из этапов';
+
+  @override
+  String get serviceClubsSub => 'Корты и расписание';
+
+  @override
+  String get serviceCommunitySub => 'Сообщества игроков';
+
+  @override
+  String get serviceShopSub => 'Ракетки и мячи';
+
+  @override
+  String get serviceTrainingsSub => 'Записаться к тренеру';
+
+  @override
+  String get serviceGamesSub => 'Поединки 2×2';
+
+  @override
+  String get serviceClubCardsSub => 'Часы и списания';
+
+  @override
+  String get serviceCertificatesSub => 'Подарить игру';
+
+  @override
   String get serviceComingSoon => 'Раздел в разработке';
 
   @override

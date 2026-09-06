@@ -2350,6 +2350,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceCertificates => 'Certificates';
 
   @override
+  String get serviceTrainings => 'Trainings';
+
+  @override
+  String get serviceLeaguesSub => 'A season of stages';
+
+  @override
+  String get serviceClubsSub => 'Courts and schedule';
+
+  @override
+  String get serviceCommunitySub => 'Player communities';
+
+  @override
+  String get serviceShopSub => 'Rackets and balls';
+
+  @override
+  String get serviceTrainingsSub => 'Book a coach';
+
+  @override
+  String get serviceGamesSub => '2×2 matches';
+
+  @override
+  String get serviceClubCardsSub => 'Hours and charges';
+
+  @override
+  String get serviceCertificatesSub => 'Gift a game';
+
+  @override
   String get serviceComingSoon => 'Section under development';
 
   @override

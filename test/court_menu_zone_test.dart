@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:padel_app/theme/app_theme.dart';
-import 'package:padel_app/widgets/profile/profile_court_menu.dart';
+import 'package:padel_app/widgets/court_menu_panel.dart';
 
 /// «Приглашения на турнир» краснеют только когда есть что закрыть.
 ///

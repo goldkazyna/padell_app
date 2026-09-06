@@ -11,7 +11,7 @@ import '../widgets/home/nearest_tournament_card.dart';
 import '../widgets/home/active_tournament_card.dart';
 import '../widgets/home/upcoming_list.dart';
 import '../widgets/home/section_title.dart';
-import '../widgets/home/services_block.dart';
+import '../widgets/home/services_court_block.dart';
 import '../widgets/home/home_banner_card.dart';
 import '../widgets/home/personal_creator_block.dart';
 import '../widgets/pressable_card.dart';
@@ -116,10 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                   const SizedBox(height: 16),
-                  ServicesBlock(
-                    onOpenTournaments: () => widget.onNavigateToTab?.call(1),
-                    refreshTick: _refreshTick,
-                  ),
+                  ServicesCourtBlock(refreshTick: _refreshTick),
                   const SizedBox(height: 12),
                   // Для admin клуба — блок управления, для остальных —
                   // приглашение получить аккредитацию.
