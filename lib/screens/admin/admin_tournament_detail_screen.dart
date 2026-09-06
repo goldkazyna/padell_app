@@ -4287,7 +4287,9 @@ class _AdminTournamentDetailScreenState
   }
 
   Future<void> _whatsappPlayer(AdminParticipant p) async {
-    final ph = p.phone;
+    // Пишем на указанный WhatsApp, если игрок его вписал: телефон входа —
+    // это логин, и он не всегда тот, где человек читает сообщения.
+    final ph = p.whatsappNumber;
     if (ph == null || ph.isEmpty) return;
     final uri = Uri.parse('https://wa.me/${_digitsOnly(ph)}');
     if (await canLaunchUrl(uri)) {

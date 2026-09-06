@@ -3,6 +3,10 @@ class AdminParticipant {
   final int id;
   final String name;
   final String? phone;
+
+  /// Номер WhatsApp, если игрок указал свой: у части людей он не тот,
+  /// которым они входят.
+  final String? whatsapp;
   final double? level;
   final int? rating;
   final String? avatarUrl;
@@ -15,6 +19,7 @@ class AdminParticipant {
     required this.id,
     required this.name,
     required this.phone,
+    this.whatsapp,
     required this.level,
     required this.rating,
     required this.avatarUrl,
@@ -29,6 +34,7 @@ class AdminParticipant {
       id: (json['id'] as num).toInt(),
       name: json['name'] as String? ?? '',
       phone: json['phone'] as String?,
+      whatsapp: json['whatsapp'] as String?,
       level: (json['level'] as num?)?.toDouble(),
       rating: (json['rating'] as num?)?.toInt(),
       avatarUrl: json['avatar_url'] as String?,
@@ -39,5 +45,15 @@ class AdminParticipant {
       moderationDeadline:
           DateTime.tryParse(json['moderation_deadline'] as String? ?? ''),
     );
+  }
+
+  /// Номер для WhatsApp: указанный игроком, иначе телефон аккаунта.
+  /// Пусто — писать некуда.
+  String? get whatsappNumber {
+    final own = whatsapp?.trim() ?? '';
+    if (own.isNotEmpty) return own;
+
+    final login = phone?.trim() ?? '';
+    return login.isEmpty ? null : login;
   }
 }
