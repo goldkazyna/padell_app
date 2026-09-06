@@ -103,6 +103,7 @@
   "tournamentStatusCompleted": "Завершён",
   "tournamentStatusCancelled": "Отменён",
 
+  "messengersHint": "Укажите хотя бы один — так с вами свяжутся после игры",
   "sectionMessengers": "МЕССЕНДЖЕРЫ",
   "sectionContacts": "КОНТАКТЫ",
   "sectionAbout": "О ВАС",

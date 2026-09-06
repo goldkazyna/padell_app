@@ -271,6 +271,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tournamentStatusCancelled => 'Отменён';
 
   @override
+  String get messengersHint =>
+      'Укажите хотя бы один — так с вами свяжутся после игры';
+
+  @override
   String get sectionMessengers => 'МЕССЕНДЖЕРЫ';
 
   @override

@@ -271,6 +271,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tournamentStatusCancelled => 'Cancelled';
 
   @override
+  String get messengersHint =>
+      'Add at least one so people can reach you after a game';
+
+  @override
   String get sectionMessengers => 'MESSENGERS';
 
   @override

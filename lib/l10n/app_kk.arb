@@ -103,6 +103,7 @@
   "tournamentStatusCompleted": "Аяқталды",
   "tournamentStatusCancelled": "Бас тартылды",
 
+  "messengersHint": "Кемінде біреуін көрсетіңіз — ойыннан кейін сізбен байланысады",
   "sectionMessengers": "МЕССЕНДЖЕРЛЕР",
   "sectionContacts": "БАЙЛАНЫСТАР",
   "sectionAbout": "СІЗ ТУРАЛЫ",

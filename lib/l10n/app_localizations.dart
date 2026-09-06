@@ -592,6 +592,12 @@ abstract class AppLocalizations {
   /// **'Отменён'**
   String get tournamentStatusCancelled;
 
+  /// No description provided for @messengersHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите хотя бы один — так с вами свяжутся после игры'**
+  String get messengersHint;
+
   /// No description provided for @sectionMessengers.
   ///
   /// In ru, this message translates to:

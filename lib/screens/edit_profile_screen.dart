@@ -454,8 +454,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           // которые обязательны.
                           _buildSectionTitle(
                             AppLocalizations.of(context)!.sectionMessengers,
-                            optional: true,
+                            optional: !_noMessenger,
                           ),
+                          // Пока не заполнен ни один — объясняем, зачем это
+                          // вообще: иначе человек видит жёлтую точку в
+                          // профиле и не понимает, чего от него хотят.
+                          if (_noMessenger)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.info_outline,
+                                      size: 14, color: _T.amber),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      AppLocalizations.of(context)!
+                                          .messengersHint,
+                                      style: TextStyle(
+                                        color: _T.amber,
+                                        fontSize: 12,
+                                        height: 1.35,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           _buildCard(children: [
                             _buildEditableRow(
                               icon: Icons.chat_outlined,
@@ -463,6 +490,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               controller: _whatsappController,
                               hint: '+7 777 ...',
                               keyboardType: TextInputType.phone,
+                              incomplete: _noMessenger,
                               // У части людей WhatsApp на другом номере,
                               // поэтому не подставляем молча, а предлагаем.
                               trailing: _phone.isEmpty
@@ -490,6 +518,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               label: AppLocalizations.of(context)!.fieldTelegram,
                               controller: _telegramController,
                               hint: '@username',
+                              incomplete: _noMessenger,
                             ),
                             _divider(),
                             _buildEditableRow(
@@ -784,6 +813,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
+
+  /// Ни WhatsApp, ни телеграм не заполнены — по такому профилю с человеком
+  /// не связаться после игры, и точка у карандаша в профиле горит именно
+  /// из-за этого.
+  bool get _noMessenger =>
+      _whatsappController.text.trim().isEmpty &&
+      _telegramController.text.trim().isEmpty;
 
   Widget _buildSectionTitle(String title, {bool optional = false}) {
     return Padding(

@@ -271,6 +271,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get tournamentStatusCancelled => 'Бас тартылды';
 
   @override
+  String get messengersHint =>
+      'Кемінде біреуін көрсетіңіз — ойыннан кейін сізбен байланысады';
+
+  @override
   String get sectionMessengers => 'МЕССЕНДЖЕРЛЕР';
 
   @override

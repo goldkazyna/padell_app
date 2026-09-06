@@ -101,6 +101,7 @@
   "tournamentStatusCompleted": "Completed",
   "tournamentStatusCancelled": "Cancelled",
 
+  "messengersHint": "Add at least one so people can reach you after a game",
   "sectionMessengers": "MESSENGERS",
   "sectionContacts": "CONTACTS",
   "sectionAbout": "ABOUT YOU",
