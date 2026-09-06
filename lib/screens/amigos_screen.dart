@@ -36,7 +36,6 @@ class _AmigosScreenState extends State<AmigosScreen> {
   late int _tab = widget.initialTab;
 
   final _searchController = TextEditingController();
-  bool _searchOpen = false;
   Timer? _debounce;
 
   @override
@@ -52,14 +51,6 @@ class _AmigosScreenState extends State<AmigosScreen> {
     _debounce = Timer(const Duration(milliseconds: 350), () {
       if (mounted) context.read<AmigoProvider>().search(value);
     });
-  }
-
-  void _toggleSearch() {
-    setState(() => _searchOpen = !_searchOpen);
-    if (!_searchOpen) {
-      _searchController.clear();
-      context.read<AmigoProvider>().clearSearch();
-    }
   }
 
   /// Тап по амигос: занят игрой — спрашиваем куда идти, иначе профиль.
@@ -124,7 +115,9 @@ class _AmigosScreenState extends State<AmigosScreen> {
     if (status.gameId != null) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => GameDetailScreen(gameId: status.gameId!)),
+        MaterialPageRoute(
+          builder: (_) => GameDetailScreen(gameId: status.gameId!),
+        ),
       );
     }
   }
@@ -148,13 +141,19 @@ class _AmigosScreenState extends State<AmigosScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textSecondary)),
+            child: Text(
+              l10n.cancel,
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               l10n.amigosRemove,
-              style: TextStyle(color: AppTheme.error, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                color: AppTheme.error,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -192,80 +191,17 @@ class _AmigosScreenState extends State<AmigosScreen> {
                           letterSpacing: -0.3,
                         ),
                       ),
-                      const Spacer(),
-                      // Поиск по всей базе: добавлять хочется не только тех,
-                      // с кем уже играл.
-                      GestureDetector(
-                        onTap: _toggleSearch,
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          width: 34,
-                          height: 34,
-                          decoration: BoxDecoration(
-                            color: _searchOpen
-                                ? AppTheme.accent.withValues(alpha: 0.16)
-                                : AppTheme.card,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppTheme.border),
-                          ),
-                          child: Icon(
-                            _searchOpen ? Icons.close : Icons.search,
-                            size: 18,
-                            color: _searchOpen
-                                ? AppTheme.accent
-                                : AppTheme.textPrimary,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
-                if (_searchOpen)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: TextField(
-                      controller: _searchController,
-                      autofocus: true,
-                      onChanged: _onSearchChanged,
-                      style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 14,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: l10n.amigosSearchPlaceholder,
-                        hintStyle: TextStyle(
-                          color: AppTheme.textDim,
-                          fontSize: 14,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          size: 18,
-                          color: AppTheme.textDim,
-                        ),
-                        filled: true,
-                        fillColor: AppTheme.cardRaised,
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: AppTheme.border),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: AppTheme.border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: AppTheme.accent),
-                        ),
-                      ),
-                    ),
-                  ),
-                if (!_searchOpen)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _Tabs(
-                    labels: [l10n.amigosMine, l10n.amigosFollowers, l10n.amigosFeed],
+                    labels: [
+                      l10n.amigosMine,
+                      l10n.amigosFollowers,
+                      l10n.amigosFeed,
+                    ],
                     counts: [
                       provider.amigos.length,
                       provider.followers.length,
@@ -279,14 +215,12 @@ class _AmigosScreenState extends State<AmigosScreen> {
                   ),
                 ),
                 Expanded(
-                  child: _searchOpen
-                      ? _searchBody(provider, l10n)
-                      : RefreshIndicator(
-                          color: AppTheme.accent,
-                          backgroundColor: AppTheme.card,
-                          onRefresh: _load,
-                          child: _body(provider, l10n),
-                        ),
+                  child: RefreshIndicator(
+                    color: AppTheme.accent,
+                    backgroundColor: AppTheme.card,
+                    onRefresh: _load,
+                    child: _body(provider, l10n),
+                  ),
                 ),
               ],
             );
@@ -296,50 +230,11 @@ class _AmigosScreenState extends State<AmigosScreen> {
     );
   }
 
-  /// Выдача поиска: те же строки кандидатов, но найденные по имени.
-  Widget _searchBody(AmigoProvider provider, AppLocalizations l10n) {
-    if (provider.isSearching && provider.searchResults.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
-    }
-
-    if (provider.searchQuery.trim().length < 2) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-        child: Text(
-          l10n.amigosSearchTitle,
-          style: TextStyle(color: AppTheme.textDim, fontSize: 13),
-        ),
-      );
-    }
-
-    if (provider.searchResults.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-        child: _EmptyCard(text: l10n.amigosSearchNothing),
-      );
-    }
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 30),
-      children: [
-        _ListCard(
-          children: provider.searchResults
-              .map((candidate) => _CandidateRow(
-                    candidate: candidate,
-                    onTap: () => _openPlayer(candidate.id, candidate.name),
-                    onAdd: candidate.added
-                        ? null
-                        : () => context.read<AmigoProvider>().follow(candidate.id),
-                  ))
-              .toList(),
-        ),
-      ],
-    );
-  }
-
   Widget _body(AmigoProvider provider, AppLocalizations l10n) {
     if (provider.isLoading && provider.amigos.isEmpty && _tab == 0) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.accent),
+      );
     }
 
     return ListView(
@@ -362,29 +257,100 @@ class _AmigosScreenState extends State<AmigosScreen> {
           onLongPress: _remove,
           items: provider.amigos,
           children: provider.amigos
-              .map((amigo) => AmigoRow(
-                    amigo: amigo,
-                    onTap: () => _openAmigo(amigo),
-                    onStatusTap: () => _openAmigo(amigo),
-                  ))
+              .map(
+                (amigo) => AmigoRow(
+                  amigo: amigo,
+                  onTap: () => _openAmigo(amigo),
+                  onStatusTap: () => _openAmigo(amigo),
+                ),
+              )
               .toList(),
         ),
 
-      // Кандидаты показываем, пока список маленький: пустой экран на старте —
-      // главная беда таких разделов.
-      if (provider.candidates.isNotEmpty && provider.amigos.length < 5) ...[
-        const SizedBox(height: 20),
-        _SectionTitle(l10n.amigosCandidatesTitle),
-        const SizedBox(height: 8),
-        _ListCard(
-          children: provider.candidates
-              .map((candidate) => _CandidateRow(
+      // Поиск живёт прямо в списке, над кандидатами: добавлять хочется не
+      // только тех, с кем уже играл, и прятать это за лупой незачем.
+      const SizedBox(height: 20),
+      TextField(
+        controller: _searchController,
+        style: TextStyle(color: AppTheme.textPrimary),
+        onChanged: _onSearchChanged,
+        onSubmitted: (value) {
+          _debounce?.cancel();
+          context.read<AmigoProvider>().search(value);
+        },
+        decoration: InputDecoration(
+          hintText: l10n.amigosSearchPlaceholder,
+          hintStyle: TextStyle(color: AppTheme.textSecondary),
+          filled: true,
+          fillColor: AppTheme.card,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+          prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary),
+          suffixIcon: provider.searchQuery.isEmpty
+              ? null
+              : IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: AppTheme.textSecondary,
+                    size: 18,
+                  ),
+                  onPressed: () {
+                    _searchController.clear();
+                    context.read<AmigoProvider>().clearSearch();
+                  },
+                ),
+        ),
+      ),
+      const SizedBox(height: 14),
+
+      // Пока ищут — показываем найденных; иначе тех, с кем уже играли.
+      if (provider.searchQuery.trim().length >= 2) ...[
+        if (provider.isSearching && provider.searchResults.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Center(
+              child: CircularProgressIndicator(color: AppTheme.accent),
+            ),
+          )
+        else if (provider.searchResults.isEmpty)
+          _EmptyCard(text: l10n.amigosSearchNothing)
+        else
+          _ListCard(
+            children: provider.searchResults
+                .map(
+                  (candidate) => _CandidateRow(
                     candidate: candidate,
                     onTap: () => _openPlayer(candidate.id, candidate.name),
                     onAdd: candidate.added
                         ? null
-                        : () => context.read<AmigoProvider>().follow(candidate.id),
-                  ))
+                        : () => context.read<AmigoProvider>().follow(
+                            candidate.id,
+                          ),
+                  ),
+                )
+                .toList(),
+          ),
+      ] else if (provider.candidates.isNotEmpty) ...[
+        _SectionTitle(l10n.amigosCandidatesTitle),
+        const SizedBox(height: 8),
+        _ListCard(
+          children: provider.candidates
+              .map(
+                (candidate) => _CandidateRow(
+                  candidate: candidate,
+                  onTap: () => _openPlayer(candidate.id, candidate.name),
+                  onAdd: candidate.added
+                      ? null
+                      : () =>
+                            context.read<AmigoProvider>().follow(candidate.id),
+                ),
+              )
               .toList(),
         ),
       ],
@@ -426,7 +392,9 @@ class _AmigosScreenState extends State<AmigosScreen> {
       return [
         const Padding(
           padding: EdgeInsets.only(top: 40),
-          child: Center(child: CircularProgressIndicator(color: AppTheme.accent)),
+          child: Center(
+            child: CircularProgressIndicator(color: AppTheme.accent),
+          ),
         ),
       ];
     }
@@ -438,17 +406,21 @@ class _AmigosScreenState extends State<AmigosScreen> {
     return [
       _ListCard(
         children: provider.feed
-            .map((event) => _FeedRow(
-                  event: event,
-                  onTap: () => _openPlayer(event.userId, event.playerName),
-                  onTargetTap: () => _openStatus(AmigoStatus(
+            .map(
+              (event) => _FeedRow(
+                event: event,
+                onTap: () => _openPlayer(event.userId, event.playerName),
+                onTargetTap: () => _openStatus(
+                  AmigoStatus(
                     kind: event.kind,
                     title: event.title,
                     subtitle: event.subtitle,
                     tournamentId: event.tournamentId,
                     gameId: event.gameId,
-                  )),
-                ))
+                  ),
+                ),
+              ),
+            )
             .toList(),
       ),
     ];
@@ -476,53 +448,60 @@ class _Tabs extends StatelessWidget {
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFF27272A), width: 1)),
       ),
-      child: Row(
-        children: List.generate(labels.length, (index) {
-          final active = index == current;
-          final count = counts[index];
+      // Три вкладки в узкий экран не влезают — строка едет вбок, а не
+      // переносится: правило дизайн-системы.
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(labels.length, (index) {
+            final active = index == current;
+            final count = counts[index];
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 22),
-            child: GestureDetector(
-              onTap: () => onChanged(index),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 9),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: active ? AppTheme.accent : Colors.transparent,
-                      width: 2,
+            return Padding(
+              padding: const EdgeInsets.only(right: 22),
+              child: GestureDetector(
+                onTap: () => onChanged(index),
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 9),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: active ? AppTheme.accent : Colors.transparent,
+                        width: 2,
+                      ),
                     ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      labels[index],
-                      style: TextStyle(
-                        color: active ? AppTheme.accent : const Color(0xFF52525B),
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (count != null && count > 0) ...[
-                      const SizedBox(width: 5),
+                  child: Row(
+                    children: [
                       Text(
-                        '$count',
+                        labels[index],
                         style: TextStyle(
-                          color: active ? AppTheme.accent : AppTheme.textDim,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
+                          color: active
+                              ? AppTheme.accent
+                              : const Color(0xFF52525B),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                      if (count != null && count > 0) ...[
+                        const SizedBox(width: 5),
+                        Text(
+                          '$count',
+                          style: TextStyle(
+                            color: active ? AppTheme.accent : AppTheme.textDim,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -603,7 +582,11 @@ class _EmptyCard extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: TextStyle(color: AppTheme.textSecondary, fontSize: 13.5, height: 1.55),
+          style: TextStyle(
+            color: AppTheme.textSecondary,
+            fontSize: 13.5,
+            height: 1.55,
+          ),
         ),
       ),
     );
@@ -693,7 +676,10 @@ class _CandidateRow extends StatelessWidget {
                               'ур. ${candidate.level!.toStringAsFixed(2)}',
                             if (candidate.rating > 0) '${candidate.rating}',
                           ].join(' · '),
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -770,7 +756,10 @@ class _FeedRow extends StatelessWidget {
                     event.subtitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -780,7 +769,10 @@ class _FeedRow extends StatelessWidget {
               GestureDetector(
                 onTap: onTargetTap,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.accent.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(6),
