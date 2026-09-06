@@ -1474,6 +1474,12 @@ abstract class AppLocalizations {
   /// **'Смотри трансляцию турнира'**
   String get liveShareText;
 
+  /// No description provided for @leagueShareText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заходи в лигу'**
+  String get leagueShareText;
+
   /// No description provided for @shareFailed.
   ///
   /// In ru, this message translates to:

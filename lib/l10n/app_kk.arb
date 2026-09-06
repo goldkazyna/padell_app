@@ -281,6 +281,7 @@
   "@shareCost": { "placeholders": { "cost": { "type": "String" } } },
 
   "liveShareText": "Турнир трансляциясын көр",
+  "leagueShareText": "Лигаға қосыл",
   "shareFailed": "«Бөлісу» терезесін ашу мүмкін болмады",
   "shareAppPromo": "Padel KZ — қосымшаны жүктеп алыңыз және турнирлерге тіркеліңіз!",
   "noSpotsLeftUpper": "ОРЫН ЖОҚ",

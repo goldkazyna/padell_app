@@ -756,6 +756,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get liveShareText => 'Смотри трансляцию турнира';
 
   @override
+  String get leagueShareText => 'Заходи в лигу';
+
+  @override
   String get shareFailed => 'Не удалось открыть «Поделиться»';
 
   @override

@@ -6,11 +6,13 @@ import 'package:flutter/foundation.dart';
 
 import '../screens/club_detail_screen.dart';
 import '../screens/club_waiver_screen.dart';
+import '../screens/league_detail_screen.dart';
 import '../screens/tournament_detail_screen.dart';
 import '../screens/tournament_live_entry_screen.dart';
 
 /// Слушает входящие deep-link'и (padelp://tournament/{id}, padelp://live/{id},
-/// padelp://club/{id}, padelp://waiver/{id}) и роутит на нужный экран.
+/// padelp://league/{id}, padelp://club/{id}, padelp://waiver/{id}) и роутит
+/// на нужный экран.
 ///
 /// Деплинки приходят:
 /// - При тапе на ссылку «Открыть в приложении» с лендинга /t/{id}
@@ -108,6 +110,22 @@ class DeepLinkService {
       return;
     }
 
+    // --- League ---
+    // padelp://league/7    — host=league, segments=[7]
+    // https://padel-p.kz/l/7 — segments=[l, 7]
+    int? leagueId;
+    if (uri.host == 'league' && uri.pathSegments.isNotEmpty) {
+      leagueId = int.tryParse(uri.pathSegments.first);
+    } else if (uri.pathSegments.length >= 2 &&
+        (uri.pathSegments[0] == 'l' || uri.pathSegments[0] == 'league')) {
+      leagueId = int.tryParse(uri.pathSegments[1]);
+    }
+
+    if (leagueId != null) {
+      _navigateToLeague(leagueId, fromInitial: fromInitial);
+      return;
+    }
+
     // --- Club ---
     // padelp://club/123  — host=club, segments=[123]
     // https://padel-p.kz/c/123 — segments=[c, 123]
@@ -154,6 +172,25 @@ class DeepLinkService {
         state.push(
           MaterialPageRoute(
             builder: (_) => TournamentLiveEntryScreen(tournamentId: id),
+          ),
+        );
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
+  Future<void> _navigateToLeague(int id, {required bool fromInitial}) async {
+    final key = _navigatorKey;
+    if (key == null) return;
+
+    // При cold-start Navigator может быть ещё не готов — ждём.
+    for (int i = 0; i < 100; i++) {
+      final state = key.currentState;
+      if (state != null && state.mounted) {
+        state.push(
+          MaterialPageRoute(
+            builder: (_) => LeagueDetailScreen(leagueId: id),
           ),
         );
         return;

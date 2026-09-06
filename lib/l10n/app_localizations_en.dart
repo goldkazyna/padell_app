@@ -754,6 +754,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get liveShareText => 'Watch the tournament live';
 
   @override
+  String get leagueShareText => 'Join the league';
+
+  @override
   String get shareFailed => 'Could not open the share sheet';
 
   @override

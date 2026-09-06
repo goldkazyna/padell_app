@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/league.dart';
 import '../providers/home_provider.dart';
 import '../services/league_service.dart';
@@ -10,6 +11,7 @@ import '../utils/app_alert.dart';
 import '../utils/tournament_navigation.dart';
 import '../providers/main_tab_notifier.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/app_share_button.dart';
 import '../widgets/main_nav_pill.dart';
 import '../widgets/app_tabs.dart';
 import '../widgets/tournaments/club_logo.dart';
@@ -109,6 +111,24 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
           style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
           overflow: TextOverflow.ellipsis,
         ),
+        actions: [
+          // Пока лига не загрузилась, делиться нечем: имя в тексте пустое,
+          // и ссылка ушла бы без названия.
+          if (league != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Builder(builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+
+                // Короткий текст: остальное развернёт превью лендинга.
+                return AppShareButton(
+                  text: '${l10n.leagueShareText}\n«${league.name}»\n'
+                      'https://padel-p.kz/l/${league.id}',
+                  errorTitle: l10n.shareFailed,
+                );
+              }),
+            ),
+        ],
       ),
       // Меню не должно пропадать под ногами: из лиги люди уходят на
       // главную или в рейтинг, а не «назад-назад-назад».

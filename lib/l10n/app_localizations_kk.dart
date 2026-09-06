@@ -741,6 +741,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get liveShareText => 'Турнир трансляциясын көр';
 
   @override
+  String get leagueShareText => 'Лигаға қосыл';
+
+  @override
   String get shareFailed => '«Бөлісу» терезесін ашу мүмкін болмады';
 
   @override
