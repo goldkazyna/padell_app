@@ -55,61 +55,68 @@ class _AmigosCardState extends State<AmigosCard> {
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppTheme.card,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
-            ),
-            // Справа отступа нет: лента должна уходить под край карточки,
-            // иначе не видно, что её можно листать.
-            padding: const EdgeInsets.fromLTRB(14, 14, 0, 14),
-            child: Column(
-              // Без этого карточка растягивается на всю доступную высоту,
-              // когда её кладут не в скролл.
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 14),
-                  child: _header(l10n, amigos.length, playing),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 76,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.only(right: 14),
-                    children: [
-                      _AddTile(
-                        label: l10n.amigosAdd,
-                        onTap: () => openAmigos(context),
-                      ),
-                      if (amigos.isEmpty)
-                        // Пока никого — держим место, чтобы лента не выглядела
-                        // обрезанной.
-                        ...List.generate(3, (_) => const _GhostTile())
-                      else
-                        ...amigos.map(
-                          (amigo) => _AmigoTile(
-                            amigo: amigo,
-                            onTap: () => _open(amigo),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                if (amigos.isEmpty) ...[
-                  const SizedBox(height: 8),
+          // Нажимается вся карточка, а не только строка заголовка: на узкой
+          // полоске в 20 px люди не попадают. Аватары и «Добавить» внутри
+          // ловят тап раньше и ведут по-своему.
+          child: GestureDetector(
+            onTap: () => openAmigos(context),
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.card,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFF2A3330), width: 0.5),
+              ),
+              // Справа отступа нет: лента должна уходить под край карточки,
+              // иначе не видно, что её можно листать.
+              padding: const EdgeInsets.fromLTRB(14, 14, 0, 14),
+              child: Column(
+                // Без этого карточка растягивается на всю доступную высоту,
+                // когда её кладут не в скролл.
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 14),
-                    child: Text(
-                      l10n.amigosProfileEmpty,
-                      style: TextStyle(color: AppTheme.textDim, fontSize: 12),
+                    child: _header(l10n, amigos.length, playing),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 76,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(right: 14),
+                      children: [
+                        _AddTile(
+                          label: l10n.amigosAdd,
+                          onTap: () => openAmigos(context),
+                        ),
+                        if (amigos.isEmpty)
+                          // Пока никого — держим место, чтобы лента не выглядела
+                          // обрезанной.
+                          ...List.generate(3, (_) => const _GhostTile())
+                        else
+                          ...amigos.map(
+                            (amigo) => _AmigoTile(
+                              amigo: amigo,
+                              onTap: () => _open(amigo),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
+                  if (amigos.isEmpty) ...[
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 14),
+                      child: Text(
+                        l10n.amigosProfileEmpty,
+                        style: TextStyle(color: AppTheme.textDim, fontSize: 12),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );
@@ -118,37 +125,33 @@ class _AmigosCardState extends State<AmigosCard> {
   }
 
   Widget _header(AppLocalizations l10n, int count, int playing) {
-    return GestureDetector(
-      onTap: () => openAmigos(context),
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        children: [
+    return Row(
+      children: [
+        Text(
+          l10n.amigos,
+          style: TextStyle(
+            color: AppTheme.textPrimary,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const Spacer(),
+        // Когда кто-то играет — показываем это вместо общего числа:
+        // ради него карточку и открывают.
+        if (playing > 0)
+          _PlayingBadge(count: playing, label: l10n.amigosPlayingNow)
+        else if (count > 0)
           Text(
-            l10n.amigos,
+            '$count',
             style: TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
+              color: AppTheme.textSecondary,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const Spacer(),
-          // Когда кто-то играет — показываем это вместо общего числа:
-          // ради него карточку и открывают.
-          if (playing > 0)
-            _PlayingBadge(count: playing, label: l10n.amigosPlayingNow)
-          else if (count > 0)
-            Text(
-              '$count',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          const SizedBox(width: 6),
-          Icon(Icons.chevron_right, size: 18, color: AppTheme.textDim),
-        ],
-      ),
+        const SizedBox(width: 6),
+        Icon(Icons.chevron_right, size: 18, color: AppTheme.textDim),
+      ],
     );
   }
 }
