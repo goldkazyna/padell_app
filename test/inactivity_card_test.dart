@@ -7,8 +7,7 @@ import 'package:padel_app/services/api_service.dart';
 import 'package:padel_app/services/profile_service.dart';
 import 'package:padel_app/services/storage_service.dart';
 import 'package:padel_app/theme/app_theme.dart';
-import 'package:padel_app/widgets/profile/inactivity_card.dart'
-    show InactivityCard, kInactivityPreview;
+import 'package:padel_app/widgets/profile/inactivity_card.dart';
 import 'package:provider/provider.dart';
 
 /// Напоминание о простое в профиле.
@@ -49,8 +48,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(Container), findsNothing);
-    // Пока включён показ обоих состояний, карточка рисуется всегда.
-  }, skip: kInactivityPreview);
+  });
 
   testWidgets('с 45-го дня предупреждаем и говорим, сколько осталось',
       (tester) async {
