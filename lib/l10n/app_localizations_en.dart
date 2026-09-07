@@ -807,6 +807,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pendingModeration => 'Pending moderation';
 
   @override
+  String get withoutPair => 'Without a pair';
+
+  @override
   String get participants => 'Participants';
 
   @override

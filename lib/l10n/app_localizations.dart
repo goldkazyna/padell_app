@@ -1576,6 +1576,12 @@ abstract class AppLocalizations {
   /// **'На модерации'**
   String get pendingModeration;
 
+  /// No description provided for @withoutPair.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без пары'**
+  String get withoutPair;
+
   /// No description provided for @participants.
   ///
   /// In ru, this message translates to:

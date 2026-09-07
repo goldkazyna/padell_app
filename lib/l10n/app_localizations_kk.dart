@@ -794,6 +794,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get pendingModeration => 'Модерацияда';
 
   @override
+  String get withoutPair => 'Жұбы жоқ';
+
+  @override
   String get participants => 'Қатысушылар';
 
   @override

@@ -298,6 +298,7 @@
   "perPerson": "адамға",
   "pay": "Төлеу",
   "pendingModeration": "Модерацияда",
+  "withoutPair": "Жұбы жоқ",
   "participants": "Қатысушылар",
   "countOfMax": "{max}-нен {count}",
   "@countOfMax": { "placeholders": { "count": { "type": "int" }, "max": { "type": "int" } } },

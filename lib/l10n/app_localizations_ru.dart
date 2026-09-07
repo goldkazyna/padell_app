@@ -809,6 +809,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pendingModeration => 'На модерации';
 
   @override
+  String get withoutPair => 'Без пары';
+
+  @override
   String get participants => 'Участники';
 
   @override

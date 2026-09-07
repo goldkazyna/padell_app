@@ -418,6 +418,24 @@ class Tournament {
 
   bool get isTeamTournament => type == 'team';
 
+  /// Участники, которым организатор ещё не собрал пару.
+  ///
+  /// В парном флексе и в этапе лиги записываются поодиночке, а пары собирает
+  /// клуб. До старта нужно показать и то, и другое: готовые пары и тех, кто
+  /// пока без пары.
+  List<TournamentParticipant> get unpairedParticipants {
+    if (teams.isEmpty) return participants;
+
+    final paired = <int>{
+      for (final team in teams) ...[
+        team.player1.id,
+        if (team.player2 != null) team.player2!.id,
+      ],
+    };
+
+    return participants.where((p) => !paired.contains(p.id)).toList();
+  }
+
   /// Пары собирает админ — игроки записываются поодиночке.
   bool get isAdminPairing => usesSoloRegistration && pairingMode == 'admin';
 

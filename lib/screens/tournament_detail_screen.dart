@@ -733,7 +733,81 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   Widget _buildParticipantsSection(Tournament t, int? currentUserId) {
     final l10n = AppLocalizations.of(context)!;
     final pending = t.participants.where((p) => p.status == 'pending').toList();
-    final registered = t.participants.where((p) => p.status != 'pending').toList();
+    var registered = t.participants.where((p) => p.status != 'pending').toList();
+
+    // Пары организатор собирает до старта, и до сих пор их не было видно:
+    // человек открывал турнир и видел общий список, хотя пара у него уже
+    // есть. Показываем пары первыми, ниже — те, кому пара ещё не нашлась.
+    final unpaired = t.unpairedParticipants
+        .where((p) => p.status != 'pending')
+        .toList();
+
+    if (t.teams.isNotEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (pending.isNotEmpty) ...[
+            Row(
+              children: [
+                Text(
+                  l10n.pendingModeration,
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _buildCountBadge(pending.length, _pendingColor),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...pending.map((p) {
+              final isMe = currentUserId != null && p.id == currentUserId;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: _buildPendingRow(participant: p, isMe: isMe),
+              );
+            }),
+            const SizedBox(height: 24),
+          ],
+
+          // Готовые пары — тем же списком, что в парных турнирах.
+          TeamListSection(tournament: t, currentUserId: currentUserId),
+
+          if (unpaired.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Text(
+                  l10n.withoutPair,
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _buildCountBadge(unpaired.length, AppTheme.textSecondary),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...List.generate(unpaired.length, (i) {
+              final p = unpaired[i];
+              final isMe = currentUserId != null && p.id == currentUserId;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: _buildParticipantRow(
+                  participant: p,
+                  index: i + 1,
+                  isMe: isMe,
+                ),
+              );
+            }),
+          ],
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
