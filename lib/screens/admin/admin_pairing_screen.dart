@@ -131,13 +131,17 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
                   children: [
                     _progress(pairsCount, maxPairs),
                     const SizedBox(height: 12),
+                    // Баннер теперь предупреждение, а не запрет: пары
+                    // собираются из подтверждённых, опоздавших доставляют
+                    // позже. Ждать последнюю заявку — значит собирать восемь
+                    // пар в вечер перед игрой.
                     if (!rosterReady)
                       _rosterBanner(approvedCount, maxParticipants, pendingCount),
-                    if (rosterReady && unpaired.length >= 2) ...[
+                    if (unpaired.length >= 2) ...[
                       _autoButton(),
                       const SizedBox(height: 16),
                     ],
-                    if (rosterReady && unpaired.isNotEmpty) ...[
+                    if (unpaired.isNotEmpty) ...[
                       _sectionLabel('Без пары · ${unpaired.length}'),
                       const SizedBox(height: 4),
                       if (_selectedPlayerId != null)
@@ -244,7 +248,7 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Сбор пар откроется при полном составе',
+          Text('Состав ещё не полный — пары собирать можно',
               style: TextStyle(
                   color: AppTheme.orange,
                   fontSize: 14,
@@ -253,7 +257,8 @@ class _AdminPairingScreenState extends State<AdminPairingScreen> {
           Text(
             'Подтверждено $approved из $max'
             '${pending > 0 ? ' · $pending на модерации' : ''}.\n'
-            'Сначала подтвердите всех участников, затем собирайте пары.',
+            'В списке только подтверждённые: кто подтвердится позже, '
+            'появится здесь, и его останется доставить в пару.',
             style:
                 TextStyle(color: AppTheme.textSecondary, fontSize: 12),
           ),
