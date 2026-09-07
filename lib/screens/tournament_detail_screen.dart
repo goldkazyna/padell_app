@@ -20,6 +20,7 @@ import '../providers/home_provider.dart';
 import '../services/chat_service.dart';
 import '../widgets/app_back_button.dart';
 import '../widgets/moderation_countdown.dart';
+import '../widgets/tournaments/pairs_grid.dart';
 import '../widgets/tournaments/team_list_section.dart';
 import '../widgets/tournaments/team_info_card.dart';
 import '../widgets/tournaments/team_registration_sheet.dart';
@@ -738,6 +739,16 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         team.player1.id == userId || team.player2?.id == userId);
   }
 
+  /// Занять пустую пару в сетке.
+  Future<void> _takeEmptyPair(Tournament t) async {
+    final provider = context.read<TournamentProvider>();
+    final result = await provider.takeEmptyPair(t.id);
+
+    if (!mounted) return;
+
+    showAppAlert(context, result.message, isError: !result.success);
+  }
+
   /// Сесть в свободное место пары.
   Future<void> _joinPair(Tournament t, TournamentTeam team) async {
     final provider = context.read<TournamentProvider>();
@@ -794,16 +805,19 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             const SizedBox(height: 24),
           ],
 
-          // Готовые пары — тем же списком, что в парных турнирах. В
-          // открытых парах у неполной пары есть свободное место: туда
-          // садятся тапом, без заявок и одобрений.
-          TeamListSection(
-            tournament: t,
-            currentUserId: currentUserId,
-            onJoinPair: t.openPairs && !_isInSomePair(t, currentUserId)
-                ? (team) => _joinPair(t, team)
-                : null,
-          ),
+          // В открытых парах рисуем всю сетку: и занятые пары, и пустые.
+          // Человек видит турнир целиком и садится тапом в любое свободное
+          // место, а не гадает по общему списку.
+          if (t.openPairs)
+            PairsGrid(
+              tournament: t,
+              currentUserId: currentUserId,
+              busy: context.watch<TournamentProvider>().isActionLoading,
+              onJoinTeam: (team) => _joinPair(t, team),
+              onTakeEmpty: () => _takeEmptyPair(t),
+            )
+          else
+            TeamListSection(tournament: t, currentUserId: currentUserId),
 
           if (unpaired.isNotEmpty) ...[
             const SizedBox(height: 24),

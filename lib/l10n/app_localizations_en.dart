@@ -813,6 +813,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinThisPair => 'Free spot — play in this pair';
 
   @override
+  String get pairs => 'Pairs';
+
+  @override
+  String seatsCount(int count) {
+    return '$count seats';
+  }
+
+  @override
+  String get freeSlot => 'Free spot';
+
+  @override
+  String freeSlotWith(String name) {
+    return 'Free spot — play with $name';
+  }
+
+  @override
   String get participants => 'Participants';
 
   @override

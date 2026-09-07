@@ -291,6 +291,16 @@
   "pendingModeration": "Pending moderation",
   "withoutPair": "Without a pair",
   "joinThisPair": "Free spot — play in this pair",
+  "pairs": "Pairs",
+  "seatsCount": "{count} seats",
+  "@seatsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "freeSlot": "Free spot",
+  "freeSlotWith": "Free spot — play with {name}",
+  "@freeSlotWith": {
+    "placeholders": { "name": { "type": "String" } }
+  },
   "participants": "Participants",
   "countOfMax": "{count} of {max}",
   "noParticipantsYet": "No participants yet",

@@ -301,6 +301,16 @@
   "pendingModeration": "На модерации",
   "withoutPair": "Без пары",
   "joinThisPair": "Свободное место — играть в этой паре",
+  "pairs": "Пары",
+  "seatsCount": "{count} мест",
+  "@seatsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "freeSlot": "Свободно",
+  "freeSlotWith": "Свободно — играть с {name}",
+  "@freeSlotWith": {
+    "placeholders": { "name": { "type": "String" } }
+  },
   "participants": "Участники",
   "countOfMax": "{count} из {max}",
   "@countOfMax": { "placeholders": { "count": { "type": "int" }, "max": { "type": "int" } } },

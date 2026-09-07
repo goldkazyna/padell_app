@@ -815,6 +815,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get joinThisPair => 'Свободное место — играть в этой паре';
 
   @override
+  String get pairs => 'Пары';
+
+  @override
+  String seatsCount(int count) {
+    return '$count мест';
+  }
+
+  @override
+  String get freeSlot => 'Свободно';
+
+  @override
+  String freeSlotWith(String name) {
+    return 'Свободно — играть с $name';
+  }
+
+  @override
   String get participants => 'Участники';
 
   @override

@@ -300,6 +300,16 @@
   "pendingModeration": "Модерацияда",
   "withoutPair": "Жұбы жоқ",
   "joinThisPair": "Бос орын — осы жұпта ойнау",
+  "pairs": "Жұптар",
+  "seatsCount": "{count} орын",
+  "@seatsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "freeSlot": "Бос",
+  "freeSlotWith": "Бос — {name} екеуің",
+  "@freeSlotWith": {
+    "placeholders": { "name": { "type": "String" } }
+  },
   "participants": "Қатысушылар",
   "countOfMax": "{max}-нен {count}",
   "@countOfMax": { "placeholders": { "count": { "type": "int" }, "max": { "type": "int" } } },

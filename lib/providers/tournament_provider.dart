@@ -254,6 +254,30 @@ class TournamentProvider extends ChangeNotifier {
 
   // === Отменить запись ===
 
+  /// Занять пустую пару в сетке.
+  Future<({bool success, String message})> takeEmptyPair(int id) async {
+    final token = await _storage.getToken();
+    if (token == null) return (success: false, message: 'Нет авторизации');
+
+    _isActionLoading = true;
+    notifyListeners();
+
+    try {
+      final result = await _service.takeEmptyPair(id, token);
+      if (result.success) {
+        await loadTournamentDetails(id);
+      }
+      return result;
+    } on ApiException catch (e) {
+      return (success: false, message: e.message);
+    } catch (_) {
+      return (success: false, message: 'Не удалось занять место');
+    } finally {
+      _isActionLoading = false;
+      notifyListeners();
+    }
+  }
+
   /// Сесть в свободное место пары. После успеха перечитываем турнир —
   /// список пар меняется целиком.
   Future<({bool success, String message})> joinPair(int id, int teamId) async {

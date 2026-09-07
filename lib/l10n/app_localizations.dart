@@ -1588,6 +1588,30 @@ abstract class AppLocalizations {
   /// **'Свободное место — играть в этой паре'**
   String get joinThisPair;
 
+  /// No description provided for @pairs.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пары'**
+  String get pairs;
+
+  /// No description provided for @seatsCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count} мест'**
+  String seatsCount(int count);
+
+  /// No description provided for @freeSlot.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободно'**
+  String get freeSlot;
+
+  /// No description provided for @freeSlotWith.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободно — играть с {name}'**
+  String freeSlotWith(String name);
+
   /// No description provided for @participants.
   ///
   /// In ru, this message translates to:

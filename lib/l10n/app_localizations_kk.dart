@@ -800,6 +800,22 @@ class AppLocalizationsKk extends AppLocalizations {
   String get joinThisPair => 'Бос орын — осы жұпта ойнау';
 
   @override
+  String get pairs => 'Жұптар';
+
+  @override
+  String seatsCount(int count) {
+    return '$count орын';
+  }
+
+  @override
+  String get freeSlot => 'Бос';
+
+  @override
+  String freeSlotWith(String name) {
+    return 'Бос — $name екеуің';
+  }
+
+  @override
   String get participants => 'Қатысушылар';
 
   @override

@@ -70,6 +70,23 @@ class TournamentService {
     return RegisterResult.fromJson(response);
   }
 
+  /// Занять пустую пару в сетке (сесть первым).
+  Future<({bool success, String message})> takeEmptyPair(
+    int tournamentId,
+    String token,
+  ) async {
+    final response = await _api.post(
+      '/tournaments/$tournamentId/pairs',
+      {},
+      token,
+    );
+
+    return (
+      success: response['success'] == true,
+      message: response['message'] as String? ?? '',
+    );
+  }
+
   /// Сесть в свободное место чужой пары (открытые пары во флексе).
   Future<({bool success, String message})> joinPair(
     int tournamentId,
