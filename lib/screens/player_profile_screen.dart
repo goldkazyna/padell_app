@@ -9,6 +9,7 @@ import '../providers/rating_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/rating_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/tournaments/league_stage_tag.dart';
 import '../utils/rating_formatter.dart';
 import '../models/tournament.dart';
 import '../utils/tournament_navigation.dart';
@@ -421,10 +422,25 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    h.tournamentName,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
-                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      if (h.league != null) ...[
+                        LeagueStageTag(league: h.league!),
+                        const SizedBox(width: 6),
+                      ],
+                      Flexible(
+                        child: Text(
+                          h.tournamentName,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
                     h.date,

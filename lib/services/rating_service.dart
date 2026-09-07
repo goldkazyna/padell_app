@@ -1,3 +1,4 @@
+import '../models/league.dart';
 import '../models/tournament.dart';
 import 'api_service.dart';
 import 'profile_service.dart' show RatingTrendPoint;
@@ -515,6 +516,9 @@ class RatingHistoryItem {
   final int? place;
   final bool isRated;
 
+  /// Этап лиги — по нему рисуется метка «Лига · этап N».
+  final TournamentLeagueRef? league;
+
   RatingHistoryItem({
     this.tournamentId,
     required this.tournamentName,
@@ -524,6 +528,7 @@ class RatingHistoryItem {
     required this.ratingAfter,
     this.place,
     this.isRated = true,
+    this.league,
   });
 
   factory RatingHistoryItem.fromJson(Map<String, dynamic> json) {
@@ -536,6 +541,9 @@ class RatingHistoryItem {
       ratingAfter: json['rating_after'] as int? ?? 0,
       place: json['place'] as int?,
       isRated: json['is_rated'] as bool? ?? true,
+      league: json['league'] is Map<String, dynamic>
+          ? TournamentLeagueRef.fromJson(json['league'] as Map<String, dynamic>)
+          : null,
     );
   }
 }

@@ -7,6 +7,7 @@ import '../../providers/profile_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../utils/tournament_navigation.dart';
 import '../../theme/app_theme.dart';
+import '../tournaments/league_stage_tag.dart';
 import '../../utils/rating_formatter.dart';
 import 'medal.dart';
 
@@ -146,15 +147,25 @@ class TournamentHistoryRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    tournament.name,
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      if (tournament.league != null) ...[
+                        LeagueStageTag(league: tournament.league!),
+                        const SizedBox(width: 6),
+                      ],
+                      Flexible(
+                        child: Text(
+                          tournament.name,
+                          style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
