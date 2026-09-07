@@ -2650,6 +2650,18 @@ abstract class AppLocalizations {
   /// **'ТЕЛЕФОН'**
   String get sectionPhone;
 
+  /// No description provided for @phoneAdd.
+  ///
+  /// In ru, this message translates to:
+  /// **'Указать'**
+  String get phoneAdd;
+
+  /// No description provided for @phoneAddWithCode.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердим кодом из СМС'**
+  String get phoneAddWithCode;
+
   /// No description provided for @fieldPhone.
   ///
   /// In ru, this message translates to:

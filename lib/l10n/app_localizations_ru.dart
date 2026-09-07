@@ -1405,6 +1405,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sectionPhone => 'ТЕЛЕФОН';
 
   @override
+  String get phoneAdd => 'Указать';
+
+  @override
+  String get phoneAddWithCode => 'Подтвердим кодом из СМС';
+
+  @override
   String get fieldPhone => 'Телефон';
 
   @override

@@ -22,7 +22,10 @@ class ChangePhoneScreen extends StatefulWidget {
 }
 
 class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
-  _Step _step = _Step.oldCode;
+  /// Если номера ещё нет (вход через Apple/Google), подтверждать нечего —
+  /// начинаем сразу с ввода нового.
+  late _Step _step =
+      widget.currentPhone.isEmpty ? _Step.newPhone : _Step.oldCode;
   String? _token;
   bool _loading = false;
   String? _error;
@@ -46,7 +49,9 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
 
   Future<void> _init() async {
     _token = await StorageService().getToken();
-    await _sendOldCode();
+    if (widget.currentPhone.isNotEmpty) {
+      await _sendOldCode();
+    }
   }
 
   String _formatPhone(String p) {

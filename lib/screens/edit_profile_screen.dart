@@ -196,15 +196,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body['telegram_username'] = _telegramController.text.trim();
       body['instagram'] = _instagramController.text.trim();
 
-      // Телефон — отправляем только если изначально был пуст и юзер ввёл.
-      // Если уже был задан — поле заблокировано, не шлём.
-      if (_phone.isEmpty) {
-        final phoneRaw = _phoneController.text.trim();
-        final phoneDigits = phoneRaw.replaceAll(RegExp(r'[^0-9]'), '');
-        if (phoneDigits.isNotEmpty) {
-          body['phone'] = phoneDigits;
-        }
-      }
+      // Телефон здесь не шлём: он ставится только через код из СМС.
 
       await ApiService().put('/profile', body, token);
 
@@ -402,15 +394,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               hint: AppLocalizations.of(context)!.nameHint,
                             ),
                             _divider(),
-                            // Если телефон пуст — позволяем ввести,
-                            // иначе — readonly с замком (менять нельзя).
+                            // Телефон вводится только с подтверждением кодом:
+                            // и когда его ещё нет, и когда меняют. Свободное
+                            // поле давало вписать чужой или ошибочный номер.
                             _phone.isEmpty
-                                ? _buildEditableRow(
+                                ? _buildInfoRow(
                                     icon: Icons.phone_outlined,
                                     label: AppLocalizations.of(context)!.fieldPhone,
-                                    controller: _phoneController,
-                                    hint: '+7 777 ...',
-                                    keyboardType: TextInputType.phone,
+                                    value: null,
+                                    placeholder: AppLocalizations.of(context)!
+                                        .phoneAddWithCode,
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context)!.phoneAdd,
+                                          style: const TextStyle(
+                                              color: _T.green,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(Icons.chevron_right,
+                                            size: 16, color: _T.dim),
+                                      ],
+                                    ),
+                                    onTap: _openChangePhone,
                                     incomplete: true,
                                   )
                                 : _buildInfoRow(

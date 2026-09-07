@@ -1403,6 +1403,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionPhone => 'PHONE';
 
   @override
+  String get phoneAdd => 'Add';
+
+  @override
+  String get phoneAddWithCode => 'We\'ll confirm it by SMS code';
+
+  @override
   String get fieldPhone => 'Phone';
 
   @override

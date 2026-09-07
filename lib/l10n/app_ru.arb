@@ -520,6 +520,8 @@
   "fieldName": "Имя",
   "notSpecified": "Не указано",
   "sectionPhone": "ТЕЛЕФОН",
+  "phoneAdd": "Указать",
+  "phoneAddWithCode": "Подтвердим кодом из СМС",
   "fieldPhone": "Телефон",
   "phoneHintEdit": "+7 (___) ___-__-__",
   "phoneLockedHint": "Телефон нельзя изменить",

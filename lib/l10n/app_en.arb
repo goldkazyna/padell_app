@@ -498,6 +498,8 @@
   "saveProfile": "Save",
   "sectionName": "NAME",
   "sectionPhone": "PHONE",
+  "phoneAdd": "Add",
+  "phoneAddWithCode": "We'll confirm it by SMS code",
   "fieldPhone": "Phone",
   "phoneHintEdit": "+7 (___) ___-__-__",
   "phoneLockedHint": "Phone cannot be changed",

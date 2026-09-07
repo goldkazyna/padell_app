@@ -1381,6 +1381,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get sectionPhone => 'ТЕЛЕФОН';
 
   @override
+  String get phoneAdd => 'Көрсету';
+
+  @override
+  String get phoneAddWithCode => 'СМС кодымен растаймыз';
+
+  @override
   String get fieldPhone => 'Телефон';
 
   @override
