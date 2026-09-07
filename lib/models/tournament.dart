@@ -357,6 +357,12 @@ class Tournament {
   final List<TournamentTeam> teams;
   final List<TournamentParticipant> waitlistParticipants;
   final List<TournamentTeam> waitlistTeams;
+
+  /// Открытые пары: запись создаёт половину пары, рядом свободное место.
+  final bool openPairs;
+
+  /// Сколько пар помещается в турнир.
+  final int maxPairs;
   final int waitlistSize;
   final int waitlistCount;
   final bool waitlistAvailable;
@@ -406,6 +412,8 @@ class Tournament {
     this.teams = const [],
     this.waitlistParticipants = const [],
     this.waitlistTeams = const [],
+    this.openPairs = false,
+    this.maxPairs = 0,
     this.waitlistSize = 0,
     this.waitlistCount = 0,
     this.waitlistAvailable = false,
@@ -417,6 +425,10 @@ class Tournament {
   });
 
   bool get isTeamTournament => type == 'team';
+
+  /// Пары, где второе место свободно — к ним можно подсесть.
+  List<TournamentTeam> get openTeams =>
+      teams.where((t) => t.player2 == null).toList();
 
   /// Участники, которым организатор ещё не собрал пару.
   ///
@@ -534,6 +546,8 @@ class Tournament {
           : null,
       participants: parsedParticipants,
       teams: parsedTeams,
+      openPairs: json['open_pairs'] as bool? ?? false,
+      maxPairs: (json['max_pairs'] as num?)?.toInt() ?? 0,
       waitlistParticipants: parsedWaitlist,
       waitlistTeams: parsedWaitlistTeams,
       waitlistSize: json['waitlist_size'] as int? ?? 0,

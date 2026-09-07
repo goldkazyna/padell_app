@@ -812,6 +812,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get withoutPair => 'Без пары';
 
   @override
+  String get joinThisPair => 'Свободное место — играть в этой паре';
+
+  @override
   String get participants => 'Участники';
 
   @override

@@ -797,6 +797,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get withoutPair => 'Жұбы жоқ';
 
   @override
+  String get joinThisPair => 'Бос орын — осы жұпта ойнау';
+
+  @override
   String get participants => 'Қатысушылар';
 
   @override

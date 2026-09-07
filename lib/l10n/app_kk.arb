@@ -299,6 +299,7 @@
   "pay": "Төлеу",
   "pendingModeration": "Модерацияда",
   "withoutPair": "Жұбы жоқ",
+  "joinThisPair": "Бос орын — осы жұпта ойнау",
   "participants": "Қатысушылар",
   "countOfMax": "{max}-нен {count}",
   "@countOfMax": { "placeholders": { "count": { "type": "int" }, "max": { "type": "int" } } },

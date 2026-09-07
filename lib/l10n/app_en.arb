@@ -290,6 +290,7 @@
   "pay": "Pay",
   "pendingModeration": "Pending moderation",
   "withoutPair": "Without a pair",
+  "joinThisPair": "Free spot — play in this pair",
   "participants": "Participants",
   "countOfMax": "{count} of {max}",
   "noParticipantsYet": "No participants yet",

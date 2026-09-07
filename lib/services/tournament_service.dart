@@ -70,6 +70,24 @@ class TournamentService {
     return RegisterResult.fromJson(response);
   }
 
+  /// Сесть в свободное место чужой пары (открытые пары во флексе).
+  Future<({bool success, String message})> joinPair(
+    int tournamentId,
+    int teamId,
+    String token,
+  ) async {
+    final response = await _api.post(
+      '/tournaments/$tournamentId/pairs/$teamId/join',
+      {},
+      token,
+    );
+
+    return (
+      success: response['success'] == true,
+      message: response['message'] as String? ?? '',
+    );
+  }
+
   Future<String> cancel(int tournamentId, String token) async {
     final response = await _api.post('/tournaments/$tournamentId/cancel', {}, token);
     return response['message'] as String;

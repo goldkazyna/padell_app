@@ -810,6 +810,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withoutPair => 'Without a pair';
 
   @override
+  String get joinThisPair => 'Free spot — play in this pair';
+
+  @override
   String get participants => 'Participants';
 
   @override

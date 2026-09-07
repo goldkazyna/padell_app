@@ -730,6 +730,28 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   static const Color _pendingColor = Color(0xFFF59E0B); // amber/orange
 
   // === Участники ===
+  /// Уже сижу в какой-то паре этого турнира.
+  bool _isInSomePair(Tournament t, int? userId) {
+    if (userId == null) return false;
+
+    return t.teams.any((team) =>
+        team.player1.id == userId || team.player2?.id == userId);
+  }
+
+  /// Сесть в свободное место пары.
+  Future<void> _joinPair(Tournament t, TournamentTeam team) async {
+    final provider = context.read<TournamentProvider>();
+    final result = await provider.joinPair(t.id, team.id);
+
+    if (!mounted) return;
+
+    showAppAlert(
+      context,
+      result.message,
+      isError: !result.success,
+    );
+  }
+
   Widget _buildParticipantsSection(Tournament t, int? currentUserId) {
     final l10n = AppLocalizations.of(context)!;
     final pending = t.participants.where((p) => p.status == 'pending').toList();
@@ -772,8 +794,16 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
             const SizedBox(height: 24),
           ],
 
-          // Готовые пары — тем же списком, что в парных турнирах.
-          TeamListSection(tournament: t, currentUserId: currentUserId),
+          // Готовые пары — тем же списком, что в парных турнирах. В
+          // открытых парах у неполной пары есть свободное место: туда
+          // садятся тапом, без заявок и одобрений.
+          TeamListSection(
+            tournament: t,
+            currentUserId: currentUserId,
+            onJoinPair: t.openPairs && !_isInSomePair(t, currentUserId)
+                ? (team) => _joinPair(t, team)
+                : null,
+          ),
 
           if (unpaired.isNotEmpty) ...[
             const SizedBox(height: 24),

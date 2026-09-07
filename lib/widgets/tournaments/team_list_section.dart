@@ -12,6 +12,10 @@ class TeamListSection extends StatelessWidget {
   final Tournament tournament;
   final int? currentUserId;
 
+  /// Сесть в свободное место пары. Null — места не предлагаем (пары
+  /// собирает клуб или человек уже в составе).
+  final void Function(TournamentTeam team)? onJoinPair;
+
   static const Color _pendingColor = Color(0xFFF59E0B);
   static final Color _waitlistColor = AppTheme.blue;
 
@@ -19,6 +23,7 @@ class TeamListSection extends StatelessWidget {
     super.key,
     required this.tournament,
     this.currentUserId,
+    this.onJoinPair,
   });
 
   @override
@@ -248,6 +253,9 @@ class TeamListSection extends StatelessWidget {
               secondaryColor: secondaryColor,
               avatarBg: avatarBg,
             ),
+          ] else if (onJoinPair != null && !isPending && !isWaitlist) ...[
+            const SizedBox(height: 8),
+            _buildEmptySlot(context, team),
           ],
           // Pending badge
           if (isPending) ...[
@@ -310,6 +318,53 @@ class TeamListSection extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  /// Свободное место в паре: тап — и ты играешь с этим человеком.
+  Widget _buildEmptySlot(BuildContext context, TournamentTeam team) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return GestureDetector(
+      onTap: () => onJoinPair!(team),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.accent.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: AppTheme.accent.withValues(alpha: 0.35),
+            width: 0.8,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppTheme.accent.withValues(alpha: 0.16),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.add, size: 17, color: AppTheme.accent),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                l10n.joinThisPair,
+                style: TextStyle(
+                  color: AppTheme.accent,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 16, color: AppTheme.accent),
+          ],
+        ),
       ),
     );
   }

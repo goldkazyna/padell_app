@@ -1582,6 +1582,12 @@ abstract class AppLocalizations {
   /// **'Без пары'**
   String get withoutPair;
 
+  /// No description provided for @joinThisPair.
+  ///
+  /// In ru, this message translates to:
+  /// **'Свободное место — играть в этой паре'**
+  String get joinThisPair;
+
   /// No description provided for @participants.
   ///
   /// In ru, this message translates to:

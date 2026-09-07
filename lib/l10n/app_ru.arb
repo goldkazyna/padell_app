@@ -300,6 +300,7 @@
   "pay": "Оплатить",
   "pendingModeration": "На модерации",
   "withoutPair": "Без пары",
+  "joinThisPair": "Свободное место — играть в этой паре",
   "participants": "Участники",
   "countOfMax": "{count} из {max}",
   "@countOfMax": { "placeholders": { "count": { "type": "int" }, "max": { "type": "int" } } },
