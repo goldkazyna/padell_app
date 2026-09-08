@@ -6777,6 +6777,18 @@ class _AdminTournamentDetailScreenState
   }) {
     return Row(
       children: [
+        // Аватары пары: в раунде видно только имена, и одинаковые «Тест #5»
+        // не отличить друг от друга — лицо узнаётся быстрее строки.
+        for (final player in team.players) ...[
+          PlayerAvatar(
+            name: player.name,
+            avatarUrl: player.avatarUrl,
+            size: 22,
+            circle: true,
+          ),
+          const SizedBox(width: 5),
+        ],
+        const SizedBox(width: 3),
         Expanded(
           child: Text(
             team.title,
