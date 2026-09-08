@@ -2698,6 +2698,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gameDetails => 'Подробнее';
 
   @override
+  String get gamesBetaNotice =>
+      'Уважаемые игроки! Игры — важная часть приложения, и мы хотим сделать их как надо. Нужно ещё немного времени: в течение двух недель модуль заработает полностью.';
+
+  @override
   String get gameScreenTitle => 'Игры';
 
   @override

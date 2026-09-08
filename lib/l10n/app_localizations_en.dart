@@ -2689,6 +2689,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameDetails => 'Details';
 
   @override
+  String get gamesBetaNotice =>
+      'Dear players! Games are an important part of the app and we want to get them right. We need a bit more time: the module will be fully working within two weeks.';
+
+  @override
   String get gameScreenTitle => 'Games';
 
   @override

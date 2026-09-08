@@ -2658,6 +2658,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get gameDetails => 'Толығырақ';
 
   @override
+  String get gamesBetaNotice =>
+      'Құрметті ойыншылар! Ойындар — қосымшаның маңызды бөлігі, оны дұрыстап жасағымыз келеді. Аздап уақыт керек: екі апта ішінде модуль толық жұмыс істейді.';
+
+  @override
   String get gameScreenTitle => 'Ойындар';
 
   @override

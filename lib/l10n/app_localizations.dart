@@ -5032,6 +5032,12 @@ abstract class AppLocalizations {
   /// **'Подробнее'**
   String get gameDetails;
 
+  /// No description provided for @gamesBetaNotice.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уважаемые игроки! Игры — важная часть приложения, и мы хотим сделать их как надо. Нужно ещё немного времени: в течение двух недель модуль заработает полностью.'**
+  String get gamesBetaNotice;
+
   /// No description provided for @gameScreenTitle.
   ///
   /// In ru, this message translates to:
