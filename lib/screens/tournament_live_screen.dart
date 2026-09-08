@@ -1245,6 +1245,12 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     final avg = matches > 0 ? pointsFor / matches : 0.0;
     final playerId = p['id'] is num ? (p['id'] as num).toInt() : null;
     final playerName = p['name'] as String?;
+    // Парный флекс: строка несёт двоих. Склейку «Имя / Имя» правило для
+    // одиночных ФИО резало по первому пробелу — выходила каша.
+    final rawPlayers = p['players'] as List?;
+    final pair = (rawPlayers != null && rawPlayers.length == 2)
+        ? rawPlayers.cast<Map<String, dynamic>>()
+        : null;
 
     Widget cell(
       Widget child, {
@@ -1282,30 +1288,86 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         ),
         // Avatar
         cell(
-          _Avatar(
-            url: p['avatar'] as String?,
-            name: p['name'] as String? ?? '',
-            size: 24,
-          ),
+          pair == null
+              ? _Avatar(
+                  url: p['avatar'] as String?,
+                  name: p['name'] as String? ?? '',
+                  size: 24,
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final player in pair)
+                      SizedBox(
+                        height: 26,
+                        child: Center(
+                          child: _Avatar(
+                            url: player['avatar'] as String?,
+                            name: (player['name'] as String?) ?? '',
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         ),
         // Name + verified
         cell(
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 240),
-            child: StandingsName(
-              name: playerName ?? '—',
-              color: isMe ? AppTheme.accent : null,
-              trailing: [
-                if (p['verified'] == true)
-                  VerifiedBadge(
-                    size: 12,
-                    userId: playerId,
-                    playerName: playerName,
+          pair != null
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final player in pair)
+                      SizedBox(
+                        height: 26,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 200),
+                              child: Text(
+                                (player['name'] as String?) ?? '—',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isMe
+                                      ? AppTheme.accent
+                                      : AppTheme.textPrimary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            if (player['verified'] == true) ...[
+                              const SizedBox(width: 4),
+                              VerifiedBadge(
+                                size: 12,
+                                userId: (player['id'] as num?)?.toInt(),
+                                playerName: player['name'] as String?,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                  ],
+                )
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 240),
+                  child: StandingsName(
+                    name: playerName ?? '—',
+                    color: isMe ? AppTheme.accent : null,
+                    trailing: [
+                      if (p['verified'] == true)
+                        VerifiedBadge(
+                          size: 12,
+                          userId: playerId,
+                          playerName: playerName,
+                        ),
+                    ],
                   ),
-              ],
-            ),
-          ),
+                ),
           padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
           alignment: Alignment.centerLeft,
         ),
