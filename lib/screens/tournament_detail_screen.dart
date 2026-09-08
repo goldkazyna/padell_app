@@ -904,6 +904,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               );
             }),
           ],
+
+          // Очередь есть и когда пары уже собраны: людям из неё как раз и
+          // нужно видеть, что они в списке, — раньше блок жил только во
+          // второй ветке и с появлением первой пары пропадал с экрана.
+          ..._waitlistSection(t, currentUserId),
         ],
       );
     }
@@ -1026,43 +1031,55 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
 
         // === Лист ожидания ===
-        if (t.waitlistParticipants.isNotEmpty) ...[
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Text(
-                'Лист ожидания',
-                style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 8),
-              _buildCountBadge(t.waitlistParticipants.length, AppTheme.blue),
-              const Spacer(),
-              if (t.waitlistSize > 0)
-                Text(
-                  '${t.waitlistParticipants.length} / ${t.waitlistSize}',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...List.generate(t.waitlistParticipants.length, (index) {
-            final p = t.waitlistParticipants[index];
-            final isMe = currentUserId != null && p.id == currentUserId;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: _buildWaitlistRow(index: index + 1, participant: p, isMe: isMe),
-            );
-          }),
-        ],
+        ..._waitlistSection(t, currentUserId),
       ],
     );
+  }
+
+  /// Лист ожидания: синий блок с номерами очереди.
+  ///
+  /// Общий для обеих веток состава — с парами и без. Когда пары появились,
+  /// ветка менялась целиком, и очередь исчезала вместе с ней.
+  List<Widget> _waitlistSection(Tournament t, int? currentUserId) {
+    if (t.waitlistParticipants.isEmpty) return const [];
+
+    return [
+      const SizedBox(height: 24),
+      Row(
+        children: [
+          Text(
+            'Лист ожидания',
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _buildCountBadge(t.waitlistParticipants.length, AppTheme.blue),
+          const Spacer(),
+          // Предел показываем, только если он есть: в открытых парах
+          // очередь бесконечна, и «3 / 4» было бы враньём.
+          if (t.waitlistSize > 0)
+            Text(
+              '${t.waitlistParticipants.length} / ${t.waitlistSize}',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      ...List.generate(t.waitlistParticipants.length, (index) {
+        final p = t.waitlistParticipants[index];
+        final isMe = currentUserId != null && p.id == currentUserId;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: _buildWaitlistRow(index: index + 1, participant: p, isMe: isMe),
+        );
+      }),
+    ];
   }
 
   Widget _buildWaitlistRow({
