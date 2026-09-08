@@ -102,6 +102,8 @@ class AdminFlexPlayerMenuBody extends StatelessWidget {
               padding: EdgeInsets.zero,
               children: [
                 _section('СОСТАВ'),
+                // Цвет статуса тот же, что в сетке и в вебе: модерация —
+                // жёлтая, очередь — синяя, состав — зелёный.
                 if (player.status == 'pending')
                   _item(
                     Icons.check,
@@ -114,18 +116,21 @@ class AdminFlexPlayerMenuBody extends StatelessWidget {
                     Icons.hourglass_top,
                     'На модерацию',
                     () => onAction(FlexPlayerAction.toPending),
+                    color: AppTheme.orange,
                   ),
                 if (player.status != 'registered')
                   _item(
                     Icons.how_to_reg,
                     'В основной список',
                     () => onAction(FlexPlayerAction.toRegistered),
+                    color: AppTheme.accent,
                   ),
                 if (player.status != 'waiting')
                   _item(
                     Icons.hourglass_empty,
                     'В лист ожидания',
                     () => onAction(FlexPlayerAction.toWaiting),
+                    color: AppTheme.blue,
                     note: 'освободит место',
                   ),
                 ..._moves(own),
@@ -241,7 +246,7 @@ class AdminFlexPlayerMenuBody extends StatelessWidget {
 
   Widget _section(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Text(
         title,
         style: TextStyle(
@@ -261,13 +266,25 @@ class AdminFlexPlayerMenuBody extends StatelessWidget {
     Color? color,
     String? note,
   }) {
+    final tint = color ?? AppTheme.textSecondary;
+
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
-            Icon(icon, size: 19, color: color ?? AppTheme.textSecondary),
+            // Иконка в плашке своего цвета: так действие узнаётся раньше,
+            // чем прочитан текст, — как блоки статусов в вебе.
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: tint.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(icon, size: 18, color: tint),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -275,8 +292,13 @@ class AdminFlexPlayerMenuBody extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: color ?? AppTheme.textPrimary,
+                  // Текст красим только у опасного действия: пять цветных
+                  // строк подряд читаются как гирлянда.
+                  color: color == AppTheme.error
+                      ? AppTheme.error
+                      : AppTheme.textPrimary,
                   fontSize: 15,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
