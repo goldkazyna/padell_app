@@ -137,6 +137,43 @@ void main() {
     expect(tookEmpty, isTrue, reason: 'пустая пара — своя новая');
   });
 
+  testWidgets('тап по игроку открывает его профиль', (tester) async {
+    // В сетке видно соперников, и первое желание — посмотреть, кто это.
+    tester.view.physicalSize = const Size(390, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    TournamentTeamPlayer? tapped;
+
+    await tester.pumpWidget(wrap(PairsGrid(
+      tournament: _tournament(
+        maxPairs: 2,
+        seats: 4,
+        teams: [
+          {
+            'id': 10,
+            'player1': _player(1, 'Евгения'),
+            'player2': _player(2, 'Борис С'),
+            'status': 'approved',
+          },
+        ],
+      ),
+      currentUserId: 99,
+      onJoinTeam: (_) {},
+      onTakeEmpty: () {},
+      onPlayerTap: (p) => tapped = p,
+    )));
+    await tester.pump();
+
+    await tester.tap(find.text('Борис С'));
+    await tester.pump();
+    expect(tapped?.id, 2);
+
+    await tester.tap(find.text('Евгения'));
+    await tester.pump();
+    expect(tapped?.id, 1, reason: 'жмётся каждый игрок пары');
+  });
+
   testWidgets('в своей паре место рядом не предлагается', (tester) async {
     tester.view.physicalSize = const Size(390, 1200);
     tester.view.devicePixelRatio = 1.0;

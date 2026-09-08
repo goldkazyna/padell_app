@@ -870,6 +870,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
               busy: context.watch<TournamentProvider>().isActionLoading,
               onJoinTeam: (team) => _joinPair(t, team),
               onTakeEmpty: () => _takeEmptyPair(t),
+              onPlayerTap: (p) => _openPlayerProfile(p.id, p.name),
             )
           else
             TeamListSection(tournament: t, currentUserId: currentUserId),

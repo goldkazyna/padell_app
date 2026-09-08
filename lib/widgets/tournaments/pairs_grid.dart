@@ -21,6 +21,10 @@ class PairsGrid extends StatelessWidget {
   /// Занять пустую пару.
   final VoidCallback onTakeEmpty;
 
+  /// Открыть профиль игрока: в сетке видно соперников, и первое желание —
+  /// посмотреть, кто это.
+  final void Function(TournamentTeamPlayer player)? onPlayerTap;
+
   /// Пока идёт запрос — не даём нажимать второй раз.
   final bool busy;
 
@@ -29,6 +33,7 @@ class PairsGrid extends StatelessWidget {
     required this.tournament,
     required this.onJoinTeam,
     required this.onTakeEmpty,
+    this.onPlayerTap,
     this.currentUserId,
     this.busy = false,
   });
@@ -179,6 +184,18 @@ class PairsGrid extends StatelessWidget {
   Widget _player(BuildContext context, TournamentTeamPlayer player) {
     final mine = player.id == currentUserId;
 
+    return GestureDetector(
+      onTap: onPlayerTap == null ? null : () => onPlayerTap!(player),
+      behavior: HitTestBehavior.opaque,
+      child: _playerRow(context, player, mine),
+    );
+  }
+
+  Widget _playerRow(
+    BuildContext context,
+    TournamentTeamPlayer player,
+    bool mine,
+  ) {
     return Row(
       children: [
         PlayerAvatar(name: player.name, avatarUrl: player.avatar, size: 34, circle: true),
