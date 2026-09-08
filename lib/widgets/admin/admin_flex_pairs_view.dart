@@ -238,11 +238,18 @@ class AdminFlexPairsView extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: AppTheme.cardRaised,
+          // Место с пометкой подкрашено целиком: полоски слева было мало,
+          // чтобы заметить, что человек в паре, но ещё на модерации.
+          color: tag == null
+              ? AppTheme.cardRaised
+              : Color.alphaBlend(
+                  tag.$2.withValues(alpha: 0.10),
+                  AppTheme.cardRaised,
+                ),
           borderRadius: BorderRadius.circular(12),
           border: tag == null
               ? null
-              : Border(left: BorderSide(color: tag.$2, width: 3)),
+              : Border.all(color: tag.$2.withValues(alpha: 0.45)),
         ),
         child: Row(
           children: [
