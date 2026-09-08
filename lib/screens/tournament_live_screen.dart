@@ -881,6 +881,12 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
     // а игроки собраны из разных групп.
     final slot = p['playoff_slot'] as String?;
     final groupName = p['group_name'] as String?;
+    // Парный флекс: в строке два игрока. Склеенное «Тест #3 / Тестовый1»
+    // разбивалось по первому пробелу — выходила каша из половинок имён.
+    final rawPlayers = p['players'] as List?;
+    final pair = (rawPlayers != null && rawPlayers.length == 2)
+        ? rawPlayers.cast<Map<String, dynamic>>()
+        : null;
     final groupLabel = groupName?.replaceFirst('Группа ', '');
 
     Widget cell(
@@ -939,16 +945,71 @@ class _TournamentLiveScreenState extends State<TournamentLiveScreen> {
         ),
         // Avatar
         cell(
-          _Avatar(
-            url: p['avatar'] as String?,
-            name: p['name'] as String? ?? '',
-            size: 24,
-          ),
+          pair == null
+              ? _Avatar(
+                  url: p['avatar'] as String?,
+                  name: p['name'] as String? ?? '',
+                  size: 24,
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final player in pair)
+                      SizedBox(
+                        height: 26,
+                        child: Center(
+                          child: _Avatar(
+                            url: player['avatar'] as String?,
+                            name: (player['name'] as String?) ?? '',
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         ),
         // Name (растягивается, может перенестись) + галочка верификации
         cell(
-          StandingsName(
+          pair != null
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final player in pair)
+                      SizedBox(
+                        height: 26,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                (player['name'] as String?) ?? '—',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isMe
+                                      ? AppTheme.accent
+                                      : AppTheme.textPrimary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            if (player['verified'] == true) ...[
+                              const SizedBox(width: 4),
+                              VerifiedBadge(
+                                size: 12,
+                                userId: (player['id'] as num?)?.toInt(),
+                                playerName: player['name'] as String?,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                  ],
+                )
+              : StandingsName(
             name: playerName ?? '—',
             color: isMe ? AppTheme.accent : null,
             trailing: [
