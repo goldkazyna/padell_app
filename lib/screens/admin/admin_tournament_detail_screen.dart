@@ -2839,8 +2839,11 @@ class _AdminTournamentDetailScreenState
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          disabledBackgroundColor: color.withOpacity(0.4),
-          foregroundColor: Colors.white,
+          disabledBackgroundColor: color.withValues(alpha: 0.4),
+          // На зелёной заливке текст чёрный — правило дизайн-системы,
+          // белый по зелёному не читается.
+          foregroundColor: Colors.black,
+          disabledForegroundColor: Colors.black45,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
