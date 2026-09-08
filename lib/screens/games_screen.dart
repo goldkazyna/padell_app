@@ -192,7 +192,9 @@ class _OpenTab extends StatelessWidget {
           color: AppTheme.accent,
           child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            // Снизу оставляем место под кнопку «+»: без него последняя
+            // карточка упиралась в неё, и «Занять место» было не нажать.
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
             itemCount: provider.feed.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (_, index) {
@@ -238,7 +240,9 @@ class _MyTab extends StatelessWidget {
           color: AppTheme.accent,
           child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            // Снизу оставляем место под кнопку «+»: без него последняя
+            // карточка упиралась в неё, и «Занять место» было не нажать.
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
             itemCount: provider.myGames.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (_, index) {
