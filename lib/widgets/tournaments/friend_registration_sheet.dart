@@ -34,7 +34,7 @@ class FriendRegistrationSheet extends StatefulWidget {
 }
 
 class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
-  final _phoneController = TextEditingController();
+  final _searchController = TextEditingController();
   Timer? _debounce;
 
   @override
@@ -50,18 +50,21 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
   @override
   void dispose() {
     _debounce?.cancel();
-    _phoneController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
-  void _onPhoneChanged(String value) {
+  void _onSearchChanged(String value) {
     _debounce?.cancel();
-    final digits = value.replaceAll(RegExp(r'\D'), '');
-    if (digits.length >= 5) {
-      _debounce = Timer(const Duration(milliseconds: 500), () {
-        context.read<TournamentProvider>().searchPartner(widget.tournamentId, digits);
-      });
-    }
+
+    // Ищем и по имени, и по номеру — как в рейтинге. Раньше поле принимало
+    // только цифры, и найти человека по имени было нельзя.
+    final term = value.trim();
+    if (term.length < 2) return;
+
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      context.read<TournamentProvider>().searchPartner(widget.tournamentId, term);
+    });
   }
 
   void _onRegister() async {
@@ -162,12 +165,13 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
+              controller: _searchController,
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.words,
               style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
-              onChanged: _onPhoneChanged,
+              onChanged: _onSearchChanged,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.enterPhoneNumber,
+                hintText: AppLocalizations.of(context)!.enterNameOrPhone,
                 hintStyle: TextStyle(color: AppTheme.textSecondary),
                 prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary),
                 filled: true,
@@ -208,9 +212,9 @@ class _FriendRegistrationSheetState extends State<FriendRegistrationSheet> {
 
               final results = provider.partnerSearchResults;
               final selected = provider.selectedPartner;
-              final phoneLen = _phoneController.text.replaceAll(RegExp(r'\D'), '').length;
+              final termLen = _searchController.text.trim().length;
 
-              if (results.isEmpty && phoneLen >= 5) {
+              if (results.isEmpty && termLen >= 2) {
                 return Padding(
                   padding: const EdgeInsets.all(24),
                   child: Text(

@@ -168,7 +168,9 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
               final results = provider.partnerSearchResults;
               final selected = provider.selectedPartner;
 
-              if (results.isEmpty && _phoneController.text.replaceAll(RegExp(r'\D'), '').length >= 5) {
+              // Считаем по символам, а не по цифрам: иначе на запрос по
+              // имени экран оставался пустым — ни списка, ни «не найдено».
+              if (results.isEmpty && _phoneController.text.trim().length >= 2) {
                 return Padding(
                   padding: const EdgeInsets.all(24),
                   child: Text(
