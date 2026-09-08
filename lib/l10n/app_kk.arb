@@ -305,6 +305,15 @@
   "@seatsCount": {
     "placeholders": { "count": { "type": "int" } }
   },
+  "joinPairTitle": "Жұпқа қосыласыз ба?",
+  "joinPairBody": "Бүкіл турнирде {name} ойыншысымен бірге ойнайсыз. Серіктесті кейін тек ұйымдастырушы ауыстыра алады.",
+  "@joinPairBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "joinPairConfirm": "Жұпқа отыру",
+  "takeEmptyPairTitle": "Жаңа жұп ашасыз ба?",
+  "takeEmptyPairBody": "Бос жұптан орын аласыз — серіктес өзі қосылады немесе оны ұйымдастырушы отырғызады.",
+  "takeEmptyPairConfirm": "Орын алу",
   "freeSlot": "Бос",
   "freeSlotWith": "Бос — {name} екеуің",
   "@freeSlotWith": {

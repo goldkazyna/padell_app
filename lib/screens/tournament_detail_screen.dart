@@ -740,7 +740,51 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
   }
 
   /// Занять пустую пару в сетке.
+  /// Диалог «точно сюда?» перед посадкой в пару.
+  Future<bool?> _confirmSeat({
+    required String title,
+    required String body,
+    required String confirm,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: Text(title, style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text(body, style: TextStyle(color: AppTheme.textDim)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textDim)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              confirm,
+              style: TextStyle(
+                color: AppTheme.accent,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _takeEmptyPair(Tournament t) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final ok = await _confirmSeat(
+      title: l10n.takeEmptyPairTitle,
+      body: l10n.takeEmptyPairBody,
+      confirm: l10n.takeEmptyPairConfirm,
+    );
+    if (ok != true || !mounted) return;
+
     final provider = context.read<TournamentProvider>();
     final result = await provider.takeEmptyPair(t.id);
 
@@ -751,6 +795,17 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
 
   /// Сесть в свободное место пары.
   Future<void> _joinPair(Tournament t, TournamentTeam team) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Пара на весь турнир, и разбить её сам игрок уже не сможет — значит
+    // случайный тап по свободному месту не должен ничего решать.
+    final ok = await _confirmSeat(
+      title: l10n.joinPairTitle,
+      body: l10n.joinPairBody(team.player1.name),
+      confirm: l10n.joinPairConfirm,
+    );
+    if (ok != true || !mounted) return;
+
     final provider = context.read<TournamentProvider>();
     final result = await provider.joinPair(t.id, team.id);
 

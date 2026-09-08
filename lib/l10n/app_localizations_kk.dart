@@ -808,6 +808,27 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String get joinPairTitle => 'Жұпқа қосыласыз ба?';
+
+  @override
+  String joinPairBody(String name) {
+    return 'Бүкіл турнирде $name ойыншысымен бірге ойнайсыз. Серіктесті кейін тек ұйымдастырушы ауыстыра алады.';
+  }
+
+  @override
+  String get joinPairConfirm => 'Жұпқа отыру';
+
+  @override
+  String get takeEmptyPairTitle => 'Жаңа жұп ашасыз ба?';
+
+  @override
+  String get takeEmptyPairBody =>
+      'Бос жұптан орын аласыз — серіктес өзі қосылады немесе оны ұйымдастырушы отырғызады.';
+
+  @override
+  String get takeEmptyPairConfirm => 'Орын алу';
+
+  @override
   String get freeSlot => 'Бос';
 
   @override

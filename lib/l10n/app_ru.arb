@@ -306,6 +306,15 @@
   "@seatsCount": {
     "placeholders": { "count": { "type": "int" } }
   },
+  "joinPairTitle": "Сесть в пару?",
+  "joinPairBody": "Вы играете весь турнир вместе с {name}. Поменять напарника потом сможет только организатор.",
+  "@joinPairBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "joinPairConfirm": "Сесть в пару",
+  "takeEmptyPairTitle": "Открыть новую пару?",
+  "takeEmptyPairBody": "Вы займёте место в пустой паре — второй игрок подсядет к вам сам или его посадит организатор.",
+  "takeEmptyPairConfirm": "Занять место",
   "freeSlot": "Свободно",
   "freeSlotWith": "Свободно — играть с {name}",
   "@freeSlotWith": {

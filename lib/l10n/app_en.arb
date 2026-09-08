@@ -296,6 +296,15 @@
   "@seatsCount": {
     "placeholders": { "count": { "type": "int" } }
   },
+  "joinPairTitle": "Join this pair?",
+  "joinPairBody": "You will play the whole tournament with {name}. Only the organiser can change partners later.",
+  "@joinPairBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "joinPairConfirm": "Join pair",
+  "takeEmptyPairTitle": "Start a new pair?",
+  "takeEmptyPairBody": "You will take a seat in an empty pair — someone will join you, or the organiser will seat a partner.",
+  "takeEmptyPairConfirm": "Take the seat",
   "freeSlot": "Free spot",
   "freeSlotWith": "Free spot — play with {name}",
   "@freeSlotWith": {

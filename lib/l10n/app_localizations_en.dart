@@ -821,6 +821,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get joinPairTitle => 'Join this pair?';
+
+  @override
+  String joinPairBody(String name) {
+    return 'You will play the whole tournament with $name. Only the organiser can change partners later.';
+  }
+
+  @override
+  String get joinPairConfirm => 'Join pair';
+
+  @override
+  String get takeEmptyPairTitle => 'Start a new pair?';
+
+  @override
+  String get takeEmptyPairBody =>
+      'You will take a seat in an empty pair — someone will join you, or the organiser will seat a partner.';
+
+  @override
+  String get takeEmptyPairConfirm => 'Take the seat';
+
+  @override
   String get freeSlot => 'Free spot';
 
   @override

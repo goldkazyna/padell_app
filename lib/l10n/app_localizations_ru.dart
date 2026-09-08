@@ -823,6 +823,27 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get joinPairTitle => 'Сесть в пару?';
+
+  @override
+  String joinPairBody(String name) {
+    return 'Вы играете весь турнир вместе с $name. Поменять напарника потом сможет только организатор.';
+  }
+
+  @override
+  String get joinPairConfirm => 'Сесть в пару';
+
+  @override
+  String get takeEmptyPairTitle => 'Открыть новую пару?';
+
+  @override
+  String get takeEmptyPairBody =>
+      'Вы займёте место в пустой паре — второй игрок подсядет к вам сам или его посадит организатор.';
+
+  @override
+  String get takeEmptyPairConfirm => 'Занять место';
+
+  @override
   String get freeSlot => 'Свободно';
 
   @override

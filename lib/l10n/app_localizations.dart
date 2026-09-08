@@ -1600,6 +1600,42 @@ abstract class AppLocalizations {
   /// **'{count} мест'**
   String seatsCount(int count);
 
+  /// No description provided for @joinPairTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сесть в пару?'**
+  String get joinPairTitle;
+
+  /// No description provided for @joinPairBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы играете весь турнир вместе с {name}. Поменять напарника потом сможет только организатор.'**
+  String joinPairBody(String name);
+
+  /// No description provided for @joinPairConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сесть в пару'**
+  String get joinPairConfirm;
+
+  /// No description provided for @takeEmptyPairTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть новую пару?'**
+  String get takeEmptyPairTitle;
+
+  /// No description provided for @takeEmptyPairBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы займёте место в пустой паре — второй игрок подсядет к вам сам или его посадит организатор.'**
+  String get takeEmptyPairBody;
+
+  /// No description provided for @takeEmptyPairConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Занять место'**
+  String get takeEmptyPairConfirm;
+
   /// No description provided for @freeSlot.
   ///
   /// In ru, this message translates to:
