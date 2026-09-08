@@ -656,7 +656,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.accent,
-            foregroundColor: Colors.white,
+            // На зелёной заливке текст чёрный — правило дизайн-системы:
+            // белый по зелёному не читается.
+            foregroundColor: Colors.black,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
@@ -2104,7 +2106,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.accent,
-                      foregroundColor: Colors.white,
+                      foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
                     ),
@@ -2136,7 +2138,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
                     onPressed: () => Navigator.of(ctx).pop(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: success ? AppTheme.accent : AppTheme.error,
-                      foregroundColor: Colors.white,
+                      // По зелёному — чёрный текст, по красному белый:
+                      // белый на зелёном не читается.
+                      foregroundColor: success ? Colors.black : Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
                     ),
@@ -2308,7 +2312,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       onPressed: () => _onSubscribe(t.id),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppTheme.accent,
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         elevation: 0,
       ),
@@ -2395,7 +2399,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
         onPressed: () => _openTeamRegistrationSheet(t.id),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.accent,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),

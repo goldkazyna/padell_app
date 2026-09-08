@@ -213,7 +213,8 @@ class _TeamRegistrationSheetState extends State<TeamRegistrationSheet> {
                     onPressed: provider.isActionLoading ? null : _onRegister,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.accent,
-                      foregroundColor: Colors.white,
+                      // Чёрный по зелёному — правило дизайн-системы.
+                      foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       elevation: 0,
                     ),
