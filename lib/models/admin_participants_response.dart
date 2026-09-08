@@ -1,3 +1,4 @@
+import 'admin_flex_pairs.dart';
 import 'admin_participant.dart';
 import 'admin_team.dart';
 
@@ -10,12 +11,17 @@ class AdminParticipantsResponse {
   final int max; // max_participants или max_teams (для display)
   final bool canModify;
 
+  /// Сетка пар парного флекса: приходит вместе с составом, потому что там
+  /// место — это место в паре, а не строка списка.
+  final AdminFlexPairs? flexPairs;
+
   const AdminParticipantsResponse({
     required this.type,
     required this.participants,
     required this.teams,
     required this.max,
     required this.canModify,
+    this.flexPairs,
   });
 
   bool get isTeam => type == 'team';
@@ -40,6 +46,9 @@ class AdminParticipantsResponse {
               ?.toInt() ??
           0,
       canModify: json['can_modify'] as bool? ?? false,
+      flexPairs: json['flex_pairs'] is Map<String, dynamic>
+          ? AdminFlexPairs.fromJson(json['flex_pairs'] as Map<String, dynamic>)
+          : null,
     );
   }
 }

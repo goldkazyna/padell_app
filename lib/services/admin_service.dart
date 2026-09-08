@@ -594,6 +594,46 @@ class AdminService {
     );
   }
 
+  // === Парный флекс: работа с местами в сетке ===
+  //
+  // Организатор чаще всего с телефоном у корта: пары надо собирать и тасовать
+  // там же, а не за компьютером.
+
+  /// Посадить игрока на свободное место в конкретной паре.
+  Future<void> fillPair(int tournamentId, int pairId, int userId) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/pairs/$pairId/fill',
+      {'user_id': userId},
+      token,
+    );
+  }
+
+  /// Посадить в первое свободное место, а если таких нет — открыть пару.
+  Future<void> seatPlayer(int tournamentId, int userId) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/pairs/seat',
+      {'user_id': userId},
+      token,
+    );
+  }
+
+  /// Пересадить на конкретное место: занятое — обмен, [teamId] = 0 — новая пара.
+  Future<void> movePlayerToSeat(
+    int tournamentId,
+    int userId, {
+    required int teamId,
+    required int seat,
+  }) async {
+    final token = await _storage.getToken();
+    await _api.post(
+      '/admin/tournaments/$tournamentId/pairs/move',
+      {'user_id': userId, 'team_id': teamId, 'seat': seat},
+      token,
+    );
+  }
+
   Future<void> addParticipant(int tournamentId, int userId) async {
     final token = await _storage.getToken();
     await _api.post(

@@ -16,6 +16,8 @@ import '../../models/admin_team.dart';
 import '../../models/admin_tournament_detail.dart';
 import 'tournament_standings_share_screen.dart';
 import '../../services/admin_service.dart';
+import '../../models/admin_flex_pairs.dart';
+import '../../widgets/admin/admin_flex_pairs_view.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/admin/venue_club_field.dart';
 import '../../utils/americano_playoff_formats.dart';
@@ -3171,6 +3173,49 @@ class _AdminTournamentDetailScreenState
   // -------------------- Одиночные --------------------
 
   Widget _buildSinglesList(AdminParticipantsResponse r) {
+    // Парный флекс собирают по местам: пока пары не составлены, турнир не
+    // запустить, а плоский список этого не показывал — организатор шёл в
+    // веб-CRM. Здесь тот же порядок, что и там.
+    final flex = r.flexPairs;
+    if (flex != null) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        children: [
+          _buildParticipantsHeader(
+            approved: r.participants.where((p) => p.status != 'waiting').length,
+            max: r.max,
+            pending: r.participants.where((p) => p.status == 'pending').length,
+            canModify: r.canModify,
+            isFull: !flex.canCreatePair,
+            onAdd: r.canModify ? _openAddPlayer : null,
+          ),
+          if (_leagueBanner() != null) ...[
+            const SizedBox(height: 12),
+            _leagueBanner()!,
+          ],
+          const SizedBox(height: 12),
+          AdminFlexPairsView(
+            pairs: flex,
+            participants: r.participants,
+            maxParticipants: r.max,
+            canModify: r.canModify,
+            onFillSeat: (pair) => _openSeatPicker(r, pair: pair),
+            onOpenNewPair: () => _openSeatPicker(r, pair: null),
+            onPlayerMenu: (player) => _openFlexPlayerMenu(r, flex, player),
+            onDisbandPair: _disbandFlexPair,
+            onSeatPlayer: (player) => _runAction(
+              () => context.read<AdminService>().seatPlayer(
+                widget.tournamentId,
+                player.id,
+              ),
+              label: 'Сажаем в пару...',
+            ),
+          ),
+        ],
+      );
+    }
+
     final pending = r.participants.where((p) => p.status == 'pending').toList();
     final approved = r.participants
         .where((p) => p.status == 'registered')
@@ -4393,6 +4438,384 @@ class _AdminTournamentDetailScreenState
     await _runAction(
       () => context.read<AdminService>().removeTeam(widget.tournamentId, t.id),
       label: 'Удаляем пару...',
+    );
+  }
+
+  // -------------------- Парный флекс: места в сетке --------------------
+
+  /// Кого посадить: сначала те, кто уже в турнире без пары, потом поиск.
+  ///
+  /// [pair] = null — открываем новую пару в свободной строке.
+  Future<void> _openSeatPicker(
+    AdminParticipantsResponse r, {
+    required AdminFlexPair? pair,
+  }) async {
+    final flex = r.flexPairs;
+    if (flex == null || _actionBusy) return;
+
+    final seated = flex.seatedIds;
+    final candidates =
+        r.participants.where((p) => !seated.contains(p.id)).toList();
+
+    final picked = await showModalBottomSheet<AdminParticipant>(
+      context: context,
+      backgroundColor: AppTheme.card,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                pair == null ? 'Кем открыть пару' : 'Кого посадить в пару',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                candidates.isEmpty
+                    ? 'Все, кто в турнире, уже сидят в парах'
+                    : 'Уже в турнире, без пары',
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12.5),
+              ),
+              const SizedBox(height: 12),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    for (final player in candidates)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: PlayerAvatar(
+                          name: player.name,
+                          avatarUrl: player.avatarUrl,
+                          size: 36,
+                          circle: true,
+                        ),
+                        title: Text(
+                          player.name,
+                          style: TextStyle(color: AppTheme.textPrimary),
+                        ),
+                        subtitle: Text(
+                          _flexStatusLabel(player.status),
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                        trailing: Text(
+                          '${player.rating ?? 0}',
+                          style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        onTap: () => Navigator.pop(ctx, player),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _openAddPlayer();
+                  },
+                  icon: const Icon(Icons.person_add_alt, size: 18),
+                  label: const Text('Найти игрока в базе'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.accent,
+                    side: BorderSide(color: AppTheme.accent),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    minimumSize: const Size(0, 46),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (picked == null || !mounted) return;
+
+    await _runAction(
+      () => pair == null
+          ? context.read<AdminService>().movePlayerToSeat(
+              widget.tournamentId,
+              picked.id,
+              teamId: 0,
+              seat: 2,
+            )
+          : context.read<AdminService>().fillPair(
+              widget.tournamentId,
+              pair.id,
+              picked.id,
+            ),
+      label: 'Сажаем в пару...',
+    );
+  }
+
+  String _flexStatusLabel(String? status) => switch (status) {
+        'pending' => 'на модерации',
+        'waiting' => 'лист ожидания',
+        _ => 'в составе',
+      };
+
+  /// Меню игрока: статус, пересадка на любое место, удаление.
+  Future<void> _openFlexPlayerMenu(
+    AdminParticipantsResponse r,
+    AdminFlexPairs flex,
+    AdminParticipant player,
+  ) async {
+    if (_actionBusy) return;
+
+    final own = flex.pairs.where((p) => p.has(player.id)).firstOrNull;
+    final service = context.read<AdminService>();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.card,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        Widget item(IconData icon, String label, VoidCallback onTap,
+            {Color? color, String? note}) {
+          return ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(icon, size: 20, color: color ?? AppTheme.textSecondary),
+            title: Text(
+              label,
+              style: TextStyle(color: color ?? AppTheme.textPrimary, fontSize: 15),
+            ),
+            trailing: note == null
+                ? null
+                : Text(
+                    note,
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+            onTap: () {
+              Navigator.pop(ctx);
+              onTap();
+            },
+          );
+        }
+
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    PlayerAvatar(
+                      name: player.name,
+                      avatarUrl: player.avatarUrl,
+                      size: 40,
+                      circle: true,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            player.name,
+                            style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            '${_flexStatusLabel(player.status)}, '
+                            '${own == null ? 'без пары' : 'пара ${own.position}'}',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 12.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(height: 24),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      Text(
+                        'СОСТАВ',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 11,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                      if (player.status == 'pending')
+                        item(Icons.check, 'Одобрить заявку', () {
+                          _runAction(
+                            () => service.approveParticipant(
+                                widget.tournamentId, player.id),
+                            label: 'Одобряем...',
+                          );
+                        }, color: AppTheme.accent)
+                      else
+                        item(Icons.hourglass_top, 'На модерацию', () {
+                          _runAction(
+                            () => service.moveParticipant(
+                                widget.tournamentId, player.id, 'pending'),
+                            label: 'Переносим...',
+                          );
+                        }),
+                      if (player.status != 'registered')
+                        item(Icons.how_to_reg, 'В основной список', () {
+                          _runAction(
+                            () => service.moveParticipant(
+                                widget.tournamentId, player.id, 'registered'),
+                            label: 'Переносим...',
+                          );
+                        }),
+                      if (player.status != 'waiting')
+                        item(Icons.hourglass_empty, 'В лист ожидания', () {
+                          _runAction(
+                            () => service.moveParticipant(
+                                widget.tournamentId, player.id, 'waiting'),
+                            label: 'Переносим...',
+                          );
+                        }, note: 'освободит место'),
+                      const Divider(height: 20),
+                      Text(
+                        'МЕСТО',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 11,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                      if (flex.canCreatePair && own?.isFull != false)
+                        item(Icons.add_box_outlined, 'Открыть новую пару', () {
+                          _runAction(
+                            () => service.movePlayerToSeat(
+                              widget.tournamentId,
+                              player.id,
+                              teamId: 0,
+                              seat: 2,
+                            ),
+                            label: 'Пересаживаем...',
+                          );
+                        }, color: AppTheme.accent,
+                            note: 'строка ${flex.nextPosition}'),
+                      for (final target in flex.pairs)
+                        if (target.id != own?.id) ...[
+                          if (target.player2 == null)
+                            item(
+                              Icons.person_add_alt,
+                              'Пара ${target.position} · свободное место',
+                              () => _moveToSeat(player, target.id, 2),
+                              note: 'к: ${target.player1?.name ?? '—'}',
+                            )
+                          else ...[
+                            item(
+                              Icons.swap_horiz,
+                              'Пара ${target.position} · вместо: '
+                              '${target.player1?.name ?? '—'}',
+                              () => _moveToSeat(player, target.id, 1),
+                              note: 'обмен',
+                            ),
+                            item(
+                              Icons.swap_horiz,
+                              'Пара ${target.position} · вместо: '
+                              '${target.player2?.name ?? '—'}',
+                              () => _moveToSeat(player, target.id, 2),
+                              note: 'обмен',
+                            ),
+                          ],
+                        ],
+                      const Divider(height: 20),
+                      item(Icons.close, 'Убрать из турнира', () {
+                        _runAction(
+                          () => service.removeParticipant(
+                              widget.tournamentId, player.id),
+                          label: 'Убираем...',
+                        );
+                      }, color: AppTheme.error),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _moveToSeat(AdminParticipant player, int teamId, int seat) {
+    return _runAction(
+      () => context.read<AdminService>().movePlayerToSeat(
+        widget.tournamentId,
+        player.id,
+        teamId: teamId,
+        seat: seat,
+      ),
+      label: 'Пересаживаем...',
+    );
+  }
+
+  Future<void> _disbandFlexPair(AdminFlexPair pair) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        title: Text('Распустить пару?',
+            style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text(
+          'Игроки останутся в турнире, но без пары.',
+          style: TextStyle(color: AppTheme.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Отмена', style: TextStyle(color: AppTheme.textDim)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Распустить',
+                style: TextStyle(
+                    color: AppTheme.error, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    await _runAction(
+      () => context
+          .read<AdminService>()
+          .removePair(widget.tournamentId, pair.id)
+          .then((_) {}),
+      label: 'Распускаем пару...',
     );
   }
 
