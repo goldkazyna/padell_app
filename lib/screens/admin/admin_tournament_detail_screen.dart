@@ -28,6 +28,7 @@ import '../../widgets/app_back_button.dart';
 import '../../widgets/main_tab_bar.dart';
 import '../../widgets/moderation_countdown.dart';
 import '../../widgets/standings_bits.dart';
+import '../../widgets/standings_table.dart';
 import '../../widgets/verified_badge.dart';
 import '../player_profile_screen.dart';
 import 'admin_bali_create_pairs_screen.dart';
@@ -5671,310 +5672,96 @@ class _AdminTournamentDetailScreenState
   }
 
   Widget _buildFlexLeaderboard(List<AdminLeaderboardRow> rows) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.cardRaised,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Прокручиваем вбок только таблицу: легенда ниже должна
-          // переноситься по ширине экрана, а не тянуться в строку.
-          LayoutBuilder(
-            builder: (context, c) => SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minWidth: c.maxWidth),
-                child: Table(
-                  columnWidths: const {
-                    0: IntrinsicColumnWidth(),
-                    1: IntrinsicColumnWidth(),
-                    2: IntrinsicColumnWidth(),
-                    3: IntrinsicColumnWidth(),
-                    4: IntrinsicColumnWidth(),
-                    5: IntrinsicColumnWidth(),
-                    6: IntrinsicColumnWidth(),
-                    7: IntrinsicColumnWidth(),
-                    8: IntrinsicColumnWidth(),
-                    9: IntrinsicColumnWidth(),
-                    10: IntrinsicColumnWidth(),
-                  },
-                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  children: [
-                    TableRow(
-                      children: [
-                        _flexHdr(
-                          '#',
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.fromLTRB(2, 8, 6, 8),
-                        ),
-                        const SizedBox(),
-                        _flexHdr(
-                          'ИГРОК',
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
-                        ),
-                        _flexHdr('В'),
-                        _flexHdr('П'),
-                        _flexHdr('Н'),
-                        _flexHdr('З'),
-                        _flexHdr('Пр'),
-                        _flexHdr('±'),
-                        _flexHdr('М'),
-                        _flexHdr(
-                          'Ср',
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.fromLTRB(6, 8, 4, 8),
-                        ),
-                      ],
-                    ),
-                    for (final p in rows) _flexLeaderRow(p),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          StandingsLegend(
-            items: const [
-              ...StandingsLegend.scoring,
-              ('М', 'матчей'),
-              ('Ср', 'среднее забитых за матч'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _flexHdr(
-    String text, {
-    AlignmentGeometry alignment = Alignment.center,
-    EdgeInsets? padding,
-  }) {
-    return Container(
-      padding:
-          padding ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-      alignment: alignment,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: AppTheme.textSecondary,
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.3,
-        ),
-      ),
-    );
-  }
-
-  TableRow _flexLeaderRow(AdminLeaderboardRow p) {
-    final posColor = switch (p.position) {
-      1 => const Color(0xFFFACC15),
-      2 => const Color(0xFF94A3B8),
-      3 => const Color(0xFFF97316),
-      _ => const Color(0xFF52525B),
-    };
-    final diff = p.pointsFor - p.pointsAgainst;
-    final matches = p.matchesPlayed ?? 0;
-    // Среднее = забито ÷ матчей (как в вебе).
-    final avg = p.avgPoints ?? (matches > 0 ? p.pointsFor / matches : 0.0);
-    Widget cell(
-      Widget child, {
-      EdgeInsets? padding,
-      AlignmentGeometry alignment = Alignment.center,
-    }) {
-      return Container(
-        padding:
-            padding ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-        alignment: alignment,
-        child: child,
-      );
+    // Девять колонок не помещались в ширину телефона: ФИО сжимались до
+    // нечитаемого, цифры лепились друг к другу. Теперь пара закреплена
+    // слева — каждый игрок своей строкой, — а показатели листаются вбок.
+    int matchesOf(AdminLeaderboardRow p) => p.matchesPlayed ?? 0;
+    double avgOf(AdminLeaderboardRow p) {
+      final matches = matchesOf(p);
+      // Среднее = забито ÷ матчей (как в вебе).
+      return p.avgPoints ?? (matches > 0 ? p.pointsFor / matches : 0.0);
     }
 
-    final numStyle = TextStyle(
-      color: AppTheme.textPrimary,
-      fontSize: 13,
-      fontWeight: FontWeight.w600,
-    );
+    String diffText(int index) {
+      final diff = rows[index].pointsFor - rows[index].pointsAgainst;
+      if (diff > 0) return '+$diff';
+      if (diff < 0) return '−${diff.abs()}';
+      return '0';
+    }
 
-    // Парная строка: показываем обоих игроков с аватарами на двух строках.
-    final pair = (p.players != null && p.players!.length == 2)
-        ? p.players!
-        : null;
-
-    return TableRow(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        cell(
-          Text(
-            '${p.position}',
-            style: TextStyle(
-              color: posColor,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          padding: const EdgeInsets.fromLTRB(2, 10, 6, 10),
-          alignment: Alignment.centerLeft,
-        ),
-        cell(
-          pair == null
-              ? _AdminLeaderAvatar(url: p.avatarUrl, name: p.name, size: 24)
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (final pl in pair)
-                      SizedBox(
-                        height: 26,
-                        child: Center(
-                          child: _AdminLeaderAvatar(
-                            url: pl.avatarUrl,
-                            name: pl.name,
-                            size: 20,
+        StandingsTable(
+          nameHeader: 'Пара',
+          entries: [
+            for (final p in rows)
+              StandingsEntry(
+                place: p.position,
+                players: (p.players != null && p.players!.isNotEmpty)
+                    ? [
+                        for (final player in p.players!)
+                          StandingsPlayer(
+                            name: player.name,
+                            avatarUrl: player.avatarUrl,
+                            verified: player.verified,
                           ),
+                      ]
+                    : [
+                        StandingsPlayer(
+                          name: p.name,
+                          avatarUrl: p.avatarUrl,
+                          verified: p.verified,
                         ),
-                      ),
-                  ],
-                ),
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        ),
-        cell(
-          pair == null
-              ? ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 240),
-                  child: StandingsName(
-                    name: p.name,
-                    trailing: [
-                      if (p.verified)
-                        VerifiedBadge(
-                          size: 12,
-                          userId: p.id,
-                          playerName: p.name,
-                        ),
-                    ],
-                  ),
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final pl in pair)
-                      SizedBox(
-                        height: 26,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 240),
-                              child: Text(
-                                pl.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: AppTheme.textPrimary,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            if (pl.verified) ...[
-                              const SizedBox(width: 5),
-                              VerifiedBadge(
-                                size: 12,
-                                userId: pl.id,
-                                playerName: pl.name,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-          alignment: Alignment.centerLeft,
-        ),
-        // Победы / поражения / ничьи — первыми, как в остальных таблицах
-        cell(
-          Text(
-            '${p.wins}',
-            style: const TextStyle(
-              color: Color(0xFF22C55E),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+                      ],
+              ),
+          ],
+          columns: [
+            StandingsColumn(
+              title: 'Очки',
+              value: (i) => '${rows[i].totalPoints}',
+              bold: true,
+              width: 56,
             ),
-          ),
-        ),
-        cell(
-          Text(
-            '${p.losses}',
-            style: const TextStyle(
-              color: Color(0xFFEF4444),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+            StandingsColumn(title: 'В', value: (i) => '${rows[i].wins}', width: 42),
+            StandingsColumn(title: 'П', value: (i) => '${rows[i].losses}', width: 42),
+            StandingsColumn(title: 'Н', value: (i) => '${rows[i].draws}', width: 42),
+            StandingsColumn(title: 'З', value: (i) => '${rows[i].pointsFor}', width: 48),
+            StandingsColumn(
+              title: 'Пр',
+              value: (i) => '${rows[i].pointsAgainst}',
+              width: 48,
             ),
-          ),
-        ),
-        cell(
-          Text(
-            '${p.draws}',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+            StandingsColumn(
+              title: '±',
+              value: diffText,
+              width: 50,
+              color: (i) {
+                final diff = rows[i].pointsFor - rows[i].pointsAgainst;
+                if (diff > 0) return AppTheme.accent;
+                if (diff < 0) return AppTheme.error;
+                return AppTheme.textSecondary;
+              },
             ),
-          ),
-        ),
-        // Забито
-        cell(
-          Text(
-            '${p.pointsFor}',
-            style: const TextStyle(
-              color: Color(0xFF22C55E),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+            StandingsColumn(
+              title: 'М',
+              value: (i) => '${matchesOf(rows[i])}',
+              width: 42,
             ),
-          ),
-        ),
-        // Пропущено
-        cell(
-          Text(
-            '${p.pointsAgainst}',
-            style: const TextStyle(
-              color: Color(0xFFEF4444),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+            StandingsColumn(
+              title: 'Ср',
+              value: (i) => avgOf(rows[i]).toStringAsFixed(1),
+              width: 52,
             ),
-          ),
+          ],
         ),
-        // Разница
-        cell(
-          Text(
-            diff > 0 ? '+$diff' : '$diff',
-            style: TextStyle(
-              color: diff > 0
-                  ? const Color(0xFF22C55E)
-                  : diff < 0
-                  ? const Color(0xFFEF4444)
-                  : AppTheme.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        // Матчей
-        cell(Text('$matches', style: numStyle)),
-        // Среднее
-        cell(
-          Text(
-            avg.toStringAsFixed(2),
-            style: const TextStyle(
-              color: Color(0xFF22C55E),
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          padding: const EdgeInsets.fromLTRB(6, 10, 4, 10),
-          alignment: Alignment.centerRight,
+        const SizedBox(height: 8),
+        StandingsLegend(
+          items: const [
+            ...StandingsLegend.scoring,
+            ('М', 'матчей'),
+            ('Ср', 'среднее забитых за матч'),
+          ],
         ),
       ],
     );
