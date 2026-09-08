@@ -140,8 +140,8 @@ class _ServicesCourtBlockState extends State<ServicesCourtBlock> {
           icon: Icons.sports_esports_outlined,
           title: l.serviceGames,
           subtitle: l.serviceGamesSub,
-          // Игр нет — числа нет: ноль зовёт зря.
-          value: _games > 0 ? '$_games' : null,
+          // Игр нет — бейджа нет: ноль зовёт зря.
+          badge: _games,
           onTap: () => _open(const GamesScreen(), needProfile: true),
         ),
         _Service(
@@ -171,6 +171,7 @@ class _ServicesCourtBlockState extends State<ServicesCourtBlock> {
       compact: compact,
       bareIcon: bare,
       value: s.value,
+      badge: s.badge,
       valueColor: AppTheme.accent,
       tag: s.tag,
       onTap: s.onTap,
@@ -253,6 +254,10 @@ class _Service {
   final String title;
   final String subtitle;
   final String? value;
+
+  /// Счётчик красным кружком. Зелёное число на зелёной разметке корта
+  /// сливалось с фоном — его просто не замечали.
+  final int badge;
   final String? tag;
   final bool accent;
   final VoidCallback onTap;
@@ -263,6 +268,7 @@ class _Service {
     required this.subtitle,
     required this.onTap,
     this.value,
+    this.badge = 0,
     this.tag,
     this.accent = false,
   });

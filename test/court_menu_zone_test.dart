@@ -76,4 +76,32 @@ void main() {
       AppTheme.textPrimary,
     );
   });
+
+  testWidgets('счётчик в компактной зоне красный', (tester) async {
+    // Зелёное число на зелёной разметке корта сливалось с фоном: счётчик
+    // игр на главной попросту не замечали.
+    await tester.pumpWidget(wrap(CourtMenuZone(
+      icon: Icons.sports_esports_outlined,
+      title: 'Игры',
+      subtitle: 'с кем сыграть',
+      compact: true,
+      badge: 4,
+      onTap: () {},
+    )));
+    await tester.pump();
+
+    expect(find.text('4'), findsOneWidget);
+
+    final pill = tester.widget<Container>(
+      find.ancestor(
+        of: find.text('4'),
+        matching: find.byType(Container),
+      ).first,
+    );
+    final decoration = pill.decoration as BoxDecoration;
+    expect(decoration.color, AppTheme.error);
+
+    final label = tester.widget<Text>(find.text('4'));
+    expect(label.style?.color, Colors.white);
+  });
 }
