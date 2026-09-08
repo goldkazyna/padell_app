@@ -53,6 +53,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _position;
   DateTime? _birthDate;
   String _phone = '';
+  // Подтверждённый кодом номер меняют только через СМС, остальные — руками:
+  // на иностранные номера код не доходит вовсе.
+  bool _phoneVerified = false;
   String? _avatarUrl;
   int? _rating;
   double? _level;
@@ -99,6 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _position = user['position'] as String?;
         _birthDate = birth;
         _phone = (user['phone'] as String? ?? '').trim();
+        _phoneVerified = user['phone_verified'] == true;
         _phoneController.text = _phone; // пустое если не задан
         _whatsappController.text = _formatPhone(
           (user['whatsapp'] as String?) ?? '',
@@ -196,7 +200,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body['telegram_username'] = _telegramController.text.trim();
       body['instagram'] = _instagramController.text.trim();
 
-      // Телефон здесь не шлём: он ставится только через код из СМС.
+      // Телефон шлём, пока он не подтверждён кодом: у входа через Google
+      // номера нет, а на иностранный номер СМС не приходит — без ручного
+      // ввода такой игрок остаётся вовсе без телефона.
+      if (!_phoneVerified) {
+        final phoneDigits =
+            _phoneController.text.trim().replaceAll(RegExp(r'[^0-9]'), '');
+        if (phoneDigits.isNotEmpty) {
+          body['phone'] = phoneDigits;
+        }
+      }
 
       await ApiService().put('/profile', body, token);
 
@@ -394,33 +407,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               hint: AppLocalizations.of(context)!.nameHint,
                             ),
                             _divider(),
-                            // Телефон вводится только с подтверждением кодом:
-                            // и когда его ещё нет, и когда меняют. Свободное
-                            // поле давало вписать чужой или ошибочный номер.
-                            _phone.isEmpty
-                                ? _buildInfoRow(
+                            // Номер, подтверждённый кодом, меняют только
+                            // через СМС. Пока он не подтверждён — вводим
+                            // руками: код доходит не на всякий номер, и
+                            // иностранный игрок иначе останется без телефона.
+                            !_phoneVerified
+                                ? _buildEditableRow(
                                     icon: Icons.phone_outlined,
                                     label: AppLocalizations.of(context)!.fieldPhone,
-                                    value: null,
-                                    placeholder: AppLocalizations.of(context)!
-                                        .phoneAddWithCode,
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context)!.phoneAdd,
-                                          style: const TextStyle(
-                                              color: _T.green,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Icon(Icons.chevron_right,
-                                            size: 16, color: _T.dim),
-                                      ],
-                                    ),
-                                    onTap: _openChangePhone,
-                                    incomplete: true,
+                                    controller: _phoneController,
+                                    hint: '+7 777 ...',
+                                    keyboardType: TextInputType.phone,
+                                    incomplete: _phone.isEmpty,
                                   )
                                 : _buildInfoRow(
                                     icon: Icons.phone_outlined,
