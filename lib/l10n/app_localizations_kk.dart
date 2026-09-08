@@ -859,6 +859,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get organizer => 'Ұйымдастырушы';
 
   @override
+  String get joinWaitlistButton => 'Кезекке тұру';
+
+  @override
   String get registerButton => 'Тіркелу';
 
   @override

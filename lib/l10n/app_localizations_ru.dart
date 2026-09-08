@@ -874,6 +874,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get organizer => 'Организатор';
 
   @override
+  String get joinWaitlistButton => 'В лист ожидания';
+
+  @override
   String get registerButton => 'Записаться';
 
   @override

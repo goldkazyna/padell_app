@@ -316,6 +316,7 @@
   "spotsLeftCount": "{count} more spots available",
   "pendingStatus": "Pending",
   "organizer": "Organizer",
+  "joinWaitlistButton": "Join the waiting list",
   "registerButton": "Register",
   "leagueStageTag": "League · stage {stage}",
   "@leagueStageTag": {

@@ -328,6 +328,7 @@
   "@spotsLeftCount": { "placeholders": { "count": { "type": "int" } } },
   "pendingStatus": "Ожидание",
   "organizer": "Организатор",
+  "joinWaitlistButton": "В лист ожидания",
   "registerButton": "Записаться",
   "leagueStageTag": "Лига · этап {stage}",
   "@leagueStageTag": {

@@ -350,6 +350,10 @@ class Tournament {
   final bool isRegistered;
   final String? registrationStatus;
   final bool canRegister;
+
+  /// Запись пойдёт в лист ожидания: состав уже полный (в парном флексе —
+  /// все пары созданы). Кнопка должна говорить об этом заранее.
+  final bool goesToWaitlist;
   final String? blockReason;
   final bool isSubscribed;
   final TournamentResult? myResult;
@@ -405,6 +409,7 @@ class Tournament {
     this.isRegistered = false,
     this.registrationStatus,
     this.canRegister = true,
+    this.goesToWaitlist = false,
     this.blockReason,
     this.isSubscribed = false,
     this.myResult,
@@ -539,6 +544,7 @@ class Tournament {
       isRegistered: json['is_registered'] as bool? ?? false,
       registrationStatus: json['registration_status'] as String?,
       canRegister: json['can_register'] as bool? ?? true,
+      goesToWaitlist: json['goes_to_waitlist'] as bool? ?? false,
       blockReason: json['block_reason'] as String?,
       isSubscribed: json['is_subscribed'] as bool? ?? false,
       myResult: json['my_result'] != null

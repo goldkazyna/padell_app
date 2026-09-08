@@ -327,6 +327,7 @@
   "@spotsLeftCount": { "placeholders": { "count": { "type": "int" } } },
   "pendingStatus": "Күтуде",
   "organizer": "Ұйымдастырушы",
+  "joinWaitlistButton": "Кезекке тұру",
   "registerButton": "Тіркелу",
   "leagueStageTag": "Лига · {stage}-кезең",
   "@leagueStageTag": {

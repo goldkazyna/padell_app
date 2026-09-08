@@ -872,6 +872,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get organizer => 'Organizer';
 
   @override
+  String get joinWaitlistButton => 'Join the waiting list';
+
+  @override
   String get registerButton => 'Register';
 
   @override

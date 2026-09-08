@@ -1684,6 +1684,12 @@ abstract class AppLocalizations {
   /// **'Организатор'**
   String get organizer;
 
+  /// No description provided for @joinWaitlistButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'В лист ожидания'**
+  String get joinWaitlistButton;
+
   /// No description provided for @registerButton.
   ///
   /// In ru, this message translates to:

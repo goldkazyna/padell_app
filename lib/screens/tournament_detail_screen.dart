@@ -1806,10 +1806,14 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Состав полный — запись уйдёт в очередь, и кнопка говорит об
+          // этом до нажатия, а не после.
           AppPrimaryButton(
-            label: AppLocalizations.of(context)!.registerButton,
+            label: t.goesToWaitlist
+                ? AppLocalizations.of(context)!.joinWaitlistButton
+                : AppLocalizations.of(context)!.registerButton,
             onPressed: () => _onRegister(t.id),
-            icon: Icons.add,
+            icon: t.goesToWaitlist ? Icons.hourglass_empty : Icons.add,
           ),
           const SizedBox(height: 10),
           SizedBox(
