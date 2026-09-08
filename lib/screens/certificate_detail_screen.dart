@@ -503,14 +503,28 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
   /// Захват сертификата → PDF → системный шэринг (WhatsApp/Telegram/…).
   Future<void> _share() async {
     setState(() => _sharing = true);
+
+    // iOS ждёт, откуда «вылетает» окно отправки: без origin системный лист
+    // на iPad не открывается вовсе, а на iPhone поведение зависит от версии.
+    // Считаем до первого await, пока контекст точно жив.
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+
+    // Шаг называем вслух: на iPhone логов не видно, и «Ошибка загрузки
+    // данных» не говорила, что именно не получилось — снимок, PDF или сам
+    // системный лист.
+    var step = 'снимок';
     try {
       final boundary =
           _docKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      final image = await boundary.toImage(pixelRatio: 3.0);
+      // 3.0 на больших экранах даёт картинку в десятки мегапикселей —
+      // iOS такой снимок может не отдать. 2.5 хватает для печати.
+      final image = await boundary.toImage(pixelRatio: 2.5);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      if (byteData == null) throw Exception('capture failed');
+      if (byteData == null) throw Exception('пустой снимок');
       final bytes = byteData.buffer.asUint8List();
 
+      step = 'PDF';
       final pdf = pw.Document();
       final img = pw.MemoryImage(bytes);
       const pageW = 800.0;
@@ -521,19 +535,26 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
         build: (_) => pw.Image(img, fit: pw.BoxFit.fill),
       ));
 
+      step = 'файл';
       final dir = await getTemporaryDirectory();
       final safe = widget.certificate.number
           .replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '');
       final file = File('${dir.path}/certificate_$safe.pdf');
       await file.writeAsBytes(await pdf.save());
 
+      step = 'отправка';
       await Share.shareXFiles(
-        [XFile(file.path)],
+        [XFile(file.path, mimeType: 'application/pdf')],
         text: 'Сертификат · ${widget.certificate.club.name}',
+        sharePositionOrigin: origin,
       );
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
-        showAppAlert(context, AppLocalizations.of(context)!.loadError);
+        showAppAlert(
+          context,
+          '${AppLocalizations.of(context)!.loadError}\n\nШаг: $step\n$e',
+          isError: true,
+        );
       }
     } finally {
       if (mounted) setState(() => _sharing = false);
